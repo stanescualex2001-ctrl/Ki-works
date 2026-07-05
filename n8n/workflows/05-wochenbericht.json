@@ -1,0 +1,73 @@
+{
+  "name": "05 Wochenbericht mit KI-Zusammenfassung (Mo 08:00)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 8 * * 1" }] }
+      },
+      "id": "wf5-schedule",
+      "name": "Montag 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:3001/api/stats/weekly",
+        "options": {}
+      },
+      "id": "wf5-http",
+      "name": "Wochenstatistik holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-api-key", "value": "={{ $env.ANTHROPIC_API_KEY }}" },
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 500, messages: [{ role: 'user', content: 'Schreibe einen kurzen, freundlichen Wochenbericht auf Deutsch für einen Restaurantbesitzer basierend auf diesen Zahlen: ' + JSON.stringify($json) }] }) }}",
+        "options": {}
+      },
+      "id": "wf5-claude",
+      "name": "Claude: Bericht formulieren",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
+        "toEmail": "={{ $env.KIWORKS_FALLBACK_EMAIL }}",
+        "subject": "📈 ki-works Wochenbericht",
+        "text": "={{ $json.content[0].text }}",
+        "options": {}
+      },
+      "id": "wf5-email",
+      "name": "Wochenbericht senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [660, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Montag 08:00": { "main": [[{ "node": "Wochenstatistik holen", "type": "main", "index": 0 }]] },
+    "Wochenstatistik holen": { "main": [[{ "node": "Claude: Bericht formulieren", "type": "main", "index": 0 }]] },
+    "Claude: Bericht formulieren": { "main": [[{ "node": "Wochenbericht senden", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1", "timezone": "Europe/Vienna" }
+}

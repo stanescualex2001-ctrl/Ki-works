@@ -1,0 +1,42 @@
+{
+  "name": "01 Anruf abgeschlossen → Benachrichtigung",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "anruf-abgeschlossen",
+        "options": {}
+      },
+      "id": "wf1-webhook",
+      "name": "Webhook: Anruf abgeschlossen",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "anruf-abgeschlossen"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
+        "toEmail": "={{ $json.body.restaurant.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "subject": "=📞 Neuer Anruf: {{ $json.body.call.caller_number || 'Unbekannt' }} ({{ $json.body.call.outcome }})",
+        "text": "=Restaurant: {{ $json.body.restaurant.name }}\nAnrufer: {{ $json.body.call.caller_number }}\nErgebnis: {{ $json.body.call.outcome }}\nDauer: {{ $json.body.call.duration_seconds }} Sekunden\n\nZusammenfassung:\n{{ $json.body.call.summary }}",
+        "options": {}
+      },
+      "id": "wf1-email",
+      "name": "E-Mail an Restaurant",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Anruf abgeschlossen": {
+      "main": [[{ "node": "E-Mail an Restaurant", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

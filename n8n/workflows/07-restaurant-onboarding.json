@@ -1,0 +1,61 @@
+{
+  "name": "07 Neues Restaurant → Vapi-Assistent anlegen",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "restaurant-onboarding",
+        "options": {}
+      },
+      "id": "wf7-webhook",
+      "name": "Webhook: Restaurant angelegt",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "restaurant-onboarding"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.vapi.ai/assistant",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $env.VAPI_API_KEY }}" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ name: 'ki-works – ' + $json.body.restaurant.name, firstMessage: 'Grüß Gott, hier ist der Reservierungsassistent von ' + $json.body.restaurant.name + '. Wie kann ich Ihnen helfen?', model: { provider: 'anthropic', model: 'claude-haiku-4-5-20251001', messages: [{ role: 'system', content: 'Du bist der freundliche Telefonassistent des Restaurants ' + $json.body.restaurant.name + ' (' + ($json.body.restaurant.address || '') + '). Du nimmst Reservierungen entgegen und beantwortest Fragen zu Öffnungszeiten. Sprich Deutsch. Nutze die Funktion create_reservation, sobald du Name, Personenanzahl sowie Datum und Uhrzeit hast.' }] }, transcriber: { provider: 'deepgram', language: 'de' }, serverUrl: ($env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu') + '/api/webhooks/vapi' }) }}",
+        "options": {}
+      },
+      "id": "wf7-vapi",
+      "name": "Vapi-Assistent erstellen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://127.0.0.1:3001/api/restaurants/{{ $('Webhook: Restaurant angelegt').item.json.body.restaurant.id }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ vapi_assistant_id: $json.id }) }}",
+        "options": {}
+      },
+      "id": "wf7-update",
+      "name": "Assistant-ID speichern",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0]
+    }
+  ],
+  "connections": {
+    "Webhook: Restaurant angelegt": { "main": [[{ "node": "Vapi-Assistent erstellen", "type": "main", "index": 0 }]] },
+    "Vapi-Assistent erstellen": { "main": [[{ "node": "Assistant-ID speichern", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

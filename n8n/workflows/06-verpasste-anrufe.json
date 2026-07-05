@@ -1,0 +1,42 @@
+{
+  "name": "06 Verpasster Anruf → Alarm",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "anruf-verpasst",
+        "options": {}
+      },
+      "id": "wf6-webhook",
+      "name": "Webhook: Anruf verpasst",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "anruf-verpasst"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "subject": "=⚠️ Verpasster Anruf: {{ $json.body.call.caller_number || 'Unbekannt' }}",
+        "text": "=Ein Anruf konnte nicht abgeschlossen werden.\n\nRestaurant: {{ $json.body.restaurant?.name }}\nAnrufer: {{ $json.body.call.caller_number }}\nZeit: {{ $json.body.call.started_at }}\n\nBitte zurückrufen!",
+        "options": {}
+      },
+      "id": "wf6-email",
+      "name": "Alarm senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Anruf verpasst": {
+      "main": [[{ "node": "Alarm senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

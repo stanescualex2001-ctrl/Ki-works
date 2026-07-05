@@ -1,0 +1,42 @@
+{
+  "name": "02 Reservierung erstellt → Bestätigung",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reservierung-erstellt",
+        "options": {}
+      },
+      "id": "wf2-webhook",
+      "name": "Webhook: Reservierung erstellt",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "reservierung-erstellt"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "subject": "=✅ Neue Reservierung: {{ $json.body.reservation.customer_name }}, {{ $json.body.reservation.party_size }} Personen",
+        "text": "=Neue Reservierung eingegangen:\n\nName: {{ $json.body.reservation.customer_name }}\nTelefon: {{ $json.body.reservation.customer_phone }}\nPersonen: {{ $json.body.reservation.party_size }}\nZeit: {{ $json.body.reservation.reserved_at }}\nQuelle: {{ $json.body.reservation.source }}\nNotizen: {{ $json.body.reservation.notes }}",
+        "options": {}
+      },
+      "id": "wf2-email",
+      "name": "Bestätigung senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Reservierung erstellt": {
+      "main": [[{ "node": "Bestätigung senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

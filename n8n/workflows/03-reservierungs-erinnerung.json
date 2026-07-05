@@ -1,0 +1,73 @@
+{
+  "name": "03 Reservierungs-Erinnerung (stündlich)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 1 }] }
+      },
+      "id": "wf3-schedule",
+      "name": "Stündlich",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:3001/api/reservations/upcoming",
+        "sendQuery": true,
+        "queryParameters": { "parameters": [{ "name": "hours", "value": "2" }] },
+        "options": {}
+      },
+      "id": "wf3-http",
+      "name": "Anstehende Reservierungen holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "typeValidation": "loose", "version": 2 },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEmpty", "singleValue": true }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "wf3-if",
+      "name": "Gibt es Reservierungen?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
+        "toEmail": "={{ $json.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "subject": "=⏰ Erinnerung: Reservierung {{ $json.customer_name }} um {{ $json.reserved_at }}",
+        "text": "=Erinnerung für {{ $json.restaurant_name }}:\n\n{{ $json.customer_name }}, {{ $json.party_size }} Personen\nZeit: {{ $json.reserved_at }}\nTelefon: {{ $json.customer_phone }}\nNotizen: {{ $json.notes }}",
+        "options": {}
+      },
+      "id": "wf3-email",
+      "name": "Erinnerung senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [660, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Stündlich": { "main": [[{ "node": "Anstehende Reservierungen holen", "type": "main", "index": 0 }]] },
+    "Anstehende Reservierungen holen": { "main": [[{ "node": "Gibt es Reservierungen?", "type": "main", "index": 0 }]] },
+    "Gibt es Reservierungen?": { "main": [[{ "node": "Erinnerung senden", "type": "main", "index": 0 }], []] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

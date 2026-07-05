@@ -1,0 +1,21 @@
+[Unit]
+Description=n8n Workflow Automation
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=kiworks
+EnvironmentFile=/etc/ki-works/ki-works.env
+Environment=N8N_HOST=n8n.ki-works.eu
+Environment=N8N_PORT=5678
+Environment=N8N_LISTEN_ADDRESS=127.0.0.1
+Environment=N8N_PROTOCOL=https
+Environment=WEBHOOK_URL=https://n8n.ki-works.eu/
+Environment=GENERIC_TIMEZONE=Europe/Vienna
+Environment=N8N_DIAGNOSTICS_ENABLED=false
+ExecStart=/usr/bin/env n8n start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
