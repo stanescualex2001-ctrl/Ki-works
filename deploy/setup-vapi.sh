@@ -19,7 +19,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
   "name": "ki-works – Venezia",
   "firstMessage": "Grüß Gott, hier ist der Reservierungsassistent vom Restaurant Venezia in Schwertberg. Wie kann ich Ihnen helfen?",
   "transcriber": { "provider": "deepgram", "model": "nova-2", "language": "de" },
-  "voice": { "provider": "11labs", "voiceId": "FTNCalFNG5bRnkkaP5Ug" },
+  "voice": { "provider": "azure", "voiceId": "de-AT-IngridNeural" },
   "model": {
     "provider": "anthropic",
     "model": "claude-haiku-4-5-20251001",
