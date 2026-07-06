@@ -13,7 +13,7 @@ Environment=N8N_PROTOCOL=https
 Environment=WEBHOOK_URL=https://n8n.ki-works.eu/
 Environment=GENERIC_TIMEZONE=Europe/Vienna
 Environment=N8N_DIAGNOSTICS_ENABLED=false
-ExecStart=/usr/bin/env n8n start
+ExecStart=/usr/bin/env n8n
 Restart=always
 RestartSec=5
 
