@@ -144,6 +144,32 @@ app.get('/api/stats', async (_req, res) => {
 app.get('/api/stats/daily', async (_req, res) => res.json(await statsSince('1 day')));
 app.get('/api/stats/weekly', async (_req, res) => res.json(await statsSince('7 days')));
 
+// Per-customer stats: one row per restaurant incl. contact_email,
+// so n8n can send each customer their own report.
+async function statsByRestaurant(interval) {
+  const { rows } = await query(
+    `SELECT r.id AS restaurant_id, r.name, r.contact_email,
+       (SELECT count(*) FROM calls c
+         WHERE c.restaurant_id = r.id AND c.created_at > now() - $1::interval)          AS calls,
+       (SELECT count(*) FROM reservations x
+         WHERE x.restaurant_id = r.id AND x.created_at > now() - $1::interval)          AS reservations,
+       (SELECT count(*) FROM reservations x
+         WHERE x.restaurant_id = r.id AND x.created_at > now() - $1::interval
+           AND x.source = 'phone')                                                      AS phone_reservations,
+       (SELECT COALESCE(sum(x.party_size), 0) FROM reservations x
+         WHERE x.restaurant_id = r.id AND x.created_at > now() - $1::interval
+           AND x.status = 'confirmed')                                                  AS guests
+     FROM restaurants r ORDER BY r.id`,
+    [interval],
+  );
+  return rows;
+}
+
+app.get('/api/stats/daily/by-restaurant', async (_req, res) =>
+  res.json(await statsByRestaurant('1 day')));
+app.get('/api/stats/weekly/by-restaurant', async (_req, res) =>
+  res.json(await statsByRestaurant('7 days')));
+
 // -----------------------------------------------------------------------------
 const port = process.env.PORT || 3001;
 app.listen(port, '127.0.0.1', () => console.log(`ki-works API listening on 127.0.0.1:${port}`));

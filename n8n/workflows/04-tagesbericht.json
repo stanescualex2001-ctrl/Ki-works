@@ -1,5 +1,5 @@
 {
-  "name": "04 Tagesbericht (21:00)",
+  "name": "04 Tagesbericht pro Kunde (21:00)",
   "nodes": [
     {
       "parameters": {
@@ -13,21 +13,22 @@
     },
     {
       "parameters": {
-        "url": "http://127.0.0.1:3001/api/stats/daily",
+        "url": "http://127.0.0.1:3001/api/stats/daily/by-restaurant",
         "options": {}
       },
       "id": "wf4-http",
-      "name": "Tagesstatistik holen",
+      "name": "Tagesstatistik pro Kunde",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [220, 0]
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $env.KIWORKS_FALLBACK_EMAIL }}",
-        "subject": "=📊 ki-works Tagesbericht: {{ $json.reservations }} Reservierungen, {{ $json.calls }} Anrufe",
-        "text": "=Tagesbericht ki-works\n\nAnrufe heute: {{ $json.calls }}\nReservierungen heute: {{ $json.reservations }}\nDavon telefonisch (KI): {{ $json.phone_reservations }}\nGäste gesamt: {{ $json.guests }}",
+        "fromEmail": "stanescualex2001@gmail.com",
+        "toEmail": "={{ $json.contact_email || 'stanescualex2001@gmail.com' }}",
+        "subject": "=📊 Tagesbericht {{ $json.name }}: {{ $json.reservations }} Reservierungen, {{ $json.calls }} Anrufe",
+        "emailFormat": "text",
+        "text": "=Tagesbericht für {{ $json.name }}\n\nAnrufe heute: {{ $json.calls }}\nReservierungen heute: {{ $json.reservations }}\nDavon telefonisch (KI): {{ $json.phone_reservations }}\nGäste gesamt: {{ $json.guests }}\n\nIhr ki-works Team",
         "options": {}
       },
       "id": "wf4-email",
@@ -41,8 +42,8 @@
     }
   ],
   "connections": {
-    "Täglich 21:00": { "main": [[{ "node": "Tagesstatistik holen", "type": "main", "index": 0 }]] },
-    "Tagesstatistik holen": { "main": [[{ "node": "Bericht senden", "type": "main", "index": 0 }]] }
+    "Täglich 21:00": { "main": [[{ "node": "Tagesstatistik pro Kunde", "type": "main", "index": 0 }]] },
+    "Tagesstatistik pro Kunde": { "main": [[{ "node": "Bericht senden", "type": "main", "index": 0 }]] }
   },
   "active": false,
   "settings": { "executionOrder": "v1", "timezone": "Europe/Vienna" }

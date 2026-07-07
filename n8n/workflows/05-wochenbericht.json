@@ -1,5 +1,5 @@
 {
-  "name": "05 Wochenbericht mit KI-Zusammenfassung (Mo 08:00)",
+  "name": "05 Wochenbericht pro Kunde mit KI (Mo 08:00)",
   "nodes": [
     {
       "parameters": {
@@ -13,11 +13,11 @@
     },
     {
       "parameters": {
-        "url": "http://127.0.0.1:3001/api/stats/weekly",
+        "url": "http://127.0.0.1:3001/api/stats/weekly/by-restaurant",
         "options": {}
       },
       "id": "wf5-http",
-      "name": "Wochenstatistik holen",
+      "name": "Wochenstatistik pro Kunde",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [220, 0]
@@ -36,7 +36,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 500, messages: [{ role: 'user', content: 'Schreibe einen kurzen, freundlichen Wochenbericht auf Deutsch für einen Restaurantbesitzer basierend auf diesen Zahlen: ' + JSON.stringify($json) }] }) }}",
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 500, messages: [{ role: 'user', content: 'Schreibe einen kurzen, freundlichen Wochenbericht auf Deutsch für den Betrieb \"' + $json.name + '\". Zahlen dieser Woche: ' + JSON.stringify({ anrufe: $json.calls, reservierungen: $json.reservations, davon_telefonisch: $json.phone_reservations, gaeste: $json.guests }) + '. Sprich den Betrieb direkt an, keine Anrede mit Namen von Personen.' }] }) }}",
         "options": {}
       },
       "id": "wf5-claude",
@@ -47,9 +47,10 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $env.KIWORKS_FALLBACK_EMAIL }}",
-        "subject": "📈 ki-works Wochenbericht",
+        "fromEmail": "stanescualex2001@gmail.com",
+        "toEmail": "={{ $('Wochenstatistik pro Kunde').item.json.contact_email || 'stanescualex2001@gmail.com' }}",
+        "subject": "=📈 Wochenbericht {{ $('Wochenstatistik pro Kunde').item.json.name }}",
+        "emailFormat": "text",
         "text": "={{ $json.content[0].text }}",
         "options": {}
       },
@@ -64,8 +65,8 @@
     }
   ],
   "connections": {
-    "Montag 08:00": { "main": [[{ "node": "Wochenstatistik holen", "type": "main", "index": 0 }]] },
-    "Wochenstatistik holen": { "main": [[{ "node": "Claude: Bericht formulieren", "type": "main", "index": 0 }]] },
+    "Montag 08:00": { "main": [[{ "node": "Wochenstatistik pro Kunde", "type": "main", "index": 0 }]] },
+    "Wochenstatistik pro Kunde": { "main": [[{ "node": "Claude: Bericht formulieren", "type": "main", "index": 0 }]] },
     "Claude: Bericht formulieren": { "main": [[{ "node": "Wochenbericht senden", "type": "main", "index": 0 }]] }
   },
   "active": false,
