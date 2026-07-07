@@ -127,6 +127,46 @@ button.primary:disabled { opacity: 0.6; cursor: wait; }
   border-radius: 12px; padding: 1.1rem; white-space: pre-wrap; line-height: 1.55; max-width: 720px;
 }
 
+/* ---- Login ---- */
+.login-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--panel);
+}
+.login-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px;
+  padding: 2rem; width: 340px; display: flex; flex-direction: column; gap: 0.5rem;
+  box-shadow: 0 8px 30px rgba(16, 24, 40, 0.06);
+}
+.login-logo { justify-content: center; margin-bottom: 0.2rem; }
+.login-sub { color: var(--muted); font-size: 0.9rem; text-align: center; margin-bottom: 0.8rem; }
+.login-card label { font-size: 0.85rem; color: var(--muted); margin-top: 0.4rem; }
+.login-card input {
+  padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem;
+}
+.login-card .primary { margin-top: 1rem; }
+
+/* ---- Suche & Kunden-Zugang ---- */
+.search {
+  padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.9rem; width: 100%; max-width: 320px; background: #fff; color: var(--text);
+}
+.sidebar select[size] { height: auto; }
+.sidebar option { padding: 0.25rem 0.3rem; }
+.customer-name-box {
+  background: var(--accent-soft); color: var(--accent); font-weight: 700;
+  border-radius: 8px; padding: 0.6rem 0.7rem;
+}
+.access-form {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.6rem;
+  max-width: 420px;
+}
+.access-form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.85rem; color: var(--muted); }
+.access-form input {
+  padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem;
+}
+.form-row { display: flex; gap: 0.9rem; align-items: center; }
+
 /* ---- Mobil ---- */
 @media (max-width: 760px) {
   .layout { flex-direction: column; }

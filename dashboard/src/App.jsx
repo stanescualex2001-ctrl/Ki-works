@@ -7,6 +7,24 @@ const fmtTime = (iso) =>
 const todayISO = () => new Date().toISOString().slice(0, 10);
 
 const CAPACITY = 60; // Plätze gesamt (Runde 2: echte Tischverwaltung pro Betrieb)
+const AUTH_KEY = 'kiworks-auth';
+
+// ---------------------------------------------------------------- auth utils
+const loadAuth = () => {
+  try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || null; } catch { return null; }
+};
+const saveAuth = (a) => localStorage.setItem(AUTH_KEY, JSON.stringify(a));
+const clearAuth = () => localStorage.removeItem(AUTH_KEY);
+
+function apiFetch(url, opts = {}) {
+  const auth = loadAuth();
+  const headers = { ...(opts.headers || {}) };
+  if (auth?.token) headers.Authorization = `Bearer ${auth.token}`;
+  return fetch(url, { ...opts, headers }).then((r) => {
+    if (r.status === 401 && auth) { clearAuth(); window.location.reload(); }
+    return r;
+  });
+}
 
 function useFetch(url, refreshKey) {
   const [data, setData] = useState(null);
@@ -15,7 +33,7 @@ function useFetch(url, refreshKey) {
     if (!url) return undefined;
     let alive = true;
     setData(null);
-    fetch(url)
+    apiFetch(url)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((d) => alive && setData(d))
       .catch((e) => alive && setError(e.message));
@@ -24,6 +42,56 @@ function useFetch(url, refreshKey) {
   return { data, error };
 }
 
+// ---------------------------------------------------------------- Login
+function Login({ onLogin }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    fetch('/api/login', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        saveAuth(d);
+        onLogin(d);
+      })
+      .catch((err) => { setError(err.message); setLoading(false); });
+  };
+
+  return (
+    <div className="login-page">
+      <form className="login-card" onSubmit={submit}>
+        <div className="logo-area login-logo">
+          <img src="/logo.png" alt="" className="logo-img"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <span className="logo-word">ki-works</span>
+        </div>
+        <p className="login-sub">Ihr KI-Telefonassistent — Anmeldung</p>
+        <label htmlFor="login-email">E-Mail</label>
+        <input id="login-email" type="email" required autoComplete="username"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
+        <label htmlFor="login-pass">Passwort</label>
+        <input id="login-pass" type="password" required autoComplete="current-password"
+          value={password} onChange={(e) => setPassword(e.target.value)} />
+        {error && <p className="error">{error}</p>}
+        <button className="primary" type="submit" disabled={loading}>
+          {loading ? 'Anmelden…' : 'Anmelden'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------- widgets
 function StatCard({ label, value }) {
   return (
     <div className="stat-card">
@@ -68,7 +136,7 @@ function Reservations({ restaurantId, refreshKey, onChanged }) {
     `/api/reservations?restaurant_id=${restaurantId}`, refreshKey,
   );
   const setStatus = useCallback((id, status) => {
-    fetch(`/api/reservations/${id}`, {
+    apiFetch(`/api/reservations/${id}`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ status }),
@@ -112,7 +180,7 @@ function CalendarDay({ restaurantId, refreshKey }) {
   const { data: reservations } = useFetch(
     `/api/reservations?restaurant_id=${restaurantId}&date=${date}`, refreshKey,
   );
-  const hours = useMemo(() => Array.from({ length: 14 }, (_, i) => i + 10), []); // 10–23 Uhr
+  const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []); // ganzer Tag
   const active = (reservations || []).filter((r) => r.status === 'confirmed');
 
   const occupancyAt = (hour) => {
@@ -191,7 +259,7 @@ function Recommendations({ restaurantId }) {
   const [state, setState] = useState({ loading: false, text: null, error: null });
   const generate = () => {
     setState({ loading: true, text: null, error: null });
-    fetch(`/api/recommendations?restaurant_id=${restaurantId}`)
+    apiFetch(`/api/recommendations?restaurant_id=${restaurantId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((d) => setState({ loading: false, text: d.recommendations, error: null }))
       .catch((e) => setState({ loading: false, text: null, error: e.message }));
@@ -208,39 +276,110 @@ function Recommendations({ restaurantId }) {
   );
 }
 
-function Customers({ refreshKey }) {
+// Zugangs-Formular für einen Kunden (nur Betreiber).
+function AccessForm({ restaurant, onDone, onCancel }) {
+  const [email, setEmail] = useState(restaurant.login_email || restaurant.contact_email || '');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch(`/api/restaurants/${restaurant.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ login_email: email, ...(password ? { password } : {}) }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onDone();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>Login für „{restaurant.name}"</strong>
+      <label>Login-E-Mail
+        <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+      </label>
+      <label>Passwort {restaurant.login_email ? '(leer = unverändert)' : ''}
+        <input type="text" value={password} onChange={(e) => setPassword(e.target.value)}
+          required={!restaurant.login_email} placeholder="Neues Passwort" />
+      </label>
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>Speichern</button>
+        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+      </div>
+    </form>
+  );
+}
+
+function Customers({ refreshKey, onChanged }) {
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const { data: restaurants } = useFetch('/api/restaurants', refreshKey);
+  const [search, setSearch] = useState('');
+  const [editing, setEditing] = useState(null);
+
   if (!daily || !weekly || !restaurants) return <p>Lade…</p>;
   const weekOf = (id) => weekly.find((w) => w.restaurant_id === id) || {};
   const info = (id) => restaurants.find((r) => r.id === id) || {};
+  const q = search.trim().toLowerCase();
+  const rows = daily.filter((d) => {
+    if (!q) return true;
+    const r = info(d.restaurant_id);
+    return [d.name, d.contact_email, r.login_email, r.address]
+      .some((v) => (v || '').toLowerCase().includes(q));
+  });
+
   return (
     <>
       <p>Alle Kennzahlen deiner Geschäftskunden auf einen Blick — dein Bericht, ohne E-Mail-Flut.</p>
+      <div className="toolbar">
+        <input
+          type="search" className="search" placeholder="🔍 Kunde suchen…"
+          value={search} onChange={(e) => setSearch(e.target.value)}
+        />
+        <span className="hint">{rows.length} von {daily.length} Kunden</span>
+      </div>
+      {editing && (
+        <AccessForm
+          restaurant={info(editing)}
+          onCancel={() => setEditing(null)}
+          onDone={() => { setEditing(null); onChanged(); }}
+        />
+      )}
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Kunde</th><th>E-Mail</th><th>KI-Nummer</th>
+              <th>Kunde</th><th>Login</th><th>KI-Nummer</th>
               <th>Anrufe heute</th><th>Res. heute</th>
-              <th>Anrufe 7 T</th><th>Res. 7 T</th><th>Gäste 7 T</th>
+              <th>Anrufe 7 T</th><th>Res. 7 T</th><th>Gäste 7 T</th><th></th>
             </tr>
           </thead>
           <tbody>
-            {daily.map((d) => {
+            {rows.map((d) => {
               const w = weekOf(d.restaurant_id);
               const r = info(d.restaurant_id);
               return (
                 <tr key={d.restaurant_id}>
                   <td><strong>{d.name}</strong></td>
-                  <td>{d.contact_email || <span className="warn-text">fehlt!</span>}</td>
+                  <td>{r.login_email || <span className="warn-text">kein Zugang</span>}</td>
                   <td>{r.vapi_phone_number || '–'}</td>
                   <td>{d.calls}</td>
                   <td>{d.reservations}</td>
                   <td>{w.calls ?? '–'}</td>
                   <td>{w.reservations ?? '–'}</td>
                   <td>{w.guests ?? '–'}</td>
+                  <td>
+                    <button className="link" onClick={() => setEditing(d.restaurant_id)}>
+                      {r.login_email ? 'Zugang ändern' : 'Zugang anlegen'}
+                    </button>
+                  </td>
                 </tr>
               );
             })}
@@ -251,13 +390,14 @@ function Customers({ refreshKey }) {
   );
 }
 
+// ---------------------------------------------------------------- shell
 const NAV = [
   { id: 'overview', label: 'Übersicht', icon: '📊' },
   { id: 'calendar', label: 'Kalender', icon: '📅' },
   { id: 'reservations', label: 'Reservierungen', icon: '🍽️' },
   { id: 'calls', label: 'Anrufe', icon: '📞' },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
-  { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true },
+  { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
 ];
 
 const TITLES = {
@@ -266,47 +406,70 @@ const TITLES = {
 };
 
 export default function App() {
+  const [auth, setAuth] = useState(loadAuth);
   const [view, setView] = useState('overview');
   const [refreshKey, setRefreshKey] = useState(0);
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
-  const { data: restaurants } = useFetch('/api/restaurants', refreshKey);
+  const isAdmin = auth?.role === 'admin';
+
+  const { data: restaurants } = useFetch(auth ? '/api/restaurants' : null, refreshKey);
   const [restaurantId, setRestaurantId] = useState(null);
+  const [sideSearch, setSideSearch] = useState('');
 
   useEffect(() => {
-    if (restaurants?.length && restaurantId == null) setRestaurantId(restaurants[0].id);
-  }, [restaurants, restaurantId]);
+    if (!auth) return;
+    if (auth.role === 'customer') setRestaurantId(auth.restaurant_id);
+    else if (restaurants?.length && restaurantId == null) setRestaurantId(restaurants[0].id);
+  }, [auth, restaurants, restaurantId]);
 
   useEffect(() => {
+    if (!auth) return undefined;
     const t = setInterval(refresh, 30000);
     return () => clearInterval(t);
-  }, [refresh]);
+  }, [auth, refresh]);
 
+  if (!auth) return <Login onLogin={setAuth} />;
+
+  const logout = () => { clearAuth(); setAuth(null); setView('overview'); };
   const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
+  const filtered = (restaurants || []).filter(
+    (r) => r.name.toLowerCase().includes(sideSearch.trim().toLowerCase()),
+  );
+  const nav = NAV.filter((item) => !item.adminOnly || isAdmin);
 
   return (
     <div className="layout">
       <aside className="sidebar">
         <div className="logo-area">
-          <img
-            src="/logo.png" alt="" className="logo-img"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          />
+          <img src="/logo.png" alt="" className="logo-img"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           <span className="logo-word">ki-works</span>
         </div>
 
-        <label className="side-label" htmlFor="restaurant-select">Betrieb</label>
-        <select
-          id="restaurant-select"
-          value={restaurantId ?? ''}
-          onChange={(e) => setRestaurantId(e.target.value)}
-        >
-          {(restaurants || []).map((r) => (
-            <option key={r.id} value={r.id}>{r.name}</option>
-          ))}
-        </select>
+        {isAdmin ? (
+          <>
+            <label className="side-label" htmlFor="restaurant-search">Betrieb</label>
+            <input
+              id="restaurant-search" type="search" className="search"
+              placeholder="🔍 Suchen…" value={sideSearch}
+              onChange={(e) => setSideSearch(e.target.value)}
+            />
+            <select
+              id="restaurant-select" size={Math.min(Math.max(filtered.length, 2), 6)}
+              value={restaurantId ?? ''}
+              onChange={(e) => setRestaurantId(e.target.value)}
+            >
+              {filtered.map((r) => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
+          </>
+        ) : (
+          <div className="customer-name-box">{auth.name}</div>
+        )}
 
         <nav>
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <React.Fragment key={item.id}>
               {item.divider && <hr className="nav-divider" />}
               <button
@@ -320,6 +483,7 @@ export default function App() {
         </nav>
 
         <button className="refresh" onClick={refresh}>⟳ Aktualisieren</button>
+        <button className="refresh" onClick={logout}>Abmelden ({isAdmin ? 'Betreiber' : auth.name})</button>
       </aside>
 
       <main>
@@ -327,7 +491,7 @@ export default function App() {
           <h1>{TITLES[view]}</h1>
           {view !== 'customers' && current && <span className="current-name">{current.name}</span>}
         </header>
-        {restaurantId == null ? <p>Lade…</p> : (
+        {restaurantId == null && view !== 'customers' ? <p>Lade…</p> : (
           <>
             {view === 'overview' && <Overview restaurantId={restaurantId} refreshKey={refreshKey} />}
             {view === 'calendar' && <CalendarDay restaurantId={restaurantId} refreshKey={refreshKey} />}
@@ -336,7 +500,9 @@ export default function App() {
             )}
             {view === 'calls' && <Calls restaurantId={restaurantId} refreshKey={refreshKey} />}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
-            {view === 'customers' && <Customers refreshKey={refreshKey} />}
+            {view === 'customers' && isAdmin && (
+              <Customers refreshKey={refreshKey} onChanged={refresh} />
+            )}
           </>
         )}
       </main>

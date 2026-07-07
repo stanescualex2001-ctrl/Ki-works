@@ -77,6 +77,9 @@ sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='kiworks'" | 
   || sudo -u postgres createdb -O kiworks kiworks
 export PGPASSWORD=$DB_PASS
 psql -h 127.0.0.1 -U kiworks -d kiworks -f "$APP_DIR/backend/sql/schema.sql"
+for migration in "$APP_DIR"/backend/sql/migration-*.sql; do
+  [[ -e $migration ]] && psql -h 127.0.0.1 -U kiworks -d kiworks -f "$migration"
+done
 psql -h 127.0.0.1 -U kiworks -d kiworks -f "$APP_DIR/backend/sql/seed.sql"
 unset PGPASSWORD
 
@@ -88,6 +91,20 @@ if [[ -f $VAPI_WEBHOOK_SECRET_FILE ]]; then
 else
   VAPI_WEBHOOK_SECRET=$(openssl rand -hex 24)
   echo "$VAPI_WEBHOOK_SECRET" > "$VAPI_WEBHOOK_SECRET_FILE" && chmod 600 "$VAPI_WEBHOOK_SECRET_FILE"
+fi
+AUTH_SECRET_FILE=$ENV_DIR/.authsecret
+if [[ -f $AUTH_SECRET_FILE ]]; then
+  AUTH_SECRET=$(cat "$AUTH_SECRET_FILE")
+else
+  AUTH_SECRET=$(openssl rand -hex 32)
+  echo "$AUTH_SECRET" > "$AUTH_SECRET_FILE" && chmod 600 "$AUTH_SECRET_FILE"
+fi
+ADMIN_PASS_FILE=$ENV_DIR/.adminpass
+if [[ -f $ADMIN_PASS_FILE ]]; then
+  ADMIN_PASSWORD=$(cat "$ADMIN_PASS_FILE")
+else
+  ADMIN_PASSWORD=$(openssl rand -base64 12 | tr -d '=+/')
+  echo "$ADMIN_PASSWORD" > "$ADMIN_PASS_FILE" && chmod 600 "$ADMIN_PASS_FILE"
 fi
 cat > "$ENV_FILE" <<EOF
 ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
@@ -101,6 +118,9 @@ KIWORKS_PUBLIC_URL=https://$DOMAIN
 N8N_BASE_URL=http://127.0.0.1:5678
 KIWORKS_FROM_EMAIL=noreply@$DOMAIN
 KIWORKS_FALLBACK_EMAIL=${KIWORKS_FALLBACK_EMAIL:-$CERTBOT_EMAIL}
+AUTH_SECRET=$AUTH_SECRET
+ADMIN_EMAIL=${ADMIN_EMAIL:-$CERTBOT_EMAIL}
+ADMIN_PASSWORD=$ADMIN_PASSWORD
 EOF
 chmod 640 "$ENV_FILE" && chgrp kiworks "$ENV_FILE"
 
@@ -127,16 +147,8 @@ systemctl enable --now ki-works-api n8n
 sleep 3
 systemctl --no-pager --lines=0 status ki-works-api n8n || true
 
-# --- nginx + Basic Auth --------------------------------------------------------------
+# --- nginx --------------------------------------------------------------------------
 log "nginx konfigurieren"
-DASH_PASS_FILE=$ENV_DIR/.dashpass
-if [[ -f $DASH_PASS_FILE ]]; then
-  DASH_PASS=$(cat "$DASH_PASS_FILE")
-else
-  DASH_PASS=$(openssl rand -base64 12 | tr -d '=+/')
-  echo "$DASH_PASS" > "$DASH_PASS_FILE" && chmod 600 "$DASH_PASS_FILE"
-fi
-htpasswd -bc /etc/nginx/ki-works.htpasswd admin "$DASH_PASS"
 install -m 644 "$APP_DIR/deploy/nginx/ki-works.conf" /etc/nginx/sites-available/ki-works.conf
 ln -sf /etc/nginx/sites-available/ki-works.conf /etc/nginx/sites-enabled/ki-works.conf
 rm -f /etc/nginx/sites-enabled/default
@@ -151,7 +163,7 @@ certbot --nginx --non-interactive --agree-tos -m "$CERTBOT_EMAIL" \
 # --- Zusammenfassung ----------------------------------------------------------------------
 cat > $ENV_DIR/credentials.txt <<EOF
 ki-works Zugangsdaten ($(date -Iseconds))
-Dashboard:  https://$DOMAIN  (Benutzer: admin / Passwort: $DASH_PASS)
+Dashboard-Betreiber-Login: https://$DOMAIN  (${ADMIN_EMAIL:-$CERTBOT_EMAIL} / $ADMIN_PASSWORD)
 n8n:        https://n8n.$DOMAIN (Owner-Konto beim ersten Aufruf anlegen)
 Postgres:   kiworks / $DB_PASS (nur localhost)
 Vapi-Webhook-Secret (X-Vapi-Secret): $VAPI_WEBHOOK_SECRET
@@ -160,7 +172,7 @@ chmod 600 $ENV_DIR/credentials.txt
 
 log "FERTIG!"
 echo "-----------------------------------------------------------"
-echo " Dashboard : https://$DOMAIN   (admin / $DASH_PASS)"
+echo " Dashboard : https://$DOMAIN   (Betreiber-Login: ${ADMIN_EMAIL:-$CERTBOT_EMAIL} / $ADMIN_PASSWORD)"
 echo " n8n       : https://n8n.$DOMAIN"
 echo " API-Health: https://$DOMAIN/api/health"
 echo ""

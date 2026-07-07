@@ -26,7 +26,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
     "messages": [
       {
         "role": "system",
-        "content": "Du bist der freundliche Telefonassistent des Restaurants Venezia am Marktplatz 10 in 4311 Schwertberg, Österreich. Du sprichst Deutsch und nimmst Tischreservierungen entgegen. Frage nach: Name, Anzahl der Personen, Datum und Uhrzeit. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Sobald du alle Angaben hast, lege die Reservierung mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). Bestätige die Reservierung am Ende noch einmal. Heutiges Datum: {{now}}."
+        "content": "Du bist der freundliche Telefonassistent des Restaurants Venezia am Marktplatz 10 in 4311 Schwertberg, Österreich. Du sprichst Deutsch und nimmst Tischreservierungen entgegen. Frage nach: Name, Anzahl der Personen, Datum und Uhrzeit. Frage außerdem: 'Darf ich für Benachrichtigungen die Nummer speichern, von der Sie gerade anrufen, oder möchten Sie eine andere Nummer angeben?' Wenn der Gast eine andere Nummer nennt, übergib sie als phone; wenn er die aktuelle Nummer bestätigt, lasse phone weg. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Sobald du alle Angaben hast, lege die Reservierung mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). Bestätige die Reservierung am Ende noch einmal. Heutiges Datum: {{now}}."
       }
     ],
     "tools": [
@@ -39,7 +39,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
             "type": "object",
             "properties": {
               "name":       { "type": "string", "description": "Name des Gastes" },
-              "phone":      { "type": "string", "description": "Telefonnummer des Gastes" },
+              "phone":      { "type": "string", "description": "Telefonnummer für Benachrichtigungen — nur angeben, wenn sie von der Anrufnummer abweicht" },
               "party_size": { "type": "integer", "description": "Anzahl der Personen" },
               "datetime":   { "type": "string", "description": "Datum und Uhrzeit, ISO-Format JJJJ-MM-TTTHH:MM" },
               "notes":      { "type": "string", "description": "Besondere Wünsche" }
