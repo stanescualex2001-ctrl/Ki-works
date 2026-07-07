@@ -2,6 +2,7 @@ import express from 'express';
 import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
 import { notifyN8n } from './n8n.js';
+import { businessRecommendations } from './claude.js';
 
 const app = express();
 app.use(express.json({ limit: '2mb' }));
@@ -169,6 +170,26 @@ app.get('/api/stats/daily/by-restaurant', async (_req, res) =>
   res.json(await statsByRestaurant('1 day')));
 app.get('/api/stats/weekly/by-restaurant', async (_req, res) =>
   res.json(await statsByRestaurant('7 days')));
+
+// KI-Empfehlungen für einen Betrieb auf Basis der Wochenzahlen.
+app.get('/api/recommendations', async (req, res) => {
+  const rows = await statsByRestaurant('7 days');
+  const row = req.query.restaurant_id
+    ? rows.find((r) => String(r.restaurant_id) === String(req.query.restaurant_id))
+    : rows[0];
+  if (!row) return res.status(404).json({ error: 'restaurant not found' });
+  const text = await businessRecommendations(row.name, {
+    anrufe: row.calls,
+    reservierungen: row.reservations,
+    davon_telefonisch: row.phone_reservations,
+    gaeste: row.guests,
+  });
+  res.json({
+    restaurant_id: row.restaurant_id,
+    name: row.name,
+    recommendations: text || 'Keine Empfehlungen verfügbar (Claude-API nicht erreichbar).',
+  });
+});
 
 // -----------------------------------------------------------------------------
 const port = process.env.PORT || 3001;

@@ -35,6 +35,16 @@ export async function summarizeCall(transcript) {
   );
 }
 
+export async function businessRecommendations(name, stats) {
+  return ask(
+    'Du bist ein erfahrener Berater für Gastronomie- und Dienstleistungsbetriebe. Antworte auf Deutsch, kurz und konkret.',
+    `Betrieb: ${name}. Zahlen der letzten 7 Tage: ${JSON.stringify(stats)}. `
+    + 'Gib genau 3 kurze, umsetzbare Empfehlungen als nummerierte Liste (je 1-2 Sätze). '
+    + 'Wenn die Zahlen sehr niedrig sind, empfiehl Maßnahmen, um mehr Anrufe/Reservierungen zu bekommen.',
+    500,
+  );
+}
+
 export async function classifyOutcome(transcript) {
   if (!transcript) return 'other';
   const answer = await ask(

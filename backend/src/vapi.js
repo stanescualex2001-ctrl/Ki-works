@@ -32,7 +32,7 @@ async function resolveRestaurant(phoneNumber) {
 }
 
 // Vapi tool call: create_reservation({name, phone, party_size, datetime, notes})
-async function createReservation(restaurant, args) {
+async function createReservation(restaurant, args, callerNumber) {
   const reservedAt = parseGuestDatetime(args.datetime || args.date_time || args.time);
   if (Number.isNaN(reservedAt.getTime())) {
     return { error: 'Ungültiges Datum. Bitte Datum und Uhrzeit im Format JJJJ-MM-TT HH:MM angeben.' };
@@ -43,7 +43,7 @@ async function createReservation(restaurant, args) {
     [
       restaurant.id,
       args.name || 'Unbekannt',
-      args.phone || null,
+      args.phone || callerNumber || null,
       parseInt(args.party_size, 10) || 2,
       reservedAt.toISOString(),
       args.notes || null,
@@ -80,6 +80,7 @@ async function handleToolCalls(message, restaurant) {
   // Supports both legacy "function-call" and current "tool-calls" formats.
   const calls = message.toolCallList
     || (message.functionCall ? [{ id: 'legacy', function: message.functionCall }] : []);
+  const callerNumber = message.call?.customer?.number || message.customer?.number || null;
   const results = [];
   for (const call of calls) {
     const fn = call.function || call;
@@ -88,7 +89,7 @@ async function handleToolCalls(message, restaurant) {
     if (typeof args === 'string') { try { args = JSON.parse(args); } catch { args = {}; } }
     const handler = TOOL_HANDLERS[name];
     const out = handler
-      ? await handler(restaurant, args)
+      ? await handler(restaurant, args, callerNumber)
       : { error: `Unbekannte Funktion: ${name}` };
     const value = out.result ?? out.error;
     results.push({ toolCallId: call.id, result: typeof value === 'string' ? value : JSON.stringify(value) });
