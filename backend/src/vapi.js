@@ -22,12 +22,12 @@ function parseGuestDatetime(str) {
 async function resolveRestaurant(phoneNumber) {
   if (phoneNumber) {
     const r = await query(
-      'SELECT id, name, contact_email FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
+      'SELECT id, name, contact_email, vapi_assistant_id FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
       [phoneNumber],
     );
     if (r.rows[0]) return r.rows[0];
   }
-  const r = await query('SELECT id, name, contact_email FROM restaurants ORDER BY id LIMIT 1');
+  const r = await query('SELECT id, name, contact_email, vapi_assistant_id FROM restaurants ORDER BY id LIMIT 1');
   return r.rows[0] || null;
 }
 
@@ -97,6 +97,55 @@ async function handleToolCalls(message, restaurant) {
   return { results };
 }
 
+// Kunden-Gedächtnis: erkennt Stammgäste an der Rufnummer und liefert dem
+// Agenten Kontext (Name, Besuche, letzte Reservierung, Notizen, letzter Anruf).
+async function guestContext(phone, restaurant) {
+  if (!phone || !restaurant) return 'Kein bekannter Stammgast.';
+  const { rows } = await query(
+    `SELECT customer_name, count(*) AS visits, max(reserved_at) AS last_visit,
+            string_agg(DISTINCT notes, '; ') AS notes
+     FROM reservations
+     WHERE restaurant_id = $1 AND customer_phone = $2 AND status <> 'cancelled'
+     GROUP BY customer_name ORDER BY count(*) DESC, max(reserved_at) DESC LIMIT 1`,
+    [restaurant.id, phone],
+  );
+  const guest = rows[0];
+  if (!guest) return 'Kein bekannter Stammgast.';
+  const lastCall = await query(
+    `SELECT summary FROM calls
+     WHERE restaurant_id = $1 AND caller_number = $2 AND summary IS NOT NULL
+     ORDER BY created_at DESC LIMIT 1`,
+    [restaurant.id, phone],
+  );
+  const parts = [
+    `Stammgast erkannt: ${guest.customer_name}`,
+    `${guest.visits} bisherige Reservierungen`,
+    `zuletzt am ${new Date(guest.last_visit).toLocaleDateString('de-AT', { timeZone: 'Europe/Vienna' })}`,
+  ];
+  if (guest.notes) parts.push(`Notizen: ${guest.notes}`);
+  if (lastCall.rows[0]?.summary) parts.push(`Letztes Gespräch: ${lastCall.rows[0].summary}`);
+  return `${parts.join(', ')}.`;
+}
+
+// Vapi fragt hier an, welcher Assistent den Anruf übernehmen soll —
+// wir antworten mit dem Assistenten des Restaurants plus Gast-Kontext.
+async function handleAssistantRequest(message, restaurant) {
+  const caller = message.call?.customer?.number || message.customer?.number || null;
+  let context = 'Kein bekannter Stammgast.';
+  try {
+    context = await guestContext(caller, restaurant);
+  } catch (err) {
+    console.error('guestContext failed:', err.message);
+  }
+  if (!restaurant?.vapi_assistant_id) {
+    return { error: 'Kein Assistent für dieses Restaurant konfiguriert.' };
+  }
+  return {
+    assistantId: restaurant.vapi_assistant_id,
+    assistantOverrides: { variableValues: { guestContext: context } },
+  };
+}
+
 async function handleEndOfCall(message, restaurant) {
   const call = message.call || {};
   const artifact = message.artifact || message;
@@ -143,6 +192,8 @@ export async function handleVapiWebhook(req, res) {
   const restaurant = await resolveRestaurant(dialed);
   try {
     switch (message.type) {
+      case 'assistant-request':
+        return res.json(await handleAssistantRequest(message, restaurant));
       case 'tool-calls':
       case 'function-call':
         return res.json(await handleToolCalls(message, restaurant));

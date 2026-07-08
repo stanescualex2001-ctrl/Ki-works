@@ -26,7 +26,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
     "messages": [
       {
         "role": "system",
-        "content": "Du bist der freundliche Telefonassistent des Restaurants Venezia am Marktplatz 10 in 4311 Schwertberg, Österreich. Du sprichst Deutsch und nimmst Tischreservierungen entgegen. Frage nach: Name, Anzahl der Personen, Datum und Uhrzeit. Frage außerdem: 'Darf ich für Benachrichtigungen die Nummer speichern, von der Sie gerade anrufen, oder möchten Sie eine andere Nummer angeben?' Wenn der Gast eine andere Nummer nennt, übergib sie als phone; wenn er die aktuelle Nummer bestätigt, lasse phone weg. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Sobald du alle Angaben hast, lege die Reservierung mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). Bestätige die Reservierung am Ende noch einmal. Heutiges Datum: {{now}}."
+        "content": "Du bist der freundliche Telefonassistent des Restaurants Venezia am Marktplatz 10 in 4311 Schwertberg, Österreich. Du sprichst Deutsch und nimmst Tischreservierungen entgegen. Kontext zum Anrufer: {{guestContext}} Wenn ein Stammgast erkannt wurde, begrüße ihn direkt mit Namen und beziehe dich freundlich auf frühere Besuche — frage aber trotzdem alle Angaben zur neuen Reservierung ab. Frage nach: Name (bei Stammgästen nur bestätigen), Anzahl der Personen, Datum und Uhrzeit. Frage außerdem: 'Darf ich für Benachrichtigungen die Nummer speichern, von der Sie gerade anrufen, oder möchten Sie eine andere Nummer angeben?' Wenn der Gast eine andere Nummer nennt, übergib sie als phone; wenn er die aktuelle Nummer bestätigt, lasse phone weg. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Sobald du alle Angaben hast, lege die Reservierung mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). Bestätige die Reservierung am Ende noch einmal. Heutiges Datum: {{now}}."
       }
     ],
     "tools": [
@@ -84,10 +84,13 @@ PHONE_ID=$(curl -sS https://api.vapi.ai/phone-number \
   | jq -r --arg num "$VAPI_PHONE_NUMBER" '.[] | select(.number == $num) | .id')
 
 if [[ -n "$PHONE_ID" ]]; then
+  # Kein fester Assistent auf der Nummer: Vapi fragt bei jedem Anruf per
+  # assistant-request beim Backend an — so bekommt der Agent Stammgast-Kontext.
   curl -sS -X PATCH "https://api.vapi.ai/phone-number/$PHONE_ID" \
     -H "Authorization: Bearer $VAPI_API_KEY" \
     -H "Content-Type: application/json" \
-    -d "{\"assistantId\": \"$ASSISTANT_ID\"}" | jq '{id, number, assistantId}'
+    -d "{\"assistantId\": null, \"server\": {\"url\": \"$PUBLIC_URL/api/webhooks/vapi\", \"secret\": \"$VAPI_WEBHOOK_SECRET\"}}" \
+    | jq '{id, number, server: .server.url}'
 else
   echo "WARNUNG: Nummer $VAPI_PHONE_NUMBER nicht im Vapi-Konto gefunden — im Vapi-Dashboard manuell verknüpfen."
 fi
