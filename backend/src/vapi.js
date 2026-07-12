@@ -1,6 +1,7 @@
 import { query } from './db.js';
 import { summarizeCall, classifyOutcome } from './claude.js';
 import { notifyN8n } from './n8n.js';
+import { sendSms, reservationSms } from './sms.js';
 
 // Naive datetimes from the assistant ("2026-07-06T19:00") are Vienna local time.
 function viennaOffsetMs(date) {
@@ -51,6 +52,10 @@ async function createReservation(restaurant, args, callerNumber) {
   );
   const reservation = rows[0];
   notifyN8n('reservierung-erstellt', { reservation, restaurant });
+  if (reservation.customer_phone) {
+    sendSms(reservation.customer_phone, reservationSms(reservation, restaurant.name))
+      .catch((err) => console.error('SMS failed:', err.message));
+  }
   return {
     result: `Reservierung bestätigt für ${reservation.customer_name}, ${reservation.party_size} Personen am ${reservedAt.toLocaleString('de-AT', { timeZone: 'Europe/Vienna' })}.`,
   };

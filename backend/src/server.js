@@ -3,6 +3,7 @@ import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
 import { notifyN8n } from './n8n.js';
 import { businessRecommendations } from './claude.js';
+import { sendSms, reservationSms } from './sms.js';
 import {
   authMiddleware, adminOnly, customerScope,
   hashPassword, verifyPassword, signToken,
@@ -161,6 +162,11 @@ app.post('/api/reservations', async (req, res) => {
     [restaurantId, customer_name, customer_phone || null, party_size || 2, reserved_at, notes || null],
   );
   notifyN8n('reservierung-erstellt', { reservation: rows[0] });
+  if (rows[0].customer_phone) {
+    const rest = await query('SELECT name FROM restaurants WHERE id = $1', [restaurantId]);
+    sendSms(rows[0].customer_phone, reservationSms(rows[0], rest.rows[0]?.name || 'ki-works'))
+      .catch((err) => console.error('SMS failed:', err.message));
+  }
   res.status(201).json(rows[0]);
 });
 
