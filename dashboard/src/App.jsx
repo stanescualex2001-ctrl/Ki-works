@@ -86,6 +86,7 @@ function Login({ onLogin }) {
         <button className="primary" type="submit" disabled={loading}>
           {loading ? 'Anmelden…' : 'Anmelden'}
         </button>
+        <a className="site-link login-site-link" href="/">← Zur Website</a>
       </form>
     </div>
   );
@@ -110,6 +111,7 @@ function StatRow({ title, row }) {
         <StatCard label="Reservierungen" value={row?.reservations} />
         <StatCard label="davon telefonisch (KI)" value={row?.phone_reservations} />
         <StatCard label="Gäste" value={row?.guests} />
+        <StatCard label="Bestellungen" value={row?.orders} />
       </div>
     </section>
   );
@@ -390,6 +392,57 @@ function Customers({ refreshKey, onChanged }) {
   );
 }
 
+const ORDER_STATUS = {
+  new: '🆕 Neu', in_progress: '👨‍🍳 In Arbeit', ready: '✅ Abholbereit',
+  completed: '📦 Abgeschlossen', cancelled: '❌ Storniert',
+};
+
+function Orders({ restaurantId, refreshKey, onChanged }) {
+  const { data: orders, error } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
+  const setStatus = (id, status) => {
+    apiFetch(`/api/orders/${id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status }),
+    }).then(onChanged);
+  };
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (!orders) return <p>Lade…</p>;
+  if (!orders.length) return <p>Noch keine Bestellungen.</p>;
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Eingegangen</th><th>Name</th><th>Telefon</th><th>Bestellung</th><th>Abholzeit</th><th>Notizen</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {orders.map((o) => (
+            <tr key={o.id} className={['completed', 'cancelled'].includes(o.status) ? 'muted' : ''}>
+              <td>{fmtDateTime(o.created_at)}</td>
+              <td><strong>{o.customer_name}</strong></td>
+              <td>{o.customer_phone || '–'}</td>
+              <td>{o.items}</td>
+              <td>{o.requested_at ? fmtTime(o.requested_at) : '–'}</td>
+              <td>{o.notes || ''}</td>
+              <td>
+                <select
+                  value={o.status}
+                  onChange={(e) => setStatus(o.id, e.target.value)}
+                  className="lead-status"
+                >
+                  {Object.entries(ORDER_STATUS).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 const LEAD_STATUS = { new: '🆕 Neu', contacted: '📞 Kontaktiert', won: '✅ Gewonnen', lost: '❌ Verloren' };
 
 function Leads({ refreshKey, onChanged }) {
@@ -446,6 +499,7 @@ const NAV = [
   { id: 'overview', label: 'Übersicht', icon: '📊' },
   { id: 'calendar', label: 'Kalender', icon: '📅' },
   { id: 'reservations', label: 'Reservierungen', icon: '🍽️' },
+  { id: 'orders', label: 'Bestellungen', icon: '🛍️' },
   { id: 'calls', label: 'Anrufe', icon: '📞' },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
@@ -454,7 +508,8 @@ const NAV = [
 
 const TITLES = {
   overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
-  calls: 'Anrufe', reco: 'KI-Empfehlungen', customers: 'Kundenübersicht', leads: 'Anfragen',
+  orders: 'Bestellungen', calls: 'Anrufe', reco: 'KI-Empfehlungen',
+  customers: 'Kundenübersicht', leads: 'Anfragen',
 };
 
 export default function App() {
@@ -536,6 +591,7 @@ export default function App() {
 
         <button className="refresh" onClick={refresh}>⟳ Aktualisieren</button>
         <button className="refresh" onClick={logout}>Abmelden ({isAdmin ? 'Betreiber' : auth.name})</button>
+        <a className="site-link" href="/">← Zur Website</a>
       </aside>
 
       <main>
@@ -549,6 +605,9 @@ export default function App() {
             {view === 'calendar' && <CalendarDay restaurantId={restaurantId} refreshKey={refreshKey} />}
             {view === 'reservations' && (
               <Reservations restaurantId={restaurantId} refreshKey={refreshKey} onChanged={refresh} />
+            )}
+            {view === 'orders' && (
+              <Orders restaurantId={restaurantId} refreshKey={refreshKey} onChanged={refresh} />
             )}
             {view === 'calls' && <Calls restaurantId={restaurantId} refreshKey={refreshKey} />}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}

@@ -218,6 +218,36 @@ app.patch('/api/reservations/:id', async (req, res) => {
   res.json(rows[0]);
 });
 
+// --- Orders ------------------------------------------------------------------
+app.get('/api/orders', async (req, res) => {
+  const scope = customerScope(req);
+  const restaurantId = scope ?? req.query.restaurant_id;
+  const vals = [];
+  let where = '';
+  if (restaurantId) { vals.push(restaurantId); where = 'WHERE o.restaurant_id = $1'; }
+  const { rows } = await query(
+    `SELECT o.*, rest.name AS restaurant_name FROM orders o
+     JOIN restaurants rest ON rest.id = o.restaurant_id
+     ${where} ORDER BY o.created_at DESC LIMIT 200`, vals,
+  );
+  res.json(rows);
+});
+
+app.patch('/api/orders/:id', async (req, res) => {
+  const scope = customerScope(req);
+  const { status } = req.body;
+  if (!['new', 'in_progress', 'ready', 'completed', 'cancelled'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  const { rows } = await query(
+    `UPDATE orders SET status = $1
+     WHERE id = $2 AND ($3::int IS NULL OR restaurant_id = $3) RETURNING *`,
+    [status, req.params.id, scope],
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(rows[0]);
+});
+
 // --- Calls -------------------------------------------------------------------
 app.get('/api/calls', async (req, res) => {
   const scope = customerScope(req);
@@ -268,7 +298,10 @@ async function statsByRestaurant(interval) {
            AND x.source = 'phone')                                                      AS phone_reservations,
        (SELECT COALESCE(sum(x.party_size), 0) FROM reservations x
          WHERE x.restaurant_id = r.id AND x.created_at > now() - $1::interval
-           AND x.status = 'confirmed')                                                  AS guests
+           AND x.status = 'confirmed')                                                  AS guests,
+       (SELECT count(*) FROM orders o
+         WHERE o.restaurant_id = r.id AND o.created_at > now() - $1::interval
+           AND o.status <> 'cancelled')                                                 AS orders
      FROM restaurants r ORDER BY r.id`,
     [interval],
   );

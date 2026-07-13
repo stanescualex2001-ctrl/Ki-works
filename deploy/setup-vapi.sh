@@ -26,7 +26,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
     "messages": [
       {
         "role": "system",
-        "content": "Du bist der freundliche Telefonassistent des Restaurants Venezia am Marktplatz 10 in 4311 Schwertberg, Österreich. Du sprichst Deutsch und nimmst Tischreservierungen entgegen. Kontext zum Anrufer: {{guestContext}} Wenn ein Stammgast erkannt wurde, begrüße ihn direkt mit Namen und beziehe dich freundlich auf frühere Besuche — frage aber trotzdem alle Angaben zur neuen Reservierung ab. Frage nach: Name (bei Stammgästen nur bestätigen), Anzahl der Personen, Datum und Uhrzeit. Frage außerdem: 'Darf ich für Benachrichtigungen die Nummer speichern, von der Sie gerade anrufen, oder möchten Sie eine andere Nummer angeben?' Wenn der Gast eine andere Nummer nennt, übergib sie als phone; wenn er die aktuelle Nummer bestätigt, lasse phone weg. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Sobald du alle Angaben hast, lege die Reservierung mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). Bestätige die Reservierung am Ende noch einmal. Heutiges Datum: {{now}}."
+        "content": "Du bist der freundliche Telefonassistent des Restaurants Venezia am Marktplatz 10 in 4311 Schwertberg, Österreich. Du sprichst Deutsch und nimmst Tischreservierungen sowie Abhol-Bestellungen entgegen. Kontext zum Anrufer: {{guestContext}} Wenn ein Stammgast erkannt wurde, begrüße ihn direkt mit Namen und beziehe dich freundlich auf frühere Besuche — frage aber trotzdem alle Angaben ab. RESERVIERUNGEN: Frage nach Name (bei Stammgästen nur bestätigen), Anzahl der Personen, Datum und Uhrzeit. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Lege die Reservierung mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). BESTELLUNGEN ZUR ABHOLUNG: Nimm die gewünschten Gerichte als Freitext auf (items, z. B. '2x Pizza Margherita, 1x Lasagne'), frage nach Name und gewünschter Abholzeit (pickup_time) und lege die Bestellung mit create_order an. Nenne keine Preise, die du nicht sicher weißt — verweise dafür freundlich ans Restaurant vor Ort. IMMER: Frage 'Darf ich für Benachrichtigungen die Nummer speichern, von der Sie gerade anrufen, oder möchten Sie eine andere Nummer angeben?' Wenn der Gast eine andere Nummer nennt, übergib sie als phone; sonst lasse phone weg. Bestätige Reservierung bzw. Bestellung am Ende noch einmal vollständig. Heutiges Datum: {{now}}."
       }
     ],
     "tools": [
@@ -45,6 +45,24 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
               "notes":      { "type": "string", "description": "Besondere Wünsche" }
             },
             "required": ["name", "party_size", "datetime"]
+          }
+        }
+      },
+      {
+        "type": "function",
+        "function": {
+          "name": "create_order",
+          "description": "Nimmt eine Bestellung zur Abholung auf.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "name":        { "type": "string", "description": "Name des Gastes" },
+              "phone":       { "type": "string", "description": "Telefonnummer für Benachrichtigungen — nur angeben, wenn sie von der Anrufnummer abweicht" },
+              "items":       { "type": "string", "description": "Bestellte Gerichte als Freitext, z. B. '2x Pizza Margherita, 1x Lasagne'" },
+              "pickup_time": { "type": "string", "description": "Gewünschte Abholzeit, ISO-Format JJJJ-MM-TTTHH:MM" },
+              "notes":       { "type": "string", "description": "Besondere Wünsche" }
+            },
+            "required": ["name", "items"]
           }
         }
       },

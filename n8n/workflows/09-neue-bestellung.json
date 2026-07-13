@@ -1,0 +1,44 @@
+{
+  "id": "KiWorksOrder09v1",
+  "name": "09 Neue Bestellung → Benachrichtigung",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bestellung-erstellt",
+        "options": {}
+      },
+      "id": "wf9-webhook",
+      "name": "Webhook: Neue Bestellung",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "bestellung-erstellt"
+    },
+    {
+      "parameters": {
+        "fromEmail": "stanescualex2001@gmail.com",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || 'stanescualex2001@gmail.com' }}",
+        "subject": "=🛍️ Neue Bestellung: {{ $json.body.order.customer_name }}",
+        "emailFormat": "text",
+        "text": "=Neue telefonische Bestellung:\n\nName: {{ $json.body.order.customer_name }}\nTelefon: {{ $json.body.order.customer_phone }}\nBestellung: {{ $json.body.order.items }}\nAbholzeit: {{ $json.body.order.requested_at }}\nNotizen: {{ $json.body.order.notes }}\n\n→ Status pflegen im Dashboard: https://ki-works.eu/dashboard/",
+        "options": {}
+      },
+      "id": "wf9-email",
+      "name": "Bestell-Benachrichtigung",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Neue Bestellung": {
+      "main": [[{ "node": "Bestell-Benachrichtigung", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

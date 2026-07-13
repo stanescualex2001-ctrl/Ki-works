@@ -26,6 +26,13 @@ export async function sendSms(to, body) {
   }
 }
 
+export function orderSms(order, restaurantName) {
+  const when = order.requested_at
+    ? ` zur Abholung um ${new Date(order.requested_at).toLocaleTimeString('de-AT', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit' })}`
+    : '';
+  return `Bestellung angenommen (${restaurantName}): ${order.items}${when}. Danke, ${order.customer_name}!`;
+}
+
 export function reservationSms(reservation, restaurantName) {
   const when = new Date(reservation.reserved_at).toLocaleString('de-AT', {
     timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short',

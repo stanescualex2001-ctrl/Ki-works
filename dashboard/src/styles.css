@@ -167,6 +167,10 @@ button.primary:disabled { opacity: 0.6; cursor: wait; }
 }
 .form-row { display: flex; gap: 0.9rem; align-items: center; }
 
+.site-link { color: var(--muted); font-size: 0.85rem; text-decoration: none; text-align: center; }
+.site-link:hover { color: var(--accent); }
+.login-site-link { margin-top: 0.8rem; }
+
 .lead-status {
   padding: 0.3rem 0.4rem; border: 1px solid var(--border); border-radius: 6px;
   background: #fff; font-size: 0.85rem; color: var(--text);

@@ -1,7 +1,7 @@
 import { query } from './db.js';
 import { summarizeCall, classifyOutcome } from './claude.js';
 import { notifyN8n } from './n8n.js';
-import { sendSms, reservationSms } from './sms.js';
+import { sendSms, reservationSms, orderSms } from './sms.js';
 
 // Naive datetimes from the assistant ("2026-07-06T19:00") are Vienna local time.
 function viennaOffsetMs(date) {
@@ -76,9 +76,38 @@ async function checkAvailability(restaurant, args) {
   return { result: free > 0 ? `Ja, es sind noch Plätze frei (ca. ${free}).` : 'Leider ausgebucht zu dieser Zeit.' };
 }
 
+// Vapi tool call: create_order({name, phone, items, pickup_time, notes})
+async function createOrder(restaurant, args, callerNumber) {
+  if (!args.items) return { error: 'Bitte die gewünschten Gerichte angeben.' };
+  const requestedAt = args.pickup_time ? parseGuestDatetime(args.pickup_time) : null;
+  const { rows } = await query(
+    `INSERT INTO orders (restaurant_id, customer_name, customer_phone, items, requested_at, notes, source)
+     VALUES ($1, $2, $3, $4, $5, $6, 'phone') RETURNING *`,
+    [
+      restaurant.id,
+      args.name || 'Unbekannt',
+      args.phone || callerNumber || null,
+      String(args.items).slice(0, 1000),
+      requestedAt && !Number.isNaN(requestedAt.getTime()) ? requestedAt.toISOString() : null,
+      args.notes || null,
+    ],
+  );
+  const order = rows[0];
+  notifyN8n('bestellung-erstellt', { order, restaurant });
+  if (order.customer_phone) {
+    sendSms(order.customer_phone, orderSms(order, restaurant.name))
+      .catch((err) => console.error('SMS failed:', err.message));
+  }
+  const when = order.requested_at
+    ? ` zur Abholung um ${new Date(order.requested_at).toLocaleTimeString('de-AT', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit' })} Uhr`
+    : '';
+  return { result: `Bestellung aufgenommen für ${order.customer_name}: ${order.items}${when}.` };
+}
+
 const TOOL_HANDLERS = {
   create_reservation: createReservation,
   check_availability: checkAvailability,
+  create_order: createOrder,
 };
 
 async function handleToolCalls(message, restaurant) {
