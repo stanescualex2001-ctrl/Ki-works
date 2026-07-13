@@ -72,6 +72,39 @@ app.post('/api/login', async (req, res) => {
 // --- Vapi webhook (called by Vapi servers) ------------------------------------
 app.post('/api/webhooks/vapi', handleVapiWebhook);
 
+// --- Interessenten-Formular der Firmen-Website (öffentlich) --------------------
+app.post('/api/public/interest', async (req, res) => {
+  const { name, business, email, phone, message } = req.body || {};
+  if (!name || (!email && !phone)) {
+    return res.status(400).json({ error: 'Name und E-Mail oder Telefon erforderlich' });
+  }
+  const clip = (v, n) => (typeof v === 'string' ? v.slice(0, n) : null);
+  const { rows } = await query(
+    `INSERT INTO leads (name, business, email, phone, message)
+     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [clip(name, 120), clip(business, 120), clip(email, 160), clip(phone, 40), clip(message, 2000)],
+  );
+  notifyN8n('neuer-interessent', { lead: rows[0] });
+  res.status(201).json({ ok: true });
+});
+
+app.get('/api/leads', adminOnly, async (_req, res) => {
+  const { rows } = await query('SELECT * FROM leads ORDER BY created_at DESC LIMIT 200');
+  res.json(rows);
+});
+
+app.patch('/api/leads/:id', adminOnly, async (req, res) => {
+  const { status } = req.body;
+  if (!['new', 'contacted', 'won', 'lost'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  const { rows } = await query(
+    'UPDATE leads SET status = $1 WHERE id = $2 RETURNING *', [status, req.params.id],
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(rows[0]);
+});
+
 // --- Restaurants --------------------------------------------------------------
 app.get('/api/restaurants', async (req, res) => {
   const scope = customerScope(req);

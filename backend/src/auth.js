@@ -40,6 +40,7 @@ export function verifyToken(token) {
 // erkennbar an fehlendem Proxy-Header) gelten als Admin; alles andere braucht Token.
 export function authMiddleware(req, res, next) {
   if (req.path.startsWith('/api/webhooks/')
+    || req.path.startsWith('/api/public/')
     || req.path === '/api/login'
     || req.path === '/api/health') return next();
   const viaProxy = Boolean(req.headers['x-real-ip']);

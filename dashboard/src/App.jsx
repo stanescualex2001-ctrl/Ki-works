@@ -390,6 +390,57 @@ function Customers({ refreshKey, onChanged }) {
   );
 }
 
+const LEAD_STATUS = { new: '🆕 Neu', contacted: '📞 Kontaktiert', won: '✅ Gewonnen', lost: '❌ Verloren' };
+
+function Leads({ refreshKey, onChanged }) {
+  const { data: leads, error } = useFetch('/api/leads', refreshKey);
+  const setStatus = (id, status) => {
+    apiFetch(`/api/leads/${id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status }),
+    }).then(onChanged);
+  };
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (!leads) return <p>Lade…</p>;
+  if (!leads.length) return <p>Noch keine Anfragen über die Website.</p>;
+  return (
+    <>
+      <p>Anfragen über das Formular auf ki-works.eu.</p>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Eingegangen</th><th>Name</th><th>Betrieb</th><th>E-Mail</th><th>Telefon</th><th>Nachricht</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            {leads.map((l) => (
+              <tr key={l.id} className={['won', 'lost'].includes(l.status) ? 'muted' : ''}>
+                <td>{fmtDateTime(l.created_at)}</td>
+                <td><strong>{l.name}</strong></td>
+                <td>{l.business || '–'}</td>
+                <td>{l.email || '–'}</td>
+                <td>{l.phone || '–'}</td>
+                <td>{l.message || ''}</td>
+                <td>
+                  <select
+                    value={l.status}
+                    onChange={(e) => setStatus(l.id, e.target.value)}
+                    className="lead-status"
+                  >
+                    {Object.entries(LEAD_STATUS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
 // ---------------------------------------------------------------- shell
 const NAV = [
   { id: 'overview', label: 'Übersicht', icon: '📊' },
@@ -398,11 +449,12 @@ const NAV = [
   { id: 'calls', label: 'Anrufe', icon: '📞' },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
+  { id: 'leads', label: 'Anfragen', icon: '📥', adminOnly: true },
 ];
 
 const TITLES = {
   overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
-  calls: 'Anrufe', reco: 'KI-Empfehlungen', customers: 'Kundenübersicht',
+  calls: 'Anrufe', reco: 'KI-Empfehlungen', customers: 'Kundenübersicht', leads: 'Anfragen',
 };
 
 export default function App() {
@@ -491,7 +543,7 @@ export default function App() {
           <h1>{TITLES[view]}</h1>
           {view !== 'customers' && current && <span className="current-name">{current.name}</span>}
         </header>
-        {restaurantId == null && view !== 'customers' ? <p>Lade…</p> : (
+        {restaurantId == null && !['customers', 'leads'].includes(view) ? <p>Lade…</p> : (
           <>
             {view === 'overview' && <Overview restaurantId={restaurantId} refreshKey={refreshKey} />}
             {view === 'calendar' && <CalendarDay restaurantId={restaurantId} refreshKey={refreshKey} />}
@@ -502,6 +554,9 @@ export default function App() {
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'customers' && isAdmin && (
               <Customers refreshKey={refreshKey} onChanged={refresh} />
+            )}
+            {view === 'leads' && isAdmin && (
+              <Leads refreshKey={refreshKey} onChanged={refresh} />
             )}
           </>
         )}

@@ -1,0 +1,44 @@
+{
+  "id": "KiWorksLead08v01",
+  "name": "08 Neuer Interessent → Benachrichtigung",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "neuer-interessent",
+        "options": {}
+      },
+      "id": "wf8-webhook",
+      "name": "Webhook: Neuer Interessent",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "neuer-interessent"
+    },
+    {
+      "parameters": {
+        "fromEmail": "stanescualex2001@gmail.com",
+        "toEmail": "stanescualex2001@gmail.com",
+        "subject": "=🚀 Neue Anfrage über ki-works.eu: {{ $json.body.lead.name }} ({{ $json.body.lead.business || 'Betrieb unbekannt' }})",
+        "emailFormat": "text",
+        "text": "=Neue Interessenten-Anfrage über die Website:\n\nName: {{ $json.body.lead.name }}\nBetrieb: {{ $json.body.lead.business }}\nE-Mail: {{ $json.body.lead.email }}\nTelefon: {{ $json.body.lead.phone }}\n\nNachricht:\n{{ $json.body.lead.message }}\n\n→ Im Dashboard unter 'Anfragen' ansehen: https://ki-works.eu/dashboard/",
+        "options": {}
+      },
+      "id": "wf8-email",
+      "name": "Benachrichtigung senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Neuer Interessent": {
+      "main": [[{ "node": "Benachrichtigung senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
