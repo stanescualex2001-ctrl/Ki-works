@@ -48,8 +48,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "stanescualex2001@gmail.com",
-        "toEmail": "={{ $('Wochenstatistik pro Kunde').item.json.contact_email || 'stanescualex2001@gmail.com' }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $('Wochenstatistik pro Kunde').item.json.contact_email || 'info@ki-works.eu' }}",
         "subject": "=📈 Wochenbericht {{ $('Wochenstatistik pro Kunde').item.json.name }}",
         "emailFormat": "text",
         "text": "={{ $json.content[0].text }}",

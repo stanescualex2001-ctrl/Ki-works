@@ -17,8 +17,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "stanescualex2001@gmail.com",
-        "toEmail": "={{ $json.body.restaurant?.contact_email || 'stanescualex2001@gmail.com' }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || 'info@ki-works.eu' }}",
         "subject": "=🛍️ Neue Bestellung: {{ $json.body.order.customer_name }}",
         "emailFormat": "text",
         "text": "=Neue telefonische Bestellung:\n\nName: {{ $json.body.order.customer_name }}\nTelefon: {{ $json.body.order.customer_phone }}\nBestellung: {{ $json.body.order.items }}\nAbholzeit: {{ $json.body.order.requested_at }}\nNotizen: {{ $json.body.order.notes }}\n\n→ Status pflegen im Dashboard: https://ki-works.eu/dashboard/",
