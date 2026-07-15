@@ -54,16 +54,40 @@ nav button.active { background: var(--accent-soft); color: var(--accent); font-w
 }
 
 /* ---- Hauptbereich ---- */
-.main-head { display: flex; align-items: baseline; gap: 0.8rem; margin-bottom: 1.2rem; }
+.main-head { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem; }
+.main-head-top { display: flex; align-items: baseline; gap: 0.8rem; }
 .main-head h1 { font-size: 1.5rem; }
 .current-name { color: var(--muted); font-size: 1.05rem; }
 h2 { margin: 1.2rem 0 0.6rem; font-size: 1.05rem; }
+
+/* ---- Betrieb-Suche (oben, volle Breite, linksbündig) ---- */
+.business-picker { position: relative; width: 100%; }
+.business-picker-input {
+  width: 100%; padding: 0.55rem 0.75rem; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 0.95rem; text-align: left; background: #fff; color: var(--text);
+}
+.business-picker-list {
+  position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; right: 0;
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  max-height: 260px; overflow-y: auto; list-style: none;
+  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+}
+.business-picker-list li { border-bottom: 1px solid var(--border); }
+.business-picker-list li:last-child { border-bottom: none; }
+.business-picker-list button {
+  width: 100%; text-align: left; padding: 0.55rem 0.75rem; border: none; background: none;
+  cursor: pointer; font-size: 0.92rem; color: var(--text);
+}
+.business-picker-list button:hover { background: var(--panel); }
+.business-picker-empty { padding: 0.55rem 0.75rem; color: var(--muted); font-size: 0.9rem; }
 
 /* ---- Stat-Kacheln ---- */
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.8rem; }
 .stat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem; }
 .stat-value { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 0.15rem; }
+.stat-card.clickable { cursor: pointer; font: inherit; text-align: left; width: 100%; }
+.stat-card.clickable:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
 
 /* ---- Tabellen ---- */
 .table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
@@ -73,6 +97,14 @@ tr:last-child td { border-bottom: none; }
 th { color: var(--muted); font-weight: 600; white-space: nowrap; background: var(--panel); }
 tr.muted { opacity: 0.5; }
 .warn-text { color: #b45309; font-weight: 600; }
+tr.clickable-row { cursor: pointer; }
+tr.clickable-row:hover td { background: var(--panel); }
+.link-strong {
+  background: none; border: none; padding: 0; color: var(--text); font-weight: 700;
+  cursor: pointer; font-size: inherit; text-decoration: underline; text-decoration-color: transparent;
+}
+.link-strong:hover { text-decoration-color: var(--accent); color: var(--accent); }
+.lead-actions { display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start; }
 
 /* ---- Badges (Status immer mit Text, nie nur Farbe) ---- */
 .badge { padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.78rem; background: #eef0f4; }
@@ -99,21 +131,44 @@ tr.muted { opacity: 0.5; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; }
 .dot-free { background: var(--border); }
 .dot-busy { background: var(--accent); }
-.calendar { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.cal-row {
-  display: grid; grid-template-columns: 64px 180px 110px 1fr;
-  gap: 0.8rem; align-items: center; padding: 0.5rem 0.9rem;
-  border-bottom: 1px solid var(--border); background: #fff;
+
+/* ---- Wochenkalender ---- */
+.week-grid {
+  display: grid; grid-template-columns: 64px repeat(7, minmax(120px, 1fr));
+  font-size: 0.85rem; min-width: 820px;
 }
-.cal-row:last-child { border-bottom: none; }
-.cal-hour { color: var(--muted); font-variant-numeric: tabular-nums; }
-.cal-bar-track { background: var(--panel); border-radius: 6px; height: 14px; overflow: hidden; }
-.cal-bar { background: var(--accent); height: 100%; border-radius: 6px 4px 4px 6px; }
-.cal-free { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
-.cal-entries { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.cal-chip {
-  background: var(--accent-soft); color: var(--accent);
-  border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.8rem;
+.week-cell { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0.3rem 0.4rem; background: #fff; }
+.week-corner { background: var(--panel); }
+.week-day-head { background: var(--panel); text-align: center; font-weight: 600; text-transform: capitalize; }
+.week-hour { color: var(--muted); font-variant-numeric: tabular-nums; background: var(--panel); }
+.week-slot { min-height: 44px; display: flex; flex-direction: column; gap: 2px; }
+.event-chip {
+  display: block; width: 100%; text-align: left; border: none; border-radius: 6px;
+  padding: 0.18rem 0.4rem; font-size: 0.75rem; cursor: pointer; line-height: 1.3;
+}
+.event-chip.reservation { background: var(--accent-soft); color: var(--accent); }
+.event-chip.order { background: #fef3d6; color: #92650b; }
+
+/* ---- Detail-Modal ---- */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); z-index: 50;
+  display: flex; align-items: center; justify-content: center; padding: 1rem;
+}
+.modal {
+  background: #fff; border-radius: 14px; padding: 1.5rem; width: 100%; max-width: 460px;
+  position: relative; max-height: 90vh; overflow-y: auto;
+}
+.modal-close {
+  position: absolute; top: 0.7rem; right: 0.8rem; border: none; background: none;
+  font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--muted);
+}
+.modal h2 { margin-bottom: 0.9rem; font-size: 1.15rem; }
+.detail-list { display: grid; grid-template-columns: 110px 1fr; gap: 0.4rem 0.8rem; margin-bottom: 1.1rem; }
+.detail-list dt { color: var(--muted); font-size: 0.85rem; }
+.detail-list dd { font-size: 0.95rem; }
+.modal select {
+  width: 100%; padding: 0.5rem 0.6rem; border: 1px solid var(--border);
+  border-radius: 8px; margin-top: 0.3rem; font-size: 0.95rem;
 }
 
 /* ---- KI-Empfehlungen ---- */

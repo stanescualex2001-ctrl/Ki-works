@@ -4,9 +4,6 @@ const fmtDateTime = (iso) =>
   iso ? new Date(iso).toLocaleString('de-AT', { dateStyle: 'medium', timeStyle: 'short' }) : '–';
 const fmtTime = (iso) =>
   iso ? new Date(iso).toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' }) : '–';
-const todayISO = () => new Date().toISOString().slice(0, 10);
-
-const CAPACITY = 60; // Plätze gesamt (Runde 2: echte Tischverwaltung pro Betrieb)
 const AUTH_KEY = 'kiworks-auth';
 
 // ---------------------------------------------------------------- auth utils
@@ -92,40 +89,187 @@ function Login({ onLogin }) {
   );
 }
 
-// ---------------------------------------------------------------- widgets
-function StatCard({ label, value }) {
+// Öffentliche Seite: Kunde setzt sein eigenes Passwort über den Einladungslink.
+function SetupPassword({ token, onDone }) {
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [state, setState] = useState({ loading: false, error: null, success: false });
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (password.length < 8) {
+      setState({ loading: false, error: 'Mindestens 8 Zeichen.', success: false });
+      return;
+    }
+    if (password !== confirm) {
+      setState({ loading: false, error: 'Passwörter stimmen nicht überein.', success: false });
+      return;
+    }
+    setState({ loading: true, error: null, success: false });
+    fetch('/api/public/setup-password', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ token, password }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setState({ loading: false, error: null, success: true });
+      })
+      .catch((err) => setState({ loading: false, error: err.message, success: false }));
+  };
+
   return (
-    <div className="stat-card">
-      <div className="stat-value">{value ?? '–'}</div>
-      <div className="stat-label">{label}</div>
+    <div className="login-page">
+      <div className="login-card">
+        <div className="logo-area login-logo">
+          <img src="/logo.png" alt="" className="logo-img"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <span className="logo-word">ki-works</span>
+        </div>
+        <p className="login-sub">Ihr Passwort festlegen</p>
+        {state.success ? (
+          <>
+            <p>✅ Passwort gespeichert. Sie können sich jetzt anmelden.</p>
+            <button className="primary" onClick={onDone}>Zur Anmeldung</button>
+          </>
+        ) : (
+          <form onSubmit={submit}>
+            <label htmlFor="su-pw">Neues Passwort</label>
+            <input id="su-pw" type="password" required value={password}
+              onChange={(e) => setPassword(e.target.value)} />
+            <label htmlFor="su-pw2">Passwort wiederholen</label>
+            <input id="su-pw2" type="password" required value={confirm}
+              onChange={(e) => setConfirm(e.target.value)} />
+            {state.error && <p className="error">{state.error}</p>}
+            <button className="primary" type="submit" disabled={state.loading}>
+              {state.loading ? 'Speichern…' : 'Passwort speichern'}
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 }
 
-function StatRow({ title, row }) {
+// ---------------------------------------------------------------- widgets
+function StatCard({ label, value, onClick }) {
+  const Tag = onClick ? 'button' : 'div';
+  return (
+    <Tag
+      className={`stat-card${onClick ? ' clickable' : ''}`}
+      onClick={onClick}
+      type={onClick ? 'button' : undefined}
+    >
+      <div className="stat-value">{value ?? '–'}</div>
+      <div className="stat-label">{label}</div>
+    </Tag>
+  );
+}
+
+function StatRow({ title, row, onNavigate }) {
   return (
     <section>
       <h2>{title}</h2>
       <div className="stat-grid">
-        <StatCard label="Anrufe" value={row?.calls} />
-        <StatCard label="Reservierungen" value={row?.reservations} />
+        <StatCard label="Anrufe" value={row?.calls} onClick={onNavigate && (() => onNavigate('calls'))} />
+        <StatCard
+          label="Reservierungen" value={row?.reservations}
+          onClick={onNavigate && (() => onNavigate('reservations'))}
+        />
         <StatCard label="davon telefonisch (KI)" value={row?.phone_reservations} />
         <StatCard label="Gäste" value={row?.guests} />
-        <StatCard label="Bestellungen" value={row?.orders} />
+        <StatCard label="Bestellungen" value={row?.orders} onClick={onNavigate && (() => onNavigate('orders'))} />
       </div>
     </section>
   );
 }
 
-function Overview({ restaurantId, refreshKey }) {
+function Overview({ restaurantId, refreshKey, onNavigate }) {
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const pick = (rows) => rows?.find((r) => String(r.restaurant_id) === String(restaurantId));
   return (
     <>
-      <StatRow title="Heute" row={pick(daily)} />
-      <StatRow title="Letzte 7 Tage" row={pick(weekly)} />
+      <StatRow title="Heute" row={pick(daily)} onNavigate={onNavigate} />
+      <StatRow title="Letzte 7 Tage" row={pick(weekly)} onNavigate={onNavigate} />
     </>
+  );
+}
+
+// Zeigt alle Felder einer Reservierung/Bestellung + Status-Änderung.
+function DetailModal({ item, onClose, onStatusChange }) {
+  if (!item) return null;
+  const { type, data } = item;
+  const isReservation = type === 'reservation';
+  const statusMap = isReservation ? STATUS_LABELS : ORDER_STATUS;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose} aria-label="Schließen">×</button>
+        <h2>{isReservation ? '🍽️ Reservierung' : '🛍️ Bestellung'}</h2>
+        <dl className="detail-list">
+          <dt>Name</dt><dd>{data.customer_name}</dd>
+          <dt>Telefon</dt><dd>{data.customer_phone || '–'}</dd>
+          {isReservation ? (
+            <>
+              <dt>Zeit</dt><dd>{fmtDateTime(data.reserved_at)}</dd>
+              <dt>Personen</dt><dd>{data.party_size}</dd>
+            </>
+          ) : (
+            <>
+              <dt>Bestellung</dt><dd>{data.items}</dd>
+              <dt>Abholzeit</dt><dd>{data.requested_at ? fmtDateTime(data.requested_at) : '–'}</dd>
+            </>
+          )}
+          <dt>Quelle</dt><dd>{data.source === 'phone' ? '📞 Telefon' : 'Dashboard'}</dd>
+          <dt>Notizen</dt><dd>{data.notes || '–'}</dd>
+          <dt>Eingegangen</dt><dd>{fmtDateTime(data.created_at)}</dd>
+        </dl>
+        <label className="side-label" htmlFor="detail-status">Status</label>
+        <select
+          id="detail-status" value={data.status}
+          onChange={(e) => onStatusChange(type, data.id, e.target.value)}
+        >
+          {Object.entries(statusMap).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </select>
+      </div>
+    </div>
+  );
+}
+
+// Durchsuchbarer Betrieb-Wähler — zeigt nach Auswahl nur noch den gewählten Namen.
+function BusinessPicker({ restaurants, restaurantId, onSelect }) {
+  const [query, setQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const current = restaurants.find((r) => String(r.id) === String(restaurantId));
+  const matches = restaurants.filter((r) => r.name.toLowerCase().includes(query.trim().toLowerCase()));
+
+  return (
+    <div className="business-picker">
+      <input
+        type="text" className="business-picker-input" placeholder="🔍 Betrieb suchen…"
+        value={open ? query : (current?.name || '')}
+        onFocus={() => { setQuery(''); setOpen(true); }}
+        onChange={(e) => setQuery(e.target.value)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+      />
+      {open && (
+        <ul className="business-picker-list">
+          {matches.length === 0 && <li className="business-picker-empty">Keine Treffer</li>}
+          {matches.map((r) => (
+            <li key={r.id}>
+              <button
+                type="button" onMouseDown={(e) => e.preventDefault()}
+                onClick={() => { onSelect(r.id); setOpen(false); setQuery(''); }}
+              >
+                {r.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
@@ -133,7 +277,7 @@ const STATUS_LABELS = {
   confirmed: 'Bestätigt', cancelled: 'Storniert', no_show: 'Nicht erschienen', completed: 'Abgeschlossen',
 };
 
-function Reservations({ restaurantId, refreshKey, onChanged }) {
+function Reservations({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
   const { data: reservations, error } = useFetch(
     `/api/reservations?restaurant_id=${restaurantId}`, refreshKey,
   );
@@ -156,7 +300,10 @@ function Reservations({ restaurantId, refreshKey, onChanged }) {
         </thead>
         <tbody>
           {reservations.map((r) => (
-            <tr key={r.id} className={r.status === 'cancelled' ? 'muted' : ''}>
+            <tr
+              key={r.id} className={`clickable-row${r.status === 'cancelled' ? ' muted' : ''}`}
+              onClick={() => onOpenDetail('reservation', r)}
+            >
               <td>{fmtDateTime(r.reserved_at)}</td>
               <td>{r.customer_name}</td>
               <td>{r.customer_phone || '–'}</td>
@@ -166,7 +313,12 @@ function Reservations({ restaurantId, refreshKey, onChanged }) {
               <td>{r.notes || ''}</td>
               <td>
                 {r.status === 'confirmed' && (
-                  <button className="link" onClick={() => setStatus(r.id, 'cancelled')}>Stornieren</button>
+                  <button
+                    className="link"
+                    onClick={(e) => { e.stopPropagation(); setStatus(r.id, 'cancelled'); }}
+                  >
+                    Stornieren
+                  </button>
                 )}
               </td>
             </tr>
@@ -177,59 +329,98 @@ function Reservations({ restaurantId, refreshKey, onChanged }) {
   );
 }
 
-function CalendarDay({ restaurantId, refreshKey }) {
-  const [date, setDate] = useState(todayISO());
-  const { data: reservations } = useFetch(
-    `/api/reservations?restaurant_id=${restaurantId}&date=${date}`, refreshKey,
-  );
-  const hours = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []); // ganzer Tag
-  const active = (reservations || []).filter((r) => r.status === 'confirmed');
+const mondayOf = (d) => {
+  const date = new Date(d);
+  const day = date.getDay();
+  date.setDate(date.getDate() + (day === 0 ? -6 : 1) - day);
+  date.setHours(0, 0, 0, 0);
+  return date;
+};
 
-  const occupancyAt = (hour) => {
-    const slot = new Date(`${date}T${String(hour).padStart(2, '0')}:00:00`);
-    return active
-      .filter((r) => Math.abs(new Date(r.reserved_at) - slot) <= 90 * 60000)
-      .reduce((sum, r) => sum + r.party_size, 0);
+function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
+  const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()));
+  const { data: reservations } = useFetch(`/api/reservations?restaurant_id=${restaurantId}`, refreshKey);
+  const { data: orders } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
+
+  const days = useMemo(() => Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekStart); d.setDate(d.getDate() + i); return d;
+  }), [weekStart]);
+  const hours = useMemo(() => Array.from({ length: 16 }, (_, i) => i + 8), []); // 08–23 Uhr
+
+  const weekEnd = useMemo(() => { const e = new Date(weekStart); e.setDate(e.getDate() + 7); return e; }, [weekStart]);
+  const inWeek = (iso) => { if (!iso) return false; const t = new Date(iso); return t >= weekStart && t < weekEnd; };
+  const dayIndex = (iso) => Math.floor((new Date(iso) - weekStart) / 86400000);
+
+  const resByCell = {};
+  (reservations || []).forEach((r) => {
+    if (r.status === 'cancelled' || !inWeek(r.reserved_at)) return;
+    const key = `${dayIndex(r.reserved_at)}-${new Date(r.reserved_at).getHours()}`;
+    (resByCell[key] ||= []).push(r);
+  });
+  const ordByCell = {};
+  (orders || []).forEach((o) => {
+    if (o.status === 'cancelled' || !inWeek(o.requested_at)) return;
+    const key = `${dayIndex(o.requested_at)}-${new Date(o.requested_at).getHours()}`;
+    (ordByCell[key] ||= []).push(o);
+  });
+
+  const rangeLabel = () => {
+    const end = new Date(weekStart); end.setDate(end.getDate() + 6);
+    const opts = { day: '2-digit', month: '2-digit' };
+    return `${weekStart.toLocaleDateString('de-AT', opts)}–${end.toLocaleDateString('de-AT', { ...opts, year: 'numeric' })}`;
   };
-  const startingAt = (hour) =>
-    active.filter((r) => new Date(r.reserved_at).getHours() === hour);
+  const shiftWeek = (delta) => setWeekStart((s) => { const n = new Date(s); n.setDate(n.getDate() + delta * 7); return n; });
+  const loading = !reservations || !orders;
 
   return (
     <>
       <div className="toolbar">
-        <label htmlFor="cal-date">Tag:&nbsp;</label>
-        <input id="cal-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <span className="cal-legend">
-          <span className="dot dot-free" /> frei&nbsp;&nbsp;
-          <span className="dot dot-busy" /> belegt
-        </span>
+        <button className="link" onClick={() => shiftWeek(-1)}>← Vorherige</button>
+        <strong>{rangeLabel()}</strong>
+        <button className="link" onClick={() => shiftWeek(1)}>Nächste →</button>
+        <button className="link" onClick={() => setWeekStart(mondayOf(new Date()))}>Heute</button>
       </div>
-      {!reservations ? <p>Lade…</p> : (
-        <div className="calendar">
-          {hours.map((h) => {
-            const occ = occupancyAt(h);
-            const free = Math.max(0, CAPACITY - occ);
-            const pct = Math.min(100, Math.round((occ / CAPACITY) * 100));
-            return (
-              <div className="cal-row" key={h}>
-                <div className="cal-hour">{String(h).padStart(2, '0')}:00</div>
-                <div className="cal-bar-track" title={`${occ} von ${CAPACITY} Plätzen belegt`}>
-                  <div className="cal-bar" style={{ width: `${pct}%` }} />
-                </div>
-                <div className="cal-free">{free} Plätze frei</div>
-                <div className="cal-entries">
-                  {startingAt(h).map((r) => (
-                    <span className="cal-chip" key={r.id} title={r.notes || ''}>
-                      {fmtTime(r.reserved_at)} · {r.customer_name} ({r.party_size})
-                    </span>
-                  ))}
-                </div>
+      {loading ? <p>Lade…</p> : (
+        <div className="table-wrap">
+          <div className="week-grid">
+            <div className="week-cell week-corner" />
+            {days.map((d, i) => (
+              <div className="week-cell week-day-head" key={i}>
+                {d.toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit' })}
               </div>
-            );
-          })}
+            ))}
+            {hours.map((h) => (
+              <React.Fragment key={h}>
+                <div className="week-cell week-hour">{String(h).padStart(2, '0')}:00</div>
+                {days.map((_, di) => {
+                  const key = `${di}-${h}`;
+                  return (
+                    <div className="week-cell week-slot" key={di}>
+                      {(resByCell[key] || []).map((r) => (
+                        <button
+                          key={`r${r.id}`} className="event-chip reservation" title={r.notes || ''}
+                          onClick={() => onOpenDetail('reservation', r)}
+                        >
+                          🍽️ {r.customer_name} ({r.party_size})
+                        </button>
+                      ))}
+                      {(ordByCell[key] || []).map((o) => (
+                        <button
+                          key={`o${o.id}`} className="event-chip order" title={o.notes || ''}
+                          onClick={() => onOpenDetail('order', o)}
+                        >
+                          🛍️ {o.items.length > 18 ? `${o.items.slice(0, 18)}…` : o.items}
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       )}
-      <p className="hint">Kapazität aktuell pauschal {CAPACITY} Plätze pro Zeitfenster — echte Tischverwaltung folgt.</p>
+      <p className="hint">Klick auf einen Eintrag zeigt alle Details und erlaubt eine Status-Änderung.</p>
     </>
   );
 }
@@ -319,12 +510,20 @@ function AccessForm({ restaurant, onDone, onCancel }) {
   );
 }
 
-function Customers({ refreshKey, onChanged }) {
+function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const { data: restaurants } = useFetch('/api/restaurants', refreshKey);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState(null);
+  const [inviteMsg, setInviteMsg] = useState(null);
+
+  const sendInvite = (id) => {
+    setInviteMsg('Wird gesendet…');
+    apiFetch(`/api/restaurants/${id}/invite`, { method: 'POST' })
+      .then((r) => (r.ok ? setInviteMsg('✅ Einladung gesendet') : setInviteMsg('Fehler beim Senden')))
+      .catch(() => setInviteMsg('Fehler beim Senden'));
+  };
 
   if (!daily || !weekly || !restaurants) return <p>Lade…</p>;
   const weekOf = (id) => weekly.find((w) => w.restaurant_id === id) || {};
@@ -347,6 +546,7 @@ function Customers({ refreshKey, onChanged }) {
         />
         <span className="hint">{rows.length} von {daily.length} Kunden</span>
       </div>
+      {inviteMsg && <p className="hint">{inviteMsg}</p>}
       {editing && (
         <AccessForm
           restaurant={info(editing)}
@@ -369,7 +569,11 @@ function Customers({ refreshKey, onChanged }) {
               const r = info(d.restaurant_id);
               return (
                 <tr key={d.restaurant_id}>
-                  <td><strong>{d.name}</strong></td>
+                  <td>
+                    <button className="link-strong" onClick={() => onOpenRestaurant(d.restaurant_id)}>
+                      {d.name}
+                    </button>
+                  </td>
                   <td>{r.login_email || <span className="warn-text">kein Zugang</span>}</td>
                   <td>{r.vapi_phone_number || '–'}</td>
                   <td>{d.calls}</td>
@@ -377,9 +581,12 @@ function Customers({ refreshKey, onChanged }) {
                   <td>{w.calls ?? '–'}</td>
                   <td>{w.reservations ?? '–'}</td>
                   <td>{w.guests ?? '–'}</td>
-                  <td>
+                  <td className="lead-actions">
                     <button className="link" onClick={() => setEditing(d.restaurant_id)}>
                       {r.login_email ? 'Zugang ändern' : 'Zugang anlegen'}
+                    </button>
+                    <button className="link" onClick={() => sendInvite(d.restaurant_id)}>
+                      Einladung senden
                     </button>
                   </td>
                 </tr>
@@ -397,7 +604,7 @@ const ORDER_STATUS = {
   completed: '📦 Abgeschlossen', cancelled: '❌ Storniert',
 };
 
-function Orders({ restaurantId, refreshKey, onChanged }) {
+function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
   const { data: orders, error } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
   const setStatus = (id, status) => {
     apiFetch(`/api/orders/${id}`, {
@@ -417,7 +624,10 @@ function Orders({ restaurantId, refreshKey, onChanged }) {
         </thead>
         <tbody>
           {orders.map((o) => (
-            <tr key={o.id} className={['completed', 'cancelled'].includes(o.status) ? 'muted' : ''}>
+            <tr
+              key={o.id} className={`clickable-row${['completed', 'cancelled'].includes(o.status) ? ' muted' : ''}`}
+              onClick={() => onOpenDetail('order', o)}
+            >
               <td>{fmtDateTime(o.created_at)}</td>
               <td><strong>{o.customer_name}</strong></td>
               <td>{o.customer_phone || '–'}</td>
@@ -428,6 +638,7 @@ function Orders({ restaurantId, refreshKey, onChanged }) {
                 <select
                   value={o.status}
                   onChange={(e) => setStatus(o.id, e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
                   className="lead-status"
                 >
                   {Object.entries(ORDER_STATUS).map(([value, label]) => (
@@ -445,14 +656,23 @@ function Orders({ restaurantId, refreshKey, onChanged }) {
 
 const LEAD_STATUS = { new: '🆕 Neu', contacted: '📞 Kontaktiert', won: '✅ Gewonnen', lost: '❌ Verloren' };
 
-function Leads({ refreshKey, onChanged }) {
+function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
   const { data: leads, error } = useFetch('/api/leads', refreshKey);
+  const [converting, setConverting] = useState(null);
   const setStatus = (id, status) => {
     apiFetch(`/api/leads/${id}`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ status }),
     }).then(onChanged);
+  };
+  const convert = (id) => {
+    setConverting(id);
+    apiFetch(`/api/leads/${id}/convert`, { method: 'POST' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(() => onChanged())
+      .catch(() => {})
+      .finally(() => setConverting(null));
   };
   if (error) return <p className="error">Fehler: {error}</p>;
   if (!leads) return <p>Lade…</p>;
@@ -474,7 +694,7 @@ function Leads({ refreshKey, onChanged }) {
                 <td>{l.email || '–'}</td>
                 <td>{l.phone || '–'}</td>
                 <td>{l.message || ''}</td>
-                <td>
+                <td className="lead-actions">
                   <select
                     value={l.status}
                     onChange={(e) => setStatus(l.id, e.target.value)}
@@ -484,6 +704,15 @@ function Leads({ refreshKey, onChanged }) {
                       <option key={value} value={value}>{label}</option>
                     ))}
                   </select>
+                  {l.converted_restaurant_id ? (
+                    <button className="link" onClick={() => onOpenRestaurant(l.converted_restaurant_id)}>
+                      Zum Kunden →
+                    </button>
+                  ) : (
+                    <button className="link" disabled={converting === l.id} onClick={() => convert(l.id)}>
+                      {converting === l.id ? 'Wird umgewandelt…' : 'In Kunde umwandeln & einladen'}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -518,10 +747,12 @@ export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
   const isAdmin = auth?.role === 'admin';
+  const [detail, setDetail] = useState(null);
+
+  const setupToken = useMemo(() => new URLSearchParams(window.location.search).get('setup'), []);
 
   const { data: restaurants } = useFetch(auth ? '/api/restaurants' : null, refreshKey);
   const [restaurantId, setRestaurantId] = useState(null);
-  const [sideSearch, setSideSearch] = useState('');
 
   useEffect(() => {
     if (!auth) return;
@@ -535,14 +766,28 @@ export default function App() {
     return () => clearInterval(t);
   }, [auth, refresh]);
 
+  if (setupToken) {
+    return <SetupPassword token={setupToken} onDone={() => { window.location.href = '/dashboard/'; }} />;
+  }
+
   if (!auth) return <Login onLogin={setAuth} />;
 
   const logout = () => { clearAuth(); setAuth(null); setView('overview'); };
   const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
-  const filtered = (restaurants || []).filter(
-    (r) => r.name.toLowerCase().includes(sideSearch.trim().toLowerCase()),
-  );
   const nav = NAV.filter((item) => !item.adminOnly || isAdmin);
+  const noPicker = ['customers', 'leads'].includes(view);
+
+  const openDetail = (type, data) => setDetail({ type, data });
+  const closeDetail = () => setDetail(null);
+  const changeDetailStatus = (type, id, status) => {
+    const url = type === 'reservation' ? `/api/reservations/${id}` : `/api/orders/${id}`;
+    apiFetch(url, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status }),
+    }).then(() => { refresh(); closeDetail(); });
+  };
+  const openRestaurant = (id) => { setRestaurantId(id); setView('overview'); };
 
   return (
     <div className="layout">
@@ -553,27 +798,7 @@ export default function App() {
           <span className="logo-word">ki-works</span>
         </div>
 
-        {isAdmin ? (
-          <>
-            <label className="side-label" htmlFor="restaurant-search">Betrieb</label>
-            <input
-              id="restaurant-search" type="search" className="search"
-              placeholder="🔍 Suchen…" value={sideSearch}
-              onChange={(e) => setSideSearch(e.target.value)}
-            />
-            <select
-              id="restaurant-select" size={Math.min(Math.max(filtered.length, 2), 6)}
-              value={restaurantId ?? ''}
-              onChange={(e) => setRestaurantId(e.target.value)}
-            >
-              {filtered.map((r) => (
-                <option key={r.id} value={r.id}>{r.name}</option>
-              ))}
-            </select>
-          </>
-        ) : (
-          <div className="customer-name-box">{auth.name}</div>
-        )}
+        {!isAdmin && <div className="customer-name-box">{auth.name}</div>}
 
         <nav>
           {nav.map((item) => (
@@ -596,30 +821,46 @@ export default function App() {
 
       <main>
         <header className="main-head">
-          <h1>{TITLES[view]}</h1>
-          {view !== 'customers' && current && <span className="current-name">{current.name}</span>}
+          <div className="main-head-top">
+            <h1>{TITLES[view]}</h1>
+            {!noPicker && current && <span className="current-name">{current.name}</span>}
+          </div>
+          {isAdmin && !noPicker && restaurants && (
+            <BusinessPicker restaurants={restaurants} restaurantId={restaurantId} onSelect={setRestaurantId} />
+          )}
         </header>
-        {restaurantId == null && !['customers', 'leads'].includes(view) ? <p>Lade…</p> : (
+        {restaurantId == null && !noPicker ? <p>Lade…</p> : (
           <>
-            {view === 'overview' && <Overview restaurantId={restaurantId} refreshKey={refreshKey} />}
-            {view === 'calendar' && <CalendarDay restaurantId={restaurantId} refreshKey={refreshKey} />}
+            {view === 'overview' && (
+              <Overview restaurantId={restaurantId} refreshKey={refreshKey} onNavigate={setView} />
+            )}
+            {view === 'calendar' && (
+              <WeekCalendar restaurantId={restaurantId} refreshKey={refreshKey} onOpenDetail={openDetail} />
+            )}
             {view === 'reservations' && (
-              <Reservations restaurantId={restaurantId} refreshKey={refreshKey} onChanged={refresh} />
+              <Reservations
+                restaurantId={restaurantId} refreshKey={refreshKey}
+                onChanged={refresh} onOpenDetail={openDetail}
+              />
             )}
             {view === 'orders' && (
-              <Orders restaurantId={restaurantId} refreshKey={refreshKey} onChanged={refresh} />
+              <Orders
+                restaurantId={restaurantId} refreshKey={refreshKey}
+                onChanged={refresh} onOpenDetail={openDetail}
+              />
             )}
             {view === 'calls' && <Calls restaurantId={restaurantId} refreshKey={refreshKey} />}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'customers' && isAdmin && (
-              <Customers refreshKey={refreshKey} onChanged={refresh} />
+              <Customers refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
             )}
             {view === 'leads' && isAdmin && (
-              <Leads refreshKey={refreshKey} onChanged={refresh} />
+              <Leads refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
             )}
           </>
         )}
       </main>
+      <DetailModal item={detail} onClose={closeDetail} onStatusChange={changeDetailStatus} />
     </div>
   );
 }
