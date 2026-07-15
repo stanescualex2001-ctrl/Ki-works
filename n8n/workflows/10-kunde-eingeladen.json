@@ -1,0 +1,44 @@
+{
+  "id": "KiWorksInvite10v1",
+  "name": "10 Kunde eingeladen → Setup-Mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "kunde-eingeladen",
+        "options": {}
+      },
+      "id": "wf10-webhook",
+      "name": "Webhook: Kunde eingeladen",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "kunde-eingeladen"
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant.login_email || $json.body.restaurant.contact_email }}",
+        "subject": "=Ihr ki-works Zugang für {{ $json.body.restaurant.name }}",
+        "emailFormat": "text",
+        "text": "=Willkommen bei ki-works!\n\nFür {{ $json.body.restaurant.name }} wurde ein Dashboard-Zugang eingerichtet.\nBitte legen Sie über diesen Link Ihr persönliches Passwort fest (7 Tage gültig):\n\n{{ $json.body.setup_link }}\n\nDanach können Sie sich jederzeit unter https://ki-works.eu/dashboard/ anmelden.\n\nIhr ki-works Team",
+        "options": {}
+      },
+      "id": "wf10-email",
+      "name": "Setup-Mail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Kunde eingeladen": {
+      "main": [[{ "node": "Setup-Mail senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

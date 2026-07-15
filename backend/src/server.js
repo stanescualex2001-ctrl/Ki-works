@@ -6,7 +6,7 @@ import { businessRecommendations } from './claude.js';
 import { sendSms, reservationSms } from './sms.js';
 import {
   authMiddleware, adminOnly, customerScope,
-  hashPassword, verifyPassword, signToken,
+  hashPassword, verifyPassword, signToken, generateSetupToken,
 } from './auth.js';
 
 process.on('unhandledRejection', (err) => console.error('Unhandled rejection:', err));
@@ -25,7 +25,7 @@ for (const method of ['get', 'post', 'patch']) {
     : orig(path));
 }
 
-const publicRestaurant = ({ password_hash, ...rest }) => rest;
+const publicRestaurant = ({ password_hash, setup_token, ...rest }) => rest;
 
 // --- Health -----------------------------------------------------------------
 app.get('/api/health', async (_req, res) => {
@@ -103,6 +103,68 @@ app.patch('/api/leads/:id', adminOnly, async (req, res) => {
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
   res.json(rows[0]);
+});
+
+// Erzeugt einen Einladungslink (7 Tage gültig) und benachrichtigt n8n, das die
+// Setup-Mail verschickt. Der Kunde setzt sein Passwort selbst über den Link.
+async function inviteRestaurant(restaurant) {
+  const token = generateSetupToken();
+  const { rows } = await query(
+    `UPDATE restaurants SET setup_token = $1, setup_token_expires = now() + interval '7 days'
+     WHERE id = $2 RETURNING *`,
+    [token, restaurant.id],
+  );
+  const updated = rows[0];
+  const base = process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu';
+  const setup_link = `${base}/dashboard/?setup=${token}`;
+  notifyN8n('kunde-eingeladen', { restaurant: publicRestaurant(updated), setup_link });
+  return { restaurant: updated, setup_link };
+}
+
+app.post('/api/restaurants/:id/invite', adminOnly, async (req, res) => {
+  const { rows } = await query('SELECT * FROM restaurants WHERE id = $1', [req.params.id]);
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  const { setup_link } = await inviteRestaurant(rows[0]);
+  res.json({ ok: true, setup_link });
+});
+
+app.post('/api/leads/:id/convert', adminOnly, async (req, res) => {
+  const { rows } = await query('SELECT * FROM leads WHERE id = $1', [req.params.id]);
+  const lead = rows[0];
+  if (!lead) return res.status(404).json({ error: 'not found' });
+  const name = lead.business || lead.name;
+  const inserted = await query(
+    `INSERT INTO restaurants (name, contact_email, contact_phone, login_email)
+     VALUES ($1, $2, $3, $4) RETURNING *`,
+    [name, lead.email, lead.phone, lead.email],
+  );
+  const restaurant = inserted.rows[0];
+  await query(
+    "UPDATE leads SET status = 'won', converted_restaurant_id = $1 WHERE id = $2",
+    [restaurant.id, lead.id],
+  );
+  const { setup_link } = await inviteRestaurant(restaurant);
+  res.status(201).json({ ok: true, restaurant: publicRestaurant(restaurant), setup_link });
+});
+
+// Öffentlich: Kunde setzt über den Einladungslink sein eigenes Passwort.
+app.post('/api/public/setup-password', async (req, res) => {
+  const { token, password } = req.body || {};
+  if (!token || !password || password.length < 8) {
+    return res.status(400).json({ error: 'Token und Passwort (min. 8 Zeichen) erforderlich' });
+  }
+  const { rows } = await query(
+    `SELECT id FROM restaurants
+     WHERE setup_token = $1 AND setup_token_expires > now()`,
+    [token],
+  );
+  if (!rows[0]) return res.status(400).json({ error: 'Link ungültig oder abgelaufen' });
+  await query(
+    `UPDATE restaurants SET password_hash = $1, setup_token = NULL, setup_token_expires = NULL
+     WHERE id = $2`,
+    [hashPassword(password), rows[0].id],
+  );
+  res.json({ ok: true });
 });
 
 // --- Restaurants --------------------------------------------------------------

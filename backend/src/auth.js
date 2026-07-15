@@ -2,6 +2,10 @@ import crypto from 'crypto';
 
 const SECRET = process.env.AUTH_SECRET || 'dev-secret-change-me';
 
+export function generateSetupToken() {
+  return crypto.randomBytes(24).toString('hex');
+}
+
 export function hashPassword(pw) {
   const salt = crypto.randomBytes(16).toString('hex');
   const hash = crypto.scryptSync(pw, salt, 64).toString('hex');
