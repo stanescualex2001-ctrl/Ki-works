@@ -110,7 +110,8 @@ app.patch('/api/leads/:id', adminOnly, async (req, res) => {
 async function inviteRestaurant(restaurant) {
   const token = generateSetupToken();
   const { rows } = await query(
-    `UPDATE restaurants SET setup_token = $1, setup_token_expires = now() + interval '7 days'
+    `UPDATE restaurants SET setup_token = $1, setup_token_expires = now() + interval '7 days',
+            login_email = COALESCE(login_email, contact_email)
      WHERE id = $2 RETURNING *`,
     [token, restaurant.id],
   );
@@ -124,6 +125,9 @@ async function inviteRestaurant(restaurant) {
 app.post('/api/restaurants/:id/invite', adminOnly, async (req, res) => {
   const { rows } = await query('SELECT * FROM restaurants WHERE id = $1', [req.params.id]);
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  if (!rows[0].login_email && !rows[0].contact_email) {
+    return res.status(400).json({ error: 'Keine E-Mail-Adresse hinterlegt (weder Login- noch Kontakt-E-Mail)' });
+  }
   const { setup_link } = await inviteRestaurant(rows[0]);
   res.json({ ok: true, setup_link });
 });

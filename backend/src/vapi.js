@@ -216,9 +216,34 @@ async function handleEndOfCall(message, restaurant) {
     ],
   );
   const saved = rows[0];
+  await linkCallArtifacts(saved);
   notifyN8n('anruf-abgeschlossen', { call: saved, restaurant });
   if (outcome === 'missed') notifyN8n('anruf-verpasst', { call: saved, restaurant });
   return {};
+}
+
+// Verknüpft die während dieses Anrufs erstellte Reservierung/Bestellung mit dem
+// Anruf-Datensatz, damit das Dashboard von einem Anruf aus direkt zu den Details
+// springen kann. Zuordnung über Restaurant + Anrufernummer + Zeitfenster des Anrufs.
+async function linkCallArtifacts(call) {
+  if (!call.caller_number || !call.started_at || !call.restaurant_id) return;
+  const windowEnd = call.ended_at || new Date().toISOString();
+  try {
+    await query(
+      `UPDATE reservations SET call_id = $1
+       WHERE call_id IS NULL AND restaurant_id = $2 AND customer_phone = $3
+         AND created_at BETWEEN $4 AND $5::timestamptz + interval '2 minutes'`,
+      [call.id, call.restaurant_id, call.caller_number, call.started_at, windowEnd],
+    );
+    await query(
+      `UPDATE orders SET call_id = $1
+       WHERE call_id IS NULL AND restaurant_id = $2 AND customer_phone = $3
+         AND created_at BETWEEN $4 AND $5::timestamptz + interval '2 minutes'`,
+      [call.id, call.restaurant_id, call.caller_number, call.started_at, windowEnd],
+    );
+  } catch (err) {
+    console.error('linkCallArtifacts failed:', err.message);
+  }
 }
 
 export async function handleVapiWebhook(req, res) {

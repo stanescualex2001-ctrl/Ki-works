@@ -177,8 +177,11 @@ function StatRow({ title, row, onNavigate }) {
           label="Reservierungen" value={row?.reservations}
           onClick={onNavigate && (() => onNavigate('reservations'))}
         />
-        <StatCard label="davon telefonisch (KI)" value={row?.phone_reservations} />
-        <StatCard label="Gäste" value={row?.guests} />
+        <StatCard
+          label="davon telefonisch (KI)" value={row?.phone_reservations}
+          onClick={onNavigate && (() => onNavigate('reservations'))}
+        />
+        <StatCard label="Gäste" value={row?.guests} onClick={onNavigate && (() => onNavigate('reservations'))} />
         <StatCard label="Bestellungen" value={row?.orders} onClick={onNavigate && (() => onNavigate('orders'))} />
       </div>
     </section>
@@ -239,30 +242,45 @@ function DetailModal({ item, onClose, onStatusChange }) {
 }
 
 // Durchsuchbarer Betrieb-Wähler — zeigt nach Auswahl nur noch den gewählten Namen.
+// Der Text bleibt immer normal editierbar (kein Zurücksetzen per State bei jedem
+// Tastendruck) — auf Fokus wird der Text nur markiert, damit man direkt lostippen
+// oder mit Backspace/Entf normal löschen kann.
 function BusinessPicker({ restaurants, restaurantId, onSelect }) {
-  const [query, setQuery] = useState('');
+  const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
   const current = restaurants.find((r) => String(r.id) === String(restaurantId));
-  const matches = restaurants.filter((r) => r.name.toLowerCase().includes(query.trim().toLowerCase()));
+
+  useEffect(() => {
+    setText(current?.name || '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurantId]);
+
+  const matches = restaurants.filter((r) => r.name.toLowerCase().includes(text.trim().toLowerCase()));
+
+  const selectRestaurant = (r) => {
+    onSelect(r.id);
+    setText(r.name);
+    setOpen(false);
+  };
 
   return (
     <div className="business-picker">
       <input
         type="text" className="business-picker-input" placeholder="🔍 Betrieb suchen…"
-        value={open ? query : (current?.name || '')}
-        onFocus={() => { setQuery(''); setOpen(true); }}
-        onChange={(e) => setQuery(e.target.value)}
-        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        autoComplete="off" value={text}
+        onFocus={(e) => { setOpen(true); e.target.select(); }}
+        onChange={(e) => { setText(e.target.value); setOpen(true); }}
+        onBlur={() => setTimeout(() => {
+          setOpen(false);
+          if (current) setText(current.name);
+        }, 150)}
       />
       {open && (
         <ul className="business-picker-list">
           {matches.length === 0 && <li className="business-picker-empty">Keine Treffer</li>}
           {matches.map((r) => (
             <li key={r.id}>
-              <button
-                type="button" onMouseDown={(e) => e.preventDefault()}
-                onClick={() => { onSelect(r.id); setOpen(false); setQuery(''); }}
-              >
+              <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => selectRestaurant(r)}>
                 {r.name}
               </button>
             </li>
@@ -425,25 +443,48 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
   );
 }
 
-function Calls({ restaurantId, refreshKey }) {
+function Calls({ restaurantId, refreshKey, onOpenDetail }) {
   const { data: calls, error } = useFetch(`/api/calls?restaurant_id=${restaurantId}`, refreshKey);
+  const { data: reservations } = useFetch(`/api/reservations?restaurant_id=${restaurantId}`, refreshKey);
+  const { data: orders } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
+
   if (error) return <p className="error">Fehler: {error}</p>;
   if (!calls) return <p>Lade…</p>;
   if (!calls.length) return <p>Noch keine Anrufe.</p>;
+
+  const reservationFor = (callId) => (reservations || []).find((r) => r.call_id === callId);
+  const orderFor = (callId) => (orders || []).find((o) => o.call_id === callId);
+
   return (
     <div className="call-list">
-      {calls.map((c) => (
-        <div className="call-card" key={c.id}>
-          <div className="call-head">
-            <strong>{c.caller_number || 'Unbekannte Nummer'}</strong>
-            <span>{fmtDateTime(c.started_at || c.created_at)}</span>
-            {c.duration_seconds != null && <span>{Math.round(c.duration_seconds / 60)} min</span>}
-            <span className={`badge badge-${c.outcome}`}>{c.outcome || '–'}</span>
+      {calls.map((c) => {
+        const res = reservationFor(c.id);
+        const ord = orderFor(c.id);
+        return (
+          <div className="call-card" key={c.id}>
+            <div className="call-head">
+              <strong>{c.caller_number || 'Unbekannte Nummer'}</strong>
+              <span>{fmtDateTime(c.started_at || c.created_at)}</span>
+              {c.duration_seconds != null && <span>{Math.round(c.duration_seconds / 60)} min</span>}
+              <span className={`badge badge-${c.outcome}`}>{c.outcome || '–'}</span>
+            </div>
+            {c.summary && <p className="call-summary">{c.summary}</p>}
+            <div className="call-actions">
+              {c.recording_url && <a href={c.recording_url} target="_blank" rel="noreferrer">Aufnahme anhören</a>}
+              {res && (
+                <button className="link" onClick={() => onOpenDetail('reservation', res)}>
+                  🍽️ Reservierung ansehen
+                </button>
+              )}
+              {ord && (
+                <button className="link" onClick={() => onOpenDetail('order', ord)}>
+                  🛍️ Bestellung ansehen
+                </button>
+              )}
+            </div>
           </div>
-          {c.summary && <p className="call-summary">{c.summary}</p>}
-          {c.recording_url && <a href={c.recording_url} target="_blank" rel="noreferrer">Aufnahme anhören</a>}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -510,12 +551,66 @@ function AccessForm({ restaurant, onDone, onCancel }) {
   );
 }
 
+// Formular zum Anlegen eines neuen Kunden (nur Betreiber).
+function NewCustomerForm({ onDone, onCancel }) {
+  const [name, setName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+  const [vapiNumber, setVapiNumber] = useState('');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch('/api/restaurants', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        contact_email: contactEmail || null,
+        contact_phone: contactPhone || null,
+        vapi_phone_number: vapiNumber || null,
+      }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onDone();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>Neuen Kunden anlegen</strong>
+      <label>Name*
+        <input required value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <label>Kontakt-E-Mail
+        <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
+      </label>
+      <label>Kontakt-Telefon
+        <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
+      </label>
+      <label>KI-Telefonnummer (falls schon vorhanden)
+        <input value={vapiNumber} onChange={(e) => setVapiNumber(e.target.value)} />
+      </label>
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>Anlegen</button>
+        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+      </div>
+    </form>
+  );
+}
+
 function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const { data: restaurants } = useFetch('/api/restaurants', refreshKey);
   const [search, setSearch] = useState('');
   const [editing, setEditing] = useState(null);
+  const [adding, setAdding] = useState(false);
   const [inviteMsg, setInviteMsg] = useState(null);
 
   const sendInvite = (id) => {
@@ -545,8 +640,15 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
           value={search} onChange={(e) => setSearch(e.target.value)}
         />
         <span className="hint">{rows.length} von {daily.length} Kunden</span>
+        <button className="primary" onClick={() => setAdding(true)}>+ Neuer Kunde</button>
       </div>
       {inviteMsg && <p className="hint">{inviteMsg}</p>}
+      {adding && (
+        <NewCustomerForm
+          onCancel={() => setAdding(false)}
+          onDone={() => { setAdding(false); onChanged(); }}
+        />
+      )}
       {editing && (
         <AccessForm
           restaurant={info(editing)}
@@ -849,7 +951,9 @@ export default function App() {
                 onChanged={refresh} onOpenDetail={openDetail}
               />
             )}
-            {view === 'calls' && <Calls restaurantId={restaurantId} refreshKey={refreshKey} />}
+            {view === 'calls' && (
+              <Calls restaurantId={restaurantId} refreshKey={refreshKey} onOpenDetail={openDetail} />
+            )}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'customers' && isAdmin && (
               <Customers refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
