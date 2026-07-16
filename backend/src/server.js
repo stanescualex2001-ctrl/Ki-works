@@ -37,6 +37,14 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
+// DSGVO: Kunden-Login bestätigt die Datenschutzerklärung/Auftragsverarbeitung.
+app.post('/api/accept-terms', async (req, res) => {
+  const scope = customerScope(req);
+  if (!scope) return res.status(400).json({ error: 'nur für Kunden-Logins verfügbar' });
+  await query('UPDATE restaurants SET terms_accepted_at = now() WHERE id = $1', [scope]);
+  res.json({ ok: true });
+});
+
 // --- Login --------------------------------------------------------------------
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body || {};
@@ -406,6 +414,24 @@ app.get('/api/recommendations', async (req, res) => {
     recommendations: text || 'Keine Empfehlungen verfügbar (Claude-API nicht erreichbar).',
   });
 });
+
+// --- DSGVO: Anruf-Rohdaten (Transkript, Aufnahme) nach 7 Tagen löschen ----------
+// Zusammenfassung, Rufnummer, Zeiten und Ergebnis bleiben für Statistik und
+// Stammgast-Erkennung erhalten — nur der Wortlaut des Gesprächs wird entfernt.
+async function purgeOldCallRawData() {
+  try {
+    const { rowCount } = await query(
+      `UPDATE calls SET transcript = NULL, recording_url = NULL
+       WHERE created_at < now() - interval '7 days'
+         AND (transcript IS NOT NULL OR recording_url IS NOT NULL)`,
+    );
+    if (rowCount) console.log(`DSGVO-Löschung: ${rowCount} Anruf-Rohdatensätze bereinigt`);
+  } catch (err) {
+    console.error('purgeOldCallRawData failed:', err.message);
+  }
+}
+purgeOldCallRawData();
+setInterval(purgeOldCallRawData, 24 * 60 * 60 * 1000);
 
 // -----------------------------------------------------------------------------
 app.use((err, _req, res, _next) => {

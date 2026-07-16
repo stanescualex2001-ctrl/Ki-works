@@ -207,6 +207,12 @@ button.primary:disabled { opacity: 0.6; cursor: wait; }
   padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem;
 }
 .login-card .primary { margin-top: 1rem; }
+.consent-card { width: 420px; }
+.consent-checkbox {
+  display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.88rem;
+  color: var(--text); margin-top: 0.6rem; cursor: pointer;
+}
+.consent-checkbox input { margin-top: 0.2rem; flex-shrink: 0; }
 
 /* ---- Suche & Kunden-Zugang ---- */
 .search {

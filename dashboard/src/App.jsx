@@ -89,6 +89,54 @@ function Login({ onLogin }) {
   );
 }
 
+// DSGVO: Pflicht-Zustimmung beim ersten Login eines Kunden-Zugangs.
+function ConsentGate({ restaurantName, onAccepted, onLogout }) {
+  const [checked, setChecked] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  const confirm = () => {
+    setSaving(true);
+    setError(null);
+    apiFetch('/api/accept-terms', { method: 'POST' })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onAccepted();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <div className="login-page">
+      <div className="login-card consent-card">
+        <div className="logo-area login-logo">
+          <img src="/logo.png" alt="" className="logo-img"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          <span className="logo-word">ki-works</span>
+        </div>
+        <p className="login-sub">Bevor es losgeht, {restaurantName}</p>
+        <p>
+          Bevor Sie das Dashboard nutzen können, benötigen wir Ihre Zustimmung zur
+          Verarbeitung der Gästedaten (Reservierungen, Bestellungen, Anrufprotokolle)
+          im Rahmen unserer{' '}
+          <a href="/datenschutz.html" target="_blank" rel="noreferrer">Datenschutzerklärung</a>{' '}
+          und der damit verbundenen Auftragsverarbeitung.
+        </p>
+        <label className="consent-checkbox">
+          <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
+          Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung der
+          Gästedaten gemäß Auftragsverarbeitung zu.
+        </label>
+        {error && <p className="error">{error}</p>}
+        <button className="primary" disabled={!checked || saving} onClick={confirm}>
+          {saving ? 'Wird gespeichert…' : 'Bestätigen und fortfahren'}
+        </button>
+        <button type="button" className="link-strong" onClick={onLogout}>Abmelden</button>
+      </div>
+    </div>
+  );
+}
+
 // Öffentliche Seite: Kunde setzt sein eigenes Passwort über den Einladungslink.
 function SetupPassword({ token, onDone }) {
   const [password, setPassword] = useState('');
@@ -924,6 +972,17 @@ export default function App() {
   if (!auth) return <Login onLogin={setAuth} />;
 
   const logout = () => { clearAuth(); setAuth(null); setView('overview'); };
+
+  if (auth.role === 'customer' && restaurants && !restaurants[0]?.terms_accepted_at) {
+    return (
+      <ConsentGate
+        restaurantName={restaurants[0]?.name || auth.name}
+        onAccepted={refresh}
+        onLogout={logout}
+      />
+    );
+  }
+
   const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
   const nav = NAV.filter((item) => !item.adminOnly || isAdmin);
   const noPicker = ['customers', 'leads'].includes(view);

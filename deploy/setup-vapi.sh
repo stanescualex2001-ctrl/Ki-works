@@ -17,7 +17,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
   -d @- <<EOF
 {
   "name": "ki-works – Venezia",
-  "firstMessage": "Grüß Gott, hier ist der Reservierungsassistent vom Restaurant Venezia in Schwertberg. Wie kann ich Ihnen helfen?",
+  "firstMessage": "Grüß Gott, hier ist der KI-Reservierungsassistent vom Restaurant Venezia in Schwertberg. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?",
   "transcriber": { "provider": "deepgram", "model": "nova-2", "language": "de" },
   "voice": { "provider": "azure", "voiceId": "de-AT-IngridNeural" },
   "model": {
