@@ -200,10 +200,51 @@ function Overview({ restaurantId, refreshKey, onNavigate }) {
   );
 }
 
-// Zeigt alle Felder einer Reservierung/Bestellung + Status-Änderung.
-function DetailModal({ item, onClose, onStatusChange }) {
+// Zeigt alle Felder einer Reservierung/Bestellung/eines Anrufs + Status-Änderung.
+function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
   if (!item) return null;
   const { type, data } = item;
+
+  if (type === 'call') {
+    return (
+      <div className="modal-backdrop" onClick={onClose}>
+        <div className="modal" onClick={(e) => e.stopPropagation()}>
+          <button className="modal-close" onClick={onClose} aria-label="Schließen">×</button>
+          <h2>📞 Anruf</h2>
+          <dl className="detail-list">
+            <dt>Nummer</dt><dd>{data.caller_number || 'Unbekannt'}</dd>
+            <dt>Zeit</dt><dd>{fmtDateTime(data.started_at || data.created_at)}</dd>
+            <dt>Dauer</dt><dd>{data.duration_seconds != null ? `${Math.round(data.duration_seconds / 60)} min` : '–'}</dd>
+            <dt>Ergebnis</dt><dd><span className={`badge badge-${data.outcome}`}>{data.outcome || '–'}</span></dd>
+            <dt>Zusammenfassung</dt><dd>{data.summary || '–'}</dd>
+          </dl>
+          {data.linkedReservation && (
+            <p>
+              <button
+                className="link"
+                onClick={() => onOpenDetail('reservation', data.linkedReservation)}
+              >
+                🍽️ Verknüpfte Reservierung ansehen
+              </button>
+            </p>
+          )}
+          {data.linkedOrder && (
+            <p>
+              <button className="link" onClick={() => onOpenDetail('order', data.linkedOrder)}>
+                🛍️ Verknüpfte Bestellung ansehen
+              </button>
+            </p>
+          )}
+          {data.recording_url && (
+            <p><a href={data.recording_url} target="_blank" rel="noreferrer">Aufnahme anhören</a></p>
+          )}
+          <label className="side-label" htmlFor="detail-transcript">Transkript</label>
+          <div className="transcript-box" id="detail-transcript">{data.transcript || 'Kein Transkript verfügbar.'}</div>
+        </div>
+      </div>
+    );
+  }
+
   const isReservation = type === 'reservation';
   const statusMap = isReservation ? STATUS_LABELS : ORDER_STATUS;
   return (
@@ -460,8 +501,9 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
       {calls.map((c) => {
         const res = reservationFor(c.id);
         const ord = orderFor(c.id);
+        const openCall = () => onOpenDetail('call', { ...c, linkedReservation: res, linkedOrder: ord });
         return (
-          <div className="call-card" key={c.id}>
+          <div className="call-card clickable-row" key={c.id} onClick={openCall}>
             <div className="call-head">
               <strong>{c.caller_number || 'Unbekannte Nummer'}</strong>
               <span>{fmtDateTime(c.started_at || c.created_at)}</span>
@@ -470,14 +512,21 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
             </div>
             {c.summary && <p className="call-summary">{c.summary}</p>}
             <div className="call-actions">
-              {c.recording_url && <a href={c.recording_url} target="_blank" rel="noreferrer">Aufnahme anhören</a>}
+              {c.recording_url && (
+                <a href={c.recording_url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                  Aufnahme anhören
+                </a>
+              )}
               {res && (
-                <button className="link" onClick={() => onOpenDetail('reservation', res)}>
+                <button
+                  className="link"
+                  onClick={(e) => { e.stopPropagation(); onOpenDetail('reservation', res); }}
+                >
                   🍽️ Reservierung ansehen
                 </button>
               )}
               {ord && (
-                <button className="link" onClick={() => onOpenDetail('order', ord)}>
+                <button className="link" onClick={(e) => { e.stopPropagation(); onOpenDetail('order', ord); }}>
                   🛍️ Bestellung ansehen
                 </button>
               )}
@@ -964,7 +1013,10 @@ export default function App() {
           </>
         )}
       </main>
-      <DetailModal item={detail} onClose={closeDetail} onStatusChange={changeDetailStatus} />
+      <DetailModal
+        item={detail} onClose={closeDetail}
+        onStatusChange={changeDetailStatus} onOpenDetail={openDetail}
+      />
     </div>
   );
 }

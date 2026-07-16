@@ -30,7 +30,7 @@ main { flex: 1; padding: 1.5rem 2rem; max-width: 1200px; }
 .logo-word { font-size: 1.35rem; font-weight: 800; color: var(--accent); letter-spacing: -0.02em; }
 
 /* ---- Betrieb-Auswahl ---- */
-.side-label { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
+.side-label { display: block; margin-top: 0.6rem; font-size: 0.75rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
 .sidebar select {
   width: 100%; padding: 0.5rem 0.6rem; border: 1px solid var(--border);
   border-radius: 8px; background: #fff; font-size: 0.95rem; color: var(--text);
@@ -122,6 +122,13 @@ tr.clickable-row:hover td { background: var(--panel); }
 .call-head strong { color: var(--text); }
 .call-summary { margin-top: 0.5rem; }
 .call-actions { display: flex; gap: 1rem; align-items: center; margin-top: 0.6rem; flex-wrap: wrap; }
+.call-card.clickable-row { cursor: pointer; }
+.call-card.clickable-row:hover { border-color: var(--accent); background: var(--panel); }
+.transcript-box {
+  white-space: pre-wrap; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.7rem 0.8rem; margin-top: 0.3rem; max-height: 240px;
+  overflow-y: auto; font-size: 0.88rem; line-height: 1.5;
+}
 
 /* ---- Kalender ---- */
 .toolbar { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; flex-wrap: wrap; }
