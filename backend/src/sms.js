@@ -40,3 +40,17 @@ export function reservationSms(reservation, restaurantName) {
   return `Reservierung bestätigt: ${reservation.customer_name}, `
     + `${reservation.party_size} Personen am ${when} – ${restaurantName}. Bis bald!`;
 }
+
+export function cancellationSms(reservation, restaurantName) {
+  const when = new Date(reservation.reserved_at).toLocaleString('de-AT', {
+    timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short',
+  });
+  return `Ihre Reservierung bei ${restaurantName} am ${when} wurde storniert.`;
+}
+
+export function rescheduleSms(reservation, restaurantName) {
+  const when = new Date(reservation.reserved_at).toLocaleString('de-AT', {
+    timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short',
+  });
+  return `Ihre Reservierung bei ${restaurantName} wurde auf ${when} verschoben.`;
+}

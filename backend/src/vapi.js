@@ -1,7 +1,7 @@
 import { query } from './db.js';
 import { summarizeCall, classifyOutcome } from './claude.js';
 import { notifyN8n } from './n8n.js';
-import { sendSms, reservationSms, orderSms } from './sms.js';
+import { sendSms, reservationSms, orderSms, cancellationSms, rescheduleSms } from './sms.js';
 
 // Naive datetimes from the assistant ("2026-07-06T19:00") are Vienna local time.
 function viennaOffsetMs(date) {
@@ -76,6 +76,87 @@ async function checkAvailability(restaurant, args) {
   return { result: free > 0 ? `Ja, es sind noch Plätze frei (ca. ${free}).` : 'Leider ausgebucht zu dieser Zeit.' };
 }
 
+// Findet die zu stornierende/verschiebende Reservierung anhand von Restaurant +
+// Anrufernummer, optional eingeengt auf ein Zeitfenster um einen genannten Termin.
+// Rückgabe: die Reservierung, null (nichts gefunden) oder ein Array (mehrdeutig).
+async function findReservation(restaurant, args, callerNumber) {
+  const phone = args.phone || callerNumber;
+  if (!phone) return { error: 'Ohne Telefonnummer kann ich die Reservierung nicht finden.' };
+  const around = args.datetime || args.old_datetime;
+  let sql = `SELECT * FROM reservations
+             WHERE restaurant_id = $1 AND customer_phone = $2
+               AND status = 'confirmed' AND reserved_at > now()`;
+  const params = [restaurant.id, phone];
+  if (around) {
+    const at = parseGuestDatetime(around);
+    if (!Number.isNaN(at.getTime())) {
+      params.push(new Date(at.getTime() - 90 * 60000).toISOString());
+      params.push(new Date(at.getTime() + 90 * 60000).toISOString());
+      sql += ` AND reserved_at BETWEEN $3 AND $4`;
+    }
+  }
+  sql += ' ORDER BY reserved_at ASC';
+  const { rows } = await query(sql, params);
+  if (rows.length === 0) return null;
+  if (rows.length === 1) return rows[0];
+  return rows;
+}
+
+function listReservationTimes(rows) {
+  return rows
+    .map((r) => new Date(r.reserved_at).toLocaleString('de-AT', { timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short' }))
+    .join(', ');
+}
+
+// Vapi tool call: cancel_reservation({name, phone, datetime})
+async function cancelReservation(restaurant, args, callerNumber) {
+  const found = await findReservation(restaurant, args, callerNumber);
+  if (found === null) return { error: 'Ich konnte keine passende Reservierung finden.' };
+  if (Array.isArray(found)) {
+    return { result: `Ich habe mehrere Reservierungen gefunden: ${listReservationTimes(found)}. Für welchen Termin möchten Sie stornieren?` };
+  }
+  if (found.error) return { error: found.error };
+  const { rows } = await query(
+    "UPDATE reservations SET status = 'cancelled' WHERE id = $1 RETURNING *",
+    [found.id],
+  );
+  const reservation = rows[0];
+  notifyN8n('reservierung-storniert', { reservation, restaurant });
+  if (reservation.customer_phone) {
+    sendSms(reservation.customer_phone, cancellationSms(reservation, restaurant.name))
+      .catch((err) => console.error('SMS failed:', err.message));
+  }
+  const when = new Date(reservation.reserved_at).toLocaleString('de-AT', { timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short' });
+  return { result: `Reservierung für ${reservation.customer_name} am ${when} wurde storniert.` };
+}
+
+// Vapi tool call: reschedule_reservation({name, phone, old_datetime, new_datetime})
+async function rescheduleReservation(restaurant, args, callerNumber) {
+  if (!args.new_datetime) return { error: 'Bitte den gewünschten neuen Termin angeben.' };
+  const newAt = parseGuestDatetime(args.new_datetime);
+  if (Number.isNaN(newAt.getTime())) {
+    return { error: 'Ungültiges Datum. Bitte Datum und Uhrzeit im Format JJJJ-MM-TT HH:MM angeben.' };
+  }
+  const found = await findReservation(restaurant, args, callerNumber);
+  if (found === null) return { error: 'Ich konnte keine passende Reservierung finden.' };
+  if (Array.isArray(found)) {
+    return { result: `Ich habe mehrere Reservierungen gefunden: ${listReservationTimes(found)}. Welchen Termin möchten Sie verschieben?` };
+  }
+  if (found.error) return { error: found.error };
+  const { rows } = await query(
+    'UPDATE reservations SET reserved_at = $1 WHERE id = $2 RETURNING *',
+    [newAt.toISOString(), found.id],
+  );
+  const reservation = rows[0];
+  notifyN8n('reservierung-verschoben', { reservation, restaurant });
+  if (reservation.customer_phone) {
+    sendSms(reservation.customer_phone, rescheduleSms(reservation, restaurant.name))
+      .catch((err) => console.error('SMS failed:', err.message));
+  }
+  const when = new Date(reservation.reserved_at).toLocaleString('de-AT', { timeZone: 'Europe/Vienna', dateStyle: 'medium', timeStyle: 'short' });
+  return { result: `Reservierung für ${reservation.customer_name} wurde auf ${when} verschoben.` };
+}
+
 // Vapi tool call: create_order({name, phone, items, pickup_time, notes})
 async function createOrder(restaurant, args, callerNumber) {
   if (!args.items) return { error: 'Bitte die gewünschten Gerichte angeben.' };
@@ -107,6 +188,8 @@ async function createOrder(restaurant, args, callerNumber) {
 const TOOL_HANDLERS = {
   create_reservation: createReservation,
   check_availability: checkAvailability,
+  cancel_reservation: cancelReservation,
+  reschedule_reservation: rescheduleReservation,
   create_order: createOrder,
 };
 
