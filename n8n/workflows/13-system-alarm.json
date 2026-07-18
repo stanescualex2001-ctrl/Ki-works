@@ -1,0 +1,42 @@
+{
+  "name": "13 System-Alarm → E-Mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "system-alarm",
+        "options": {}
+      },
+      "id": "wf13-webhook",
+      "name": "Webhook: System-Alarm",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "system-alarm"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
+        "toEmail": "={{ $env.KIWORKS_FALLBACK_EMAIL }}",
+        "subject": "=🚨 ki-works System-Alarm: {{ $json.body.check }}",
+        "text": "=Ein Problem wurde auf dem ki-works-Server erkannt:\n\nPrüfung: {{ $json.body.check }}\nDetails: {{ $json.body.detail }}\n\nBitte im Admin-Dashboard unter 'System' nachsehen.",
+        "options": {}
+      },
+      "id": "wf13-email",
+      "name": "Alarm-Mail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: System-Alarm": {
+      "main": [[{ "node": "Alarm-Mail senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

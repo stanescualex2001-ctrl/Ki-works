@@ -142,8 +142,11 @@ sudo -u kiworks env HOME=/home/kiworks n8n import:workflow \
 # --- systemd ----------------------------------------------------------------------
 log "Dienste starten"
 install -m 644 "$APP_DIR/deploy/systemd/ki-works-api.service" /etc/systemd/system/ki-works-api.service
+install -m 644 "$APP_DIR/deploy/systemd/ki-works-backup.service" /etc/systemd/system/ki-works-backup.service
+install -m 644 "$APP_DIR/deploy/systemd/ki-works-backup.timer" /etc/systemd/system/ki-works-backup.timer
+mkdir -p /var/backups/ki-works && chown kiworks:kiworks /var/backups/ki-works
 systemctl daemon-reload
-systemctl enable --now ki-works-api n8n
+systemctl enable --now ki-works-api n8n ki-works-backup.timer
 sleep 3
 systemctl --no-pager --lines=0 status ki-works-api n8n || true
 
@@ -182,5 +185,7 @@ echo " Nächste Schritte:"
 echo "  1. DNS: $DOMAIN, www.$DOMAIN und n8n.$DOMAIN auf diese Server-IP zeigen lassen"
 echo "  2. Vapi-Assistent anlegen:  bash $APP_DIR/deploy/setup-vapi.sh"
 echo "  3. In n8n (https://n8n.$DOMAIN): Owner-Konto anlegen, SMTP-Credential"
-echo "     'KiWorks SMTP' erstellen und die 7 Workflows aktivieren"
+echo "     'KiWorks SMTP' erstellen und die Workflows aktivieren (inkl. 13-system-alarm)"
+echo "  4. Im Contabo-Kundenpanel den 'Auto Backup'-Zusatz für den VPS aktivieren"
+echo "     (externe, tägliche Komplettsicherung — ergänzt das lokale DB-Backup)"
 echo "-----------------------------------------------------------"

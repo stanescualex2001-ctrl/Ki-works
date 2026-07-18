@@ -2,6 +2,7 @@ import { query } from './db.js';
 import { summarizeCall, classifyOutcome } from './claude.js';
 import { notifyN8n } from './n8n.js';
 import { sendSms, reservationSms, orderSms, cancellationSms, rescheduleSms } from './sms.js';
+import { logError } from './monitoring.js';
 
 // Naive datetimes from the assistant ("2026-07-06T19:00") are Vienna local time.
 function viennaOffsetMs(date) {
@@ -350,7 +351,7 @@ export async function handleVapiWebhook(req, res) {
         return res.json({});
     }
   } catch (err) {
-    console.error('Vapi webhook error:', err);
+    await logError('vapi-webhook', err);
     return res.status(500).json({ error: 'internal error' });
   }
 }

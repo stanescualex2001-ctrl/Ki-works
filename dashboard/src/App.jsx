@@ -922,6 +922,87 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
   );
 }
 
+function StatusTile({ label, ok, detail }) {
+  const cls = ok === true ? 'ok' : ok === false ? 'problem' : 'unknown';
+  const text = ok === true ? 'OK' : ok === false ? 'Problem' : 'Unbekannt';
+  return (
+    <div className={`status-tile status-${cls}`}>
+      <div className="status-label">{label}</div>
+      <div className="status-value">{text}</div>
+      {detail != null && <div className="status-detail">{detail}</div>}
+    </div>
+  );
+}
+
+function fmtUptime(seconds) {
+  if (seconds == null) return '–';
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h`;
+  if (h > 0) return `${h}h ${m}min`;
+  return `${m}min`;
+}
+
+// Admin-Ansicht: Server-Gesundheit (live geprüft) + Fehlerprotokoll.
+// Erkennt nur Probleme, die auftreten, während der Backend-Prozess selbst noch
+// läuft (DB/n8n nicht erreichbar, Platte voll, SSL läuft ab, Backup fehlt) —
+// einen kompletten Server-Ausfall kann dieser Check naturgemäß nicht melden.
+function SystemStatus({ refreshKey }) {
+  const { data: status, error } = useFetch('/api/admin/system-status', refreshKey);
+  const { data: errors } = useFetch('/api/admin/errors?limit=50', refreshKey);
+
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (!status) return <p>Lade…</p>;
+
+  return (
+    <>
+      <div className="stat-grid">
+        <StatusTile label="Datenbank" ok={status.db.ok} detail={status.db.detail} />
+        <StatusTile label="n8n" ok={status.n8n.ok} detail={status.n8n.detail} />
+        <StatusTile
+          label="Festplatte"
+          ok={status.disk.ok}
+          detail={status.disk.percent != null ? `${status.disk.percent}% belegt` : status.disk.detail}
+        />
+        <StatusTile
+          label="SSL-Zertifikat"
+          ok={status.ssl.ok}
+          detail={status.ssl.daysLeft != null ? `noch ${status.ssl.daysLeft} Tage` : status.ssl.detail}
+        />
+        <StatusTile
+          label="Letztes Backup"
+          ok={status.backup.ok}
+          detail={status.backup.hoursAgo != null ? `vor ${status.backup.hoursAgo}h (${status.backup.file})` : status.backup.detail}
+        />
+        <StatusTile label="Backend-Laufzeit" ok={true} detail={fmtUptime(status.uptimeSeconds)} />
+      </div>
+      <p className="muted">Zuletzt geprüft: {fmtDateTime(status.checkedAt)}</p>
+
+      <h2>Fehlerprotokoll (letzte 30 Tage)</h2>
+      {!errors?.length ? <p>Keine Einträge.</p> : (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Zeit</th><th>Stufe</th><th>Quelle</th><th>Meldung</th></tr>
+            </thead>
+            <tbody>
+              {errors.map((e) => (
+                <tr key={e.id}>
+                  <td>{fmtDateTime(e.created_at)}</td>
+                  <td><span className={`badge badge-${e.level}`}>{e.level}</span></td>
+                  <td>{e.source}</td>
+                  <td>{e.message}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
+  );
+}
+
 // ---------------------------------------------------------------- shell
 const NAV = [
   { id: 'overview', label: 'Übersicht', icon: '📊' },
@@ -932,12 +1013,13 @@ const NAV = [
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
   { id: 'leads', label: 'Anfragen', icon: '📥', adminOnly: true },
+  { id: 'system', label: 'System', icon: '🛠️', adminOnly: true },
 ];
 
 const TITLES = {
   overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
   orders: 'Bestellungen', calls: 'Anrufe', reco: 'KI-Empfehlungen',
-  customers: 'Kundenübersicht', leads: 'Anfragen',
+  customers: 'Kundenübersicht', leads: 'Anfragen', system: 'System-Status',
 };
 
 export default function App() {
@@ -985,7 +1067,7 @@ export default function App() {
 
   const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
   const nav = NAV.filter((item) => !item.adminOnly || isAdmin);
-  const noPicker = ['customers', 'leads'].includes(view);
+  const noPicker = ['customers', 'leads', 'system'].includes(view);
 
   const openDetail = (type, data) => setDetail({ type, data });
   const closeDetail = () => setDetail(null);
@@ -1069,6 +1151,7 @@ export default function App() {
             {view === 'leads' && isAdmin && (
               <Leads refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
             )}
+            {view === 'system' && isAdmin && <SystemStatus refreshKey={refreshKey} />}
           </>
         )}
       </main>

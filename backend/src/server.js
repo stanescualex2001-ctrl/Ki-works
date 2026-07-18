@@ -2,6 +2,7 @@ import express from 'express';
 import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
 import { notifyN8n } from './n8n.js';
+import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { sendSms, reservationSms } from './sms.js';
 import {
@@ -35,6 +36,16 @@ app.get('/api/health', async (_req, res) => {
   } catch {
     res.status(500).json({ ok: false });
   }
+});
+
+app.get('/api/admin/system-status', adminOnly, async (_req, res) => {
+  res.json(await getSystemStatus());
+});
+
+app.get('/api/admin/errors', adminOnly, async (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit, 10) || 50, 200);
+  const { rows } = await query('SELECT * FROM error_log ORDER BY created_at DESC LIMIT $1', [limit]);
+  res.json(rows);
 });
 
 // DSGVO: Kunden-Login bestätigt die Datenschutzerklärung/Auftragsverarbeitung.
@@ -432,10 +443,11 @@ async function purgeOldCallRawData() {
 }
 purgeOldCallRawData();
 setInterval(purgeOldCallRawData, 24 * 60 * 60 * 1000);
+startMonitoring();
 
 // -----------------------------------------------------------------------------
 app.use((err, _req, res, _next) => {
-  console.error('API error:', err.message);
+  logError('api', err);
   res.status(500).json({ error: 'internal error' });
 });
 

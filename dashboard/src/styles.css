@@ -9,6 +9,7 @@
   --border: #e4e7ec;
   --good-bg: #d9f2e2; --good-text: #12603a;
   --bad-bg: #fbdfdf;  --bad-text: #8f1d1d;
+  --warn-bg: #fdf0d5; --warn-text: #8a5a00;
 }
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -109,7 +110,18 @@ tr.clickable-row:hover td { background: var(--panel); }
 /* ---- Badges (Status immer mit Text, nie nur Farbe) ---- */
 .badge { padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.78rem; background: #eef0f4; }
 .badge-confirmed, .badge-reservation { background: var(--good-bg); color: var(--good-text); }
-.badge-cancelled, .badge-no_show, .badge-missed { background: var(--bad-bg); color: var(--bad-text); }
+.badge-cancelled, .badge-no_show, .badge-missed, .badge-error { background: var(--bad-bg); color: var(--bad-text); }
+.badge-warn { background: var(--warn-bg); color: var(--warn-text); }
+
+/* ---- System-Status (Admin) ---- */
+.status-tile { padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid var(--border); background: var(--panel); }
+.status-tile.status-ok { background: var(--good-bg); border-color: transparent; }
+.status-tile.status-problem { background: var(--bad-bg); border-color: transparent; }
+.status-tile.status-unknown { background: var(--panel); }
+.status-label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.status-tile.status-ok .status-label, .status-tile.status-problem .status-label { color: inherit; opacity: 0.75; }
+.status-value { font-size: 1.3rem; font-weight: 700; margin-top: 0.2rem; }
+.status-detail { font-size: 0.85rem; margin-top: 0.2rem; opacity: 0.85; }
 
 .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 0.85rem; }
 .error { color: #b42318; }
