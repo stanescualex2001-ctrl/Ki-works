@@ -47,8 +47,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $json.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.contact_email || 'info@ki-works.eu' }}",
         "subject": "=⏰ Erinnerung: Reservierung {{ $json.customer_name }} um {{ $json.reserved_at }}",
         "text": "=Erinnerung für {{ $json.restaurant_name }}:\n\n{{ $json.customer_name }}, {{ $json.party_size }} Personen\nZeit: {{ $json.reserved_at }}\nTelefon: {{ $json.customer_phone }}\nNotizen: {{ $json.notes }}",
         "options": {}

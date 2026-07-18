@@ -16,8 +16,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $json.body.restaurant.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant.contact_email || 'info@ki-works.eu' }}",
         "subject": "=📞 Neuer Anruf: {{ $json.body.call.caller_number || 'Unbekannt' }} ({{ $json.body.call.outcome }})",
         "text": "=Restaurant: {{ $json.body.restaurant.name }}\nAnrufer: {{ $json.body.call.caller_number }}\nErgebnis: {{ $json.body.call.outcome }}\nDauer: {{ $json.body.call.duration_seconds }} Sekunden\n\nZusammenfassung:\n{{ $json.body.call.summary }}",
         "options": {}

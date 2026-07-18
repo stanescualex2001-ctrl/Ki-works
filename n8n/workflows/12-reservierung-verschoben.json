@@ -16,8 +16,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $json.body.restaurant?.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || 'info@ki-works.eu' }}",
         "subject": "=🔄 Reservierung verschoben: {{ $json.body.reservation.customer_name }}, {{ $json.body.reservation.party_size }} Personen",
         "text": "=Eine Reservierung wurde auf einen neuen Termin verschoben:\n\nName: {{ $json.body.reservation.customer_name }}\nTelefon: {{ $json.body.reservation.customer_phone }}\nPersonen: {{ $json.body.reservation.party_size }}\nNeue Zeit: {{ $json.body.reservation.reserved_at }}\nNotizen: {{ $json.body.reservation.notes }}",
         "options": {}

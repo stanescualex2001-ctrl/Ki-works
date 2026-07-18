@@ -16,8 +16,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $env.KIWORKS_FALLBACK_EMAIL }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "info@ki-works.eu",
         "subject": "=🚨 ki-works System-Alarm: {{ $json.body.check }}",
         "text": "=Ein Problem wurde auf dem ki-works-Server erkannt:\n\nPrüfung: {{ $json.body.check }}\nDetails: {{ $json.body.detail }}\n\nBitte im Admin-Dashboard unter 'System' nachsehen.",
         "options": {}

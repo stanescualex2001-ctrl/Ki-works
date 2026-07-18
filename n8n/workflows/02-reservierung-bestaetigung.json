@@ -16,8 +16,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $json.body.restaurant?.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || 'info@ki-works.eu' }}",
         "subject": "=✅ Neue Reservierung: {{ $json.body.reservation.customer_name }}, {{ $json.body.reservation.party_size }} Personen",
         "text": "=Neue Reservierung eingegangen:\n\nName: {{ $json.body.reservation.customer_name }}\nTelefon: {{ $json.body.reservation.customer_phone }}\nPersonen: {{ $json.body.reservation.party_size }}\nZeit: {{ $json.body.reservation.reserved_at }}\nQuelle: {{ $json.body.reservation.source }}\nNotizen: {{ $json.body.reservation.notes }}",
         "options": {}

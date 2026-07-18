@@ -16,8 +16,8 @@
     },
     {
       "parameters": {
-        "fromEmail": "={{ $env.KIWORKS_FROM_EMAIL || 'noreply@ki-works.eu' }}",
-        "toEmail": "={{ $json.body.restaurant?.contact_email || $env.KIWORKS_FALLBACK_EMAIL }}",
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || 'info@ki-works.eu' }}",
         "subject": "=⚠️ Verpasster Anruf: {{ $json.body.call.caller_number || 'Unbekannt' }}",
         "text": "=Ein Anruf konnte nicht abgeschlossen werden.\n\nRestaurant: {{ $json.body.restaurant?.name }}\nAnrufer: {{ $json.body.call.caller_number }}\nZeit: {{ $json.body.call.started_at }}\n\nBitte zurückrufen!",
         "options": {}
