@@ -55,6 +55,23 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   vorher nur hartcodierter Mittwoch-Ruhetag-Text). Nebenbei: "Aufnahme
   anhören"-Link repariert (Vapi-Links liefen ab, werden jetzt bei Klick
   frisch nachgeladen).
+- "Login"-Button auf der Landingpage jetzt auch auf Mobile sichtbar (war
+  versehentlich nur ab Tablet-Breite eingeblendet).
+- Telefonagent-Verbesserungen aus echten Testanruf-Auswertungen: Kiwo
+  bestätigt Namen vor dem Anlegen (Vorlesen statt blind übernehmen), mehr
+  Geduld beim Buchstabieren (bestätigt in kleinen Häppchen); Stille-Grenze
+  60s + aktive Nachfrage "Sind Sie noch da?" bei 15s/30s statt Vapis
+  Standard-30s-Stille-Abbruch; Mengen werden als Wort gesprochen
+  ("dreimal" statt "3 X"); Kiwo verabschiedet sich aktiv statt
+  kommentarlos aufzulegen; Bestellung/Reservierung wird nur noch EINMAL
+  komplett zusammengefasst (vorher mehrfach wiederholt); Reservierung +
+  Bestellung im selben Anruf kombinierbar (getrennt ODER verknüpft als
+  "Essen am reservierten Tisch", `orders.reservation_id`); Termine in der
+  Vergangenheit werden jetzt hart im Backend abgelehnt (nicht mehr nur per
+  Prompt-Bitte); maximale Anruflänge von Vapi-Standard 10 Min. auf 30 Min.
+  erhöht (verursachte einen echten Abbruch mitten im Satz, per Vapi-Log
+  "Max Duration Exceeded" bestätigt) + Warnhinweis bei 27 Min. ("in ca. 3
+  Minuten muss ich beenden") über Vapis `call.timeElapsed`-Hook.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -86,6 +103,12 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
 - Gäste-360°-/Umsatz-Ansicht wartet auf genauere Vorgaben des Kunden
+- Offene Rückfrage an Kunde (unbeantwortet): soll ich zusätzlich zur
+  27-Minuten-Warnung (a) Kiwo per Prompt anweisen, danach aufs Wesentliche
+  zu fokussieren, und (b) das harte Zeitlimit von 30 auf 35 Minuten
+  anheben? Dynamisches "5 Minuten verlängern" auf Zuruf ist mit Vapis API
+  nicht sauber möglich (kein Live-Update von maxDurationSeconds während
+  des Anrufs) — recherchiert und dem Kunden so erklärt.
 
 ## Pflege dieser Datei
 
