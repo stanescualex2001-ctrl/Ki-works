@@ -48,6 +48,13 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Dashboard im gleichen Design (Farben/Fonts) an Landingpage angeglichen,
   Struktur/Funktionen unverändert
 - "Kunden-Login"-Button auf der Landingpage (Nav + Footer) zu /dashboard/
+- Dashboard "Einstellungen": Betreiber (nur eigener Betrieb) und Admin (jeder
+  Betrieb) können Speisekarte, Öffnungszeiten, FAQ und Login-Zugangsdaten
+  selbst ändern (Kunde muss aktuelles Passwort bestätigen). Öffnungszeiten
+  werden jetzt auch live an Kiwo weitergegeben ({{opening_hours}} im Prompt,
+  vorher nur hartcodierter Mittwoch-Ruhetag-Text). Nebenbei: "Aufnahme
+  anhören"-Link repariert (Vapi-Links liefen ab, werden jetzt bei Klick
+  frisch nachgeladen).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -72,7 +79,6 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Klartext geteilte API-Keys)
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
-- Speisekarten-Verwaltung im Dashboard (Upload/Bearbeiten) noch nicht gebaut
 - Gäste-360°-/Umsatz-Ansicht wartet auf genauere Vorgaben des Kunden
 
 ## Pflege dieser Datei
