@@ -37,6 +37,18 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Landing-Positionierung "Plattform für KI-Mitarbeiter" (Restaurants als
   erster Anwendungsfall)
 
+## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
+
+- **Marken-Idee:** KI-Works = die Plattform, Kiwo = der digitale KI-Mitarbeiter
+  (Beispiel-Claim: „KI-Works – Die Plattform für digitale KI-Mitarbeiter" /
+  „Kiwo – Dein digitaler Mitarbeiter"). Später denkbar: spezialisierte Kiwo-Rollen
+  je Kanal/Aufgabe, z. B. Kiwo Reception (Telefon/Empfang), Kiwo Sales (Vertrieb),
+  Kiwo Support (Kundenservice), Kiwo Office (E-Mail/Kalender), Kiwo Orders
+  (Bestellungen/Reservierungen). Passt zur bestehenden Landing-Positionierung
+  "Plattform wächst modular um weitere KI-Mitarbeiter" (bereits umgesetzt) —
+  diese Rollen-Aufteilung ist der nächste gedankliche Schritt davon, aber noch
+  nicht implementiert oder final entschieden.
+
 ## Offene Punkte (Stand zuletzt bekannt)
 
 - Österreichische Vapi/Twilio-Telefonnummer noch in Verifizierung (aktuell
@@ -64,6 +76,9 @@ Automatisch alle 5 Stunden per Routine aktualisiert. Zusätzlich soll ich
   Sitzung hinaus relevant bleibt → als offenen Punkt/Kontext ergänzen
 - sich ein externer Status ändert, den der Nutzer mitteilt (z. B. Nummer
   verifiziert, Billing erledigt) → entsprechenden Punkt aktualisieren
+- der Nutzer eine Idee/Zukunftsplanung teilt, die noch nicht umgesetzt wird
+  (z. B. Branding-Konzepte, mögliche neue Features) → unter „Ideen &
+  Zukunftsplanung" vormerken, auch wenn noch nichts entschieden ist
 
 Nicht bei jeder kleinen Nachfrage — nur bei Änderungen, die für eine künftige
 neue Sitzung wichtig wären.
