@@ -39,6 +39,9 @@ async function createReservation(restaurant, args, callerNumber) {
   if (Number.isNaN(reservedAt.getTime())) {
     return { error: 'Ungültiges Datum. Bitte Datum und Uhrzeit im Format JJJJ-MM-TT HH:MM angeben.' };
   }
+  if (reservedAt.getTime() < Date.now()) {
+    return { error: 'Dieser Zeitpunkt liegt in der Vergangenheit. Bitte einen Termin in der Zukunft nennen.' };
+  }
   const { rows } = await query(
     `INSERT INTO reservations (restaurant_id, customer_name, customer_phone, party_size, reserved_at, notes, source)
      VALUES ($1, $2, $3, $4, $5, $6, 'phone') RETURNING *`,
@@ -58,7 +61,7 @@ async function createReservation(restaurant, args, callerNumber) {
       .catch((err) => console.error('SMS failed:', err.message));
   }
   return {
-    result: `Reservierung bestätigt für ${reservation.customer_name}, ${reservation.party_size} Personen am ${reservedAt.toLocaleString('de-AT', { timeZone: 'Europe/Vienna' })}.`,
+    result: `Reservierung bestätigt für ${reservation.customer_name}, ${reservation.party_size} Personen am ${reservedAt.toLocaleString('de-AT', { timeZone: 'Europe/Vienna' })}. [reservation_id: ${reservation.id}]`,
   };
 }
 
@@ -138,6 +141,9 @@ async function rescheduleReservation(restaurant, args, callerNumber) {
   if (Number.isNaN(newAt.getTime())) {
     return { error: 'Ungültiges Datum. Bitte Datum und Uhrzeit im Format JJJJ-MM-TT HH:MM angeben.' };
   }
+  if (newAt.getTime() < Date.now()) {
+    return { error: 'Dieser Zeitpunkt liegt in der Vergangenheit. Bitte einen Termin in der Zukunft nennen.' };
+  }
   const found = await findReservation(restaurant, args, callerNumber);
   if (found === null) return { error: 'Ich konnte keine passende Reservierung finden.' };
   if (Array.isArray(found)) {
@@ -158,18 +164,39 @@ async function rescheduleReservation(restaurant, args, callerNumber) {
   return { result: `Reservierung für ${reservation.customer_name} wurde auf ${when} verschoben.` };
 }
 
-// Vapi tool call: create_order({name, phone, items, pickup_time, notes})
+// Vapi tool call: create_order({name, phone, items, pickup_time, notes, reservation_id, fulfillment})
 async function createOrder(restaurant, args, callerNumber) {
   if (!args.items) return { error: 'Bitte die gewünschten Gerichte angeben.' };
-  const requestedAt = args.pickup_time ? parseGuestDatetime(args.pickup_time) : null;
+
+  let linkedReservation = null;
+  if (args.reservation_id) {
+    const { rows } = await query(
+      'SELECT * FROM reservations WHERE id = $1 AND restaurant_id = $2',
+      [args.reservation_id, restaurant.id],
+    );
+    linkedReservation = rows[0] || null;
+  }
+  const fulfillment = args.fulfillment || (linkedReservation ? 'dine_in' : 'pickup');
+
+  // Bei Tisch-Verknüpfung ohne eigene Abholzeit: Essen ist zur Reservierungszeit fertig.
+  let requestedAt = args.pickup_time ? parseGuestDatetime(args.pickup_time) : null;
+  if ((!requestedAt || Number.isNaN(requestedAt?.getTime())) && linkedReservation) {
+    requestedAt = new Date(linkedReservation.reserved_at);
+  }
+  if (requestedAt && !Number.isNaN(requestedAt.getTime()) && requestedAt.getTime() < Date.now()) {
+    return { error: 'Dieser Zeitpunkt liegt in der Vergangenheit. Bitte eine Uhrzeit in der Zukunft nennen.' };
+  }
+
   const { rows } = await query(
-    `INSERT INTO orders (restaurant_id, customer_name, customer_phone, items, requested_at, notes, source)
-     VALUES ($1, $2, $3, $4, $5, $6, 'phone') RETURNING *`,
+    `INSERT INTO orders (restaurant_id, customer_name, customer_phone, items, fulfillment, reservation_id, requested_at, notes, source)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'phone') RETURNING *`,
     [
       restaurant.id,
-      args.name || 'Unbekannt',
+      args.name || linkedReservation?.customer_name || 'Unbekannt',
       args.phone || callerNumber || null,
       String(args.items).slice(0, 1000),
+      fulfillment,
+      linkedReservation?.id || null,
       requestedAt && !Number.isNaN(requestedAt.getTime()) ? requestedAt.toISOString() : null,
       args.notes || null,
     ],
@@ -180,9 +207,12 @@ async function createOrder(restaurant, args, callerNumber) {
     sendSms(order.customer_phone, orderSms(order, restaurant.name))
       .catch((err) => console.error('SMS failed:', err.message));
   }
-  const when = order.requested_at
-    ? ` zur Abholung um ${new Date(order.requested_at).toLocaleTimeString('de-AT', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit' })} Uhr`
-    : '';
+  const time = order.requested_at
+    ? new Date(order.requested_at).toLocaleTimeString('de-AT', { timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit' })
+    : null;
+  const when = linkedReservation
+    ? ` — wird zur Reservierung um ${time} Uhr am Tisch vorbereitet`
+    : (time ? ` zur Abholung um ${time} Uhr` : '');
   return { result: `Bestellung aufgenommen für ${order.customer_name}: ${order.items}${when}.` };
 }
 
