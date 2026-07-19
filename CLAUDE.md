@@ -36,6 +36,14 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Einladungs-Flow (Kunde setzt eigenes Passwort per Link)
 - Landing-Positionierung "Plattform für KI-Mitarbeiter" (Restaurants als
   erster Anwendungsfall)
+- Landingpage komplett neu im Cyan/Violet-Design (KI-Works=Plattform,
+  Kiwo=Agent, 5 Rollen Reception/Sales/Support/Office/Orders), live auf
+  ki-works.eu. Technisch: statischer Vite+React-Build (kein SSR-Server),
+  `landing/` folgt jetzt dem gleichen Muster wie `dashboard/`
+  (npm install/build → dist/, nginx root zeigt auf landing/dist)
+- Dashboard im gleichen Design (Farben/Fonts) an Landingpage angeglichen,
+  Struktur/Funktionen unverändert
+- "Kunden-Login"-Button auf der Landingpage (Nav + Footer) zu /dashboard/
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -62,8 +70,6 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Server laufen (entfernt `[DEMO]`-Testdaten)
 - Speisekarten-Verwaltung im Dashboard (Upload/Bearbeiten) noch nicht gebaut
 - Gäste-360°-/Umsatz-Ansicht wartet auf genauere Vorgaben des Kunden
-- Landing-/Dashboard-Redesign existiert bisher nur als Mockup (Artifact), noch
-  nicht in `landing/index.html`/`dashboard/` übernommen
 
 ## Pflege dieser Datei
 
