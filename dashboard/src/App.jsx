@@ -1025,8 +1025,12 @@ const WEEKDAYS = [
 // Einstellungen: Speisekarte, Öffnungszeiten, FAQ und Zugangsdaten — für den
 // Betreiber (nur eigener Betrieb) und den Admin (beliebiger, per BusinessPicker
 // gewählter Betrieb) gleichermaßen nutzbar.
-function Settings({ restaurantId, restaurants, isAdmin }) {
-  const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
+function Settings({ restaurantId, isAdmin }) {
+  // Bewusst NICHT an den globalen 30s-Auto-Refresh gekoppelt: das würde
+  // laufende Eingaben in den Feldern immer wieder zurücksetzen. Stattdessen
+  // lädt diese Ansicht ihre Daten nur beim Öffnen bzw. Betrieb-Wechsel neu.
+  const [current, setCurrent] = useState(null);
+  const [loadError, setLoadError] = useState(null);
 
   const [menu, setMenu] = useState('');
   const [hours, setHours] = useState({});
@@ -1040,6 +1044,19 @@ function Settings({ restaurantId, restaurants, isAdmin }) {
   const [savingCreds, setSavingCreds] = useState(false);
   const [credsMsg, setCredsMsg] = useState(null);
 
+  const loadRestaurant = useCallback(() => {
+    if (restaurantId == null) return;
+    apiFetch('/api/restaurants')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((list) => {
+        const found = list.find((r) => String(r.id) === String(restaurantId)) || list[0] || null;
+        setCurrent(found);
+      })
+      .catch((err) => setLoadError(err.message));
+  }, [restaurantId]);
+
+  useEffect(() => { setCurrent(null); loadRestaurant(); }, [loadRestaurant]);
+
   useEffect(() => {
     if (!current) return;
     setMenu(current.menu || '');
@@ -1052,6 +1069,7 @@ function Settings({ restaurantId, restaurants, isAdmin }) {
     setCredsMsg(null);
   }, [current?.id]);
 
+  if (loadError) return <p className="error">{loadError}</p>;
   if (!current) return <p>Lade…</p>;
 
   const saveContent = (e) => {
@@ -1119,7 +1137,7 @@ function Settings({ restaurantId, restaurants, isAdmin }) {
             <input
               value={hours[key] || ''}
               onChange={(e) => setHours((h) => ({ ...h, [key]: e.target.value }))}
-              placeholder="11:00-22:00 oder geschlossen"
+              placeholder="11:00-22:00 · mit Pause: 11:00-14:00, 17:00-22:00 · oder geschlossen"
             />
           </div>
         ))}
@@ -1317,7 +1335,7 @@ export default function App() {
             )}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'settings' && (
-              <Settings restaurantId={restaurantId} restaurants={restaurants} isAdmin={isAdmin} />
+              <Settings restaurantId={restaurantId} isAdmin={isAdmin} />
             )}
             {view === 'customers' && isAdmin && (
               <Customers refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
