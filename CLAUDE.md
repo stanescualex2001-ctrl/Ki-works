@@ -66,7 +66,13 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   (Bestellungen/Reservierungen). Passt zur bestehenden Landing-Positionierung
   "Plattform wächst modular um weitere KI-Mitarbeiter" (bereits umgesetzt) —
   diese Rollen-Aufteilung ist der nächste gedankliche Schritt davon, aber noch
-  nicht implementiert oder final entschieden.
+  nicht implementiert oder final entschieden. Nutzer hat als Referenz
+  fonio.ai gezeigt: die trennen ihr Angebot nach Anwendungsfällen (KI
+  Supportmitarbeiter, KI Sekretär, KI Anrufbeantworter, KI
+  Außendienstassistent, WhatsApp-Assistent als Add-on) UND nach Branchen
+  (Arztpraxis, Anwälte, Hotels, Handwerker, Zahnärzte, Immobilienmakler
+  usw., jeweils eigene Unterseite). Idee: Kiwo-Rollen langfristig ähnlich
+  strukturieren (Rolle × Branche), noch nicht gebaut.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
