@@ -522,9 +522,10 @@ export default function App() {
           <div className="justify-self-end flex items-center gap-2.5">
             <a
               href="/dashboard/"
-              className="hidden sm:inline-flex rounded-full border border-white/15 px-4 py-2 text-xs font-medium text-white/80 hover:text-white hover:border-white/30 transition whitespace-nowrap"
+              className="inline-flex rounded-full border border-white/15 px-3 py-2 text-xs font-medium text-white/80 hover:text-white hover:border-white/30 transition whitespace-nowrap"
             >
-              Kunden-Login
+              <span className="sm:hidden">Login</span>
+              <span className="hidden sm:inline">Kunden-Login</span>
             </a>
             <a
               href="#live"
