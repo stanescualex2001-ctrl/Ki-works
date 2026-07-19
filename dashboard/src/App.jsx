@@ -68,9 +68,8 @@ function Login({ onLogin }) {
     <div className="login-page">
       <form className="login-card" onSubmit={submit}>
         <div className="logo-area login-logo">
-          <img src="/logo.png" alt="" className="logo-img"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <span className="logo-word">ki-works</span>
+          <span className="logo-badge" aria-hidden="true"><span className="logo-badge-dot" /></span>
+          <span className="logo-word">KI-Works</span>
         </div>
         <p className="login-sub">Ihr KI-Telefonassistent — Anmeldung</p>
         <label htmlFor="login-email">E-Mail</label>
@@ -110,9 +109,8 @@ function ConsentGate({ restaurantName, onAccepted, onLogout }) {
     <div className="login-page">
       <div className="login-card consent-card">
         <div className="logo-area login-logo">
-          <img src="/logo.png" alt="" className="logo-img"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <span className="logo-word">ki-works</span>
+          <span className="logo-badge" aria-hidden="true"><span className="logo-badge-dot" /></span>
+          <span className="logo-word">KI-Works</span>
         </div>
         <p className="login-sub">Bevor es losgeht, {restaurantName}</p>
         <p>
@@ -171,9 +169,8 @@ function SetupPassword({ token, onDone }) {
     <div className="login-page">
       <div className="login-card">
         <div className="logo-area login-logo">
-          <img src="/logo.png" alt="" className="logo-img"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <span className="logo-word">ki-works</span>
+          <span className="logo-badge" aria-hidden="true"><span className="logo-badge-dot" /></span>
+          <span className="logo-word">KI-Works</span>
         </div>
         <p className="login-sub">Ihr Passwort festlegen</p>
         {state.success ? (
@@ -1085,9 +1082,8 @@ export default function App() {
     <div className="layout">
       <aside className="sidebar">
         <div className="logo-area">
-          <img src="/logo.png" alt="" className="logo-img"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-          <span className="logo-word">ki-works</span>
+          <span className="logo-badge" aria-hidden="true"><span className="logo-badge-dot" /></span>
+          <span className="logo-word">KI-Works</span>
         </div>
 
         {!isAdmin && <div className="customer-name-box">{auth.name}</div>}

@@ -519,12 +519,20 @@ export default function App() {
             <a href="#platform" className="hover:text-white transition">Plattform</a>
             <a href="#onboarding" className="hover:text-white transition">Onboarding</a>
           </nav>
-          <a
-            href="#live"
-            className="justify-self-end rounded-full glass px-4 py-2 text-xs font-medium text-white hover-glow hover-glow-cyan whitespace-nowrap"
-          >
-            Kiwo testen
-          </a>
+          <div className="justify-self-end flex items-center gap-2.5">
+            <a
+              href="/dashboard/"
+              className="hidden sm:inline-flex rounded-full border border-white/15 px-4 py-2 text-xs font-medium text-white/80 hover:text-white hover:border-white/30 transition whitespace-nowrap"
+            >
+              Kunden-Login
+            </a>
+            <a
+              href="#live"
+              className="rounded-full glass px-4 py-2 text-xs font-medium text-white hover-glow hover-glow-cyan whitespace-nowrap"
+            >
+              Kiwo testen
+            </a>
+          </div>
         </div>
       </header>
 
@@ -821,6 +829,7 @@ export default function App() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-xs text-white/40 font-mono sm:px-6">
           <div className="truncate">© {new Date().getFullYear()} KI-Works · agent kiwo v1.0</div>
           <div className="flex items-center gap-4">
+            <a href="/dashboard/" className="hover:text-white/70 transition">Kunden-Login</a>
             <a href="/impressum.html" className="hover:text-white/70 transition">Impressum</a>
             <a href="/datenschutz.html" className="hover:text-white/70 transition">Datenschutz</a>
             <span className="flex items-center gap-1.5">
