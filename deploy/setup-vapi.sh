@@ -19,6 +19,7 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
   "name": "ki-works – Venezia",
   "firstMessage": "Grüß Gott, hier ist Kiwo, der KI-Reservierungsassistent vom Restaurant Venezia in Schwertberg. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?",
   "silenceTimeoutSeconds": 60,
+  "maxDurationSeconds": 1800,
   "messagePlan": {
     "idleMessages": ["Sind Sie noch da? Kann ich Ihnen noch weiterhelfen?"],
     "idleMessageMaxSpokenCount": 2,
