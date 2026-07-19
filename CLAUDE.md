@@ -55,6 +55,15 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 
 ## Pflege dieser Datei
 
-Diese Datei wird automatisch alle 5 Stunden per Routine aktualisiert
-(neuer Projektstand, erledigte/neue offene Punkte), committet und gepusht —
-der Nutzer muss das nicht mehr manuell anstoßen.
+Automatisch alle 5 Stunden per Routine aktualisiert. Zusätzlich soll ich
+(auch innerhalb einer Sitzung, nicht nur die Routine) hier nachtragen, wenn:
+
+- eine größere Änderung fertig committet+gepusht ist → in „Bereits erledigt"
+  verschieben, aus „Offene Punkte" entfernen
+- der Nutzer eine neue Anforderung/Entscheidung bestätigt, die über die
+  Sitzung hinaus relevant bleibt → als offenen Punkt/Kontext ergänzen
+- sich ein externer Status ändert, den der Nutzer mitteilt (z. B. Nummer
+  verifiziert, Billing erledigt) → entsprechenden Punkt aktualisieren
+
+Nicht bei jeder kleinen Nachfrage — nur bei Änderungen, die für eine künftige
+neue Sitzung wichtig wären.
