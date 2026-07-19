@@ -59,8 +59,9 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- Österreichische Vapi/Twilio-Telefonnummer noch in Verifizierung (aktuell
-  US-Testnummer +1 502 260 3690 aktiv)
+- Österreichische Twilio-Nummer vorhanden: +43 726 223 417 (noch nicht in
+  Vapi als aktive Nummer eingerichtet/getestet — aktuell läuft noch die
+  US-Testnummer +1 502 260 3690)
 - Anthropic/Claude-Billing-Aufladung + API-Key-Rotation ausstehend
 - Impressum/Datenschutz-Platzhalter noch **rechtlich** prüfen (Technik steht,
   kein Rechtsgutachten); AVV-Verträge fehlen noch
