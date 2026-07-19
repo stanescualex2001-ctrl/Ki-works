@@ -25,6 +25,18 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
     "idleMessageMaxSpokenCount": 2,
     "idleTimeoutSeconds": 15
   },
+  "hooks": [
+    {
+      "on": "call.timeElapsed",
+      "options": { "seconds": 1620 },
+      "do": [
+        {
+          "type": "say",
+          "exact": "Kurzer Hinweis: In etwa drei Minuten muss ich das Gespräch aus technischen Gründen automatisch beenden. Lassen Sie uns das noch rasch abschließen."
+        }
+      ]
+    }
+  ],
   "transcriber": { "provider": "deepgram", "model": "nova-2", "language": "de" },
   "voice": { "provider": "azure", "voiceId": "de-AT-IngridNeural" },
   "model": {
