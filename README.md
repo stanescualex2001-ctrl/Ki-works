@@ -6,7 +6,7 @@ PostgreSQL und im React-Dashboard. n8n automatisiert Benachrichtigungen,
 Berichte und den Kunden-Einladungs-Flow.
 
 **Test-Restaurant:** Venezia, Marktplatz 10, 4311 Schwertberg · Vapi-Nummer:
-+1 502 260 3690 (US-Testnummer; österreichische Nummer aktuell in Verifizierung)
++43 726 223 417 (österreichisch, aktiv) · Zweitnummer: +1 502 260 3690 (US-Test)
 
 ## Was Kiwo kann
 
@@ -78,7 +78,7 @@ bash /opt/ki-works/deploy/setup-vapi.sh
    auf Umgebungsvariablen ist dort standardmäßig blockiert, deshalb sind
    Absender-/Fallback-Adressen in den Workflow-Dateien fest auf
    `info@ki-works.eu` gesetzt statt über Umgebungsvariablen gelöst.
-2. **Testanruf:** +1 502 260 3690 anrufen und einen Tisch reservieren —
+2. **Testanruf:** +43 726 223 417 anrufen und einen Tisch reservieren —
    die Reservierung erscheint im Dashboard unter „Reservierungen".
 
 ## Die 13 n8n-Workflows

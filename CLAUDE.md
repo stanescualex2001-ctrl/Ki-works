@@ -36,6 +36,10 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Einladungs-Flow (Kunde setzt eigenes Passwort per Link)
 - Landing-Positionierung "Plattform für KI-Mitarbeiter" (Restaurants als
   erster Anwendungsfall)
+- Österreichische Vapi-Nummer +43 726 223 417 aktiv und getestet (Kiwo meldet
+  sich). War zuvor blockiert durch Twilio-Trial-Ansage — behoben durch
+  Twilio-Account-Upgrade (Zahlungsmethode hinterlegt). US-Testnummer
+  +1 502 260 3690 bleibt als Zweitnummer bestehen.
 - Landingpage komplett neu im Cyan/Violet-Design (KI-Works=Plattform,
   Kiwo=Agent, 5 Rollen Reception/Sales/Support/Office/Orders), live auf
   ki-works.eu. Technisch: statischer Vite+React-Build (kein SSR-Server),
@@ -59,10 +63,9 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- Österreichische Twilio-Nummer vorhanden: +43 726 223 417 (noch nicht in
-  Vapi als aktive Nummer eingerichtet/getestet — aktuell läuft noch die
-  US-Testnummer +1 502 260 3690)
-- Anthropic/Claude-Billing-Aufladung + API-Key-Rotation ausstehend
+- Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
+  Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
+  weiterhin ausstehend
 - Impressum/Datenschutz-Platzhalter noch **rechtlich** prüfen (Technik steht,
   kein Rechtsgutachten); AVV-Verträge fehlen noch
 - Größere Credential-Rotation nötig (Contabo-Root-Passwort, im Setup im
