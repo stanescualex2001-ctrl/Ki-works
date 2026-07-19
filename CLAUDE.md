@@ -23,12 +23,27 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Nutzer ist nicht technisch — Erklärungen einfach halten, keine unnötigen
   Rückfragen zu bereits Entschiedenem.
 
+## Bereits erledigt (nicht mehr offen)
+
+- Kiwo-Name im Telefonagenten + auf der Landingpage
+- Reservierung stornieren/verschieben (telefonisch)
+- Echte Speisekarte im Telefonagenten (DB-basiert, `restaurants.menu`)
+- DSGVO-Grundausstattung (Impressum/Datenschutz-Platzhalter, Pflicht-Zustimmung,
+  Löschfrist, Aufzeichnungshinweis)
+- Monitoring/Backups/Error-Logging (`monitoring.js`, `backup-db.sh`, System-Tab)
+- Dashboard: Wochenkalender, Detail-Modal, klickbare Übersicht/Kunden,
+  Betrieb-Suche neu, Anrufe komplett klickbar mit Transkript
+- Einladungs-Flow (Kunde setzt eigenes Passwort per Link)
+- Landing-Positionierung "Plattform für KI-Mitarbeiter" (Restaurants als
+  erster Anwendungsfall)
+
 ## Offene Punkte (Stand zuletzt bekannt)
 
 - Österreichische Vapi/Twilio-Telefonnummer noch in Verifizierung (aktuell
   US-Testnummer +1 502 260 3690 aktiv)
 - Anthropic/Claude-Billing-Aufladung + API-Key-Rotation ausstehend
-- Impressum/Datenschutz-Platzhalter rechtlich prüfen; AVV-Verträge fehlen noch
+- Impressum/Datenschutz-Platzhalter noch **rechtlich** prüfen (Technik steht,
+  kein Rechtsgutachten); AVV-Verträge fehlen noch
 - Größere Credential-Rotation nötig (Contabo-Root-Passwort, im Setup im
   Klartext geteilte API-Keys)
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
