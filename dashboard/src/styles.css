@@ -239,6 +239,28 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   backdrop-filter: blur(16px);
 }
 
+/* ---- Einstellungen (Speisekarte/Öffnungszeiten/FAQ/Zugangsdaten) ---- */
+.settings-section {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.1rem; margin-bottom: 1rem; max-width: 640px; backdrop-filter: blur(16px);
+}
+.settings-section h2 { margin: 0 0 0.7rem; }
+.settings-section textarea {
+  padding: 0.6rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel-solid); color: var(--text); resize: vertical;
+}
+.hours-row { display: grid; grid-template-columns: 110px 1fr; gap: 0.6rem; align-items: center; margin-bottom: 0.4rem; }
+.hours-row label { font-size: 0.85rem; color: var(--muted); }
+.hours-row input {
+  padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel-solid); color: var(--text); font-size: 0.9rem;
+}
+.faq-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+.faq-row input {
+  padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel-solid); color: var(--text); font-size: 0.9rem;
+}
+
 /* ---- Login ---- */
 .login-page {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;

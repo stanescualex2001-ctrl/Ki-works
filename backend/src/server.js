@@ -235,6 +235,71 @@ app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
   res.json(publicRestaurant(rows[0]));
 });
 
+// Selbstverwaltung: Betreiber ändert eigene Speisekarte/Öffnungszeiten/FAQ,
+// Admin kann dasselbe für jeden Betrieb (kein adminOnly, stattdessen Scope-Check).
+app.patch('/api/restaurants/:id/settings', async (req, res) => {
+  const scope = customerScope(req);
+  if (scope && String(scope) !== String(req.params.id)) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
+  const allowed = ['name', 'address', 'contact_email', 'contact_phone'];
+  const sets = [];
+  const vals = [];
+  for (const key of allowed) {
+    if (key in req.body) {
+      vals.push(req.body[key] === '' ? null : req.body[key]);
+      sets.push(`${key} = $${vals.length}`);
+    }
+  }
+  if ('menu' in req.body) {
+    vals.push(req.body.menu === '' ? null : req.body.menu);
+    sets.push(`menu = $${vals.length}`);
+  }
+  if ('opening_hours' in req.body) {
+    vals.push(JSON.stringify(req.body.opening_hours || {}));
+    sets.push(`opening_hours = $${vals.length}`);
+  }
+  if ('faq' in req.body) {
+    vals.push(JSON.stringify(req.body.faq || []));
+    sets.push(`faq = $${vals.length}`);
+  }
+  if (!sets.length) return res.status(400).json({ error: 'no fields' });
+  vals.push(req.params.id);
+  const { rows } = await query(
+    `UPDATE restaurants SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING *`, vals,
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(publicRestaurant(rows[0]));
+});
+
+// Zugangsdaten ändern: Kunde muss sein aktuelles Passwort bestätigen, Admin nicht.
+app.patch('/api/restaurants/:id/credentials', async (req, res) => {
+  const scope = customerScope(req);
+  if (scope && String(scope) !== String(req.params.id)) {
+    return res.status(403).json({ error: 'forbidden' });
+  }
+  const { login_email, new_password, current_password } = req.body;
+  if (!login_email && !new_password) return res.status(400).json({ error: 'no fields' });
+  if (scope) {
+    if (!new_password && !login_email) return res.status(400).json({ error: 'no fields' });
+    if (!current_password) return res.status(400).json({ error: 'current_password required' });
+    const { rows } = await query('SELECT password_hash FROM restaurants WHERE id = $1', [req.params.id]);
+    if (!rows[0] || !verifyPassword(current_password, rows[0].password_hash)) {
+      return res.status(403).json({ error: 'wrong current password' });
+    }
+  }
+  const sets = [];
+  const vals = [];
+  if (login_email) { vals.push(login_email); sets.push(`login_email = $${vals.length}`); }
+  if (new_password) { vals.push(hashPassword(new_password)); sets.push(`password_hash = $${vals.length}`); }
+  vals.push(req.params.id);
+  const { rows } = await query(
+    `UPDATE restaurants SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING *`, vals,
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(publicRestaurant(rows[0]));
+});
+
 // --- Reservations ---------------------------------------------------------------
 app.get('/api/reservations', async (req, res) => {
   const scope = customerScope(req);
@@ -346,6 +411,36 @@ app.get('/api/calls', async (req, res) => {
      ${where} ORDER BY c.created_at DESC LIMIT 200`, vals,
   );
   res.json(rows);
+});
+
+// Vapis Aufnahme-URLs sind zeitlich befristet signiert (laufen nach einiger
+// Zeit ab) — deshalb hier bei jedem Klick frisch von Vapi nachladen statt die
+// beim Anruf gespeicherte URL direkt zu verwenden.
+app.get('/api/calls/:id/recording', async (req, res) => {
+  const scope = customerScope(req);
+  const vals = [req.params.id];
+  let where = 'id = $1';
+  if (scope) { vals.push(scope); where += ' AND restaurant_id = $2'; }
+  const { rows } = await query(`SELECT vapi_call_id, recording_url FROM calls WHERE ${where}`, vals);
+  const call = rows[0];
+  if (!call) return res.status(404).json({ error: 'not found' });
+  if (!call.vapi_call_id || !process.env.VAPI_API_KEY) {
+    if (call.recording_url) return res.json({ url: call.recording_url });
+    return res.status(404).json({ error: 'keine Aufnahme verfügbar' });
+  }
+  try {
+    const r = await fetch(`https://api.vapi.ai/call/${call.vapi_call_id}`, {
+      headers: { Authorization: `Bearer ${process.env.VAPI_API_KEY}` },
+    });
+    const data = await r.json();
+    const fresh = data.artifact?.recordingUrl || data.recordingUrl || call.recording_url;
+    if (!fresh) return res.status(404).json({ error: 'keine Aufnahme verfügbar' });
+    res.json({ url: fresh });
+  } catch (err) {
+    console.error('Aufnahme-Abruf fehlgeschlagen:', err.message);
+    if (call.recording_url) return res.json({ url: call.recording_url });
+    res.status(502).json({ error: 'Vapi nicht erreichbar' });
+  }
 });
 
 // --- Stats (dashboard + n8n reports) ----------------------------------------

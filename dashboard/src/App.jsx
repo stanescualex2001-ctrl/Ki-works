@@ -23,6 +23,19 @@ function apiFetch(url, opts = {}) {
   });
 }
 
+// Öffnet ein Fenster synchron (sonst blockt der Popup-Blocker), lädt dann die
+// aktuell gültige Aufnahme-URL nach (Vapis Links sind zeitlich befristet).
+function openRecording(callId) {
+  const win = window.open('', '_blank');
+  apiFetch(`/api/calls/${callId}/recording`)
+    .then((r) => r.json())
+    .then((d) => {
+      if (d.url && win) win.location.href = d.url;
+      else { win?.close(); alert(d.error || 'Aufnahme nicht verfügbar (evtl. abgelaufen).'); }
+    })
+    .catch(() => { win?.close(); alert('Aufnahme nicht verfügbar.'); });
+}
+
 function useFetch(url, refreshKey) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -281,7 +294,7 @@ function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
             </p>
           )}
           {data.recording_url && (
-            <p><a href={data.recording_url} target="_blank" rel="noreferrer">Aufnahme anhören</a></p>
+            <p><button type="button" className="link" onClick={() => openRecording(data.id)}>Aufnahme anhören</button></p>
           )}
           <label className="side-label" htmlFor="detail-transcript">Transkript</label>
           <div className="transcript-box" id="detail-transcript">{data.transcript || 'Kein Transkript verfügbar.'}</div>
@@ -558,9 +571,13 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
             {c.summary && <p className="call-summary">{c.summary}</p>}
             <div className="call-actions">
               {c.recording_url && (
-                <a href={c.recording_url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="link"
+                  onClick={(e) => { e.stopPropagation(); openRecording(c.id); }}
+                >
                   Aufnahme anhören
-                </a>
+                </button>
               )}
               {res && (
                 <button
@@ -1000,6 +1017,162 @@ function SystemStatus({ refreshKey }) {
   );
 }
 
+const WEEKDAYS = [
+  ['mon', 'Montag'], ['tue', 'Dienstag'], ['wed', 'Mittwoch'], ['thu', 'Donnerstag'],
+  ['fri', 'Freitag'], ['sat', 'Samstag'], ['sun', 'Sonntag'],
+];
+
+// Einstellungen: Speisekarte, Öffnungszeiten, FAQ und Zugangsdaten — für den
+// Betreiber (nur eigener Betrieb) und den Admin (beliebiger, per BusinessPicker
+// gewählter Betrieb) gleichermaßen nutzbar.
+function Settings({ restaurantId, restaurants, isAdmin }) {
+  const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
+
+  const [menu, setMenu] = useState('');
+  const [hours, setHours] = useState({});
+  const [faq, setFaq] = useState([]);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+
+  const [savingContent, setSavingContent] = useState(false);
+  const [contentMsg, setContentMsg] = useState(null);
+  const [savingCreds, setSavingCreds] = useState(false);
+  const [credsMsg, setCredsMsg] = useState(null);
+
+  useEffect(() => {
+    if (!current) return;
+    setMenu(current.menu || '');
+    setHours(current.opening_hours || {});
+    setFaq(current.faq?.length ? current.faq : []);
+    setLoginEmail(current.login_email || '');
+    setCurrentPassword('');
+    setNewPassword('');
+    setContentMsg(null);
+    setCredsMsg(null);
+  }, [current?.id]);
+
+  if (!current) return <p>Lade…</p>;
+
+  const saveContent = (e) => {
+    e.preventDefault();
+    setSavingContent(true);
+    setContentMsg(null);
+    apiFetch(`/api/restaurants/${current.id}/settings`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ menu, opening_hours: hours, faq }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        setContentMsg({ ok: true, text: 'Gespeichert.' });
+      })
+      .catch((err) => setContentMsg({ ok: false, text: err.message }))
+      .finally(() => setSavingContent(false));
+  };
+
+  const saveCredentials = (e) => {
+    e.preventDefault();
+    setSavingCreds(true);
+    setCredsMsg(null);
+    const body = { login_email: loginEmail };
+    if (newPassword) body.new_password = newPassword;
+    if (!isAdmin) body.current_password = currentPassword;
+    apiFetch(`/api/restaurants/${current.id}/credentials`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        setCredsMsg({ ok: true, text: 'Gespeichert.' });
+        setCurrentPassword('');
+        setNewPassword('');
+      })
+      .catch((err) => setCredsMsg({ ok: false, text: err.message }))
+      .finally(() => setSavingCreds(false));
+  };
+
+  const updateFaqItem = (i, key, val) =>
+    setFaq((f) => f.map((item, idx) => (idx === i ? { ...item, [key]: val } : item)));
+  const addFaqItem = () => setFaq((f) => [...f, { question: '', answer: '' }]);
+  const removeFaqItem = (i) => setFaq((f) => f.filter((_, idx) => idx !== i));
+
+  return (
+    <>
+      <div className="settings-section">
+        <h2>Speisekarte</h2>
+        <textarea
+          rows={10}
+          style={{ width: '100%', fontFamily: 'inherit', fontSize: '0.92rem' }}
+          value={menu}
+          onChange={(e) => setMenu(e.target.value)}
+          placeholder="z. B. Nr. 05 Pizza Salami — € 9,90 (Tomaten, Käse, Salami)"
+        />
+      </div>
+
+      <div className="settings-section">
+        <h2>Öffnungszeiten</h2>
+        {WEEKDAYS.map(([key, label]) => (
+          <div className="hours-row" key={key}>
+            <label>{label}</label>
+            <input
+              value={hours[key] || ''}
+              onChange={(e) => setHours((h) => ({ ...h, [key]: e.target.value }))}
+              placeholder="11:00-22:00 oder geschlossen"
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="settings-section">
+        <h2>FAQ</h2>
+        {faq.map((item, i) => (
+          <div className="faq-row" key={i}>
+            <input
+              placeholder="Frage"
+              value={item.question}
+              onChange={(e) => updateFaqItem(i, 'question', e.target.value)}
+            />
+            <input
+              placeholder="Antwort"
+              value={item.answer}
+              onChange={(e) => updateFaqItem(i, 'answer', e.target.value)}
+            />
+            <button type="button" className="link" onClick={() => removeFaqItem(i)}>Entfernen</button>
+          </div>
+        ))}
+        <button type="button" className="link" onClick={addFaqItem}>+ Frage hinzufügen</button>
+      </div>
+
+      <form className="settings-section" onSubmit={saveContent}>
+        {contentMsg && <p className={contentMsg.ok ? 'hint' : 'error'}>{contentMsg.text}</p>}
+        <button className="primary" type="submit" disabled={savingContent}>
+          Speisekarte, Öffnungszeiten & FAQ speichern
+        </button>
+      </form>
+
+      <form className="access-form settings-section" onSubmit={saveCredentials}>
+        <strong>Zugangsdaten</strong>
+        <label>Login-E-Mail
+          <input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
+        </label>
+        {!isAdmin && (
+          <label>Aktuelles Passwort
+            <input type="password" value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)} placeholder="zur Bestätigung" />
+          </label>
+        )}
+        <label>Neues Passwort (leer = unverändert)
+          <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+        </label>
+        {credsMsg && <p className={credsMsg.ok ? 'hint' : 'error'}>{credsMsg.text}</p>}
+        <button className="primary" type="submit" disabled={savingCreds}>Zugangsdaten speichern</button>
+      </form>
+    </>
+  );
+}
+
 // ---------------------------------------------------------------- shell
 const NAV = [
   { id: 'overview', label: 'Übersicht', icon: '📊' },
@@ -1008,6 +1181,7 @@ const NAV = [
   { id: 'orders', label: 'Bestellungen', icon: '🛍️' },
   { id: 'calls', label: 'Anrufe', icon: '📞' },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
+  { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
   { id: 'leads', label: 'Anfragen', icon: '📥', adminOnly: true },
   { id: 'system', label: 'System', icon: '🛠️', adminOnly: true },
@@ -1016,7 +1190,8 @@ const NAV = [
 const TITLES = {
   overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
   orders: 'Bestellungen', calls: 'Anrufe', reco: 'KI-Empfehlungen',
-  customers: 'Kundenübersicht', leads: 'Anfragen', system: 'System-Status',
+  settings: 'Einstellungen', customers: 'Kundenübersicht', leads: 'Anfragen',
+  system: 'System-Status',
 };
 
 export default function App() {
@@ -1141,6 +1316,9 @@ export default function App() {
               <Calls restaurantId={restaurantId} refreshKey={refreshKey} onOpenDetail={openDetail} />
             )}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
+            {view === 'settings' && (
+              <Settings restaurantId={restaurantId} restaurants={restaurants} isAdmin={isAdmin} />
+            )}
             {view === 'customers' && isAdmin && (
               <Customers refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
             )}

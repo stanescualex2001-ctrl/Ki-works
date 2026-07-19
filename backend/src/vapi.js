@@ -24,12 +24,12 @@ function parseGuestDatetime(str) {
 async function resolveRestaurant(phoneNumber) {
   if (phoneNumber) {
     const r = await query(
-      'SELECT id, name, contact_email, vapi_assistant_id, menu FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
+      'SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
       [phoneNumber],
     );
     if (r.rows[0]) return r.rows[0];
   }
-  const r = await query('SELECT id, name, contact_email, vapi_assistant_id, menu FROM restaurants ORDER BY id LIMIT 1');
+  const r = await query('SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours FROM restaurants ORDER BY id LIMIT 1');
   return r.rows[0] || null;
 }
 
@@ -245,6 +245,22 @@ async function guestContext(phone, restaurant) {
   return `${parts.join(', ')}.`;
 }
 
+const WEEKDAY_LABELS = [
+  ['mon', 'Mo'], ['tue', 'Di'], ['wed', 'Mi'], ['thu', 'Do'],
+  ['fri', 'Fr'], ['sat', 'Sa'], ['sun', 'So'],
+];
+
+// Wandelt {"mon":"11:00-22:00", "wed":"closed", ...} in einen lesbaren Satz
+// für den Vapi-Systemprompt um, damit Kiwo die echten Öffnungszeiten pro
+// Betrieb kennt (statt fest im Prompt eincodierter Ruhetage).
+function formatOpeningHours(hours) {
+  if (!hours || typeof hours !== 'object') return 'Keine Öffnungszeiten hinterlegt.';
+  return WEEKDAY_LABELS.map(([key, label]) => {
+    const val = hours[key];
+    return `${label} ${!val || val === 'closed' ? 'geschlossen' : val}`;
+  }).join(', ');
+}
+
 // Vapi fragt hier an, welcher Assistent den Anruf übernehmen soll —
 // wir antworten mit dem Assistenten des Restaurants plus Gast-Kontext.
 async function handleAssistantRequest(message, restaurant) {
@@ -264,6 +280,7 @@ async function handleAssistantRequest(message, restaurant) {
       variableValues: {
         guestContext: context,
         menu: restaurant.menu || 'Keine Speisekarte hinterlegt — bei Fragen zu Gerichten und Preisen bitte ans Restaurant verweisen.',
+        opening_hours: formatOpeningHours(restaurant.opening_hours),
       },
     },
   };
