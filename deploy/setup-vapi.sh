@@ -28,11 +28,11 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
   "hooks": [
     {
       "on": "call.timeElapsed",
-      "options": { "seconds": 1620 },
+      "options": { "seconds": 1500 },
       "do": [
         {
           "type": "say",
-          "exact": "Kurzer Hinweis: In etwa drei Minuten muss ich das Gespräch aus technischen Gründen automatisch beenden. Lassen Sie uns das noch rasch abschließen."
+          "exact": "Kurzer Hinweis: In etwa 5 Minuten muss ich das Gespräch aus technischen Gründen automatisch beenden. Falls Ihre Reservierung oder Bestellung noch nicht abgeschlossen ist, sagen Sie mir jetzt bitte schnell die restlichen Angaben, damit ich sie noch rechtzeitig speichern kann."
         }
       ]
     }
