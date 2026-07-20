@@ -70,10 +70,13 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Vergangenheit werden jetzt hart im Backend abgelehnt (nicht mehr nur per
   Prompt-Bitte); maximale Anruflänge von Vapi-Standard 10 Min. auf 30 Min.
   erhöht (verursachte einen echten Abbruch mitten im Satz, per Vapi-Log
-  "Max Duration Exceeded" bestätigt) + Warnhinweis bei 27 Min. ("in ca. 3
-  Minuten muss ich beenden") über Vapis `call.timeElapsed`-Hook.
-- Tages-/Wochenbericht-E-Mails zeigen jetzt Datum bzw. Zeitraum in Betreff
-  und Kopfzeile, plus einheitlicher Footer (ki-works.eu, Kiwo-Claim).
+  "Max Duration Exceeded" bestätigt) + Warnhinweis jetzt bei 25 Min. ("in
+  ca. 5 Minuten muss ich beenden, bitte fehlende Angaben jetzt schnell
+  nennen, damit ich sie noch speichern kann") über Vapis
+  `call.timeElapsed`-Hook, hartes Limit bleibt bei 30 Min.
+- Tagesbericht-E-Mail zeigt jetzt Datum bzw. Zeitraum in Betreff und
+  Kopfzeile, plus einheitlicher Footer (ki-works.eu, Kiwo-Claim).
+  Wochenbericht (Workflow 05) wieder entfernt, siehe „Offene Punkte".
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -105,12 +108,19 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
 - Gäste-360°-/Umsatz-Ansicht wartet auf genauere Vorgaben des Kunden
-- Offene Rückfrage an Kunde (unbeantwortet): soll ich zusätzlich zur
-  27-Minuten-Warnung (a) Kiwo per Prompt anweisen, danach aufs Wesentliche
-  zu fokussieren, und (b) das harte Zeitlimit von 30 auf 35 Minuten
-  anheben? Dynamisches "5 Minuten verlängern" auf Zuruf ist mit Vapis API
-  nicht sauber möglich (kein Live-Update von maxDurationSeconds während
-  des Anrufs) — recherchiert und dem Kunden so erklärt.
+- Anthropic-Guthaben war (Stand zuletzt bekannt) bei 0 → Wochenbericht
+  (Claude-generierter Mailtext) deswegen wieder aus dem Repo entfernt
+  (`n8n/workflows/05-wochenbericht.json` gelöscht, Nutzer muss den
+  Workflow auch in der n8n-Oberfläche selbst löschen/deaktivieren).
+  Wichtig zur Klarstellung: Anruf-**Zusammenfassungen** im Dashboard
+  kommen von Vapi selbst (eigenes Vapi-Guthaben), sind NICHT betroffen.
+  Die Anruf-**Ergebnis-Klassifizierung** (reservation/info/missed/other,
+  `classifyOutcome` in `backend/src/claude.js`) läuft dagegen über unser
+  eigenes Anthropic-Guthaben und schlägt bei 0 Guthaben still fehl (fällt
+  auf "other" zurück) — die "Verpasste Anrufe"-Mail (Workflow 06) hat
+  dadurch vermutlich nie ausgelöst. Sobald wieder Guthaben vorhanden ist,
+  sollte sich das von selbst korrigieren; ein Anthropic-unabhängiger
+  Fallback wurde noch nicht gebaut (nicht angefragt).
 
 ## Pflege dieser Datei
 
