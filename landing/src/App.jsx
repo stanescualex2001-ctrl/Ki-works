@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
   Mail, CalendarDays, ShoppingBag, TrendingUp, Send, Check, Cpu,
-  Workflow, Plug, Users, Layers, Play,
+  Workflow, Plug, Users, Layers, Play, Menu, X, ChevronDown,
+  UtensilsCrossed, Hotel, Wrench, Stethoscope, Scissors,
 } from "lucide-react";
 
 /* ============================================================
@@ -142,6 +143,15 @@ const roles = [
     icon: ShoppingBag,
     tone: "violet",
   },
+];
+
+/* ---------- Industries (Mega-Menü "Branchen") ---------- */
+const industries = [
+  { name: "Restaurants", icon: UtensilsCrossed, href: "#live", status: "live" },
+  { name: "Hotels", icon: Hotel, status: "soon" },
+  { name: "Handwerker", icon: Wrench, status: "soon" },
+  { name: "Arztpraxen", icon: Stethoscope, status: "soon" },
+  { name: "Friseure & Salons", icon: Scissors, status: "soon" },
 ];
 
 function CallWave() {
@@ -492,8 +502,106 @@ const steps = [
   },
 ];
 
+/* ---------- Solutions menu content (shared: desktop dropdown + mobile accordion) ---------- */
+function SolutionsMenuContent({ onNavigate, stacked = false }) {
+  return (
+    <div className={`grid gap-6 ${stacked ? "" : "sm:grid-cols-2"}`}>
+      <div>
+        <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+          Anwendungsfälle
+        </div>
+        <div className="mt-3 flex flex-col gap-1">
+          {roles.map((r) => (
+            <a
+              key={r.id}
+              href="#roles"
+              onClick={onNavigate}
+              className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm text-white/75 transition hover:bg-white/5 hover:text-white"
+            >
+              <r.icon className="h-4 w-4 shrink-0 text-cyan-300" />
+              {r.name}
+            </a>
+          ))}
+        </div>
+      </div>
+      <div>
+        <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+          Branchen
+        </div>
+        <div className="mt-3 flex flex-col gap-1">
+          {industries.map((ind) => {
+            const Icon = ind.icon;
+            if (ind.status === "live") {
+              return (
+                <a
+                  key={ind.name}
+                  href={ind.href}
+                  onClick={onNavigate}
+                  className="flex items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/75 transition hover:bg-white/5 hover:text-white"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Icon className="h-4 w-4 shrink-0 text-violet-300" />
+                    {ind.name}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-300">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> live
+                  </span>
+                </a>
+              );
+            }
+            return (
+              <span
+                key={ind.name}
+                className="flex cursor-default items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/35"
+              >
+                <span className="flex items-center gap-2.5">
+                  <Icon className="h-4 w-4 shrink-0 text-white/25" />
+                  {ind.name}
+                </span>
+                <span className="text-[10px] font-mono text-white/25">bald</span>
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ---------- Page ---------- */
 export default function App() {
+  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
+  const solutionsRef = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (solutionsRef.current && !solutionsRef.current.contains(e.target)) {
+        setSolutionsOpen(false);
+      }
+    }
+    function handleKey(e) {
+      if (e.key === "Escape") {
+        setSolutionsOpen(false);
+        setMobileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0A0F1D] text-white">
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-40" />
@@ -514,7 +622,30 @@ export default function App() {
             </div>
           </a>
           <nav className="hidden md:flex items-center gap-8 text-sm text-white/60">
-            <a href="#roles" className="hover:text-white transition">Rollen</a>
+            <div ref={solutionsRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setSolutionsOpen((v) => !v)}
+                aria-expanded={solutionsOpen}
+                className="flex items-center gap-1 hover:text-white transition"
+              >
+                Lösungen
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${solutionsOpen ? "rotate-180" : ""}`} />
+              </button>
+              <AnimatePresence>
+                {solutionsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.15 }}
+                    className="glass absolute left-1/2 top-full z-30 mt-3 w-[440px] -translate-x-1/2 rounded-2xl p-5 shadow-2xl"
+                  >
+                    <SolutionsMenuContent onNavigate={() => setSolutionsOpen(false)} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <a href="#live" className="hover:text-white transition">Live testen</a>
             <a href="#platform" className="hover:text-white transition">Plattform</a>
             <a href="#onboarding" className="hover:text-white transition">Onboarding</a>
@@ -533,8 +664,81 @@ export default function App() {
             >
               Kiwo testen
             </a>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-expanded={mobileOpen}
+              aria-label="Menü"
+              className="ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-white/30 hover:text-white md:hidden"
+            >
+              {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
           </div>
         </div>
+
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="glass overflow-hidden border-t border-white/10 md:hidden"
+            >
+              <div className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-5 text-sm sm:px-6">
+                <button
+                  type="button"
+                  onClick={() => setMobileSolutionsOpen((v) => !v)}
+                  aria-expanded={mobileSolutionsOpen}
+                  className="flex items-center justify-between rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                >
+                  Lösungen
+                  <ChevronDown className={`h-4 w-4 transition-transform ${mobileSolutionsOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence>
+                  {mobileSolutionsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden pb-2 pl-2"
+                    >
+                      <SolutionsMenuContent
+                        stacked
+                        onNavigate={() => {
+                          setMobileOpen(false);
+                          setMobileSolutionsOpen(false);
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <a
+                  href="#live"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                >
+                  Live testen
+                </a>
+                <a
+                  href="#platform"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                >
+                  Plattform
+                </a>
+                <a
+                  href="#onboarding"
+                  onClick={() => setMobileOpen(false)}
+                  className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                >
+                  Onboarding
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Hero */}
