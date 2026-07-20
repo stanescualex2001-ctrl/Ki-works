@@ -72,6 +72,8 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   erhöht (verursachte einen echten Abbruch mitten im Satz, per Vapi-Log
   "Max Duration Exceeded" bestätigt) + Warnhinweis bei 27 Min. ("in ca. 3
   Minuten muss ich beenden") über Vapis `call.timeElapsed`-Hook.
+- Tages-/Wochenbericht-E-Mails zeigen jetzt Datum bzw. Zeitraum in Betreff
+  und Kopfzeile, plus einheitlicher Footer (ki-works.eu, Kiwo-Claim).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
