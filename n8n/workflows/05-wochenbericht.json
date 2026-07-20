@@ -50,9 +50,9 @@
       "parameters": {
         "fromEmail": "info@ki-works.eu",
         "toEmail": "={{ $('Wochenstatistik pro Kunde').item.json.contact_email || 'info@ki-works.eu' }}",
-        "subject": "=📈 Wochenbericht {{ $('Wochenstatistik pro Kunde').item.json.name }}",
+        "subject": "=📈 Wochenbericht {{ $('Wochenstatistik pro Kunde').item.json.name }} ({{ $now.minus({days:7}).toFormat('dd.MM.') }}–{{ $now.minus({days:1}).toFormat('dd.MM.yyyy') }})",
         "emailFormat": "text",
-        "text": "={{ $json.content[0].text }}",
+        "text": "=Wochenbericht für {{ $('Wochenstatistik pro Kunde').item.json.name }}\nZeitraum {{ $now.minus({days:7}).toFormat('dd.MM.') }}–{{ $now.minus({days:1}).toFormat('dd.MM.yyyy') }}\n\n{{ $json.content[0].text }}\n\n—\nKiwo, Ihr digitaler Mitarbeiter · ki-works.eu\nRund um die Uhr im Einsatz, damit Sie sich aufs Wesentliche konzentrieren können.",
         "options": {}
       },
       "id": "wf5-email",

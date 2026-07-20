@@ -27,9 +27,9 @@
       "parameters": {
         "fromEmail": "info@ki-works.eu",
         "toEmail": "={{ $json.contact_email || 'info@ki-works.eu' }}",
-        "subject": "=📊 Tagesbericht {{ $json.name }}: {{ $json.reservations }} Reservierungen, {{ $json.calls }} Anrufe",
+        "subject": "=📊 Tagesbericht {{ $now.setLocale('de').toFormat('cccc, dd.MM.yyyy') }} – {{ $json.name }}: {{ $json.reservations }} Reservierungen, {{ $json.calls }} Anrufe",
         "emailFormat": "text",
-        "text": "=Tagesbericht für {{ $json.name }}\n\nAnrufe heute: {{ $json.calls }}\nReservierungen heute: {{ $json.reservations }}\nDavon telefonisch (KI): {{ $json.phone_reservations }}\nGäste gesamt: {{ $json.guests }}\n\nIhr ki-works Team",
+        "text": "=Tagesbericht für {{ $json.name }}\n{{ $now.setLocale('de').toFormat('cccc, dd. MMMM yyyy') }}\n\nAnrufe heute: {{ $json.calls }}\nReservierungen heute: {{ $json.reservations }}\nDavon telefonisch (KI): {{ $json.phone_reservations }}\nGäste gesamt: {{ $json.guests }}\n\n—\nKiwo, Ihr digitaler Mitarbeiter · ki-works.eu\nRund um die Uhr im Einsatz, damit Sie sich aufs Wesentliche konzentrieren können.",
         "options": {}
       },
       "id": "wf4-email",
