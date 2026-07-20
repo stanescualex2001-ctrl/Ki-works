@@ -476,6 +476,9 @@ function ROICalc() {
           </div>
         </div>
       </div>
+      <p className="mt-4 text-[11px] text-white/40">
+        Basis: ⌀ {hourlyCost} €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead).
+      </p>
     </GlowCard>
   );
 }
