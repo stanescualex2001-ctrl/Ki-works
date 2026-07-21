@@ -357,9 +357,9 @@ function Overview({ restaurantId, refreshKey, onNavigate }) {
   const pick = (rows) => rows?.find((r) => String(r.restaurant_id) === String(restaurantId));
   return (
     <>
+      <RoiTile totalCalls={pick(weekly)?.total_calls} firstCallAt={pick(weekly)?.first_call_at} />
       <StatRow title="Heute" row={pick(daily)} onNavigate={onNavigate} />
       <StatRow title="Letzte 7 Tage" row={pick(weekly)} onNavigate={onNavigate} />
-      <RoiTile totalCalls={pick(weekly)?.total_calls} firstCallAt={pick(weekly)?.first_call_at} />
     </>
   );
 }
