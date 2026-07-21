@@ -406,8 +406,12 @@ app.get('/api/calls', async (req, res) => {
   let where = '';
   if (restaurantId) { vals.push(restaurantId); where = 'WHERE c.restaurant_id = $1'; }
   const { rows } = await query(
-    `SELECT c.*, rest.name AS restaurant_name FROM calls c
+    `SELECT c.*, rest.name AS restaurant_name, cb.topic AS callback_topic FROM calls c
      LEFT JOIN restaurants rest ON rest.id = c.restaurant_id
+     LEFT JOIN LATERAL (
+       SELECT topic FROM callback_requests
+       WHERE vapi_call_id = c.vapi_call_id ORDER BY created_at DESC LIMIT 1
+     ) cb ON true
      ${where} ORDER BY c.created_at DESC LIMIT 200`, vals,
   );
   res.json(rows);

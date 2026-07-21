@@ -216,12 +216,26 @@ async function createOrder(restaurant, args, callerNumber) {
   return { result: `Bestellung aufgenommen für ${order.customer_name}: ${order.items}${when}.` };
 }
 
+// Vapi tool call: request_callback({topic, phone}) — Kiwo weiß etwas nicht
+// oder kann es nicht selbst erledigen; ein Mitarbeitender soll zurückrufen.
+async function requestCallback(restaurant, args, callerNumber, callId) {
+  const phone = args.phone || callerNumber || null;
+  const { rows } = await query(
+    `INSERT INTO callback_requests (restaurant_id, vapi_call_id, caller_number, topic)
+     VALUES ($1, $2, $3, $4) RETURNING *`,
+    [restaurant.id, callId || null, phone, args.topic || 'Nicht spezifiziert'],
+  );
+  notifyN8n('rueckruf-gewuenscht', { request: rows[0], restaurant });
+  return { result: 'Alles klar, ich habe Ihr Anliegen notiert — jemand vom Team meldet sich bei Ihnen zurück.' };
+}
+
 const TOOL_HANDLERS = {
   create_reservation: createReservation,
   check_availability: checkAvailability,
   cancel_reservation: cancelReservation,
   reschedule_reservation: rescheduleReservation,
   create_order: createOrder,
+  request_callback: requestCallback,
 };
 
 async function handleToolCalls(message, restaurant) {
@@ -229,6 +243,7 @@ async function handleToolCalls(message, restaurant) {
   const calls = message.toolCallList
     || (message.functionCall ? [{ id: 'legacy', function: message.functionCall }] : []);
   const callerNumber = message.call?.customer?.number || message.customer?.number || null;
+  const callId = message.call?.id || message.callId || null;
   const results = [];
   for (const call of calls) {
     const fn = call.function || call;
@@ -237,7 +252,7 @@ async function handleToolCalls(message, restaurant) {
     if (typeof args === 'string') { try { args = JSON.parse(args); } catch { args = {}; } }
     const handler = TOOL_HANDLERS[name];
     const out = handler
-      ? await handler(restaurant, args, callerNumber)
+      ? await handler(restaurant, args, callerNumber, callId)
       : { error: `Unbekannte Funktion: ${name}` };
     const value = out.result ?? out.error;
     results.push({ toolCallId: call.id, result: typeof value === 'string' ? value : JSON.stringify(value) });

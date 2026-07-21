@@ -146,6 +146,18 @@ tr.clickable-row:hover td { background: rgba(255,255,255,0.04); }
 .badge-confirmed, .badge-reservation { background: var(--good-bg); color: var(--good-text); }
 .badge-cancelled, .badge-no_show, .badge-missed, .badge-error { background: var(--bad-bg); color: var(--bad-text); }
 .badge-warn { background: var(--warn-bg); color: var(--warn-text); }
+.badge-callback { background: var(--warn-bg); color: var(--warn-text); }
+
+/* ---- Ersparnis-Kachel (ROI, echte Daten) ---- */
+.roi-tile {
+  margin-top: 0.8rem; padding: 1.1rem 1.3rem; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--violet-soft));
+  border: 1px solid var(--accent-soft); backdrop-filter: blur(16px);
+}
+.roi-tile-label { font-size: 0.82rem; color: var(--muted); font-family: var(--font-mono); }
+.roi-tile-values { display: flex; gap: 1.6rem; margin-top: 0.3rem; }
+.roi-tile-value { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.roi-tile-note { margin-top: 0.4rem; font-size: 0.74rem; color: var(--muted); }
 
 /* ---- System-Status (Admin) ---- */
 .status-tile { padding: 0.9rem 1rem; border-radius: 14px; border: 1px solid var(--border); background: var(--panel); backdrop-filter: blur(16px); }

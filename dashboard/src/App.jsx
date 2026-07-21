@@ -324,6 +324,28 @@ function StatRow({ title, row, onNavigate }) {
   );
 }
 
+// Ersparnis-Kachel: echte Anruf-Zahlen der letzten 7 Tage statt Schieberegler
+// (Marketing-ROI-Rechner auf der Landingpage nutzt dieselbe 42-€/Std-Annahme).
+function RoiTile({ calls }) {
+  const minutesPerCall = 4;
+  const hourlyCost = 42;
+  const hours = ((calls || 0) * minutesPerCall) / 60;
+  const euros = Math.round(hours * hourlyCost);
+  return (
+    <section className="roi-tile">
+      <div className="roi-tile-label">Von Kiwo übernommen — letzte 7 Tage</div>
+      <div className="roi-tile-values">
+        <span className="roi-tile-value">{hours.toLocaleString('de-DE', { maximumFractionDigits: 1 })} Std</span>
+        <span className="roi-tile-value">{euros.toLocaleString('de-DE')} €</span>
+      </div>
+      <div className="roi-tile-note">
+        Basis: {calls || 0} Anrufe × {minutesPerCall} Min. manuelle Bearbeitungszeit × Ø {hourlyCost} €/Std Vollkosten
+        (Gehalt, Lohnnebenkosten &amp; Overhead)
+      </div>
+    </section>
+  );
+}
+
 function Overview({ restaurantId, refreshKey, onNavigate }) {
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
@@ -332,6 +354,7 @@ function Overview({ restaurantId, refreshKey, onNavigate }) {
     <>
       <StatRow title="Heute" row={pick(daily)} onNavigate={onNavigate} />
       <StatRow title="Letzte 7 Tage" row={pick(weekly)} onNavigate={onNavigate} />
+      <RoiTile calls={pick(weekly)?.calls} />
     </>
   );
 }
@@ -353,6 +376,9 @@ function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
             <dt>Dauer</dt><dd>{data.duration_seconds != null ? `${Math.round(data.duration_seconds / 60)} min` : '–'}</dd>
             <dt>Ergebnis</dt><dd><span className={`badge badge-${data.outcome}`}>{data.outcome || '–'}</span></dd>
             <dt>Zusammenfassung</dt><dd>{data.summary || '–'}</dd>
+            {data.callback_topic && (
+              <><dt>Rückruf gewünscht</dt><dd><span className="badge badge-callback">📞 {data.callback_topic}</span></dd></>
+            )}
           </dl>
           {data.linkedReservation && (
             <p>
@@ -645,6 +671,7 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
               <span>{fmtDateTime(c.started_at || c.created_at)}</span>
               {c.duration_seconds != null && <span>{Math.round(c.duration_seconds / 60)} min</span>}
               <span className={`badge badge-${c.outcome}`}>{c.outcome || '–'}</span>
+              {c.callback_topic && <span className="badge badge-callback">📞 Rückruf gewünscht</span>}
             </div>
             {c.summary && <p className="call-summary">{c.summary}</p>}
             <div className="call-actions">
