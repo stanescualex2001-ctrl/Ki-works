@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
@@ -98,6 +98,42 @@ function KiwoOrb() {
         </motion.div>
       ))}
     </div>
+  );
+}
+
+/* ---------- Brand mark: Orbit K (ring + K-monogram, orbiting channel dots) ---------- */
+function OrbitKLogo({ size = 34 }) {
+  const uid = useId().replace(/:/g, "");
+  const dots = [
+    { offset: 0, color: "#67E8F9", r: 5.4, w: 3, op: 0.6, blink: "1;0.15;1", begin: 0 },
+    { offset: 120, color: "#A5B4FC", r: 4.2, w: 2.6, op: 0.55, blink: "0.2;1;0.2", begin: 0.667 },
+    { offset: 240, color: "#F3F6FB", r: 3.4, w: 2.2, op: 0.5, blink: "0.15;1;0.15", begin: 1.333 },
+  ];
+  return (
+    <svg width={size} height={size} viewBox="0 0 150 150" aria-hidden="true">
+      <defs>
+        <linearGradient id={`ok-ring-${uid}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#22D3EE" /><stop offset="1" stopColor="#8B5CF6" />
+        </linearGradient>
+        <linearGradient id={`ok-k-${uid}`} x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0" stopColor="#06B6D4" /><stop offset="1" stopColor="#818CF8" />
+        </linearGradient>
+      </defs>
+      <circle cx="75" cy="75" r="52" fill="none" stroke={`url(#ok-ring-${uid})`} strokeWidth="2.5" opacity="0.35" />
+      <path d="M64 52 L64 98 M64 75 L86 52 M72 75 L86 98" fill="none" stroke={`url(#ok-k-${uid})`}
+            strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+      {dots.map((d) => (
+        <g key={d.offset} transform={`rotate(${d.offset} 75 75)`}>
+          <animateTransform attributeName="transform" type="rotate" from={`${d.offset} 75 75`}
+                             to={`${d.offset + 360} 75 75`} dur="8s" repeatCount="indefinite" />
+          <path d="M 52.2 28.26 A 52 52 0 0 1 75 23" fill="none" stroke={d.color}
+                strokeWidth={d.w} strokeLinecap="round" opacity={d.op} />
+          <circle cx="75" cy="23" r={d.r} fill={d.color}>
+            <animate attributeName="opacity" values={d.blink} dur="2s" begin={`${d.begin}s`} repeatCount="indefinite" />
+          </circle>
+        </g>
+      ))}
+    </svg>
   );
 }
 
@@ -615,9 +651,8 @@ export default function App() {
       <header className="relative z-20">
         <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 md:flex md:justify-between">
           <a href="#" className="flex min-w-0 items-center gap-2.5">
-            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D]">
-              <Layers className="h-4.5 w-4.5" />
-              <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 pulse-dot" />
+            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
+              <OrbitKLogo size={36} />
             </span>
             <div className="leading-tight min-w-0">
               <div className="truncate text-sm font-semibold tracking-tight">KI-Works</div>
