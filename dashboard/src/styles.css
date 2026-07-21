@@ -276,6 +276,15 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
   background: var(--panel-solid); color: var(--text); font-size: 0.9rem;
 }
+.open-question-row {
+  display: grid; grid-template-columns: 1fr 1fr auto; gap: 0.5rem; align-items: center;
+  margin-bottom: 0.6rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border);
+}
+.open-question-row input {
+  padding: 0.4rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel-solid); color: var(--text); font-size: 0.9rem;
+}
+.open-question-topic { font-size: 0.9rem; }
 
 /* ---- Login ---- */
 .login-page {

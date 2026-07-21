@@ -152,6 +152,9 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
       }
     ]
   },
+  "analysisPlan": {
+    "summaryPrompt": "Fasse das folgende Restaurant-Telefonat in 1-2 kurzen deutschen Sätzen zusammen (Anliegen und Ergebnis). Antworte ausschließlich auf Deutsch, unabhängig von der Sprache des Transkripts."
+  },
   "server": {
     "url": "$PUBLIC_URL/api/webhooks/vapi",
     "secret": "$VAPI_WEBHOOK_SECRET"

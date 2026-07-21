@@ -24,12 +24,12 @@ function parseGuestDatetime(str) {
 async function resolveRestaurant(phoneNumber) {
   if (phoneNumber) {
     const r = await query(
-      'SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
+      'SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours, faq FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
       [phoneNumber],
     );
     if (r.rows[0]) return r.rows[0];
   }
-  const r = await query('SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours FROM restaurants ORDER BY id LIMIT 1');
+  const r = await query('SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours, faq FROM restaurants ORDER BY id LIMIT 1');
   return r.rows[0] || null;
 }
 
@@ -306,6 +306,16 @@ function formatOpeningHours(hours) {
   }).join(', ');
 }
 
+// Wandelt die im Dashboard gepflegten FAQ-Einträge [{question, answer}, ...]
+// in lesbaren Text für den Vapi-Systemprompt um.
+function formatFaq(faq) {
+  if (!Array.isArray(faq) || !faq.length) return 'Keine zusätzlichen FAQ hinterlegt.';
+  return faq
+    .filter((item) => item?.question && item?.answer)
+    .map((item) => `F: ${item.question} A: ${item.answer}`)
+    .join(' | ');
+}
+
 // Vapi fragt hier an, welcher Assistent den Anruf übernehmen soll —
 // wir antworten mit dem Assistenten des Restaurants plus Gast-Kontext.
 async function handleAssistantRequest(message, restaurant) {
@@ -326,6 +336,7 @@ async function handleAssistantRequest(message, restaurant) {
         guestContext: context,
         menu: restaurant.menu || 'Keine Speisekarte hinterlegt — bei Fragen zu Gerichten und Preisen bitte ans Restaurant verweisen.',
         opening_hours: formatOpeningHours(restaurant.opening_hours),
+        faq: formatFaq(restaurant.faq),
       },
     },
   };

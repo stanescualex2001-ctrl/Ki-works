@@ -417,6 +417,37 @@ app.get('/api/calls', async (req, res) => {
   res.json(rows);
 });
 
+// Von Kiwo nicht beantwortete Fragen — der Kunde trägt die Antwort selbst in
+// die FAQ ein (siehe PATCH .../settings) und markiert die Anfrage hier als
+// erledigt, damit sie aus der offenen Liste verschwindet.
+app.get('/api/callback-requests', async (req, res) => {
+  const scope = customerScope(req);
+  const restaurantId = scope ?? req.query.restaurant_id;
+  const vals = [];
+  const cond = [`status = 'open'`];
+  if (restaurantId) { vals.push(restaurantId); cond.push(`restaurant_id = $${vals.length}`); }
+  const { rows } = await query(
+    `SELECT * FROM callback_requests WHERE ${cond.join(' AND ')} ORDER BY created_at DESC LIMIT 100`,
+    vals,
+  );
+  res.json(rows);
+});
+
+app.patch('/api/callback-requests/:id', async (req, res) => {
+  const scope = customerScope(req);
+  const { status } = req.body;
+  if (!['open', 'answered'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  const { rows } = await query(
+    `UPDATE callback_requests SET status = $1
+     WHERE id = $2 AND ($3::int IS NULL OR restaurant_id = $3) RETURNING *`,
+    [status, req.params.id, scope],
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(rows[0]);
+});
+
 // Vapis Aufnahme-URLs sind zeitlich befristet signiert (laufen nach einiger
 // Zeit ab) — deshalb hier bei jedem Klick frisch von Vapi nachladen statt die
 // beim Anruf gespeicherte URL direkt zu verwenden.
@@ -485,7 +516,9 @@ async function statsByRestaurant(interval) {
            AND x.status = 'confirmed')                                                  AS guests,
        (SELECT count(*) FROM orders o
          WHERE o.restaurant_id = r.id AND o.created_at > now() - $1::interval
-           AND o.status <> 'cancelled')                                                 AS orders
+           AND o.status <> 'cancelled')                                                 AS orders,
+       (SELECT count(*) FROM calls c WHERE c.restaurant_id = r.id)                       AS total_calls,
+       (SELECT min(created_at) FROM calls c WHERE c.restaurant_id = r.id)                AS first_call_at
      FROM restaurants r ORDER BY r.id`,
     [interval],
   );

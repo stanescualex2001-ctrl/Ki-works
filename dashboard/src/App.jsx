@@ -324,22 +324,27 @@ function StatRow({ title, row, onNavigate }) {
   );
 }
 
-// Ersparnis-Kachel: echte Anruf-Zahlen der letzten 7 Tage statt Schieberegler
-// (Marketing-ROI-Rechner auf der Landingpage nutzt dieselbe 42-€/Std-Annahme).
-function RoiTile({ calls }) {
+// Ersparnis-Kachel: echte Anruf-Zahlen seit dem ersten Anruf (= Live-Start bei
+// diesem Kunden), nicht nur die letzten 7 Tage — zeigt die kumulierte Wirkung.
+function RoiTile({ totalCalls, firstCallAt }) {
   const minutesPerCall = 4;
   const hourlyCost = 42;
-  const hours = ((calls || 0) * minutesPerCall) / 60;
+  const hours = ((totalCalls || 0) * minutesPerCall) / 60;
   const euros = Math.round(hours * hourlyCost);
+  const daysLive = firstCallAt
+    ? Math.max(1, Math.ceil((Date.now() - new Date(firstCallAt).getTime()) / 86400000))
+    : null;
   return (
     <section className="roi-tile">
-      <div className="roi-tile-label">Von Kiwo übernommen — letzte 7 Tage</div>
+      <div className="roi-tile-label">
+        Von Kiwo übernommen{daysLive ? ` — seit ${daysLive} ${daysLive === 1 ? 'Tag' : 'Tagen'} live` : ''}
+      </div>
       <div className="roi-tile-values">
         <span className="roi-tile-value">{hours.toLocaleString('de-DE', { maximumFractionDigits: 1 })} Std</span>
         <span className="roi-tile-value">{euros.toLocaleString('de-DE')} €</span>
       </div>
       <div className="roi-tile-note">
-        Basis: {calls || 0} Anrufe × {minutesPerCall} Min. manuelle Bearbeitungszeit × Ø {hourlyCost} €/Std Vollkosten
+        Basis: {totalCalls || 0} Anrufe × {minutesPerCall} Min. manuelle Bearbeitungszeit × Ø {hourlyCost} €/Std Vollkosten
         (Gehalt, Lohnnebenkosten &amp; Overhead)
       </div>
     </section>
@@ -354,7 +359,7 @@ function Overview({ restaurantId, refreshKey, onNavigate }) {
     <>
       <StatRow title="Heute" row={pick(daily)} onNavigate={onNavigate} />
       <StatRow title="Letzte 7 Tage" row={pick(weekly)} onNavigate={onNavigate} />
-      <RoiTile calls={pick(weekly)?.calls} />
+      <RoiTile totalCalls={pick(weekly)?.total_calls} firstCallAt={pick(weekly)?.first_call_at} />
     </>
   );
 }
@@ -1127,6 +1132,38 @@ const WEEKDAYS = [
   ['fri', 'Freitag'], ['sat', 'Samstag'], ['sun', 'Sonntag'],
 ];
 
+// Eine offene Kundenfrage mit eigenem Antwort-Feld + eigenem Speichern-Button
+// (bewusst unabhängig vom großen Speisekarte/Öffnungszeiten/FAQ-Formular).
+function OpenQuestionRow({ question, onSave }) {
+  const [answer, setAnswer] = useState('');
+  const [state, setState] = useState({ saving: false, error: null });
+
+  const save = () => {
+    if (!answer.trim()) return;
+    setState({ saving: true, error: null });
+    onSave(question.id, question.topic, answer.trim())
+      .catch((err) => setState({ saving: false, error: err.message }));
+  };
+
+  return (
+    <div className="open-question-row">
+      <div className="open-question-topic">
+        <strong>{question.topic}</strong>
+        {question.caller_number && <span className="hint"> · {question.caller_number}</span>}
+      </div>
+      <input
+        placeholder="Antwort eintragen…"
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+      />
+      <button type="button" className="link" disabled={state.saving || !answer.trim()} onClick={save}>
+        {state.saving ? 'Speichert…' : 'Speichern'}
+      </button>
+      {state.error && <p className="error">{state.error}</p>}
+    </div>
+  );
+}
+
 // Einstellungen: Speisekarte, Öffnungszeiten, FAQ und Zugangsdaten — für den
 // Betreiber (nur eigener Betrieb) und den Admin (beliebiger, per BusinessPicker
 // gewählter Betrieb) gleichermaßen nutzbar.
@@ -1149,6 +1186,19 @@ function Settings({ restaurantId, isAdmin }) {
   const [savingCreds, setSavingCreds] = useState(false);
   const [credsMsg, setCredsMsg] = useState(null);
 
+  // Fragen von Gästen, die Kiwo nicht beantworten konnte — der Kunde trägt die
+  // Antwort selbst ein und übernimmt sie per eigenem Button in die FAQ.
+  const [openQuestions, setOpenQuestions] = useState([]);
+  const [openQuestionsError, setOpenQuestionsError] = useState(null);
+
+  const loadOpenQuestions = useCallback(() => {
+    if (restaurantId == null) return;
+    apiFetch(`/api/callback-requests?restaurant_id=${restaurantId}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(setOpenQuestions)
+      .catch((err) => setOpenQuestionsError(err.message));
+  }, [restaurantId]);
+
   const loadRestaurant = useCallback(() => {
     if (restaurantId == null) return;
     apiFetch('/api/restaurants')
@@ -1160,7 +1210,7 @@ function Settings({ restaurantId, isAdmin }) {
       .catch((err) => setLoadError(err.message));
   }, [restaurantId]);
 
-  useEffect(() => { setCurrent(null); loadRestaurant(); }, [loadRestaurant]);
+  useEffect(() => { setCurrent(null); loadRestaurant(); loadOpenQuestions(); }, [loadRestaurant, loadOpenQuestions]);
 
   useEffect(() => {
     if (!current) return;
@@ -1221,8 +1271,40 @@ function Settings({ restaurantId, isAdmin }) {
   const addFaqItem = () => setFaq((f) => [...f, { question: '', answer: '' }]);
   const removeFaqItem = (i) => setFaq((f) => f.filter((_, idx) => idx !== i));
 
+  // Eigener Speichern-Button je offener Frage: Antwort wird sofort in die FAQ
+  // übernommen (nicht an das große Formular unten gekoppelt) und die Anfrage
+  // als erledigt markiert, damit sie aus der Liste verschwindet.
+  const saveQuestionAnswer = (reqId, question, answer) => {
+    const updatedFaq = [...faq, { question, answer }];
+    return apiFetch(`/api/restaurants/${current.id}/settings`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ menu, opening_hours: hours, faq: updatedFaq }),
+    })
+      .then((r) => (r.ok ? r : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then(() => apiFetch(`/api/callback-requests/${reqId}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ status: 'answered' }),
+      }))
+      .then(() => {
+        setFaq(updatedFaq);
+        setOpenQuestions((qs) => qs.filter((q) => q.id !== reqId));
+      });
+  };
+
   return (
     <>
+      <div className="settings-section">
+        <h2>Offene Fragen von Kunden</h2>
+        {openQuestionsError && <p className="error">{openQuestionsError}</p>}
+        {openQuestions.length === 0 ? (
+          <p className="hint">Keine offenen Fragen.</p>
+        ) : (
+          openQuestions.map((q) => <OpenQuestionRow key={q.id} question={q} onSave={saveQuestionAnswer} />)
+        )}
+      </div>
+
       <div className="settings-section">
         <h2>Speisekarte</h2>
         <textarea
