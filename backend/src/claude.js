@@ -45,6 +45,17 @@ export async function businessRecommendations(name, stats) {
   );
 }
 
+export async function translateToGerman(text) {
+  if (!text) return null;
+  return ask(
+    'Falls der folgende Text nicht bereits auf Deutsch ist, übersetze ihn ins Deutsche. '
+    + 'Ist er schon Deutsch, gib ihn unverändert zurück. Antworte NUR mit dem (übersetzten) Text, '
+    + 'keine Erklärung, keine Anführungszeichen.',
+    text,
+    300,
+  );
+}
+
 export async function classifyOutcome(transcript) {
   if (!transcript) return 'other';
   const answer = await ask(
