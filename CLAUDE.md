@@ -85,6 +85,28 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   zeigt jetzt die Berechnungsgrundlage transparent an ("Ø 42 €/Stunde
   Vollkosten: Gehalt, Lohnnebenkosten & Overhead"), nachdem der Nutzer den
   Wert sonst missverständlich fand.
+- Neues Logo "Orbit K" (animierter Ring mit K-Monogramm) ersetzt das alte
+  Platzhalter-Icon überall (Landingpage-Nav, Dashboard-Login/Sidebar). Neuer
+  Kiwo-Charakter "Orb Buddy" erscheint zusätzlich in der Dashboard-Sidebar
+  ("Kiwo · bereit").
+- Kiwo erfindet keine Antworten mehr bei Unwissen: neue Prompt-Regel plus
+  Tool `request_callback` (neue Tabelle `callback_requests`) — markiert den
+  Anruf in der bestehenden Anrufe-Liste als "Rückruf gewünscht", statt zu
+  raten.
+- Dashboard-Einstellungen: offene Kundenfragen (aus `request_callback`)
+  werden direkt dort angezeigt, der Kunde trägt die Antwort ein und
+  speichert sie per eigenem Button — landet automatisch in der FAQ. FAQ
+  wird jetzt auch live an Kiwo weitergegeben ({{faq}} im Prompt), Kiwo prüft
+  sie vor "weiß ich nicht"/Rückruf-Meldung.
+- Anruf-Zusammenfassungen werden jetzt auf Deutsch erzeugt
+  (`analysisPlan.summaryPrompt` bei Vapi). Für bestehende (teils englische)
+  Alt-Zusammenfassungen gibt es ein einmaliges Backfill-Skript
+  (`backend/scripts/translate-call-summaries.js`) — lief testweise durch
+  (7 Anrufe gefunden), aber noch nicht wirksam ausgeführt, weil Anthropic-
+  Guthaben bei 0 war; muss nach Guthaben-Aufladung erneut gestartet werden.
+- Ersparnis-Kachel ("Von Kiwo übernommen") steht jetzt ganz oben in der
+  Dashboard-Übersicht (Kunden-Wunsch: soll das Erste sein, was der Betrieb
+  sieht) und zeigt die Gesamtlaufzeit seit Live-Gang, nicht nur 7 Tage.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -118,6 +140,16 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   bewusst als shared DB + Zeilen-Trennung vorgeschlagen (kein DB-pro-Kunde).
   Billing/Nutzungsmessung fehlt komplett. Noch nichts entschieden oder
   gebaut, nur vorgemerkt.
+- **Admin-Dashboard überarbeiten:** Nutzer-Brainstorming — soll künftig zeigen:
+  Anzahl aktiver Kunden, Umsatz/Kosten/Gewinn, unternehmensweite KI-Empfehlungen
+  (nicht nur pro Betrieb), sowie die Ersparnis-Kachel aggregiert über alle
+  Kunden (mit der jetzigen Pro-Kunde-Ansicht als aufklappbarem Unterpunkt).
+  Größte Lücke: es gibt noch kein Preismodell pro Kunde und keine
+  Kosten-Zuordnung (Vapi/Anthropic/Twilio laufen als ein gemeinsamer Topf) —
+  Umsatz/Gewinn sind deshalb aktuell nicht berechenbar. Weitere Ideen dazu:
+  Warnsystem bei auffällig inaktiven Kunden (Kündigungsrisiko), Wachstumstrend
+  über Zeit, offene Kundenfragen über alle Kunden hinweg an einer Stelle. Noch
+  nichts entschieden oder gebaut.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
