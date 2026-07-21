@@ -77,6 +77,14 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Tagesbericht-E-Mail zeigt jetzt Datum bzw. Zeitraum in Betreff und
   Kopfzeile, plus einheitlicher Footer (ki-works.eu, Kiwo-Claim).
   Wochenbericht (Workflow 05) wieder entfernt, siehe „Offene Punkte".
+- Landingpage: neues Mega-Menü "Lösungen" in der Navigation (Desktop-Dropdown
+  + komplett neues Mobile-Menü, vorher gab es auf Mobile außer Login/CTA gar
+  keine Navigation). Zeigt die 5 Kiwo-Rollen als "Anwendungsfälle" und
+  Branchen (Restaurants live markiert, weitere Branchen als "bald") — erster
+  sichtbarer Schritt der Rollen×Branchen-Idee (siehe unten). ROI-Rechner
+  zeigt jetzt die Berechnungsgrundlage transparent an ("Ø 42 €/Stunde
+  Vollkosten: Gehalt, Lohnnebenkosten & Overhead"), nachdem der Nutzer den
+  Wert sonst missverständlich fand.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -94,7 +102,22 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Außendienstassistent, WhatsApp-Assistent als Add-on) UND nach Branchen
   (Arztpraxis, Anwälte, Hotels, Handwerker, Zahnärzte, Immobilienmakler
   usw., jeweils eigene Unterseite). Idee: Kiwo-Rollen langfristig ähnlich
-  strukturieren (Rolle × Branche), noch nicht gebaut.
+  strukturieren (Rolle × Branche); erster sichtbarer Schritt (Mega-Menü auf
+  der Landingpage) bereits umgesetzt, siehe „Bereits erledigt" — eigene
+  Unterseiten pro Rolle/Branche gibt es aber weiterhin nicht.
+- **Multi-Tenant-SaaS-Architektur:** Nutzer-Brainstorming — ein einziger
+  Kiwo-Server soll mehrere Unternehmen/Branchen bedienen können, jeder Kunde
+  mit eigener Wissensbasis/Prompts und getrennten Daten (Restaurants, Hotels,
+  Handwerksbetriebe usw.), als Basis für ein skalierbares SaaS-Angebot.
+  Einschätzung dazu: die Grundarchitektur (ein Server, eine DB,
+  `restaurant_id`-Scoping über alle Tabellen, `customerScope`) trägt das
+  schon weitgehend. Größte Lücken: (1) Vapi-Assistent-Erstellung ist noch
+  manuell/hardcoded auf Venezia (`deploy/setup-vapi.sh`) statt automatisiert;
+  (2) Prompt/Tools sind Restaurant-spezifisch (Reservierung/Bestellung) —
+  andere Branchen bräuchten eigene Prompt-/Tool-Vorlagen; (3) Isolationsmodell
+  bewusst als shared DB + Zeilen-Trennung vorgeschlagen (kein DB-pro-Kunde).
+  Billing/Nutzungsmessung fehlt komplett. Noch nichts entschieden oder
+  gebaut, nur vorgemerkt.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
