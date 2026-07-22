@@ -650,13 +650,16 @@ export default function App() {
       {/* Nav */}
       <header className="relative z-20">
         <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 md:flex md:justify-between">
-          <a href="#" className="flex min-w-0 items-center gap-2.5">
+          <a href="/" className="flex min-w-0 items-center gap-2.5">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
               <OrbitKLogo size={36} />
             </span>
             <div className="leading-tight min-w-0">
               <div className="truncate text-sm font-semibold tracking-tight">KI-Works</div>
-              <div className="truncate text-[10px] font-mono text-white/40">platform · agent kiwo</div>
+              <div className="truncate text-[10px] font-mono text-white/40">
+                <span className="sm:hidden">agent kiwo</span>
+                <span className="hidden sm:inline">platform · agent kiwo</span>
+              </div>
             </div>
           </a>
           <nav className="hidden md:flex items-center gap-8 text-sm text-white/60">
