@@ -107,6 +107,8 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Ersparnis-Kachel ("Von Kiwo übernommen") steht jetzt ganz oben in der
   Dashboard-Übersicht (Kunden-Wunsch: soll das Erste sein, was der Betrieb
   sieht) und zeigt die Gesamtlaufzeit seit Live-Gang, nicht nur 7 Tage.
+- Landingpage-Nav: Logo verlinkt jetzt sauber auf "/" (statt "#"), mobiler
+  Untertitel "agent kiwo" wird nicht mehr abgeschnitten.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
