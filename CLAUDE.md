@@ -22,6 +22,10 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - **Nie committen/pushen ohne explizite Aufforderung** des Nutzers.
 - Nutzer ist nicht technisch — Erklärungen einfach halten, keine unnötigen
   Rückfragen zu bereits Entschiedenem.
+- **SEO/AIO-Pattern für neue Seiten:** Jede neue Landingpage/Unterseite auf
+  ki-works.eu soll dasselbe Prerendering (`react-dom/server`, kein
+  Headless-Browser) + Meta-Tags/JSON-LD/robots.txt/sitemap.xml/llms.txt
+  bekommen wie in `landing/` bereits umgesetzt (siehe „Bereits erledigt").
 
 ## Bereits erledigt (nicht mehr offen)
 
@@ -109,6 +113,16 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   sieht) und zeigt die Gesamtlaufzeit seit Live-Gang, nicht nur 7 Tage.
 - Landingpage-Nav: Logo verlinkt jetzt sauber auf "/" (statt "#"), mobiler
   Untertitel "agent kiwo" wird nicht mehr abgeschnitten.
+- ki-works.eu für SEO/AIO optimiert: größter Fund war, dass die Seite reines
+  Client-Side-React war (rohes HTML lieferte nur ein leeres `<div id="root">`
+  — für KI-Crawler ohne JavaScript-Ausführung sah die Seite leer aus). Build
+  rendert jetzt zusätzlich serverseitig vor (`react-dom/server`, kein
+  Headless-Browser als neue Abhängigkeit) und schreibt echten Text ins
+  ausgelieferte HTML — für Besucher optisch unverändert. Dazu: robots.txt
+  (inkl. bekannter KI-Crawler wie GPTBot/ClaudeBot), sitemap.xml, llms.txt,
+  canonical/og/twitter-Meta-Tags, JSON-LD (Organization + Service), neues
+  Social-Preview-Bild. pixelpress.at (andere, nicht zugängliche Plattform)
+  bewusst nicht angefasst — dafür nur eine Checkliste geliefert.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
