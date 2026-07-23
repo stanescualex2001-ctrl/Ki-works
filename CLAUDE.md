@@ -123,6 +123,9 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   canonical/og/twitter-Meta-Tags, JSON-LD (Organization + Service), neues
   Social-Preview-Bild. pixelpress.at (andere, nicht zugängliche Plattform)
   bewusst nicht angefasst — dafür nur eine Checkliste geliefert.
+- Landingpage: Orb Buddy (Kiwo-Charakter, bisher nur im Dashboard) ersetzt
+  jetzt das generische Bot-Icon im Hero-Orb und erscheint zusätzlich über der
+  finalen CTA-Sektion — Kiwo ist so auf der ganzen Seite wiedererkennbar.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
