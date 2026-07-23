@@ -1,0 +1,29 @@
+# KI-Works
+
+> KI-Works ist eine Plattform für digitale KI-Mitarbeiter. Kiwo ist der erste
+> KI-Mitarbeiter der Plattform: ein KI-Telefonassistent für Restaurants, der
+> Anrufe entgegennimmt, Reservierungen und Bestellungen aufnimmt und Gästen
+> rund um die Uhr antwortet — ohne Warteschleife.
+
+## Was Kiwo kann
+
+- Telefonanrufe entgegennehmen und in natürlicher Sprache mit Gästen sprechen
+- Tischreservierungen anlegen, verschieben und stornieren
+- Bestellungen zur Abholung oder zum Tisch aufnehmen
+- Stammgäste anhand der Telefonnummer erkennen und persönlich begrüßen
+- Fragen zu Speisekarte und Öffnungszeiten korrekt beantworten
+- Bei unbekannten Fragen ehrlich weiterleiten, statt zu raten
+
+## Plattform
+
+- KI-Works ist als Plattform konzipiert und wächst modular um weitere
+  KI-Mitarbeiter (Rollen: Reception, Sales, Support, Office, Orders).
+- Restaurants sind der erste Anwendungsfall.
+- DSGVO-konform, Hosting in der EU.
+- Live-Dashboard für Betriebe: Anrufe, Reservierungen, Bestellungen,
+  Auswertungen.
+
+## Mehr erfahren
+
+- Website: https://ki-works.eu/
+- Kontakt/Demo: über die Website (Abschnitt "Kiwo testen")
