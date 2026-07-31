@@ -1412,6 +1412,42 @@ export default function App() {
   const { data: restaurants } = useFetch(auth ? '/api/restaurants' : null, refreshKey);
   const [restaurantId, setRestaurantId] = useState(null);
 
+  // Notification-Zähler: neue Reservierungen/Bestellungen/Anrufe seit dem
+  // letzten Besuch der jeweiligen Seite (Zeitstempel lokal im Browser
+  // gespeichert, pro Betrieb + Ansicht).
+  const { data: navReservations } = useFetch(
+    restaurantId != null ? `/api/reservations?restaurant_id=${restaurantId}` : null, refreshKey,
+  );
+  const { data: navOrders } = useFetch(
+    restaurantId != null ? `/api/orders?restaurant_id=${restaurantId}` : null, refreshKey,
+  );
+  const { data: navCalls } = useFetch(
+    restaurantId != null ? `/api/calls?restaurant_id=${restaurantId}` : null, refreshKey,
+  );
+
+  useEffect(() => {
+    if (restaurantId == null) return;
+    ['reservations', 'orders', 'calls'].forEach((v) => {
+      const key = `kiworks-lastseen-${restaurantId}-${v}`;
+      if (localStorage.getItem(key) == null) localStorage.setItem(key, String(Date.now()));
+    });
+  }, [restaurantId]);
+
+  const countNew = (items, viewId) => {
+    if (!items || restaurantId == null) return 0;
+    const lastSeen = Number(localStorage.getItem(`kiworks-lastseen-${restaurantId}-${viewId}`)) || Date.now();
+    return items.filter((item) => new Date(item.created_at).getTime() > lastSeen).length;
+  };
+  const unseenCounts = {
+    reservations: countNew(navReservations, 'reservations'),
+    orders: countNew(navOrders, 'orders'),
+    calls: countNew(navCalls, 'calls'),
+  };
+  const markSeen = (viewId) => {
+    if (restaurantId == null) return;
+    localStorage.setItem(`kiworks-lastseen-${restaurantId}-${viewId}`, String(Date.now()));
+  };
+
   useEffect(() => {
     if (!auth) return;
     if (auth.role === 'customer') setRestaurantId(auth.restaurant_id);
@@ -1482,9 +1518,10 @@ export default function App() {
               {item.divider && <hr className="nav-divider" />}
               <button
                 className={view === item.id ? 'active' : ''}
-                onClick={() => setView(item.id)}
+                onClick={() => { setView(item.id); markSeen(item.id); }}
               >
                 <span className="nav-icon">{item.icon}</span> {item.label}
+                {!!unseenCounts[item.id] && <span className="nav-badge">{unseenCounts[item.id]}</span>}
               </button>
             </React.Fragment>
           ))}
