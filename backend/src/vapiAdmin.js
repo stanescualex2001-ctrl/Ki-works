@@ -193,9 +193,11 @@ export async function syncVapiAssistant(restaurantId) {
       return { ok: false, warning: 'Vapi-Assistent konnte nicht angelegt/aktualisiert werden.' };
     }
 
-    if (assistantId !== restaurant.vapi_assistant_id) {
-      await query('UPDATE restaurants SET vapi_assistant_id = $1 WHERE id = $2', [assistantId, restaurantId]);
-    }
+    // vapi_published wird bei jeder Synchronisierung zurückgesetzt — per API
+    // angelegte/aktualisierte Assistenten sind nicht automatisch "published"
+    // (siehe CLAUDE.md), der Betreiber muss das nach jeder Änderung im
+    // Vapi-Dashboard erneut manuell bestätigen.
+    await query('UPDATE restaurants SET vapi_assistant_id = $1, vapi_published = false WHERE id = $2', [assistantId, restaurantId]);
 
     let phoneLinked = false;
     if (restaurant.vapi_phone_number) {

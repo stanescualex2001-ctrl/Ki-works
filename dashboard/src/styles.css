@@ -137,6 +137,8 @@ tr:last-child td { border-bottom: none; }
 th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgba(255,255,255,0.02); font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
 tr.muted { opacity: 0.5; }
 .warn-text { color: var(--warn-text); font-weight: 600; }
+.ok-text { color: var(--good-text); font-weight: 600; }
+.vapi-status-cell { display: flex; flex-direction: column; gap: 0.2rem; align-items: flex-start; }
 tr.clickable-row { cursor: pointer; }
 tr.clickable-row:hover td { background: rgba(255,255,255,0.04); }
 .link-strong {

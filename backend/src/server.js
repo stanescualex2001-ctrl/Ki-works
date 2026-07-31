@@ -216,7 +216,7 @@ app.post('/api/restaurants', adminOnly, async (req, res) => {
 
 app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
   const allowed = ['name', 'address', 'contact_email', 'contact_phone',
-    'vapi_phone_number', 'vapi_assistant_id', 'login_email'];
+    'vapi_phone_number', 'vapi_assistant_id', 'login_email', 'vapi_published'];
   const sets = [];
   const vals = [];
   for (const key of allowed) {

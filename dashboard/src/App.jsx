@@ -850,6 +850,14 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
       .catch(() => setInviteMsg('Fehler beim Senden'));
   };
 
+  const markPublished = (id) => {
+    apiFetch(`/api/restaurants/${id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ vapi_published: true }),
+    }).then((r) => r.ok && onChanged());
+  };
+
   if (!daily || !weekly || !restaurants) return <p>Lade…</p>;
   const weekOf = (id) => weekly.find((w) => w.restaurant_id === id) || {};
   const info = (id) => restaurants.find((r) => r.id === id) || {};
@@ -898,7 +906,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
             onChanged();
             if (result?.vapi) {
               setInviteMsg(result.vapi.ok
-                ? `✅ Kunde angelegt, Vapi-Assistent eingerichtet. WICHTIG: im Vapi-Dashboard beim Assistenten einmal auf "Publish" klicken, sonst nimmt er keine Anrufe an.${result.vapi.warning ? ` Hinweis: ${result.vapi.warning}` : ''}`
+                ? `✅ Kunde angelegt, Vapi-Assistent eingerichtet. Status siehe Spalte "Vapi-Status" unten.${result.vapi.warning ? ` Hinweis: ${result.vapi.warning}` : ''}`
                 : `⚠️ Kunde angelegt, Vapi-Einrichtung fehlgeschlagen: ${result.vapi.warning}`);
             }
           }}
@@ -915,7 +923,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
         <table>
           <thead>
             <tr>
-              <th>Kunde</th><th>Login</th><th>KI-Nummer</th>
+              <th>Kunde</th><th>Login</th><th>KI-Nummer</th><th>Vapi-Status</th>
               <th>Anrufe heute</th><th>Res. heute</th>
               <th>Anrufe 7 T</th><th>Res. 7 T</th><th>Gäste 7 T</th><th></th>
             </tr>
@@ -933,6 +941,20 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                   </td>
                   <td>{r.login_email || <span className="warn-text">kein Zugang</span>}</td>
                   <td>{r.vapi_phone_number || '–'}</td>
+                  <td className="vapi-status-cell">
+                    {!r.vapi_assistant_id ? (
+                      <span className="hint">–</span>
+                    ) : r.vapi_published ? (
+                      <span className="ok-text">✅ Erledigt</span>
+                    ) : (
+                      <>
+                        <span className="warn-text">⚠️ Publish nötig</span>
+                        <button type="button" className="link" onClick={() => markPublished(d.restaurant_id)}>
+                          ✔ Als erledigt markieren
+                        </button>
+                      </>
+                    )}
+                  </td>
                   <td>{d.calls}</td>
                   <td>{d.reservations}</td>
                   <td>{w.calls ?? '–'}</td>
