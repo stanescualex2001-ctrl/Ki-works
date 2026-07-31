@@ -831,6 +831,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const { data: restaurants } = useFetch('/api/restaurants', refreshKey);
   const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('name-asc');
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
   const [inviteMsg, setInviteMsg] = useState(null);
@@ -846,12 +847,21 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const weekOf = (id) => weekly.find((w) => w.restaurant_id === id) || {};
   const info = (id) => restaurants.find((r) => r.id === id) || {};
   const q = search.trim().toLowerCase();
-  const rows = daily.filter((d) => {
+  const filtered = daily.filter((d) => {
     if (!q) return true;
     const r = info(d.restaurant_id);
     return [d.name, d.contact_email, r.login_email, r.address]
       .some((v) => (v || '').toLowerCase().includes(q));
   });
+  const SORTERS = {
+    'name-asc': (a, b) => a.name.localeCompare(b.name, 'de'),
+    'name-desc': (a, b) => b.name.localeCompare(a.name, 'de'),
+    'newest': (a, b) => new Date(info(b.restaurant_id).created_at || 0) - new Date(info(a.restaurant_id).created_at || 0),
+    'oldest': (a, b) => new Date(info(a.restaurant_id).created_at || 0) - new Date(info(b.restaurant_id).created_at || 0),
+    'calls-desc': (a, b) => (weekOf(b.restaurant_id).calls || 0) - (weekOf(a.restaurant_id).calls || 0),
+    'reservations-desc': (a, b) => (weekOf(b.restaurant_id).reservations || 0) - (weekOf(a.restaurant_id).reservations || 0),
+  };
+  const rows = [...filtered].sort(SORTERS[sortBy]);
 
   return (
     <>
@@ -861,6 +871,14 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
           type="search" className="search" placeholder="🔍 Kunde suchen…"
           value={search} onChange={(e) => setSearch(e.target.value)}
         />
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="newest">Neueste zuerst</option>
+          <option value="oldest">Älteste zuerst</option>
+          <option value="calls-desc">Anrufe 7 T (meiste zuerst)</option>
+          <option value="reservations-desc">Reservierungen 7 T (meiste zuerst)</option>
+        </select>
         <span className="hint">{rows.length} von {daily.length} Kunden</span>
         <button className="primary" onClick={() => setAdding(true)}>+ Neuer Kunde</button>
       </div>
