@@ -1,0 +1,42 @@
+{
+  "name": "14 Rückruf gewünscht → Benachrichtigung",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "rueckruf-gewuenscht",
+        "options": {}
+      },
+      "id": "wf14-webhook",
+      "name": "Webhook: Rückruf gewünscht",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "rueckruf-gewuenscht"
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.restaurant?.contact_email || 'info@ki-works.eu' }}",
+        "subject": "=📞 Rückruf gewünscht: {{ $json.body.request.topic }}",
+        "text": "=Kiwo konnte eine Frage am Telefon nicht beantworten — ein Gast wünscht einen Rückruf:\n\nAnliegen: {{ $json.body.request.topic }}\nRückrufnummer: {{ $json.body.request.caller_number }}\n\nBitte den Gast zurückrufen. Die Antwort können Sie zusätzlich im Dashboard unter \"Einstellungen\" eintragen — sie wird automatisch in die FAQ übernommen, damit Kiwo sie beim nächsten Anruf kennt.",
+        "options": {}
+      },
+      "id": "wf14-email",
+      "name": "Benachrichtigung senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Rückruf gewünscht": {
+      "main": [[{ "node": "Benachrichtigung senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
