@@ -871,7 +871,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
           type="search" className="search" placeholder="🔍 Kunde suchen…"
           value={search} onChange={(e) => setSearch(e.target.value)}
         />
-        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+        <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="name-asc">Name (A-Z)</option>
           <option value="name-desc">Name (Z-A)</option>
           <option value="newest">Neueste zuerst</option>

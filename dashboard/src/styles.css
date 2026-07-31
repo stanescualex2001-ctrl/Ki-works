@@ -325,6 +325,10 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
   font-size: 0.9rem; width: 100%; max-width: 320px; background: var(--panel-solid); color: var(--text);
 }
+.sort-select {
+  padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 8px;
+  font-size: 0.9rem; background: var(--panel-solid); color: var(--text);
+}
 .sidebar select[size] { height: auto; }
 .sidebar option { padding: 0.25rem 0.3rem; }
 .customer-name-box {
