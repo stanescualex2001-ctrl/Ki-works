@@ -891,7 +891,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
             onChanged();
             if (result?.vapi) {
               setInviteMsg(result.vapi.ok
-                ? `✅ Kunde angelegt, Vapi-Assistent eingerichtet.${result.vapi.warning ? ` Hinweis: ${result.vapi.warning}` : ''}`
+                ? `✅ Kunde angelegt, Vapi-Assistent eingerichtet. WICHTIG: im Vapi-Dashboard beim Assistenten einmal auf "Publish" klicken, sonst nimmt er keine Anrufe an.${result.vapi.warning ? ` Hinweis: ${result.vapi.warning}` : ''}`
                 : `⚠️ Kunde angelegt, Vapi-Einrichtung fehlgeschlagen: ${result.vapi.warning}`);
             }
           }}

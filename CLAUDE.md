@@ -163,6 +163,24 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   entfernt, der auf denselben Webhook hörte und einen zweiten, veralteten
   Assistenten ohne Stimme/mit Kurzprompt anlegte — führte zu doppelten
   Assistenten pro neuem Kunden, behoben.
+- Dashboard „Kunden (Betreiber)": Kundenliste jetzt sortierbar (Name A-Z/Z-A,
+  neueste/älteste zuerst, meiste Anrufe/Reservierungen 7 Tage) über ein
+  Dropdown neben der Suche.
+
+**WICHTIGE EINSCHRÄNKUNG der Vapi-Automatik (noch ungelöst):** per API
+angelegte/aktualisierte Vapi-Assistenten sind offenbar NICHT automatisch
+"published" — konkret beobachtet: Venezia funktionierte nach mehrfachem
+API-Update zeitweise nicht mehr am Telefon, bis der Nutzer manuell im
+Vapi-Dashboard auf "Publish" geklickt hat; ein frisch per Automatik
+angelegter Testkunde zeigte direkt nach der Anlage ebenfalls "nicht
+published". In der offiziellen Vapi-API-Doku/OpenAPI-Spec gibt es dafür
+keinerlei Feld oder Endpoint (recherchiert) — vermutlich eine neuere,
+nicht vollständig dokumentierte Vapi-Funktion (Versions-/Publish-System,
+siehe deren Blogpost "Version Preview, Version History"). **Workaround
+bis auf Weiteres:** nach jeder automatischen Kundenanlage/-änderung muss
+im Vapi-Dashboard einmal manuell "Publish" geklickt werden — das Dashboard
+zeigt dazu jetzt einen Hinweistext nach "+ Neuer Kunde" an. Kein
+API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -259,6 +277,10 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Vapi-Einrichtung) ist NICHT `[DEMO]`-markiert und wird vom Cleanup-Skript
   daher nicht erfasst — vor Go-Live manuell aus der `restaurants`-Tabelle
   entfernen (bzw. den zugehörigen Vapi-Assistenten löschen)
+- **Vapi "Publish"-Problem** (Details siehe „Bereits erledigt"): jeder neue/
+  geänderte Kunde braucht aktuell einen manuellen "Publish"-Klick im
+  Vapi-Dashboard, sonst nimmt der Assistent keine Anrufe an — noch kein
+  API-Weg gefunden, um das zu automatisieren
 - Gäste-360°-/Umsatz-Ansicht wartet auf genauere Vorgaben des Kunden
 - Anthropic-Guthaben war (Stand zuletzt bekannt) bei 0 → Wochenbericht
   (Claude-generierter Mailtext) deswegen wieder aus dem Repo entfernt
