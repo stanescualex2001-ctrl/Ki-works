@@ -476,7 +476,7 @@ function BusinessPicker({ restaurants, restaurantId, onSelect }) {
       <input
         type="text" className="business-picker-input" placeholder="🔍 Betrieb suchen…"
         autoComplete="off" value={text}
-        onFocus={(e) => { setOpen(true); e.target.select(); }}
+        onFocus={() => { setOpen(true); setText(''); }}
         onChange={(e) => { setText(e.target.value); setOpen(true); }}
         onBlur={() => setTimeout(() => {
           setOpen(false);
@@ -1132,6 +1132,8 @@ const WEEKDAYS = [
   ['fri', 'Freitag'], ['sat', 'Samstag'], ['sun', 'Sonntag'],
 ];
 
+const CHANNEL_LABELS = { sms: 'SMS', whatsapp: 'WhatsApp', email: 'E-Mail' };
+
 // Eine offene Kundenfrage mit eigenem Antwort-Feld + eigenem Speichern-Button
 // (bewusst unabhängig vom großen Speisekarte/Öffnungszeiten/FAQ-Formular).
 function OpenQuestionRow({ question, onSave }) {
@@ -1150,6 +1152,12 @@ function OpenQuestionRow({ question, onSave }) {
       <div className="open-question-topic">
         <strong>{question.topic}</strong>
         {question.caller_number && <span className="hint"> · {question.caller_number}</span>}
+        {question.preferred_channel && (
+          <span className="hint">
+            {' '}· Antwort per {CHANNEL_LABELS[question.preferred_channel] || question.preferred_channel}
+            {question.contact ? `: ${question.contact}` : ''}
+          </span>
+        )}
       </div>
       <input
         placeholder="Antwort eintragen…"

@@ -216,14 +216,17 @@ async function createOrder(restaurant, args, callerNumber) {
   return { result: `Bestellung aufgenommen für ${order.customer_name}: ${order.items}${when}.` };
 }
 
-// Vapi tool call: request_callback({topic, phone}) — Kiwo weiß etwas nicht
-// oder kann es nicht selbst erledigen; ein Mitarbeitender soll zurückrufen.
+// Vapi tool call: request_callback({topic, phone, channel, contact}) — Kiwo
+// weiß etwas nicht oder kann es nicht selbst erledigen; ein Mitarbeitender
+// soll zurückrufen. channel/contact halten nur den Gast-Wunsch fest, wie er
+// die Antwort erhalten möchte (kein automatischer Versand).
 async function requestCallback(restaurant, args, callerNumber, callId) {
   const phone = args.phone || callerNumber || null;
+  const channel = ['sms', 'whatsapp', 'email'].includes(args.channel) ? args.channel : null;
   const { rows } = await query(
-    `INSERT INTO callback_requests (restaurant_id, vapi_call_id, caller_number, topic)
-     VALUES ($1, $2, $3, $4) RETURNING *`,
-    [restaurant.id, callId || null, phone, args.topic || 'Nicht spezifiziert'],
+    `INSERT INTO callback_requests (restaurant_id, vapi_call_id, caller_number, topic, preferred_channel, contact)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [restaurant.id, callId || null, phone, args.topic || 'Nicht spezifiziert', channel, args.contact || null],
   );
   notifyN8n('rueckruf-gewuenscht', { request: rows[0], restaurant });
   return { result: 'Alles klar, ich habe Ihr Anliegen notiert — jemand vom Team meldet sich bei Ihnen zurück.' };

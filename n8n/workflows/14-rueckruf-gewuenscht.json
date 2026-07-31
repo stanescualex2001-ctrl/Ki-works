@@ -19,7 +19,7 @@
         "fromEmail": "info@ki-works.eu",
         "toEmail": "={{ $json.body.restaurant?.contact_email || 'info@ki-works.eu' }}",
         "subject": "=📞 Rückruf gewünscht: {{ $json.body.request.topic }}",
-        "text": "=Kiwo konnte eine Frage am Telefon nicht beantworten — ein Gast wünscht einen Rückruf:\n\nAnliegen: {{ $json.body.request.topic }}\nRückrufnummer: {{ $json.body.request.caller_number }}\n\nBitte den Gast zurückrufen. Die Antwort können Sie zusätzlich im Dashboard unter \"Einstellungen\" eintragen — sie wird automatisch in die FAQ übernommen, damit Kiwo sie beim nächsten Anruf kennt.",
+        "text": "=Kiwo konnte eine Frage am Telefon nicht beantworten — ein Gast wünscht einen Rückruf:\n\nAnliegen: {{ $json.body.request.topic }}\nRückrufnummer: {{ $json.body.request.caller_number }}\nGewünschter Antwortkanal: {{ $json.body.request.preferred_channel || 'nicht angegeben' }}{{ $json.body.request.contact ? ' (' + $json.body.request.contact + ')' : '' }}\n\nBitte den Gast zurückrufen bzw. auf dem gewünschten Kanal kontaktieren. Die Antwort können Sie zusätzlich im Dashboard unter \"Einstellungen\" eintragen — sie wird automatisch in die FAQ übernommen, damit Kiwo sie beim nächsten Anruf kennt.",
         "options": {}
       },
       "id": "wf14-email",
