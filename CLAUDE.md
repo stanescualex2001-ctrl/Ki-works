@@ -129,6 +129,13 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
+- **Automatische Rückmeldung an den Gast:** Aktuell schließt sich der
+  "Rückruf gewünscht"-Kreislauf nicht automatisch — der Betrieb trägt die
+  Antwort zwar in die FAQ ein, muss den Gast aber selbst zurückrufen, um ihm
+  die Antwort mitzuteilen (keine automatische SMS/Benachrichtigung an den
+  Gast, sobald die Antwort gespeichert wird). Nutzer fand die Idee einer
+  automatischen SMS an den Gast gut, aber bewusst nur vorgemerkt, noch nicht
+  gebaut.
 - **Marken-Idee:** KI-Works = die Plattform, Kiwo = der digitale KI-Mitarbeiter
   (Beispiel-Claim: „KI-Works – Die Plattform für digitale KI-Mitarbeiter" /
   „Kiwo – Dein digitaler Mitarbeiter"). Später denkbar: spezialisierte Kiwo-Rollen
