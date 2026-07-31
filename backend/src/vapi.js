@@ -24,12 +24,12 @@ function parseGuestDatetime(str) {
 async function resolveRestaurant(phoneNumber) {
   if (phoneNumber) {
     const r = await query(
-      'SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours, faq FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
+      'SELECT id, name, address, contact_email, vapi_assistant_id, menu, opening_hours, faq FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
       [phoneNumber],
     );
     if (r.rows[0]) return r.rows[0];
   }
-  const r = await query('SELECT id, name, contact_email, vapi_assistant_id, menu, opening_hours, faq FROM restaurants ORDER BY id LIMIT 1');
+  const r = await query('SELECT id, name, address, contact_email, vapi_assistant_id, menu, opening_hours, faq FROM restaurants ORDER BY id LIMIT 1');
   return r.rows[0] || null;
 }
 
@@ -337,6 +337,8 @@ async function handleAssistantRequest(message, restaurant) {
     assistantOverrides: {
       variableValues: {
         guestContext: context,
+        restaurant_name: restaurant.name || 'unser Restaurant',
+        restaurant_address: restaurant.address || '',
         menu: restaurant.menu || 'Keine Speisekarte hinterlegt — bei Fragen zu Gerichten und Preisen bitte ans Restaurant verweisen.',
         opening_hours: formatOpeningHours(restaurant.opening_hours),
         faq: formatFaq(restaurant.faq),
