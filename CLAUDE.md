@@ -126,6 +126,13 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Landingpage: Orb Buddy (Kiwo-Charakter, bisher nur im Dashboard) ersetzt
   jetzt das generische Bot-Icon im Hero-Orb und erscheint zusätzlich über der
   finalen CTA-Sektion — Kiwo ist so auf der ganzen Seite wiedererkennbar.
+- n8n-Benachrichtigung für "Rückruf gewünscht" (Workflow 14) — Betrieb
+  bekommt jetzt auch eine E-Mail, wenn Kiwo eine Frage nicht beantworten
+  konnte (vorher nur im Dashboard sichtbar).
+- Dashboard: Notification-Zähler in der Sidebar zeigt eine Zahl neben
+  Reservierungen/Bestellungen/Anrufe, wenn seit dem letzten Besuch neue
+  Einträge dazugekommen sind (lokal im Browser gespeicherter Zeitstempel
+  pro Betrieb+Ansicht, verschwindet beim Anklicken).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -136,6 +143,18 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Gast, sobald die Antwort gespeichert wird). Nutzer fand die Idee einer
   automatischen SMS an den Gast gut, aber bewusst nur vorgemerkt, noch nicht
   gebaut.
+- **Live-Weiterleitung an echten Menschen (auf Gast-Wunsch):** Falls ein Gast
+  während des Anrufs explizit mit einem Menschen sprechen möchte, könnte
+  Kiwo den Anruf live an eine echte Telefonnummer durchstellen (Vapi
+  unterstützt das technisch). Bewusst nur vorgemerkt, noch nicht gebaut.
+  - **Pro:** Sofortige Hilfe statt Warten auf Rückruf; wirkt wie ein
+    "Eskalieren an die Rezeption", bessere Erfahrung bei dringenden/
+    komplexen Anliegen.
+  - **Contra:** Braucht eine im Betrieb durchgehend erreichbare Nummer
+    (während Servicezeiten oft nicht der Fall); hebt niemand ab, kann der
+    Anruf unschön enden; untergräbt teilweise das "Kiwo ist immer erreichbar,
+    auch außerhalb der Öffnungszeiten"-Versprechen, da echte Menschen nicht
+    rund um die Uhr verfügbar sind.
 - **Marken-Idee:** KI-Works = die Plattform, Kiwo = der digitale KI-Mitarbeiter
   (Beispiel-Claim: „KI-Works – Die Plattform für digitale KI-Mitarbeiter" /
   „Kiwo – Dein digitaler Mitarbeiter"). Später denkbar: spezialisierte Kiwo-Rollen
