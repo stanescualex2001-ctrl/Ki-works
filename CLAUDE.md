@@ -133,6 +133,36 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Reservierungen/Bestellungen/Anrufe, wenn seit dem letzten Besuch neue
   Einträge dazugekommen sind (lokal im Browser gespeicherter Zeitstempel
   pro Betrieb+Ansicht, verschwindet beim Anklicken).
+- Dashboard: Betrieb-Auswahlfeld leert sich jetzt beim Anklicken und zeigt
+  alle Betriebe (vorher blieb nur der aktuell gewählte gefiltert stehen).
+  Dazu 3 Test-Betriebe (`[DEMO]`-Präfix) für Sichttests der Auswahl angelegt,
+  Cleanup-Skript entsprechend erweitert.
+- Rückruf-Anfrage (`request_callback`) erfasst jetzt zusätzlich den vom Gast
+  gewünschten Antwortkanal (SMS/WhatsApp/E-Mail) samt Kontakt, sichtbar im
+  Dashboard und in der Rückruf-Mail (Workflow 14). Nur Erfassung — kein
+  automatischer Versand, siehe „Automatische Rückmeldung an den Gast" unten.
+- FAQ-Lücke im Vapi-Systemprompt behoben: Backend schickte `{{faq}}` zwar
+  schon immer mit, der Prompt hat die Variable aber nie referenziert — Kiwo
+  hat hinterlegte FAQ-Antworten dadurch nie genutzt. Jetzt im Prompt drin
+  inkl. Anweisung, FAQ vor einem Rückruf zu prüfen.
+- `deploy/setup-vapi.sh` überarbeitet: (1) aktualisiert jetzt einen
+  bestehenden Vapi-Assistenten per PATCH statt bei jedem Lauf einen neuen
+  anzulegen (Ursache für 19 angesammelte Alt-Assistenten in Vapi — 18 davon
+  im Vapi-Konto gelöscht, Skript-Fix verhindert neue); (2) generisch für
+  beliebige Restaurant-ID statt hartcodiert auf Venezia.
+- **Vapi-Assistent wird jetzt automatisch bei Kundenanlage eingerichtet:**
+  neuer Kunde im Dashboard ("Kunden (Betreiber)" → "+ Neuer Kunde") legt den
+  passenden Vapi-Assistenten automatisch an und verknüpft die hinterlegte
+  Telefonnummer (`backend/src/vapiAdmin.js`) — kein manueller
+  Server-Skript-Lauf mehr nötig. Gleiches passiert automatisch bei Änderung
+  von Name/Adresse/Telefonnummer eines Bestandskunden. Läuft best-effort
+  (Kunde wird trotzdem angelegt, falls Vapi-Sync fehlschlägt; Dashboard zeigt
+  dann eine Warnung). `setup-vapi.sh` ist jetzt nur noch ein dünner Wrapper
+  für den manuellen Nachzieh-Fall (z. B. Prompt-Änderung auf Bestandskunden
+  anwenden). Dabei einen alten, vergessenen n8n-Workflow (07) gefunden und
+  entfernt, der auf denselben Webhook hörte und einen zweiten, veralteten
+  Assistenten ohne Stimme/mit Kurzprompt anlegte — führte zu doppelten
+  Assistenten pro neuem Kunden, behoben.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -178,13 +208,31 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Handwerksbetriebe usw.), als Basis für ein skalierbares SaaS-Angebot.
   Einschätzung dazu: die Grundarchitektur (ein Server, eine DB,
   `restaurant_id`-Scoping über alle Tabellen, `customerScope`) trägt das
-  schon weitgehend. Größte Lücken: (1) Vapi-Assistent-Erstellung ist noch
-  manuell/hardcoded auf Venezia (`deploy/setup-vapi.sh`) statt automatisiert;
-  (2) Prompt/Tools sind Restaurant-spezifisch (Reservierung/Bestellung) —
-  andere Branchen bräuchten eigene Prompt-/Tool-Vorlagen; (3) Isolationsmodell
-  bewusst als shared DB + Zeilen-Trennung vorgeschlagen (kein DB-pro-Kunde).
-  Billing/Nutzungsmessung fehlt komplett. Noch nichts entschieden oder
-  gebaut, nur vorgemerkt.
+  schon weitgehend. Lücke (1) "Vapi-Assistent-Erstellung manuell/hardcoded
+  auf Venezia" ist inzwischen behoben (automatisch bei Kundenanlage, siehe
+  „Bereits erledigt"). Verbleibende Lücken: (2) Prompt/Tools sind
+  Restaurant-spezifisch (Reservierung/Bestellung) — andere Branchen bräuchten
+  eigene Prompt-/Tool-Vorlagen (siehe auch Branchen-Brainstorming unten);
+  (3) Isolationsmodell bewusst als shared DB + Zeilen-Trennung vorgeschlagen
+  (kein DB-pro-Kunde). Billing/Nutzungsmessung fehlt komplett. Noch nichts
+  entschieden oder gebaut, nur vorgemerkt.
+- **Andere Branchen als Restaurants:** Nutzer-Frage, welche Branchen zum
+  bestehenden Muster (Terminbuchung + FAQ + Rückruf) passen würden. Gut
+  passend eingeschätzt: Arztpraxis/Zahnarzt/Physio, Friseur/Kosmetik/Wellness,
+  Handwerker/KFZ-Werkstatt, Hotels (Zimmer- statt Tischreservierung),
+  Anwaltskanzlei/Immobilienmakler (Ersttermin/Besichtigung). Schwieriger:
+  Branchen mit komplexer Logik statt einfachem Terminslot (Online-Shop mit
+  Warenkorb) oder starker Regulierung (Bank/Versicherung). Größter Umbau
+  wäre `create_order` (Bestellung) durch ein generisches `create_appointment`
+  (Termin) zu ergänzen/ersetzen — Rest der Architektur ist schon
+  branchenneutral. Nur Brainstorming, nichts entschieden.
+- **Mehrsprachigkeit (Englisch zusätzlich zu Deutsch):** Nutzer-Frage, ob
+  Kiwo auch Englisch können soll. Technisch möglich, aber Transkription
+  (Deepgram, aktuell fest `"language": "de"`) UND Stimme (Azure
+  `de-AT-IngridNeural`, reine Deutsch-Stimme) müssten beide auf mehrsprachig
+  umgestellt werden, sonst klingt/versteht Kiwo Englisch schlecht. Zwei
+  Varianten besprochen: automatische Spracherkennung vs. nur auf
+  Gast-Wunsch umschalten. Noch nicht entschieden, nichts gebaut.
 - **Admin-Dashboard überarbeiten:** Nutzer-Brainstorming — soll künftig zeigen:
   Anzahl aktiver Kunden, Umsatz/Kosten/Gewinn, unternehmensweite KI-Empfehlungen
   (nicht nur pro Betrieb), sowie die Ersparnis-Kachel aggregiert über alle
@@ -207,6 +255,10 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   Klartext geteilte API-Keys)
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
+- Test-Kunde "Kunde Test" (angelegt zum Testen der automatischen
+  Vapi-Einrichtung) ist NICHT `[DEMO]`-markiert und wird vom Cleanup-Skript
+  daher nicht erfasst — vor Go-Live manuell aus der `restaurants`-Tabelle
+  entfernen (bzw. den zugehörigen Vapi-Assistenten löschen)
 - Gäste-360°-/Umsatz-Ansicht wartet auf genauere Vorgaben des Kunden
 - Anthropic-Guthaben war (Stand zuletzt bekannt) bei 0 → Wochenbericht
   (Claude-generierter Mailtext) deswegen wieder aus dem Repo entfernt
