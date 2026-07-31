@@ -10,11 +10,13 @@ source /etc/ki-works/ki-works.env
 [[ -n "${VAPI_API_KEY:-}" ]] || { echo "VAPI_API_KEY fehlt in /etc/ki-works/ki-works.env"; exit 1; }
 PUBLIC_URL="${KIWORKS_PUBLIC_URL:-https://ki-works.eu}"
 
-echo "==> Vapi-Assistent 'ki-works – Venezia' anlegen..."
-ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
-  -H "Authorization: Bearer $VAPI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d @- <<EOF
+# Bereits verknüpften Assistenten wiederverwenden (aktualisieren) statt bei
+# jedem Lauf einen neuen anzulegen und die alten als Karteileichen liegen zu
+# lassen.
+EXISTING_ASSISTANT_ID=$(curl -sS "http://127.0.0.1:3001/api/restaurants" \
+  | jq -r '.[] | select(.id == 1) | .vapi_assistant_id // empty')
+
+ASSISTANT_BODY=$(cat <<EOF
 {
   "name": "ki-works – Venezia",
   "firstMessage": "Grüß Gott, hier ist Kiwo, der KI-Reservierungsassistent vom Restaurant Venezia in Schwertberg. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?",
@@ -166,8 +168,22 @@ ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
 EOF
 )
 
+if [[ -n "$EXISTING_ASSISTANT_ID" ]]; then
+  echo "==> Bestehenden Vapi-Assistenten aktualisieren ($EXISTING_ASSISTANT_ID)..."
+  ASSISTANT_JSON=$(curl -sS -X PATCH "https://api.vapi.ai/assistant/$EXISTING_ASSISTANT_ID" \
+    -H "Authorization: Bearer $VAPI_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "$ASSISTANT_BODY")
+else
+  echo "==> Neuen Vapi-Assistenten 'ki-works – Venezia' anlegen..."
+  ASSISTANT_JSON=$(curl -sS -X POST https://api.vapi.ai/assistant \
+    -H "Authorization: Bearer $VAPI_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d "$ASSISTANT_BODY")
+fi
+
 ASSISTANT_ID=$(echo "$ASSISTANT_JSON" | jq -r '.id // empty')
-[[ -n "$ASSISTANT_ID" ]] || { echo "Assistent konnte nicht angelegt werden:"; echo "$ASSISTANT_JSON" | jq .; exit 1; }
+[[ -n "$ASSISTANT_ID" ]] || { echo "Assistent konnte nicht angelegt/aktualisiert werden:"; echo "$ASSISTANT_JSON" | jq .; exit 1; }
 echo "    Assistant-ID: $ASSISTANT_ID"
 
 echo "==> Telefonnummer $VAPI_PHONE_NUMBER mit dem Assistenten verknüpfen..."
