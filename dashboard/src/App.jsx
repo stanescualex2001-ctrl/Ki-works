@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo, useId } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useId, useRef } from 'react';
 
 /* ---------- Brand mark: Orbit K (ring + K-monogram, orbiting channel dots) ---------- */
 function OrbitKLogo({ size = 34 }) {
@@ -117,10 +117,17 @@ function openRecording(callId) {
 function useFetch(url, refreshKey) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const prevUrl = useRef(null);
   useEffect(() => {
-    if (!url) return undefined;
+    if (!url) { prevUrl.current = null; setData(null); return undefined; }
     let alive = true;
-    setData(null);
+    // Nur bei echtem URL-Wechsel (Tab/Betrieb gewechselt) auf null zurücksetzen
+    // und "Lade…" zeigen. Beim stillen 30s-Auto-Refresh (gleiche URL, nur
+    // refreshKey geändert) alte Daten sichtbar lassen, sonst würde jede
+    // offene Eingabe (z. B. "+ Neuer Kunde"-Formular) durch den kurzzeitigen
+    // Unmount alle 30s verworfen.
+    if (prevUrl.current !== url) setData(null);
+    prevUrl.current = url;
     apiFetch(url)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then((d) => alive && setData(d))
