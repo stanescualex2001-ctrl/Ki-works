@@ -1,6 +1,7 @@
 import express from 'express';
 import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
+import { syncVapiAssistant } from './vapiAdmin.js';
 import { notifyN8n } from './n8n.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
@@ -208,7 +209,9 @@ app.post('/api/restaurants', adminOnly, async (req, res) => {
     [name, address || null, contact_email || null, contact_phone || null, vapi_phone_number || null],
   );
   notifyN8n('restaurant-onboarding', { restaurant: publicRestaurant(rows[0]) });
-  res.status(201).json(publicRestaurant(rows[0]));
+  const vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
+  const { rows: updated } = await query('SELECT * FROM restaurants WHERE id = $1', [rows[0].id]);
+  res.status(201).json({ ...publicRestaurant(updated[0]), vapi });
 });
 
 app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
@@ -232,7 +235,25 @@ app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
     `UPDATE restaurants SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING *`, vals,
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  // Name/Adresse/Nummer beeinflussen den Vapi-Assistenten — bei Änderung
+  // gleich mit-synchronisieren, statt manuell setup-vapi.sh nachzuziehen.
+  let vapi;
+  if (['name', 'address', 'vapi_phone_number'].some((key) => key in req.body)) {
+    vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
+    const { rows: updated } = await query('SELECT * FROM restaurants WHERE id = $1', [rows[0].id]);
+    return res.json({ ...publicRestaurant(updated[0]), vapi });
+  }
   res.json(publicRestaurant(rows[0]));
+});
+
+// Manuelles Nachziehen für Bestandskunden, z. B. nach einer Prompt-Änderung
+// (deploy/setup-vapi.sh ruft das auf) — dieselbe Logik wie oben, nur ohne
+// gleichzeitige Feldänderung.
+app.post('/api/restaurants/:id/sync-vapi', adminOnly, async (req, res) => {
+  const vapi = await syncVapiAssistant(req.params.id);
+  const { rows } = await query('SELECT * FROM restaurants WHERE id = $1', [req.params.id]);
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json({ ...publicRestaurant(rows[0]), vapi });
 });
 
 // Selbstverwaltung: Betreiber ändert eigene Speisekarte/Öffnungszeiten/FAQ,

@@ -795,8 +795,9 @@ function NewCustomerForm({ onDone, onCancel }) {
       }),
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
-        onDone();
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+        onDone(body);
       })
       .catch((err) => { setError(err.message); setSaving(false); });
   };
@@ -867,7 +868,15 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
       {adding && (
         <NewCustomerForm
           onCancel={() => setAdding(false)}
-          onDone={() => { setAdding(false); onChanged(); }}
+          onDone={(result) => {
+            setAdding(false);
+            onChanged();
+            if (result?.vapi) {
+              setInviteMsg(result.vapi.ok
+                ? `✅ Kunde angelegt, Vapi-Assistent eingerichtet.${result.vapi.warning ? ` Hinweis: ${result.vapi.warning}` : ''}`
+                : `⚠️ Kunde angelegt, Vapi-Einrichtung fehlgeschlagen: ${result.vapi.warning}`);
+            }
+          }}
         />
       )}
       {editing && (
