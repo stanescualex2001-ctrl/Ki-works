@@ -371,7 +371,19 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
     Daten (Kreditkarten, Gesundheitsdaten) vor Speicherung — konsequente
     Weiterführung der bestehenden DSGVO-Grundausstattung
   Noch nichts entschieden oder gebaut, nur vorgemerkt.
-  Noch nichts entschieden oder gebaut, nur vorgemerkt.
+- **Vorschlag Menü-Struktur ki-works.eu & Design-Richtung (Brainstorming):**
+  Mit 10+ Rollen-Ideen und 6+ Branchen wird das bestehende Mega-Menü
+  schnell unübersichtlich. Vorschlag: Rollen in zwei Gruppen bündeln statt
+  einer langen Liste — **Kundenkontakt** (Reception, Support, Sales) und
+  **Interne Prozesse** (Office, Recruiting, Zahlungserinnerung, Finance).
+  Nav-Grundgerüst: Lösungen (Mega-Menü) / Preise / Über uns / Kontakt–Jetzt
+  testen (Platz für das "Try Your Own Kiwo"-Widget) / Kunden-Login.
+  Design-Richtung: von "1 Branche + 5 Rollen" zu einem **Matrix-/Filter-
+  Ansatz** wechseln (ähnlich fonio.ai) — eigene Seite mit Filtern "Rolle" ×
+  "Branche" statt alles ins Nav zu quetschen, dazu eine Kartenübersicht
+  "Alle Kiwo-Rollen". Hero-Headline müsste von "Restaurant-Assistent" zu
+  "Plattform für KI-Mitarbeiter" nachziehen. Nur Richtung/Idee, noch kein
+  konkreter Entwurf, nichts entschieden.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
