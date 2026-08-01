@@ -19,7 +19,10 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Antworten **kurz und präzis** halten (Token sparen).
 - **Vor** Code-Änderungen erst mit dem Nutzer abstimmen, außer explizit anders
   gewünscht.
-- **Nie committen/pushen ohne explizite Aufforderung** des Nutzers.
+- **Nie committen/pushen ohne explizite Aufforderung** des Nutzers — außer
+  bei reinen CLAUDE.md-Änderungen: die werden immer sofort automatisch
+  committet+gepusht, damit sie in künftigen Sitzungen verfügbar sind. Für
+  Code-Änderungen (Dashboard/Backend/etc.) bleibt es bei "erst fragen".
 - Nutzer ist nicht technisch — Erklärungen einfach halten, keine unnötigen
   Rückfragen zu bereits Entschiedenem.
 - **SEO/AIO-Pattern für neue Seiten:** Jede neue Landingpage/Unterseite auf
