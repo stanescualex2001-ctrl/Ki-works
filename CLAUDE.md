@@ -348,6 +348,29 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
     Standard-/Schnellweg für neue Kunden sein, **Einzelanfertigung pro
     Kunde muss für Spezialfälle weiterhin möglich bleiben** — Templates
     ersetzen die individuelle Anpassung nicht, sondern ergänzen sie.
+- **Dritte Brainstorming-Runde (Deep Integration, Branchen, Security,
+  Growth):** weitere vom Nutzer geteilte, als passend bestätigte Ideen:
+  - **Kiwo Gastro & Event**: Erweiterung des jetzigen Restaurant-Kiwo um
+    Event-Anfragen und automatische Wartelisten-Benachrichtigung bei
+    Absagen
+  - **Kiwo Auto & Werkstatt**, **Kiwo Hotel & BnB**: konkretisieren die
+    schon vorgemerkten Branchen Handwerk/KFZ und Hotels (Abholbenach-
+    richtigung, WLAN-Code/Concierge-Infos)
+  - **Kiwo Auto-Docu** (Audio-to-CRM aus Meetings/Telefonaten), **Kiwo
+    Finance** (Beleg-/Rechnungserkennung → DATEV/SevDesk)
+  - **Sentiment Alert**: erkennt Frustration/Ärger im Gespräch — liefert
+    den Auslöser für die schon vorgemerkte "Live-Weiterleitung an echten
+    Menschen"
+  - **Voice-Outbound für Karteileichen**: alte/inaktive Leads automatisch
+    per Anruf reaktivieren — gleiche Technik wie der Inbound-to-Outbound-
+    Trigger, passt zur geplanten Rolle Kiwo Sales
+  - **"Try Your Own Kiwo"-Widget**: Interessent gibt seine Website ein,
+    bekommt sofort einen Test-Kiwo zum Ausprobieren — Vertriebs-Idee für
+    die ki-works.eu-Landingpage selbst
+  - **AI Compliance & Guardrails**: automatische Schwärzung sensibler
+    Daten (Kreditkarten, Gesundheitsdaten) vor Speicherung — konsequente
+    Weiterführung der bestehenden DSGVO-Grundausstattung
+  Noch nichts entschieden oder gebaut, nur vorgemerkt.
   Noch nichts entschieden oder gebaut, nur vorgemerkt.
 
 ## Offene Punkte (Stand zuletzt bekannt)
