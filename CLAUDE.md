@@ -323,6 +323,32 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
     Sprachassistent (always-on Gerät)
   Falls verfolgt: eigenständiges neues Produkt für eine andere Branche,
   keine Erweiterung des bestehenden ki-works-Codes.
+- **Weitere Kiwo-Rollen & Plattform-Ideen (zweite Brainstorming-Runde):**
+  Nutzer hat weitere extern vorgeschlagene Ideen geteilt und bestätigt, dass
+  alles davon zur "eine Plattform, mehrere Kiwo-Rollen"-Vision passt (rein
+  konzeptionelles Brainstorming — technische Lücken wie WhatsApp/Vision AI
+  spielen für diese Bewertung bewusst keine Rolle):
+  - Neue Rollen: **Kiwo Recruiter** (Bewerber-Erstqualifizierung), **Kiwo
+    Collection** (freundliche Zahlungserinnerungen statt Inkasso-Ton),
+    **Kiwo Onboarding** (Kunden-/Mitarbeiter-Einführung über die ersten
+    30 Tage)
+  - **Inbound-to-Outbound Trigger**: bei neuer Anfrage (z. B. über die
+    bestehende `leads`-Tabelle/Website-Formular) ruft Kiwo automatisch
+    zurück, solange die Kaufabsicht hoch ist — knüpft direkt an
+    Bestehendes an, auch für ki-works' eigene Landingpage-Anfragen denkbar
+  - **Live-Agent-Handover**: deckt sich mit der oben stehenden
+    "Live-Weiterleitung an echten Menschen"-Idee (gleiche Sache)
+  - **Stimm-/Dialekt-Anpassung** je Region (AT/CH) für höhere Akzeptanz bei
+    Anrufern
+  - **White-Label/Agentur-Partner-Programm**: Plattform an Agenturen/
+    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten
+  - **Branchen-Templates im Marktplatz**: vorgefertigte Prompts/Workflows/
+    Wissenstöpfe je Nische (z. B. "Template für Autohäuser"), mit einem
+    Klick aktivierbar. Nutzer-Präzisierung: Templates sollen der
+    Standard-/Schnellweg für neue Kunden sein, **Einzelanfertigung pro
+    Kunde muss für Spezialfälle weiterhin möglich bleiben** — Templates
+    ersetzen die individuelle Anpassung nicht, sondern ergänzen sie.
+  Noch nichts entschieden oder gebaut, nur vorgemerkt.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
