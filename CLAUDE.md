@@ -166,6 +166,16 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 - Dashboard „Kunden (Betreiber)": Kundenliste jetzt sortierbar (Name A-Z/Z-A,
   neueste/älteste zuerst, meiste Anrufe/Reservierungen 7 Tage) über ein
   Dropdown neben der Suche.
+- Genereller Fix in `useFetch`: der 30s-Auto-Refresh setzte Daten kurz auf
+  `null` zurück, was betroffene Ansichten durch "Lade…" ersetzte und dabei
+  offene Formulareingaben (z. B. "+ Neuer Kunde") löschte — gleiches Muster
+  wie der frühere Settings-Bug. Jetzt wird nur noch bei echtem
+  Tab-/Betrieb-Wechsel zurückgesetzt, nicht beim stillen Hintergrund-Refresh.
+- Vapi-Publish-Status ist jetzt eine eigene Spalte "Vapi-Status" in der
+  Kundenübersicht (`restaurants.vapi_published`, migration-015) statt nur
+  einer flüchtigen Hinweis-Meldung: zeigt "⚠️ Publish nötig" mit
+  Bestätigungslink, der zu "✅ Erledigt" wechselt. Wird bei jeder
+  automatischen Vapi-Synchronisierung wieder zurückgesetzt (siehe unten).
 
 **WICHTIGE EINSCHRÄNKUNG der Vapi-Automatik (noch ungelöst):** per API
 angelegte/aktualisierte Vapi-Assistenten sind offenbar NICHT automatisch
@@ -178,8 +188,8 @@ keinerlei Feld oder Endpoint (recherchiert) — vermutlich eine neuere,
 nicht vollständig dokumentierte Vapi-Funktion (Versions-/Publish-System,
 siehe deren Blogpost "Version Preview, Version History"). **Workaround
 bis auf Weiteres:** nach jeder automatischen Kundenanlage/-änderung muss
-im Vapi-Dashboard einmal manuell "Publish" geklickt werden — das Dashboard
-zeigt dazu jetzt einen Hinweistext nach "+ Neuer Kunde" an. Kein
+im Vapi-Dashboard einmal manuell "Publish" geklickt werden — sichtbar als
+"Vapi-Status"-Spalte in der Kundenübersicht mit Bestätigungslink. Kein
 API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
@@ -261,6 +271,31 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Warnsystem bei auffällig inaktiven Kunden (Kündigungsrisiko), Wachstumstrend
   über Zeit, offene Kundenfragen über alle Kunden hinweg an einer Stelle. Noch
   nichts entschieden oder gebaut.
+- **B2B-Kunden-Dashboard Self-Service-Ideen:** Nutzer-Frage "was könnte der
+  Kunde selbst erledigen, damit wir so wenig wie möglich eingreifen müssen"
+  — Brainstorming, priorisieren "morgen":
+  - Urlaubs-/Ausnahmetage selbst eintragen (bisher nur wiederkehrende
+    Wochentag-Öffnungszeiten, keine Datums-Ausnahmen wie Betriebsferien)
+  - Tischkapazität/Blackout-Zeiten selbst pflegen (`max_party_size` +
+    Sonderfälle), damit `check_availability` ohne unser Eingreifen stimmt
+  - Begrüßungs-/Verabschiedungstext und Tonalität (förmlich/locker) in
+    Leitplanken selbst wählen, statt Prompt-Änderungswunsch an uns
+  - Aktionen/Rabatte an-/ausschalten statt Speisekarte komplett neu schreiben
+  - Selbst-Test im Dashboard: Testanruf-Button (Vapi Outbound-Call) oder
+    Text-Chat-Vorschau gegen aktuelle Speisekarte/FAQ, um "funktioniert das?"
+    ohne Rückfrage an uns zu beantworten
+  - Mehrere Logins pro Betrieb (Rollen: lesen/bearbeiten) + selbst
+    Passwort zurücksetzen — vermeidet geteiltes Passwort und
+    Zugangs-Support-Anfragen
+  - Benachrichtigungs-Einstellungen selbst steuern (Tagesbericht/
+    Rückruf-Mail ein/aus, Empfänger-Adresse, Priorisierung dringender
+    Rückruf-Themen per SMS)
+  - CSV/PDF-Export für Reservierungen/Bestellungen (z. B. Tagesliste für
+    die Küche) statt "schick mir eine Liste"
+  - Vapi-Status-Transparenz weiter ausbauen (Spalte existiert bereits,
+    siehe „Bereits erledigt") — Publizieren selbst bleibt bei uns, da
+    Kunden keinen Vapi-Zugang haben
+  Noch nichts entschieden oder priorisiert, nur vorgemerkt.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
