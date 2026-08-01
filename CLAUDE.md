@@ -301,6 +301,25 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
     siehe „Bereits erledigt") — Publizieren selbst bleibt bei uns, da
     Kunden keinen Vapi-Zugang haben
   Noch nichts entschieden oder priorisiert, nur vorgemerkt.
+- **Altenpflege/Senioren-KI — Fit-Analyse (rein hypothetisch):** Nutzer hat
+  eine extern generierte Ideenliste für KI-Produkte in der Altenpflege
+  geteilt und nach Kompatibilität mit der bestehenden Kiwo-Technik gefragt.
+  Einschätzung, was sich mit dem vorhandenen Vapi+Claude-Telefongespräch-
+  Stack umsetzen ließe (nur Analyse, keine Entscheidung, nichts gebaut,
+  komplett andere Branche als Restaurants):
+  - **Passt technisch direkt** (gleicher Stack, nur neue Inhalte):
+    Erinnerungsanrufe (Medikamente/Trinken, KI fragt/reagiert per
+    Outbound-Anruf); KI-Gefährte/Plauderpartner (Einsamkeitsbekämpfung,
+    Reminiszenztherapie)
+  - **Passt konzeptionell zur Plattform-Idee, aber eigener Kanal/Aufbau:**
+    WhatsApp-Bot für Senioren & Angehörige (Erinnerungen, Check-ins,
+    Angehörigen-Update)
+  - **Passt nicht** (andere Technologie-Domäne): Pflegedokumentations-
+    Diktier-Tool für Personal, KI-generierte Aktivierungsinhalte
+    (Quiz/Musik), Sturzerkennung per Radar-Hardware, Smart-Home-
+    Sprachassistent (always-on Gerät)
+  Falls verfolgt: eigenständiges neues Produkt für eine andere Branche,
+  keine Erweiterung des bestehenden ki-works-Codes.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
