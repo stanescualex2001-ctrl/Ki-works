@@ -341,7 +341,18 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   - **Stimm-/Dialekt-Anpassung** je Region (AT/CH) für höhere Akzeptanz bei
     Anrufern
   - **White-Label/Agentur-Partner-Programm**: Plattform an Agenturen/
-    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten
+    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten.
+    Detaillierter durchdacht: braucht (1) neue Agentur-Ebene über den
+    Betrieben (jeder Betrieb gehört einer Agentur, Rechte-Modell über
+    `customerScope` hinaus erweitern), (2) austauschbares Branding
+    (Logo/Farben/Name) pro Agentur im Dashboard statt hartcodiertem
+    "KI-Works"-Design, (3) zweistufige Abrechnung (Großhandel an Agentur,
+    Agentur an Endkunde) — hängt am selben fehlenden Preismodell wie beim
+    Admin-Dashboard-Punkt, (4) Support-Trennung (Agentur = Erstsupport).
+    Größter Aufwand ist Branding-Flexibilität + Billing, nicht die
+    Multi-Tenant-Grundarchitektur (die trägt schon). Nutzer-Priorität:
+    **explizit für später** — zuerst sollen alle Kiwo-Rollen, Branchen und
+    das neue Design fertig werden.
   - **Branchen-Templates im Marktplatz**: vorgefertigte Prompts/Workflows/
     Wissenstöpfe je Nische (z. B. "Template für Autohäuser"), mit einem
     Klick aktivierbar. Nutzer-Präzisierung: Templates sollen der
