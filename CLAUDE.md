@@ -284,9 +284,14 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   - Selbst-Test im Dashboard: Testanruf-Button (Vapi Outbound-Call) oder
     Text-Chat-Vorschau gegen aktuelle Speisekarte/FAQ, um "funktioniert das?"
     ohne Rückfrage an uns zu beantworten
-  - Mehrere Logins pro Betrieb (Rollen: lesen/bearbeiten) + selbst
-    Passwort zurücksetzen — vermeidet geteiltes Passwort und
-    Zugangs-Support-Anfragen
+  - Mehrere Logins pro Betrieb (Rollen: lesen/bearbeiten) — vermeidet
+    geteiltes Passwort bei mehreren Mitarbeitenden. (Passwort-Selbst-Reset
+    ist bereits erledigt: „Neues Passwort"-Feld bei Zugangsdaten in den
+    Dashboard-Einstellungen, leer = unverändert, siehe „Bereits erledigt".)
+    Einschätzung: niedrige Priorität bei aktueller Kundengröße (kleine
+    Restaurantbetriebe), da der Hauptschmerzpunkt (unveränderbares
+    Passwort) schon gelöst ist — erst bauen, wenn ein Kunde mit mehreren
+    Filialen/klar getrennten Zuständigkeiten konkret danach fragt.
   - Benachrichtigungs-Einstellungen selbst steuern (Tagesbericht/
     Rückruf-Mail ein/aus, Empfänger-Adresse, Priorisierung dringender
     Rückruf-Themen per SMS)
