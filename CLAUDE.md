@@ -402,7 +402,19 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend
 - Impressum/Datenschutz-Platzhalter noch **rechtlich** prüfen (Technik steht,
-  kein Rechtsgutachten); AVV-Verträge fehlen noch
+  kein Rechtsgutachten); AVV-Verträge fehlen noch. Recherchiert:
+  Anthropics AVV (mit SCCs) ist automatisch Teil ihrer Commercial Terms of
+  Service, sobald man den kommerziellen API-Zugang nutzt (kein separater
+  Unterschriftsprozess) — Text zum Nachweis unter
+  anthropic.com/legal/data-processing-addendum. Für Vapi/Twilio muss das
+  gleiche noch einzeln geprüft werden. Zusätzlich vermutlich eine formelle
+  **Datenschutz-Folgenabschätzung (DPIA)** nötig, da bei KI-Systemen oft
+  "hohes Risiko" vermutet wird — bei der geplanten Rechtsprüfung mit
+  einplanen. Ein Wechsel auf EU-KI-Anbieter (Aleph Alpha/Mistral etc.)
+  wurde geprüft und **nicht empfohlen** — mit AVV+SCCs ist Anthropic aus
+  den USA rechtlich nutzbar, ein Anbieterwechsel wäre unnötiger Aufwand.
+  Der EU AI Act (Transparenzpflicht "das ist eine KI") ist über die
+  bestehende Kiwo-Begrüßung vermutlich schon erfüllt.
 - Größere Credential-Rotation nötig (Contabo-Root-Passwort, im Setup im
   Klartext geteilte API-Keys)
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
