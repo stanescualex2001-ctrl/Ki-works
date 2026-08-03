@@ -5,6 +5,7 @@ import {
   Mail, CalendarDays, ShoppingBag, TrendingUp, Send, Check, Cpu,
   Workflow, Plug, Users, Layers, Play, Menu, X, ChevronDown,
   UtensilsCrossed, Hotel, Wrench, Stethoscope, Scissors,
+  UserSearch, Receipt, Compass, Landmark, Car, Building2,
 } from "lucide-react";
 
 /* ============================================================
@@ -187,6 +188,8 @@ const roles = [
     desc: "Nimmt Anrufe an, filtert, leitet weiter oder gibt Auskunft – rund um die Uhr, ohne Wartemusik.",
     icon: PhoneCall,
     tone: "violet",
+    category: "kundenkontakt",
+    status: "live",
   },
   {
     id: "sales",
@@ -195,6 +198,8 @@ const roles = [
     desc: "Qualifiziert Leads, beantwortet Erstfragen und übergibt heiße Kontakte direkt an Ihr Team.",
     icon: TrendingUp,
     tone: "cyan",
+    category: "kundenkontakt",
+    status: "live",
   },
   {
     id: "support",
@@ -203,14 +208,8 @@ const roles = [
     desc: "Beantwortet FAQs über WhatsApp und Web-Chat – im Ton Ihrer Marke, mehrsprachig.",
     icon: MessageCircle,
     tone: "violet",
-  },
-  {
-    id: "office",
-    name: "Kiwo Office",
-    tag: "E-Mail & Kalender",
-    desc: "Sortiert E-Mails, koordiniert Termine und synchronisiert Kalender – ohne Ping-Pong.",
-    icon: CalendarDays,
-    tone: "cyan",
+    category: "kundenkontakt",
+    status: "live",
   },
   {
     id: "orders",
@@ -219,6 +218,58 @@ const roles = [
     desc: "Nimmt Bestellungen und Reservierungen entgegen, prüft Verfügbarkeit und bestätigt sofort.",
     icon: ShoppingBag,
     tone: "violet",
+    category: "kundenkontakt",
+    status: "live",
+  },
+  {
+    id: "office",
+    name: "Kiwo Office",
+    tag: "E-Mail & Kalender",
+    desc: "Sortiert E-Mails, koordiniert Termine und synchronisiert Kalender – ohne Ping-Pong.",
+    icon: CalendarDays,
+    tone: "cyan",
+    category: "intern",
+    status: "live",
+  },
+  {
+    id: "recruiting",
+    name: "Kiwo Recruiting",
+    tag: "Bewerber-Erstqualifizierung",
+    desc: "Führt Erstgespräche mit Bewerbern, prüft Verfügbarkeiten und bucht Termine im Kalender Ihres HR-Teams.",
+    icon: UserSearch,
+    tone: "cyan",
+    category: "intern",
+    status: "soon",
+  },
+  {
+    id: "collection",
+    name: "Kiwo Collection",
+    tag: "Zahlungserinnerung",
+    desc: "Erinnert freundlich an offene Rechnungen, statt wie ein Inkassobüro aufzutreten.",
+    icon: Receipt,
+    tone: "violet",
+    category: "intern",
+    status: "soon",
+  },
+  {
+    id: "onboarding",
+    name: "Kiwo Onboarding",
+    tag: "Kunden- & Mitarbeiter-Einführung",
+    desc: "Begleitet neue Kunden oder Mitarbeitende in den ersten 30 Tagen und beantwortet Startfragen.",
+    icon: Compass,
+    tone: "cyan",
+    category: "intern",
+    status: "soon",
+  },
+  {
+    id: "finance",
+    name: "Kiwo Finance",
+    tag: "Belege & Rechnungen",
+    desc: "Liest Belege und Rechnungen aus und übergibt die Daten an Ihre Buchhaltung.",
+    icon: Landmark,
+    tone: "violet",
+    category: "intern",
+    status: "soon",
   },
 ];
 
@@ -229,6 +280,8 @@ const industries = [
   { name: "Handwerker", icon: Wrench, status: "soon" },
   { name: "Arztpraxen", icon: Stethoscope, status: "soon" },
   { name: "Friseure & Salons", icon: Scissors, status: "soon" },
+  { name: "Autowerkstätten", icon: Car, status: "soon" },
+  { name: "Immobilien", icon: Building2, status: "soon" },
 ];
 
 function CallWave() {
@@ -254,8 +307,9 @@ function CallWave() {
 
 function RoleCard({ role, featured = false }) {
   const Icon = role.icon;
+  const soon = role.status === "soon";
   return (
-    <GlowCard tone={role.tone} className={`p-6 h-full ${featured ? "md:p-8" : ""}`}>
+    <GlowCard tone={role.tone} className={`p-6 h-full ${featured ? "md:p-8" : ""} ${soon ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-3">
         <div
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
@@ -266,8 +320,12 @@ function RoleCard({ role, featured = false }) {
         >
           <Icon className="h-5 w-5" />
         </div>
-        <span className="rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-mono text-white/50">
-          {role.tag}
+        <span
+          className={`rounded-full px-2.5 py-1 text-[10px] font-mono ${
+            soon ? "bg-amber-400/10 text-amber-300" : "bg-white/5 text-white/50"
+          }`}
+        >
+          {soon ? "bald verfügbar" : role.tag}
         </span>
       </div>
       <h3 className={`mt-4 font-semibold ${featured ? "text-2xl md:text-3xl" : "text-lg"}`}>
@@ -277,9 +335,11 @@ function RoleCard({ role, featured = false }) {
         {role.desc}
       </p>
       {role.id === "reception" && featured && <CallWave />}
-      <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-white/70 group-hover:text-white transition">
-        Rolle ansehen <ArrowRight className="h-3.5 w-3.5" />
-      </div>
+      {!soon && (
+        <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-white/70 group-hover:text-white transition">
+          Rolle ansehen <ArrowRight className="h-3.5 w-3.5" />
+        </div>
+      )}
     </GlowCard>
   );
 }
@@ -583,25 +643,76 @@ const steps = [
 ];
 
 /* ---------- Solutions menu content (shared: desktop dropdown + mobile accordion) ---------- */
+function StatusMenuLink({ icon: Icon, name, href, status, iconTone, onNavigate }) {
+  if (status === "live") {
+    return (
+      <a
+        href={href}
+        onClick={onNavigate}
+        className="flex items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/75 transition hover:bg-white/5 hover:text-white"
+      >
+        <span className="flex items-center gap-2.5">
+          <Icon className={`h-4 w-4 shrink-0 ${iconTone}`} />
+          {name}
+        </span>
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-300">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> live
+        </span>
+      </a>
+    );
+  }
+  return (
+    <span className="flex cursor-default items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/35">
+      <span className="flex items-center gap-2.5">
+        <Icon className="h-4 w-4 shrink-0 text-white/25" />
+        {name}
+      </span>
+      <span className="text-[10px] font-mono text-white/25">bald</span>
+    </span>
+  );
+}
+
 function SolutionsMenuContent({ onNavigate, stacked = false }) {
+  const kundenkontakt = roles.filter((r) => r.category === "kundenkontakt");
+  const intern = roles.filter((r) => r.category === "intern");
   return (
     <div className={`grid gap-6 ${stacked ? "" : "sm:grid-cols-2"}`}>
-      <div>
-        <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
-          Anwendungsfälle
+      <div className="flex flex-col gap-5">
+        <div>
+          <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+            Kundenkontakt
+          </div>
+          <div className="mt-3 flex flex-col gap-1">
+            {kundenkontakt.map((r) => (
+              <StatusMenuLink
+                key={r.id}
+                icon={r.icon}
+                name={r.name}
+                href="#roles"
+                status={r.status}
+                iconTone="text-cyan-300"
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
         </div>
-        <div className="mt-3 flex flex-col gap-1">
-          {roles.map((r) => (
-            <a
-              key={r.id}
-              href="#roles"
-              onClick={onNavigate}
-              className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-sm text-white/75 transition hover:bg-white/5 hover:text-white"
-            >
-              <r.icon className="h-4 w-4 shrink-0 text-cyan-300" />
-              {r.name}
-            </a>
-          ))}
+        <div>
+          <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+            Interne Prozesse
+          </div>
+          <div className="mt-3 flex flex-col gap-1">
+            {intern.map((r) => (
+              <StatusMenuLink
+                key={r.id}
+                icon={r.icon}
+                name={r.name}
+                href="#roles"
+                status={r.status}
+                iconTone="text-cyan-300"
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <div>
@@ -609,39 +720,17 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
           Branchen
         </div>
         <div className="mt-3 flex flex-col gap-1">
-          {industries.map((ind) => {
-            const Icon = ind.icon;
-            if (ind.status === "live") {
-              return (
-                <a
-                  key={ind.name}
-                  href={ind.href}
-                  onClick={onNavigate}
-                  className="flex items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/75 transition hover:bg-white/5 hover:text-white"
-                >
-                  <span className="flex items-center gap-2.5">
-                    <Icon className="h-4 w-4 shrink-0 text-violet-300" />
-                    {ind.name}
-                  </span>
-                  <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-300">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> live
-                  </span>
-                </a>
-              );
-            }
-            return (
-              <span
-                key={ind.name}
-                className="flex cursor-default items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/35"
-              >
-                <span className="flex items-center gap-2.5">
-                  <Icon className="h-4 w-4 shrink-0 text-white/25" />
-                  {ind.name}
-                </span>
-                <span className="text-[10px] font-mono text-white/25">bald</span>
-              </span>
-            );
-          })}
+          {industries.map((ind) => (
+            <StatusMenuLink
+              key={ind.name}
+              icon={ind.icon}
+              name={ind.name}
+              href={ind.href || "#roles"}
+              status={ind.status}
+              iconTone="text-violet-300"
+              onNavigate={onNavigate}
+            />
+          ))}
         </div>
       </div>
     </div>
@@ -721,7 +810,7 @@ export default function App() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.15 }}
-                    className="glass absolute left-1/2 top-full z-30 mt-3 w-[440px] -translate-x-1/2 rounded-2xl p-5 shadow-2xl"
+                    className="glass absolute left-1/2 top-full z-30 mt-3 w-[520px] -translate-x-1/2 rounded-2xl p-5 shadow-2xl"
                   >
                     <SolutionsMenuContent onNavigate={() => setSolutionsOpen(false)} />
                   </motion.div>
@@ -887,7 +976,7 @@ export default function App() {
                 <Cpu className="h-3.5 w-3.5 text-violet-400" /> 12+ Integrationen
               </span>
               <span className="flex items-center gap-1.5">
-                <Bot className="h-3.5 w-3.5 text-cyan-400" /> 5 Rollen
+                <Bot className="h-3.5 w-3.5 text-cyan-400" /> 5 Rollen live · 4 bald
               </span>
             </div>
           </div>
@@ -908,11 +997,12 @@ export default function App() {
                 // rollen_ökosystem
               </div>
               <h2 className="mt-2 text-3xl md:text-4xl font-semibold">
-                Ein Kiwo. <span className="text-gradient">Fünf Rollen.</span>
+                Ein Kiwo. <span className="text-gradient">Viele Rollen.</span>
               </h2>
             </div>
             <p className="max-w-md text-sm text-white/55">
               Jede Rolle ist spezialisiert – gemeinsam decken sie den Alltag Ihres Teams ab.
+              Rollen ohne "bald verfügbar" sind schon heute einsatzbereit.
             </p>
           </div>
 
@@ -921,18 +1011,11 @@ export default function App() {
             <div className="md:col-span-2 md:row-span-1">
               <RoleCard role={roles[0]} featured />
             </div>
-            <div>
-              <RoleCard role={roles[1]} />
-            </div>
-            <div>
-              <RoleCard role={roles[2]} />
-            </div>
-            <div>
-              <RoleCard role={roles[3]} />
-            </div>
-            <div>
-              <RoleCard role={roles[4]} />
-            </div>
+            {roles.slice(1).map((r) => (
+              <div key={r.id}>
+                <RoleCard role={r} />
+              </div>
+            ))}
           </div>
         </div>
       </section>
