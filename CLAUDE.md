@@ -337,7 +337,13 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   alles davon zur "eine Plattform, mehrere Kiwo-Rollen"-Vision passt (rein
   konzeptionelles Brainstorming — technische Lücken wie WhatsApp/Vision AI
   spielen für diese Bewertung bewusst keine Rolle):
-  - Neue Rollen: **Kiwo Recruiter** (Bewerber-Erstqualifizierung), **Kiwo
+  - Neue Rollen: **Kiwo Recruiter** (Bewerber-Erstqualifizierung — Prüfung
+    nur gegen vom Arbeitgeber vorab festgelegte objektive Muss-Kriterien
+    wie Führerschein/Verfügbarkeit/Gehaltsrahmen, keine subjektive
+    KI-Bewertung; nur wer diese erfüllt, bekommt automatisch einen
+    HR-Termin. **Wichtig:** EU AI Act stuft KI zur Bewerberauswahl explizit
+    als "Hochrisiko" ein (Anhang III) — deutlich strengere Auflagen als bei
+    den anderen Rollen, vor Umsetzung gesondert rechtlich prüfen), **Kiwo
     Collection** (freundliche Zahlungserinnerungen statt Inkasso-Ton),
     **Kiwo Onboarding** (Kunden-/Mitarbeiter-Einführung über die ersten
     30 Tage)
