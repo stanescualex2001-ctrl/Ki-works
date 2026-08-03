@@ -194,6 +194,15 @@ bis auf Weiteres:** nach jeder automatischen Kundenanlage/-änderung muss
 im Vapi-Dashboard einmal manuell "Publish" geklickt werden — sichtbar als
 "Vapi-Status"-Spalte in der Kundenübersicht mit Bestätigungslink. Kein
 API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
+- Landingpage: neues Mega-Menü "Lösungen" in der Navigation (Desktop-Dropdown
+  + Mobile-Accordion) — Rollen jetzt gruppiert in "Kundenkontakt" (Reception,
+  Sales, Support, Orders — live) und "Interne Prozesse" (Office live, plus
+  Recruiting/Collection/Onboarding/Finance als "bald verfügbar"). Branchen
+  um Autowerkstätten und Immobilien erweitert. Rollen-Sektion zeigt alle
+  Rollen als Karten, "bald"-Rollen deutlich gedimmt ohne CTA-Link. Erster
+  Baustein des vereinbarten Website-Relaunchs (Marketing-zuerst-Ansatz,
+  siehe „Ideen & Zukunftsplanung"), nächster Schritt: eigene Matrix-/
+  Filter-Seite „Rolle × Branche".
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
