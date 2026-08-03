@@ -382,19 +382,25 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
     Daten (Kreditkarten, Gesundheitsdaten) vor Speicherung — konsequente
     Weiterführung der bestehenden DSGVO-Grundausstattung
   Noch nichts entschieden oder gebaut, nur vorgemerkt.
-- **Vorschlag Menü-Struktur ki-works.eu & Design-Richtung (Brainstorming):**
-  Mit 10+ Rollen-Ideen und 6+ Branchen wird das bestehende Mega-Menü
-  schnell unübersichtlich. Vorschlag: Rollen in zwei Gruppen bündeln statt
-  einer langen Liste — **Kundenkontakt** (Reception, Support, Sales) und
-  **Interne Prozesse** (Office, Recruiting, Zahlungserinnerung, Finance).
-  Nav-Grundgerüst: Lösungen (Mega-Menü) / Preise / Über uns / Kontakt–Jetzt
-  testen (Platz für das "Try Your Own Kiwo"-Widget) / Kunden-Login.
-  Design-Richtung: von "1 Branche + 5 Rollen" zu einem **Matrix-/Filter-
-  Ansatz** wechseln (ähnlich fonio.ai) — eigene Seite mit Filtern "Rolle" ×
-  "Branche" statt alles ins Nav zu quetschen, dazu eine Kartenübersicht
-  "Alle Kiwo-Rollen". Hero-Headline müsste von "Restaurant-Assistent" zu
-  "Plattform für KI-Mitarbeiter" nachziehen. Nur Richtung/Idee, noch kein
-  konkreter Entwurf, nichts entschieden.
+- **Website-Relaunch ki-works.eu — ENTSCHIEDEN, in Umsetzung:** Nutzer hat
+  Menü-Struktur, Bau-Reihenfolge und Marketing-Ansatz bestätigt (vorheriger
+  Brainstorming-Stand siehe unten). Beschlossen:
+  - **Marketing zuerst, Rollen als "bald verfügbar" zeigen** — neue Rollen
+    (Recruiter, Care, Gastro & Event usw.) werden auf der Website
+    beworben, BEVOR sie technisch gebaut sind, um Nachfrage zu testen statt
+    blind zu bauen
+  - **Bau-Reihenfolge:** (1) neue Nav-Struktur (Rollen gebündelt in
+    „Kundenkontakt" und „Interne Prozesse") + eigene Matrix-/Filter-Seite
+    „Rolle × Branche" mit Kartenübersicht „Alle Kiwo-Rollen"; (2)
+    Hero-Headline von "Restaurant-Assistent" zu "Plattform für
+    KI-Mitarbeiter"; (3) "Try Your Own Kiwo"-Widget als CTA (eigene, später
+    Phase, technisch aufwendiger)
+  - **Marketing-Ideen bestätigt:** 1-Monat-gratis-Testphase als
+    Hauptangebot, Venezia als Referenz/Case-Study, lokaler Start
+    (Restaurants rund um Schwertberg/Oberösterreich), LinkedIn/Content zu
+    "KI-Mitarbeiter", bestehende SEO/AIO-Basis beibehalten
+  Ursprüngliches Brainstorming (Nav-Grundgerüst-Vorschlag: Lösungen/Preise/
+  Über uns/Kontakt–Jetzt testen/Kunden-Login) bleibt als Referenz gültig.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
