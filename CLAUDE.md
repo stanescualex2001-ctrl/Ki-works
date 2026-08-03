@@ -436,8 +436,42 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   den USA rechtlich nutzbar, ein Anbieterwechsel wäre unnötiger Aufwand.
   Der EU AI Act (Transparenzpflicht "das ist eine KI") ist über die
   bestehende Kiwo-Begrüßung vermutlich schon erfüllt.
-- Größere Credential-Rotation nötig (Contabo-Root-Passwort, im Setup im
-  Klartext geteilte API-Keys)
+- **Technisches Sicherheits-Audit (03.08.2026) — konkrete Lücken gefunden**
+  (Nutzer-Frage "wie ist ki-works/Kiwo gegen Hacker abgesichert", zwei
+  Explore-Agents haben Backend + Server-Infrastruktur geprüft). Positiv
+  bestätigt: Passwort-Hashing (scrypt+Salt, `auth.js`), durchgehend
+  parametrisierte SQL-Queries (keine SQL-Injection gefunden),
+  `customerScope`-Mandantentrennung sauber umgesetzt, keine Secrets im Git
+  committet (`.env` sauber ausgeschlossen, Passwörter/Keys werden erst beim
+  Server-Install generiert). Konkrete offene Lücken:
+  - Kein Rate-Limiting auf Login/öffentlichen Endpunkten (Brute-Force
+    aktuell nicht ausgebremst)
+  - Vapi-Webhook (`backend/src/vapi.js`) prüft das `X-Vapi-Secret` nur,
+    wenn `VAPI_WEBHOOK_SECRET` gesetzt ist — ohne diese Env-Variable wäre
+    der Endpunkt für jeden offen
+  - Interner Admin-Bypass für Zugriffe von `127.0.0.1` (`auth.js`) — jeder
+    Prozess auf demselben Server (z. B. ein kompromittiertes n8n) bekäme
+    automatisch Admin-Rechte auf die API
+  - Hardcodierte Fallback-Secrets im Code, falls Env-Variablen fehlen
+    (`AUTH_SECRET` default `'dev-secret-change-me'` in `auth.js`,
+    DB-Connection-String-Fallback in `db.js`) — nur riskant, falls die
+    echte Env-Variable in Produktion vergessen wird
+  - Keine Sicherheits-Header in nginx (HSTS/CSP/X-Frame-Options fehlen
+    komplett), kein Äquivalent zu `helmet` im Backend
+  - `README.md` behauptet Basic-Auth auf Dashboard/API per nginx — in der
+    tatsächlichen `deploy/nginx/ki-works.conf` nicht umgesetzt (veraltete
+    Doku, Schutz kommt aktuell nur aus der App-Ebene)
+  - Contabo-Root-Passwort-SSH-Login laut README-Hinweis weiterhin aktiv
+    (sollte auf reinen Key-Login umgestellt werden), kein fail2ban
+  - Backups (`backup-db.sh`) unverschlüsselt (nur gzip) und nur lokal auf
+    dem Server, kein Offsite-Backup
+  - Kein dokumentierter Patch-/Update-Prozess für OS/Node/npm
+  - Admin-Login vergleicht Passwort nicht zeitkonstant (`===` statt
+    constant-time compare) — kleines Risiko
+
+  Noch nichts davon behoben, nur erfasst. Größere Credential-Rotation
+  (Contabo-Root-Passwort, im Setup im Klartext geteilte API-Keys) bleibt
+  weiterhin zusätzlich offen.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
 - Test-Kunde "Kunde Test" (angelegt zum Testen der automatischen
