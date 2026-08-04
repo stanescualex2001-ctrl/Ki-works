@@ -209,6 +209,23 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   (`claude/ki-works-marketing-abdeb2`) erarbeitet, jetzt auf den
   Arbeitsbranch übernommen, damit hier direkt daran weitergearbeitet
   werden kann.
+- Impressum und Datenschutzerklärung waren bisher zwei isolierte, schlichte
+  HTML-Seiten ohne Menü/Design der Hauptseite — jetzt im vollen
+  Landingpage-Design inkl. Mega-Menü. Technisch: Header (mit Mega-Menü) und
+  Footer aus `landing/src/App.jsx` in wiederverwendbare Komponenten
+  (`landing/src/components/Header.jsx`, `Footer.jsx`, `PageShell.jsx`)
+  ausgelagert, `landing/src/pages/Impressum.jsx` und `Datenschutz.jsx` neu
+  gebaut. Bleiben unter `/impressum.html` bzw. `/datenschutz.html`
+  erreichbar, jetzt als eigene Vite-Einstiegspunkte mit demselben
+  SSR-Prerendering wie die Startseite (SEO/AIO-Pattern). Inhalte
+  unverändert übernommen (inkl. der internen "bitte rechtlich prüfen"-
+  Hinweise, siehe „Offene Punkte").
+- Neues Browser-Tab-Icon: generischer Platzhalter-Favicon ersetzt durch
+  das Orbit-K-Logo (`landing/public/favicon.svg`, mit `.ico`-Fallback für
+  ältere Browser).
+- Dashboard-Login-Text von "Ihr KI-Telefonassistent" (alte,
+  restaurant-spezifische Formulierung) auf "Ihr digitaler KI-Mitarbeiter"
+  angepasst — passend zur Plattform-Positionierung auf der Landingpage.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
