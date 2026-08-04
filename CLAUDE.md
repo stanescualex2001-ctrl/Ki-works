@@ -253,6 +253,27 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 - Dashboard-Login-Text von "Ihr KI-Telefonassistent" (alte,
   restaurant-spezifische Formulierung) auf "Ihr digitaler KI-Mitarbeiter"
   angepasst — passend zur Plattform-Positionierung auf der Landingpage.
+- Neue Kontakt-Seite (`/kontakt.html`, E-Mail info@ki-works.eu, Handy
+  +43 650 9915759) im selben Design, verlinkt aus Header-Navigation und
+  Footer. mailto-Links öffnen jetzt überall in einem neuen Tab (verhindert,
+  dass Besucher ohne konfiguriertes Mailprogramm die Seite verlieren).
+  "← Zurück zur Startseite"-Links auf Kontakt/Impressum/Datenschutz wieder
+  entfernt, da die Kopfzeile dort jetzt ohnehin das volle Menü zeigt.
+- **Kiwo-Rollen pro Kunde einzeln freischaltbar** (Antwort auf "wie macht
+  man das, wenn ein Kunde nur Sales will, ein anderer Support+Orders" —
+  Entscheidung: vorerst nur wir schalten das manuell frei, Architektur
+  aber Self-Service-tauglich angelegt). Neue Spalte
+  `restaurants.enabled_roles` (JSONB, Default `["orders","support"]` =
+  bisheriges Verhalten, bestehende Kunden unverändert). `vapiAdmin.js`
+  baut System-Prompt/Tool-Liste jetzt aus Rollen-Bausteinen zusammen statt
+  fix für alle gleich. Admin wählt Rollen beim Anlegen eines Kunden oder
+  über "Rollen ändern" in der Kundenübersicht (`dashboard/src/App.jsx`,
+  `RolesForm`) — löst automatisch eine Vapi-Neusynchronisierung aus.
+  **Wichtig:** Sales und Office existieren technisch noch nicht (keine
+  Tools/Prompt-Logik) — im Dashboard sichtbar, aber deaktiviert mit "bald
+  verfügbar", bis dafür echte Funktionalität gebaut wird. Migration
+  `backend/sql/migration-016-enabled-roles.sql` muss auf dem Server noch
+  einmal manuell laufen (siehe „Offene Punkte").
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -469,6 +490,12 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
+  ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
+  `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U
+  kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
+  && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
+  nächsten Backend-Neustart)
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend
