@@ -9,6 +9,28 @@ Benachrichtigungen. Details/Architektur: siehe `README.md`.
 SSH-Zugriff** — alle serverseitigen Schritte (Deploy, Migrationen, n8n-Import
 usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
 
+**Update-Ablauf auf dem Server (wichtig — `/opt/ki-works` ist KEIN Git-Repo!):**
+Der Sourcecode liegt zum Ausrollen in `/root/ki-works-src` (Git-Repo), von dort
+per `rsync` nach `/opt/ki-works` kopiert (so macht es auch `deploy/install.sh`).
+Ein `git pull` direkt in `/opt/ki-works` schlägt fehl. Korrekter Ablauf nach
+jedem Push auf den Arbeitsbranch:
+```bash
+cd /root/ki-works-src
+git fetch origin
+git checkout claude/ki-works-mvp-deploy-0wtfaz
+git pull origin claude/ki-works-mvp-deploy-0wtfaz
+
+rsync -a --delete --exclude .git --exclude node_modules --exclude dist /root/ki-works-src/ /opt/ki-works/
+chown -R kiworks:kiworks /opt/ki-works
+
+sudo -u kiworks bash -c "cd /opt/ki-works/landing && npm install --no-audit --no-fund && npm run build"
+sudo -u kiworks bash -c "cd /opt/ki-works/dashboard && npm install --no-audit --no-fund && npm run build"
+```
+Nur bei Backend-Änderungen zusätzlich: `sudo -u kiworks bash -c "cd
+/opt/ki-works/backend && npm install --omit=dev --no-audit --no-fund"` und
+`systemctl restart ki-works-api`. Secrets/`.env` liegen separat unter
+`/etc/ki-works/` und werden vom rsync nicht berührt.
+
 **Test-Restaurant:** Venezia, Marktplatz 10, 4311 Schwertberg.
 
 **Repo/Branch:** `stanescualex2001-ctrl/Ki-works`, Arbeitsbranch
