@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
-  Workflow, Plug, Users, Layers, Play,
+  Workflow, Plug, Users, Layers, Play, Pause,
 } from "lucide-react";
 import { Header, roles } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -381,6 +381,96 @@ function LiveTest() {
   );
 }
 
+/* ---------- Demo-Gespräche (gesprochene Beispiel-Dialoge, keine echten Anrufe) ---------- */
+const demoCalls = [
+  {
+    id: "reservierung",
+    title: "Tischreservierung",
+    subtitle: "Beispiel-Gespräch",
+    src: "/demo-audio/reservierung.mp3",
+    tone: "violet",
+  },
+  {
+    id: "bestellung",
+    title: "Bestellung zur Abholung",
+    subtitle: "Beispiel-Gespräch",
+    src: "/demo-audio/bestellung.mp3",
+    tone: "cyan",
+  },
+  {
+    id: "oeffnungszeiten",
+    title: "Öffnungszeiten & Reservierung",
+    subtitle: "Beispiel-Gespräch",
+    src: "/demo-audio/oeffnungszeiten.mp3",
+    tone: "violet",
+  },
+];
+
+function fmtTime(s) {
+  if (!Number.isFinite(s)) return "0:00";
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m}:${String(sec).padStart(2, "0")}`;
+}
+
+function DemoCallCard({ call }) {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [current, setCurrent] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const toggle = () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (playing) a.pause();
+    else a.play();
+  };
+
+  const pct = duration ? Math.min(100, (current / duration) * 100) : 0;
+
+  return (
+    <GlowCard tone={call.tone} className="p-5">
+      <audio
+        ref={audioRef}
+        src={call.src}
+        preload="metadata"
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+        onTimeUpdate={(e) => setCurrent(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+      />
+      <div className="flex items-center gap-3.5">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={playing ? "Pause" : "Abspielen"}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
+            call.tone === "cyan"
+              ? "bg-cyan-400/15 text-cyan-300 hover:bg-cyan-400/25"
+              : "bg-violet-400/15 text-violet-300 hover:bg-violet-400/25"
+          }`}
+        >
+          {playing ? <Pause className="h-4.5 w-4.5" /> : <Play className="h-4.5 w-4.5 translate-x-0.5" />}
+        </button>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-sm font-semibold">{call.title}</div>
+          <div className="text-[11px] font-mono text-white/40">{call.subtitle}</div>
+        </div>
+        <div className="shrink-0 font-mono text-[11px] text-white/40 tabular-nums">
+          {fmtTime(current)} / {fmtTime(duration)}
+        </div>
+      </div>
+      <div className="mt-3.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+        <div
+          className={`h-full rounded-full ${call.tone === "cyan" ? "bg-cyan-400" : "bg-violet-400"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </GlowCard>
+  );
+}
+
 /* ---------- Integrations carousel ---------- */
 
 const integrations = [
@@ -635,6 +725,23 @@ export default function App() {
           </div>
           <div className="mt-8">
             <LiveTest />
+          </div>
+
+          <div className="mt-16 text-center">
+            <div className="text-xs font-mono text-violet-300/90 inline-flex items-center gap-2">
+              <PhoneCall className="h-3.5 w-3.5" /> ZUM ANHÖREN
+            </div>
+            <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
+              Beispiel-Gespräche mit <span className="text-gradient">Kiwo</span>.
+            </h3>
+            <p className="mt-3 text-white/60 max-w-xl mx-auto text-sm md:text-base">
+              Gesprochene Beispiel-Dialoge, keine echten Gästeanrufe.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            {demoCalls.map((call) => (
+              <DemoCallCard key={call.id} call={call} />
+            ))}
           </div>
         </div>
       </section>
