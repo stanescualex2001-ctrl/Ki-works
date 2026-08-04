@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
-  Workflow, Plug, Users, Layers, Play, Pause,
+  Workflow, Plug, Users, Layers, Play, Pause, Bell, LayoutDashboard,
+  ShoppingBag,
 } from "lucide-react";
 import { Header, roles } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -742,6 +743,89 @@ export default function App() {
             {demoCalls.map((call) => (
               <DemoCallCard key={call.id} call={call} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard */}
+      <section id="dashboard" className="relative z-10">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
+          <div className="grid gap-8 md:grid-cols-2 md:items-center">
+            <div>
+              <div className="text-xs font-mono text-violet-300/90 flex items-center gap-2">
+                <LayoutDashboard className="h-3.5 w-3.5" /> KUNDEN-DASHBOARD
+              </div>
+              <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
+                Alles auf <span className="text-gradient">einen Blick</span>.
+              </h2>
+              <p className="mt-4 text-white/65 leading-relaxed">
+                Reservierungen, Bestellungen und Anrufe laufen zentral in Ihrem eigenen
+                Dashboard zusammen – kein Zettel, kein Durcheinander zwischen Telefon,
+                WhatsApp und E-Mail.
+              </p>
+              <ul className="mt-6 space-y-2.5 text-sm text-white/75">
+                {[
+                  "Alle Reservierungen, Bestellungen und Anrufe zentral an einem Ort",
+                  "Benachrichtigung bei neuen Anrufen, Reservierungen und Bestellungen",
+                  "Wochenkalender und Detailansicht auf einen Blick",
+                  "Anruf-Zusammenfassungen und Aufnahmen direkt nachhören",
+                  "Speisekarte, Öffnungszeiten und FAQ jederzeit selbst anpassen",
+                ].map((f) => (
+                  <li key={f} className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-400/15 text-violet-300">
+                      <Check className="h-3 w-3" />
+                    </span>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="/dashboard/"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-300 hover:text-violet-200 transition"
+              >
+                Dashboard ansehen <ArrowRight className="h-3.5 w-3.5" />
+              </a>
+            </div>
+
+            <GlowCard tone="violet" className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-mono text-white/50">// kiwo.dashboard</div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/15 px-2.5 py-0.5 text-[10px] font-mono text-violet-300">
+                  <Bell className="h-3 w-3" /> 3 neu
+                </span>
+              </div>
+              <div className="mt-4 space-y-2.5">
+                {[
+                  { icon: PhoneCall, tone: "cyan", label: "Neuer Anruf", meta: "vor 2 Min." },
+                  { icon: ShoppingBag, tone: "violet", label: "Bestellung · 2× Pizza Margherita", meta: "vor 12 Min." },
+                  { icon: CalendarDays, tone: "cyan", label: "Reservierung · 4 Pers., Fr 19:00", meta: "vor 34 Min." },
+                ].map((row) => (
+                  <div
+                    key={row.label}
+                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3"
+                  >
+                    <span
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                        row.tone === "cyan"
+                          ? "bg-cyan-400/10 text-cyan-300"
+                          : "bg-violet-400/10 text-violet-300"
+                      }`}
+                    >
+                      <row.icon className="h-4 w-4" />
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm text-white/85">{row.label}</span>
+                    <span className="shrink-0 text-[11px] font-mono text-white/40">{row.meta}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
+                <div className="text-xs text-cyan-300 font-mono">Von Kiwo übernommen · dieser Monat</div>
+                <div className="mt-1.5 text-2xl font-semibold tabular-nums">≈ 14 Std. · 588 €</div>
+                <div className="mt-1.5 text-[11px] text-white/40">
+                  Basis: ⌀ 42 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)
+                </div>
+              </div>
+            </GlowCard>
           </div>
         </div>
       </section>
