@@ -29,6 +29,11 @@ usw.) müssen dem Nutzer als copy-paste-fertige Befehle gegeben werden.
   ki-works.eu soll dasselbe Prerendering (`react-dom/server`, kein
   Headless-Browser) + Meta-Tags/JSON-LD/robots.txt/sitemap.xml/llms.txt
   bekommen wie in `landing/` bereits umgesetzt (siehe „Bereits erledigt").
+- **Deploy-Befehle immer proaktiv mitgeben:** Sobald eine gepushte
+  Code-Änderung serverseitig ausgerollt werden muss (z. B. `landing/`
+  oder `dashboard/` neu bauen), die passenden copy-paste-fertigen Befehle
+  direkt in derselben Antwort mitgeben — ohne dass der Nutzer extra danach
+  fragen muss.
 
 ## Bereits erledigt (nicht mehr offen)
 
