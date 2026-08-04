@@ -319,6 +319,7 @@ export function Header() {
           <a href="/#live" className="hover:text-white transition">Live testen</a>
           <a href="/#platform" className="hover:text-white transition">Plattform</a>
           <a href="/#onboarding" className="hover:text-white transition">Onboarding</a>
+          <a href="/kontakt.html" className="hover:text-white transition">Kontakt</a>
         </nav>
         <div className="justify-self-end flex items-center gap-2.5">
           <a
@@ -404,6 +405,13 @@ export function Header() {
                 className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
               >
                 Onboarding
+              </a>
+              <a
+                href="/kontakt.html"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+              >
+                Kontakt
               </a>
             </div>
           </motion.div>

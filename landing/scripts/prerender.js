@@ -10,12 +10,13 @@ const dir = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(dir, "..", "dist");
 const ssrEntry = path.join(dir, "..", "dist-server", "entry-server.js");
 
-const { renderHome, renderImpressum, renderDatenschutz } = await import(`file://${ssrEntry}`);
+const { renderHome, renderImpressum, renderDatenschutz, renderKontakt } = await import(`file://${ssrEntry}`);
 
 const pages = [
   { file: "index.html", render: renderHome },
   { file: "impressum.html", render: renderImpressum },
   { file: "datenschutz.html", render: renderDatenschutz },
+  { file: "kontakt.html", render: renderKontakt },
 ];
 
 for (const { file, render } of pages) {

@@ -5,6 +5,7 @@ export function Footer() {
         <div className="truncate">© {new Date().getFullYear()} KI-Works · agent kiwo v1.0</div>
         <div className="flex items-center gap-4">
           <a href="/dashboard/" className="hover:text-white/70 transition">Kunden-Login</a>
+          <a href="/kontakt.html" className="hover:text-white/70 transition">Kontakt</a>
           <a href="/impressum.html" className="hover:text-white/70 transition">Impressum</a>
           <a href="/datenschutz.html" className="hover:text-white/70 transition">Datenschutz</a>
           <span className="flex items-center gap-1.5">
