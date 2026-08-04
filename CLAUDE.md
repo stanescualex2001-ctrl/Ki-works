@@ -203,6 +203,12 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Baustein des vereinbarten Website-Relaunchs (Marketing-zuerst-Ansatz,
   siehe „Ideen & Zukunftsplanung"), nächster Schritt: eigene Matrix-/
   Filter-Seite „Rolle × Branche".
+- `MARKETING.md` angelegt (Vermarktungsstrategie für ki-works.eu: Social
+  Media, SEO/AIO, Google Business Profile, Kalt-E-Mail, kurzfristige
+  Prioritäten) — ursprünglich in einer separaten Sitzung/Branch
+  (`claude/ki-works-marketing-abdeb2`) erarbeitet, jetzt auf den
+  Arbeitsbranch übernommen, damit hier direkt daran weitergearbeitet
+  werden kann.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
