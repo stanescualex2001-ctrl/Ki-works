@@ -286,6 +286,13 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   im echten Produkt (Azure `de-AT-IngridNeural` via `edge-tts`, kostenlos,
   keine Azure-Zugangsdaten nötig), die "Gast"-Seite je eine andere Stimme.
   Audiodateien liegen unter `landing/public/demo-audio/`.
+- Landingpage erwähnte das Kunden-Dashboard bisher nur als Login-Link,
+  nie inhaltlich. Neue Sektion "Alles auf einen Blick" zeigt die echten
+  Vorteile (zentrale Übersicht Reservierungen/Bestellungen/Anrufe,
+  Benachrichtigungen bei Neuem, Wochenkalender, Aufnahmen nachhören,
+  Selbstverwaltung Speisekarte/Öffnungszeiten/FAQ) mit stilisierter
+  Vorschau-Karte. Ersparnis-Kachel darin nutzt dieselbe
+  Kostenbasis-Angabe (42 €/Std.) wie der ROI-Rechner.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
