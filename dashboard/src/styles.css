@@ -36,7 +36,7 @@ body {
   border-right: 1px solid var(--border);
   padding: 1.2rem 1rem; display: flex; flex-direction: column; gap: 0.9rem;
 }
-main { flex: 1; padding: 1.5rem 2rem; max-width: 1200px; }
+main { flex: 1; min-width: 0; padding: 1.5rem 2rem; }
 
 /* ---- Logo-Bereich ---- */
 .logo-area { display: flex; align-items: center; gap: 0.6rem; min-height: 44px; }

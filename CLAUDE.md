@@ -262,7 +262,10 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 - **Kiwo-Rollen pro Kunde einzeln freischaltbar** (Antwort auf "wie macht
   man das, wenn ein Kunde nur Sales will, ein anderer Support+Orders" —
   Entscheidung: vorerst nur wir schalten das manuell frei, Architektur
-  aber Self-Service-tauglich angelegt). Neue Spalte
+  aber Self-Service-tauglich angelegt: sobald Self-Service live geht, soll
+  der Kunde genau diese Rollen selbst auswählen können, wenn er einen
+  Kiwo-Agenten bestellt — `enabled_roles` ist dafür schon die richtige
+  Datengrundlage, nur der Bestell-/Bezahl-Flow fehlt noch). Neue Spalte
   `restaurants.enabled_roles` (JSONB, Default `["orders","support"]` =
   bisheriges Verhalten, bestehende Kunden unverändert). `vapiAdmin.js`
   baut System-Prompt/Tool-Liste jetzt aus Rollen-Bausteinen zusammen statt
