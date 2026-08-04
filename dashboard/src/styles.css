@@ -347,6 +347,11 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem;
   background: var(--panel-solid); color: var(--text);
 }
+.role-checkboxes { display: flex; flex-direction: column; gap: 0.4rem; }
+.role-checkboxes label {
+  flex-direction: row; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text);
+}
+.role-checkboxes label.role-disabled { color: var(--muted); }
 .form-row { display: flex; gap: 0.9rem; align-items: center; }
 
 .site-link { color: var(--muted); font-size: 0.85rem; text-decoration: none; text-align: center; }

@@ -5,10 +5,7 @@ export default function Kontakt() {
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
-        <a href="/" className="inline-flex items-center text-sm text-white/50 hover:text-white/80 transition">
-          ← Zurück zur Startseite
-        </a>
-        <h1 className="mt-4 text-3xl md:text-4xl font-semibold">Kontakt</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold">Kontakt</h1>
         <p className="mt-4 max-w-xl text-sm md:text-base text-white/65 leading-relaxed">
           Fragen zu Kiwo oder der KI-Works Plattform? Wir melden uns gerne bei Ihnen.
         </p>

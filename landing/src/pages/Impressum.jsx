@@ -26,10 +26,7 @@ export default function Impressum() {
   return (
     <PageShell>
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
-        <a href="/" className="inline-flex items-center text-sm text-white/50 hover:text-white/80 transition">
-          ← Zurück zur Startseite
-        </a>
-        <h1 className="mt-4 text-3xl md:text-4xl font-semibold">Impressum</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold">Impressum</h1>
 
         <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100/90">
           <strong className="text-amber-300">Hinweis (intern):</strong> Platzhalter unten mit den

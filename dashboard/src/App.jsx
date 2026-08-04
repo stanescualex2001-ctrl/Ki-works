@@ -739,6 +739,73 @@ function Recommendations({ restaurantId }) {
 }
 
 // Zugangs-Formular für einen Kunden (nur Betreiber).
+// Muss mit ROLE_DEFINITIONS in backend/src/vapiAdmin.js synchron gehalten
+// werden. "implemented: false" heißt: noch keine Tools/Prompt-Logik dafür
+// gebaut (nur Marketing-Versprechen auf der Landingpage) — nicht anhakbar.
+const ROLE_OPTIONS = [
+  { id: 'orders', label: 'Bestellungen & Reservierungen', implemented: true },
+  { id: 'support', label: 'Support & Rückruf', implemented: true },
+  { id: 'sales', label: 'Sales', implemented: false },
+  { id: 'office', label: 'Office', implemented: false },
+];
+
+function RoleCheckboxes({ roles, onToggle }) {
+  return (
+    <div className="role-checkboxes">
+      {ROLE_OPTIONS.map((r) => (
+        <label key={r.id} className={r.implemented ? '' : 'role-disabled'}>
+          <input
+            type="checkbox"
+            checked={r.implemented ? roles.includes(r.id) : false}
+            disabled={!r.implemented}
+            onChange={() => onToggle(r.id)}
+          />
+          {r.label}{!r.implemented && ' (bald verfügbar)'}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+// Formular zum nachträglichen Ändern der freigeschalteten Kiwo-Rollen
+// eines Bestandskunden (löst nach dem Speichern eine Vapi-Neusynchronisierung aus).
+function RolesForm({ restaurant, onDone, onCancel }) {
+  const [roles, setRoles] = useState(restaurant.enabled_roles || ['orders', 'support']);
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const toggle = (id) => {
+    setRoles((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]));
+  };
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch(`/api/restaurants/${restaurant.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ enabled_roles: roles }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onDone();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>Rollen für „{restaurant.name}"</strong>
+      <RoleCheckboxes roles={roles} onToggle={toggle} />
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>Speichern</button>
+        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+      </div>
+    </form>
+  );
+}
+
 function AccessForm({ restaurant, onDone, onCancel }) {
   const [email, setEmail] = useState(restaurant.login_email || restaurant.contact_email || '');
   const [password, setPassword] = useState('');
@@ -785,8 +852,13 @@ function NewCustomerForm({ onDone, onCancel }) {
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [vapiNumber, setVapiNumber] = useState('');
+  const [roles, setRoles] = useState(['orders', 'support']);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+
+  const toggleRole = (id) => {
+    setRoles((r) => (r.includes(id) ? r.filter((x) => x !== id) : [...r, id]));
+  };
 
   const save = (e) => {
     e.preventDefault();
@@ -799,6 +871,7 @@ function NewCustomerForm({ onDone, onCancel }) {
         contact_email: contactEmail || null,
         contact_phone: contactPhone || null,
         vapi_phone_number: vapiNumber || null,
+        enabled_roles: roles,
       }),
     })
       .then(async (r) => {
@@ -824,6 +897,9 @@ function NewCustomerForm({ onDone, onCancel }) {
       <label>KI-Telefonnummer (falls schon vorhanden)
         <input value={vapiNumber} onChange={(e) => setVapiNumber(e.target.value)} />
       </label>
+      <label>Rollen
+        <RoleCheckboxes roles={roles} onToggle={toggleRole} />
+      </label>
       {error && <p className="error">{error}</p>}
       <div className="form-row">
         <button className="primary" type="submit" disabled={saving}>Anlegen</button>
@@ -840,6 +916,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('name-asc');
   const [editing, setEditing] = useState(null);
+  const [editingRoles, setEditingRoles] = useState(null);
   const [adding, setAdding] = useState(false);
   const [inviteMsg, setInviteMsg] = useState(null);
 
@@ -919,6 +996,13 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
           onDone={() => { setEditing(null); onChanged(); }}
         />
       )}
+      {editingRoles && (
+        <RolesForm
+          restaurant={info(editingRoles)}
+          onCancel={() => setEditingRoles(null)}
+          onDone={() => { setEditingRoles(null); onChanged(); }}
+        />
+      )}
       <div className="table-wrap">
         <table>
           <thead>
@@ -966,6 +1050,9 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                     </button>
                     <button className="link" onClick={() => sendInvite(d.restaurant_id)}>
                       Einladung senden
+                    </button>
+                    <button className="link" onClick={() => setEditingRoles(d.restaurant_id)}>
+                      Rollen ändern
                     </button>
                   </td>
                 </tr>

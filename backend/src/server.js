@@ -201,12 +201,13 @@ app.get('/api/restaurants', async (req, res) => {
 });
 
 app.post('/api/restaurants', adminOnly, async (req, res) => {
-  const { name, address, contact_email, contact_phone, vapi_phone_number } = req.body;
+  const { name, address, contact_email, contact_phone, vapi_phone_number, enabled_roles } = req.body;
   if (!name) return res.status(400).json({ error: 'name required' });
   const { rows } = await query(
-    `INSERT INTO restaurants (name, address, contact_email, contact_phone, vapi_phone_number)
-     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [name, address || null, contact_email || null, contact_phone || null, vapi_phone_number || null],
+    `INSERT INTO restaurants (name, address, contact_email, contact_phone, vapi_phone_number${enabled_roles ? ', enabled_roles' : ''})
+     VALUES ($1, $2, $3, $4, $5${enabled_roles ? ', $6' : ''}) RETURNING *`,
+    [name, address || null, contact_email || null, contact_phone || null, vapi_phone_number || null,
+      ...(enabled_roles ? [JSON.stringify(enabled_roles)] : [])],
   );
   notifyN8n('restaurant-onboarding', { restaurant: publicRestaurant(rows[0]) });
   const vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
@@ -225,6 +226,10 @@ app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
       sets.push(`${key} = $${vals.length}`);
     }
   }
+  if ('enabled_roles' in req.body) {
+    vals.push(JSON.stringify(req.body.enabled_roles || []));
+    sets.push(`enabled_roles = $${vals.length}`);
+  }
   if (req.body.password) {
     vals.push(hashPassword(req.body.password));
     sets.push(`password_hash = $${vals.length}`);
@@ -235,10 +240,11 @@ app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
     `UPDATE restaurants SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING *`, vals,
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
-  // Name/Adresse/Nummer beeinflussen den Vapi-Assistenten — bei Änderung
-  // gleich mit-synchronisieren, statt manuell setup-vapi.sh nachzuziehen.
+  // Name/Adresse/Nummer/Rollen beeinflussen den Vapi-Assistenten — bei
+  // Änderung gleich mit-synchronisieren, statt manuell setup-vapi.sh
+  // nachzuziehen.
   let vapi;
-  if (['name', 'address', 'vapi_phone_number'].some((key) => key in req.body)) {
+  if (['name', 'address', 'vapi_phone_number', 'enabled_roles'].some((key) => key in req.body)) {
     vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
     const { rows: updated } = await query('SELECT * FROM restaurants WHERE id = $1', [rows[0].id]);
     return res.json({ ...publicRestaurant(updated[0]), vapi });
