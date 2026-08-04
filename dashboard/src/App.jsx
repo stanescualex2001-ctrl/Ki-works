@@ -169,7 +169,7 @@ function Login({ onLogin }) {
           <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
           <span className="logo-word">KI-Works</span>
         </div>
-        <p className="login-sub">Ihr KI-Telefonassistent — Anmeldung</p>
+        <p className="login-sub">Ihr digitaler KI-Mitarbeiter — Anmeldung</p>
         <label htmlFor="login-email">E-Mail</label>
         <input id="login-email" type="email" required autoComplete="username"
           value={email} onChange={(e) => setEmail(e.target.value)} />
