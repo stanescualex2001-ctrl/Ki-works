@@ -10,17 +10,24 @@ const dir = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(dir, "..", "dist");
 const ssrEntry = path.join(dir, "..", "dist-server", "entry-server.js");
 
-const { render } = await import(`file://${ssrEntry}`);
-const appHtml = render();
+const { renderHome, renderImpressum, renderDatenschutz } = await import(`file://${ssrEntry}`);
 
-const indexPath = path.join(distDir, "index.html");
-const html = readFileSync(indexPath, "utf-8");
-const withContent = html.replace(
-  '<div id="root"></div>',
-  `<div id="root">${appHtml}</div>`,
-);
-writeFileSync(indexPath, withContent);
+const pages = [
+  { file: "index.html", render: renderHome },
+  { file: "impressum.html", render: renderImpressum },
+  { file: "datenschutz.html", render: renderDatenschutz },
+];
+
+for (const { file, render } of pages) {
+  const appHtml = render();
+  const filePath = path.join(distDir, file);
+  const html = readFileSync(filePath, "utf-8");
+  const withContent = html.replace(
+    '<div id="root"></div>',
+    `<div id="root">${appHtml}</div>`,
+  );
+  writeFileSync(filePath, withContent);
+  console.log(`Prerender ok: ${file} — ${appHtml.length} Zeichen eingefügt.`);
+}
 
 rmSync(path.join(dir, "..", "dist-server"), { recursive: true, force: true });
-
-console.log("Prerender ok:", appHtml.length, "Zeichen in dist/index.html eingefügt.");
