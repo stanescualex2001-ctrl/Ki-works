@@ -6,7 +6,12 @@ const angaben = [
   {
     label: "E-Mail",
     value: (
-      <a href="mailto:info@ki-works.eu" className="text-cyan-300 hover:text-cyan-200 transition">
+      <a
+        href="mailto:info@ki-works.eu"
+        target="_blank"
+        rel="noreferrer"
+        className="text-cyan-300 hover:text-cyan-200 transition"
+      >
         info@ki-works.eu
       </a>
     ),

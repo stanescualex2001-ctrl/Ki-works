@@ -37,10 +37,11 @@ const dienstleister = [
 ];
 
 function A({ href, children, external = false }) {
+  const opensNewTab = external || href.startsWith("mailto:");
   return (
     <a
       href={href}
-      {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
+      {...(opensNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
       className="text-cyan-300 hover:text-cyan-200 transition"
     >
       {children}

@@ -16,6 +16,8 @@ export default function Kontakt() {
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <a
             href="mailto:info@ki-works.eu"
+            target="_blank"
+            rel="noreferrer"
             className="glass hover-glow hover-glow-cyan flex flex-1 items-center gap-3.5 rounded-2xl p-5"
           >
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300 ring-1 ring-cyan-400/20">
