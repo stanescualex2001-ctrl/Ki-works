@@ -366,6 +366,9 @@ app.post('/api/reservations', async (req, res) => {
   if (!restaurantId || !customer_name || !reserved_at) {
     return res.status(400).json({ error: 'restaurant_id, customer_name, reserved_at required' });
   }
+  if (new Date(reserved_at).getTime() < Date.now()) {
+    return res.status(400).json({ error: 'reserved_at liegt in der Vergangenheit' });
+  }
   const { rows } = await query(
     `INSERT INTO reservations (restaurant_id, customer_name, customer_phone, party_size, reserved_at, notes, source)
      VALUES ($1, $2, $3, $4, $5, $6, 'dashboard') RETURNING *`,
