@@ -277,6 +277,15 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   verfügbar", bis dafür echte Funktionalität gebaut wird. Migration
   `backend/sql/migration-016-enabled-roles.sql` muss auf dem Server noch
   einmal manuell laufen (siehe „Offene Punkte").
+- **Beispiel-Gespräche zum Anhören** auf der Landingpage (Abschnitt "Live
+  testen", passend zur "Try Your Own Kiwo"-Idee, aber einfachere erste
+  Ausbaustufe ohne echten Rückruf): drei synthetisch erzeugte Demo-Dialoge
+  (Tischreservierung, Bestellung zur Abholung, Öffnungszeiten &
+  Reservierung) — bewusst keine echten Gästeanrufe (DSGVO/Konsens-Problem),
+  sondern erfundene Beispiele. Kiwos Antworten nutzen dieselbe Stimme wie
+  im echten Produkt (Azure `de-AT-IngridNeural` via `edge-tts`, kostenlos,
+  keine Azure-Zugangsdaten nötig), die "Gast"-Seite je eine andere Stimme.
+  Audiodateien liegen unter `landing/public/demo-audio/`.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
