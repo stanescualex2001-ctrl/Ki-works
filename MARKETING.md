@@ -110,4 +110,87 @@ Technik steht — jetzt zählt Content:
    erste Runde verschicken.
 3. 3-5 Social-Media-Posts mit der Venezia-Case-Study vorbereiten und
    veröffentlichen.
+
+## Preismodell (Entwurf, Stand 04.08.2026 — noch NICHT final/live)
+
+Auslöser: Frage, wie ein Kunde später im Self-Service nur bestimmte
+Kiwo-Rollen wählen und bezahlen könnte (siehe CLAUDE.md „Kiwo-Rollen pro
+Kunde"). Noch keine Zahlungsanbindung/Checkout gebaut — reine
+Preis-Vorarbeit.
+
+### Kostenbasis (echte Zahl aus dem Vapi-Dashboard für die aktuelle
+Kiwo-Konfiguration — Deepgram Nova 2 + Claude Haiku 4.5 + Azure
+de-AT-IngridNeural)
+
+- **~0,08 $/Minute** reine Vapi-Stack-Kosten (Transkription+Modell+Stimme+
+  Vapi-Plattformgebühr), lt. Vapi-Dashboard-Anzeige
+- Zzgl. Twilio-Telefonleitung (nicht in obiger Zahl enthalten), geschätzt
+  ~0,005–0,01 €/Min für eingehende AT-Anrufe
+- **Gesamtkosten ca. 0,085 €/Minute** — Basis für alle Kalkulationen unten
+
+### Wettbewerbs-Landschaft (Recherche 04.08.2026, fonio.ai-Alternativen)
+
+- **Reine Nutzungsgebühr:** novofon ab 0,10 €/Min, sipgate ~0,15–0,25 €/Min,
+  FlowLyne 0,50 €/Min
+- **Hybrid Abo + pro Gespräch:** VITAS — 49 €/Monat Grundgebühr + 0,28 €
+  pro Konversation (nicht pro Minute — evtl. auch für Kiwo ein Modell,
+  da Restaurantgäste in "Anrufen" denken, nicht in Minuten)
+- **Gestaffelte Monatspakete:** fonio.ai (Solo 99 €/1000 Min, Team 299 €/
+  3000 Min, Scale ab 499 €/5000+ Min — alle ~0,10 €/Min effektiv, "alle
+  Rollen/Assistenten inklusive" in jedem Paket), Audelia (Essential 49 €/
+  150 Min, Starter 99 €/300 Min, Business 199 €/1000 Min, Professional
+  499 €/3000 Min — 0,17–0,33 €/Min effektiv, da Hybrid-Service mit
+  Mensch-Rückfalloption), smao (59/249/349 €), Famulor (~199 €), meiti
+  (ab 42 €)
+- **Enterprise/individuell:** Parloa, Cognigy, telli (nach
+  "Agentenzahl + Anrufminuten") — für Kiwo aktuell nicht relevant
+  (Zielgruppe: kleine Restaurants)
+
+### Strukturentscheidung: eine komplette Kiwo, Preis nach Volumen —
+nicht pro Rolle
+
+Rollen (Orders/Support/künftig Sales/Office/...) bleiben **freie
+Konfiguration ohne Einzelpreis** — der Kunde bezahlt nach Gesprächsvolumen,
+nicht danach, welche Rollen aktiv sind (kostet euch technisch ohnehin
+nichts extra). Vorbild: fonio.ai ("∞ Assistenten" in jedem Paket).
+Sobald neue Rollen (Sales, Office, Collection) technisch existieren,
+zwei Optionen, keine davon erfordert Einzelpreise pro Rolle:
+1. Einfach in jedes Paket mit aufnehmen (wie fonio) — kein Zusatzumsatz,
+   aber am einfachsten.
+2. Neue Rollen zunächst nur ab einem höheren Paket freischalten (wie
+   Audelia es z. B. mit "Individuelle Stimme" nur ab Scale macht) — Hebel
+   für spätere Preiserhöhung/Upsell ohne A-la-carte-Komplexität.
+
+### Vorläufige Tarif-Tabelle (Entwurf)
+
+| Paket | Minuten inkl. | Preis/Monat | Effektiv €/Min | Marge über Kosten |
+|---|---|---|---|---|
+| Solo  | 300  | 69 €  | 0,23 €  | ~2,7x (63 % Bruttomarge) |
+| Team  | 1000 | 199 € | 0,199 € | ~2,3x (57 % Bruttomarge) |
+| Scale | 2500 | 399 € | 0,16 €  | ~1,9x (47 % Bruttomarge) |
+
+Überschreitung des Kontingents: eigener Cent-Betrag/Minute, noch nicht
+festgelegt. Zielgruppe kleine Restaurants dürfte meist im Solo-Bereich
+landen (realistisch 20–100 Anrufe/Monat à 2-3 Min = 40-300 Min).
+
+### Verkaufsargument statt Preis-Hebel: Ersparnis vs. echte Arbeitskraft
+
+Kosten-plus-Marge legt nur die Preis-Untergrenze fest — den eigentlichen
+Wert zeigt der bereits gebaute **ROI-Rechner** der Landingpage (⌀ 42 €/Std.
+Vollkosten Arbeitskraft). Beispielrechnung: 300 Gesprächsminuten (Solo)
+entsprechen bei einem Menschen eher 6-7 Std. echter Arbeitszeit (inkl.
+Notizen/Systemeingabe) → ca. 270-290 € Personalkosten für dieselbe
+Arbeit — der Solo-Tarif (69 €) kostet also weniger als ein Viertel davon.
+**Idee für die künftige Preise-Seite:** unter jedem Paket "≈ X Std.
+Personalzeit gespart = Y € Wert" anzeigen, mit derselben Rechenlogik wie
+im bestehenden ROI-Rechner.
+
+### Offen / noch zu klären
+
+- Preis für Überschreitung des Minutenkontingents
+- Ob Minuten- oder Konversationsbasis (siehe VITAS-Vorbild) das bessere
+  Modell für Kiwo ist
+- Jahres- vs. Monatsabo (fonio bietet z. B. -15 % bei Jährlich)
+- Gesamter Bestell-/Bezahl-Flow für Self-Service fehlt noch komplett
+  (siehe CLAUDE.md „Ideen & Zukunftsplanung")
 4. Rest (SEO-Content, bezahlte Kanäle, Events) danach sukzessive angehen.

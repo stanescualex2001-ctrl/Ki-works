@@ -353,7 +353,13 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Kunden (mit der jetzigen Pro-Kunde-Ansicht als aufklappbarem Unterpunkt).
   Größte Lücke: es gibt noch kein Preismodell pro Kunde und keine
   Kosten-Zuordnung (Vapi/Anthropic/Twilio laufen als ein gemeinsamer Topf) —
-  Umsatz/Gewinn sind deshalb aktuell nicht berechenbar. Weitere Ideen dazu:
+  Umsatz/Gewinn sind deshalb aktuell nicht berechenbar. **Update:** ein
+  erster Preismodell-Entwurf existiert jetzt in `MARKETING.md`
+  ("Preismodell (Entwurf)") — Tarife Solo/Team/Scale nach Gesprächs-
+  minuten gestaffelt (69/199/399 €), Kostenbasis aus echtem Vapi-Dashboard
+  (~0,085 €/Min inkl. Twilio), Rollen bleiben dabei bewusst kostenlose
+  Konfiguration statt Einzelpreis. Noch nicht final, kein Bestell-/
+  Bezahl-Flow gebaut. Weitere Ideen dazu:
   Warnsystem bei auffällig inaktiven Kunden (Kündigungsrisiko), Wachstumstrend
   über Zeit, offene Kundenfragen über alle Kunden hinweg an einer Stelle. Noch
   nichts entschieden oder gebaut.
