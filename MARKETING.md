@@ -108,8 +108,12 @@ Technik steht — jetzt zählt Content:
 1. Google Business Profile für ki-works.eu anlegen.
 2. Kalt-E-Mail-Liste (20-30 lokale Restaurants) + Template erstellen und
    erste Runde verschicken.
-3. 3-5 Social-Media-Posts mit der Venezia-Case-Study vorbereiten und
-   veröffentlichen.
+3. ~~3-5 Social-Media-Posts mit der Venezia-Case-Study vorbereiten und
+   veröffentlichen.~~ **Erledigt (05.08.2026):** eigene Profile auf
+   Facebook, Instagram, TikTok und LinkedIn angelegt, erster Post (Claude-
+   generiertes Slideshow-Video "1 Monat gratis testen" + Plattform-
+   Beschreibung) auf allen vier veröffentlicht. Weitere Posts (z. B. echte
+   Venezia-Case-Study) folgen.
 
 ## Preismodell (Entwurf, Stand 04.08.2026 — noch NICHT final/live)
 
