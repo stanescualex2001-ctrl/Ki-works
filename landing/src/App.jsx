@@ -570,6 +570,19 @@ function ROICalc() {
   );
 }
 
+/* ---------- Preise ---------- */
+const pricingFeatures = [
+  "Alle freigeschalteten Kiwo-Rollen inklusive",
+  "Dashboard: Reservierungen, Bestellungen & Anrufe",
+  "E-Mail-Benachrichtigungen bei Neuem",
+  "EU-Hosting & DSGVO-konform",
+];
+const pricingTiers = [
+  { name: "Solo", minutes: 300, price: 69, savedHours: 6, savedEuros: 270, tone: "violet" },
+  { name: "Team", minutes: 1000, price: 199, savedHours: 22, savedEuros: 910, tone: "cyan", featured: true },
+  { name: "Scale", minutes: 2500, price: 399, savedHours: 54, savedEuros: 2275, tone: "violet" },
+];
+
 /* ---------- Onboarding ---------- */
 const steps = [
   {
@@ -952,6 +965,87 @@ export default function App() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Preise */}
+      <section id="preise" className="relative z-10">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-cyan-300/90">
+              <Sparkles className="h-3.5 w-3.5" /> PREISE
+            </div>
+            <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
+              Ein Kiwo, <span className="text-gradient">alle Rollen inklusive</span>.
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-white/60">
+              Sie zahlen nach Gesprächsvolumen, nicht danach, welche Rollen aktiv sind.
+              Der erste Monat ist kostenlos.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {pricingTiers.map((tier) => (
+              <GlowCard
+                key={tier.name}
+                tone={tier.tone}
+                className={`p-6 md:p-8 ${tier.featured ? "md:-translate-y-2 ring-1 ring-cyan-400/30" : ""}`}
+              >
+                {tier.featured && (
+                  <span className="inline-flex rounded-full bg-cyan-400/15 px-3 py-1 text-[10px] font-mono uppercase tracking-wide text-cyan-300">
+                    Meistgewählt
+                  </span>
+                )}
+                <div className={`${tier.featured ? "mt-3" : ""} text-lg font-semibold`}>{tier.name}</div>
+                <div className="mt-2 flex items-baseline gap-1.5">
+                  <span className="text-4xl font-semibold tabular-nums">{tier.price} €</span>
+                  <span className="text-sm text-white/45">/ Monat</span>
+                </div>
+                <div className="mt-1.5 text-sm text-white/55">
+                  {tier.minutes.toLocaleString("de-DE")} Gesprächsminuten/Monat
+                </div>
+
+                <ul className="mt-6 space-y-2.5 text-sm text-white/75">
+                  {pricingFeatures.map((f) => (
+                    <li key={f} className="flex items-start gap-2">
+                      <span
+                        className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${
+                          tier.tone === "cyan" ? "bg-cyan-400/15 text-cyan-300" : "bg-violet-400/15 text-violet-300"
+                        }`}
+                      >
+                        <Check className="h-3 w-3" />
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-xs text-white/55">
+                  ≈ {tier.savedHours} Std. Personalzeit gespart / Monat
+                  <br />
+                  <span className="text-white/40">≈ {tier.savedEuros.toLocaleString("de-DE")} € Wert (⌀ 42 €/Std.)</span>
+                </div>
+
+                <a
+                  href="/kontakt.html"
+                  className={`mt-6 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
+                    tier.featured
+                      ? "bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] glow-cyan hover:scale-[1.02]"
+                      : "glass border border-white/15 text-white/85 hover-glow hover-glow-violet"
+                  }`}
+                >
+                  Jetzt kostenlos testen <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </GlowCard>
+            ))}
+          </div>
+          <p className="mt-6 text-center text-[11px] text-white/35">
+            Alle Preise zzgl. USt. Mehr Minuten benötigt oder individuelles Paket gewünscht?{" "}
+            <a href="/kontakt.html" className="text-cyan-300 hover:text-cyan-200 transition">
+              Sprechen Sie uns an
+            </a>
+            .
+          </p>
         </div>
       </section>
 
