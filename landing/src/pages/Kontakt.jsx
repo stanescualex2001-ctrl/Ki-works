@@ -4,6 +4,7 @@ import { PageShell } from "../components/PageShell.jsx";
 
 function ContactForm() {
   const [form, setForm] = useState({ name: "", business: "", email: "", phone: "", message: "" });
+  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
   const [error, setError] = useState(null);
 
@@ -79,21 +80,29 @@ function ContactForm() {
 
       {error && <p className="mt-4 text-sm text-red-300">{error}</p>}
 
+      <label className="mt-5 flex items-start gap-2.5 text-[11px] text-white/45">
+        <input
+          type="checkbox"
+          required
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/[0.03] accent-cyan-400"
+        />
+        Ich habe die{" "}
+        <a href="/datenschutz.html" className="text-cyan-300 hover:text-cyan-200 transition">
+          Datenschutzerklärung
+        </a>{" "}
+        gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu.*
+      </label>
+
       <div className="mt-5 flex flex-wrap items-center gap-4">
         <button
           type="submit"
-          disabled={status === "sending"}
+          disabled={status === "sending" || !consent}
           className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform disabled:opacity-60 disabled:hover:scale-100"
         >
           {status === "sending" ? "Wird gesendet…" : "Nachricht senden"} <Send className="h-3.5 w-3.5" />
         </button>
-        <p className="text-[11px] text-white/35">
-          Mit dem Absenden stimmen Sie unserer{" "}
-          <a href="/datenschutz.html" className="text-cyan-300 hover:text-cyan-200 transition">
-            Datenschutzerklärung
-          </a>{" "}
-          zu.
-        </p>
       </div>
     </form>
   );
