@@ -315,7 +315,11 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   nötig, nur das Formular gefehlt. E-Mail-Kachel auf der Kontakt-Seite und
   "Demo anfragen" auf der Startseite verlinken jetzt auch dorthin statt
   mailto zu öffnen — Impressum/Datenschutz behalten echte mailto-Links
-  (gesetzliche Pflicht zur direkten Kontaktmöglichkeit).
+  (gesetzliche Pflicht zur direkten Kontaktmöglichkeit). Workflow 08 war
+  bereits aktiv, End-to-End-Test vom Nutzer erfolgreich: Formular
+  abgeschickt → Benachrichtigungs-E-Mail bei info@ki-works.eu angekommen.
+  Zusätzlich: Datenschutz-Zustimmung ist jetzt eine Pflicht-Checkbox statt
+  reinem Hinweistext (Senden-Button bleibt bis zum Anhaken deaktiviert).
 - Preise-Sektion auf der Startseite (neuer Nav-Punkt "Preise", Anker
   `#preise`) mit den drei Tarifen aus dem `MARKETING.md`-Preisentwurf
   (Solo 69€/300Min, Team 199€/1000Min, Scale 399€/2500Min), inkl.
@@ -547,12 +551,6 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **n8n-Workflow 08 (Neuer Interessent) auf dem Server aktivieren:** Das
-  neue Kontaktformular funktioniert nur, wenn dieser Workflow im
-  n8n-Dashboard (n8n.ki-works.eu) auf "Active" steht — war zuvor
-  vermutlich nie aktiviert, da es bisher kein Formular gab, das den
-  Endpunkt aufruft. Kurz prüfen/aktivieren, sonst kommen Anfragen zwar in
-  der `leads`-Tabelle an, aber es kommt keine E-Mail-Benachrichtigung.
 - **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
   ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
   `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U
