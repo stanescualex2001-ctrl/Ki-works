@@ -978,9 +978,7 @@ export default function App() {
                 Kiwo kennenlernen <ArrowRight className="h-4 w-4" />
               </a>
               <a
-                href="mailto:info@ki-works.eu"
-                target="_blank"
-                rel="noreferrer"
+                href="/kontakt.html"
                 className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm text-white/85 border border-white/15 hover-glow hover-glow-violet"
               >
                 <Mail className="h-3.5 w-3.5" /> Demo anfragen
