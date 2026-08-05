@@ -548,6 +548,28 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
     "KI-Mitarbeiter", bestehende SEO/AIO-Basis beibehalten
   Ursprüngliches Brainstorming (Nav-Grundgerüst-Vorschlag: Lösungen/Preise/
   Über uns/Kontakt–Jetzt testen/Kunden-Login) bleibt als Referenz gültig.
+- **Social-Media-Automatisierung (Mo/Mi/Fr, ein Post pro Tag) — ENTSCHIEDEN,
+  Backend-Teil fertig, wartet auf Meta-Einrichtung:** Nutzer möchte
+  regelmäßige Posts (freie Themenwahl), von mir erstellt UND veröffentlicht.
+  Entscheidung nach Abwägung: Facebook + Instagram werden vollautomatisch
+  bespielt (Meta erlaubt Postings per API auf eigene Seiten ohne
+  App-Review-Wartezeit), LinkedIn + TikTok bleiben vorerst manuell (ich
+  erstelle den fertigen Post, Nutzer lädt ihn selbst hoch), da beide
+  Plattformen für automatisches Posten eine eigene, unsichere/langsame
+  Freigabe verlangen. Gebaut: `backend/src/socialMedia.js` (Meta-Graph-API-
+  Calls) + Endpunkt `POST /api/webhooks/social-post` in `server.js`
+  (Shared-Secret-geschützt wie der Vapi-Webhook, nimmt Bildunterschrift +
+  Bild entgegen, hostet das Bild öffentlich unter
+  `/api/public/social-assets/`, postet auf FB-Seite + verknüpftes
+  IG-Business-Konto). **Noch offen, bevor es live gehen kann:** Nutzer muss
+  einmalig eine Meta-Entwickler-App einrichten und mir Page-ID,
+  IG-Business-Account-ID und einen Page-Access-Token geben (Anleitung
+  wurde im Chat gegeben); zusätzlich müssen `FB_PAGE_ID`,
+  `FB_PAGE_ACCESS_TOKEN`, `IG_BUSINESS_ACCOUNT_ID`, `SOCIAL_POST_SECRET`
+  in `/etc/ki-works/.env` gesetzt werden. Danach lege ich eine
+  wiederkehrende Routine (Mo/Mi/Fr) an, die automatisch Thema+Text+Grafik
+  erstellt (Rotation z. B. Case-Study, Feature-Highlight, Kundennutzen,
+  Kurzfakt) und über obigen Endpunkt veröffentlicht.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
