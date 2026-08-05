@@ -1,4 +1,7 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
 import { syncVapiAssistant } from './vapiAdmin.js';
@@ -6,6 +9,7 @@ import { notifyN8n } from './n8n.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { sendSms, reservationSms } from './sms.js';
+import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
 import {
   authMiddleware, adminOnly, customerScope,
   hashPassword, verifyPassword, signToken, generateSetupToken,
@@ -15,8 +19,14 @@ process.on('unhandledRejection', (err) => console.error('Unhandled rejection:', 
 
 const app = express();
 app.set('trust proxy', 'loopback');
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '6mb' }));
 app.use(authMiddleware);
+
+// Öffentlich erreichbarer Ablageort für Social-Media-Grafiken (Meta Graph API
+// braucht eine öffentliche Bild-URL, kein Base64-Upload).
+const SOCIAL_ASSETS_DIR = path.join(process.cwd(), 'public', 'social-assets');
+fs.mkdirSync(SOCIAL_ASSETS_DIR, { recursive: true });
+app.use('/api/public/social-assets', express.static(SOCIAL_ASSETS_DIR, { maxAge: '1d' }));
 
 // Async-Fehler aus Routen landen im Error-Handler statt die Anfrage hängen zu lassen.
 for (const method of ['get', 'post', 'patch']) {
@@ -91,6 +101,34 @@ app.post('/api/login', async (req, res) => {
 
 // --- Vapi webhook (called by Vapi servers) ------------------------------------
 app.post('/api/webhooks/vapi', handleVapiWebhook);
+
+// --- Social-Media-Post (Claude generiert Text+Grafik, ruft diesen Endpunkt auf) --
+app.post('/api/webhooks/social-post', async (req, res) => {
+  const secret = process.env.SOCIAL_POST_SECRET;
+  if (!secret || req.headers['x-social-post-secret'] !== secret) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  const { caption, imageBase64 } = req.body || {};
+  if (!caption || !imageBase64) {
+    return res.status(400).json({ error: 'caption und imageBase64 erforderlich' });
+  }
+  const filename = `${crypto.randomUUID()}.png`;
+  fs.writeFileSync(path.join(SOCIAL_ASSETS_DIR, filename), Buffer.from(imageBase64, 'base64'));
+  const imageUrl = `${process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu'}/api/public/social-assets/${filename}`;
+
+  const results = {};
+  try {
+    results.facebook = await publishFacebookPhoto({ imageUrl, caption });
+  } catch (err) {
+    results.facebook = { error: err.message };
+  }
+  try {
+    results.instagram = await publishInstagramPhoto({ imageUrl, caption });
+  } catch (err) {
+    results.instagram = { error: err.message };
+  }
+  res.json({ ok: true, imageUrl, results });
+});
 
 // --- Interessenten-Formular der Firmen-Website (öffentlich) --------------------
 app.post('/api/public/interest', async (req, res) => {
