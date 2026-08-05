@@ -308,6 +308,14 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   gratis testen", 4-teiliges Slideshow-Video) erzeugt und vom Nutzer
   freigegeben — noch nicht ins Repo übernommen (externe Marketing-Assets,
   keine Website-Inhalte).
+- Echtes Kontaktformular auf `/kontakt.html` (statt mailto-Link) —
+  nutzt den bereits bestehenden `POST /api/public/interest`-Endpunkt
+  (`leads`-Tabelle) und den bestehenden n8n-Workflow 08, der automatisch
+  eine Benachrichtigung an info@ki-works.eu schickt. Kein Backend-Umbau
+  nötig, nur das Formular gefehlt. E-Mail-Kachel auf der Kontakt-Seite und
+  "Demo anfragen" auf der Startseite verlinken jetzt auch dorthin statt
+  mailto zu öffnen — Impressum/Datenschutz behalten echte mailto-Links
+  (gesetzliche Pflicht zur direkten Kontaktmöglichkeit).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -530,6 +538,12 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **n8n-Workflow 08 (Neuer Interessent) auf dem Server aktivieren:** Das
+  neue Kontaktformular funktioniert nur, wenn dieser Workflow im
+  n8n-Dashboard (n8n.ki-works.eu) auf "Active" steht — war zuvor
+  vermutlich nie aktiviert, da es bisher kein Formular gab, das den
+  Endpunkt aufruft. Kurz prüfen/aktivieren, sonst kommen Anfragen zwar in
+  der `leads`-Tabelle an, aber es kommt keine E-Mail-Benachrichtigung.
 - **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
   ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
   `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U
