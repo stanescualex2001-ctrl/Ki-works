@@ -316,6 +316,15 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   "Demo anfragen" auf der Startseite verlinken jetzt auch dorthin statt
   mailto zu öffnen — Impressum/Datenschutz behalten echte mailto-Links
   (gesetzliche Pflicht zur direkten Kontaktmöglichkeit).
+- Preise-Sektion auf der Startseite (neuer Nav-Punkt "Preise", Anker
+  `#preise`) mit den drei Tarifen aus dem `MARKETING.md`-Preisentwurf
+  (Solo 69€/300Min, Team 199€/1000Min, Scale 399€/2500Min), inkl.
+  Ersparnis-Hinweis pro Paket (Personalzeit/Wert, gleiche 42€/Std.-Basis
+  wie der ROI-Rechner). CTA verlinkt zur Kontaktseite (noch kein
+  Bestell-/Bezahl-Flow). Interne Kostenbasis (0,085 €/Min) bewusst NICHT
+  öffentlich angezeigt, nur die Endkundenpreise. Preise gelten weiterhin
+  als Entwurf (siehe MARKETING.md „Offen / noch zu klären" — z. B.
+  Überschreitungspreis, Jahres- vs. Monatsabo).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
