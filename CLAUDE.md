@@ -293,6 +293,21 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Selbstverwaltung Speisekarte/Öffnungszeiten/FAQ) mit stilisierter
   Vorschau-Karte. Ersparnis-Kachel darin nutzt dieselbe
   Kostenbasis-Angabe (42 €/Std.) wie der ROI-Rechner.
+- **Social-Media-Grafiken/Videos selbst erzeugen (Marketing-Vorbereitung):**
+  Claude kann quadratische Werbe-Grafiken (Instagram/Facebook/LinkedIn) und
+  kurze Slideshow-Videos mit Sprachausgabe im ki-works-Design bauen — kein
+  Foto-/Video-Generator, sondern HTML/CSS im echten Look (Farben, Fonts,
+  Logo, Orb Buddy) gebaut und per Headless-Chromium als PNG gerendert;
+  Sprachausgabe per `edge-tts` (kostenlos, echte Kiwo-Stimme
+  `de-AT-IngridNeural`), Video-Zusammenbau per `ffmpeg` (Bilder + Ton).
+  **Technischer Haken einmalig gelöst:** `edge-tts`/aiohttp vertrauen dem
+  Proxy-Zertifikat dieser Umgebung nicht automatisch — Fix: Proxy-CA
+  (`/root/.ccr/ca-bundle.crt`) an `certifi`s `cacert.pem` anhängen (`cat
+  ... >> $(python3 -c "import certifi; print(certifi.where())")`), reines
+  `SSL_CERT_FILE` reicht nicht. Erste Beispiele (Werbe-Grafik "1 Monat
+  gratis testen", 4-teiliges Slideshow-Video) erzeugt und vom Nutzer
+  freigegeben — noch nicht ins Repo übernommen (externe Marketing-Assets,
+  keine Website-Inhalte).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
