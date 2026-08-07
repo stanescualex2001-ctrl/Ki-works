@@ -549,27 +549,43 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Ursprüngliches Brainstorming (Nav-Grundgerüst-Vorschlag: Lösungen/Preise/
   Über uns/Kontakt–Jetzt testen/Kunden-Login) bleibt als Referenz gültig.
 - **Social-Media-Automatisierung (Mo/Mi/Fr, ein Post pro Tag) — ENTSCHIEDEN,
-  Backend-Teil fertig, wartet auf Meta-Einrichtung:** Nutzer möchte
-  regelmäßige Posts (freie Themenwahl), von mir erstellt UND veröffentlicht.
-  Entscheidung nach Abwägung: Facebook + Instagram werden vollautomatisch
-  bespielt (Meta erlaubt Postings per API auf eigene Seiten ohne
-  App-Review-Wartezeit), LinkedIn + TikTok bleiben vorerst manuell (ich
-  erstelle den fertigen Post, Nutzer lädt ihn selbst hoch), da beide
-  Plattformen für automatisches Posten eine eigene, unsichere/langsame
-  Freigabe verlangen. Gebaut: `backend/src/socialMedia.js` (Meta-Graph-API-
-  Calls) + Endpunkt `POST /api/webhooks/social-post` in `server.js`
-  (Shared-Secret-geschützt wie der Vapi-Webhook, nimmt Bildunterschrift +
-  Bild entgegen, hostet das Bild öffentlich unter
-  `/api/public/social-assets/`, postet auf FB-Seite + verknüpftes
-  IG-Business-Konto). **Noch offen, bevor es live gehen kann:** Nutzer muss
-  einmalig eine Meta-Entwickler-App einrichten und mir Page-ID,
-  IG-Business-Account-ID und einen Page-Access-Token geben (Anleitung
-  wurde im Chat gegeben); zusätzlich müssen `FB_PAGE_ID`,
-  `FB_PAGE_ACCESS_TOKEN`, `IG_BUSINESS_ACCOUNT_ID`, `SOCIAL_POST_SECRET`
-  in `/etc/ki-works/.env` gesetzt werden. Danach lege ich eine
-  wiederkehrende Routine (Mo/Mi/Fr) an, die automatisch Thema+Text+Grafik
-  erstellt (Rotation z. B. Case-Study, Feature-Highlight, Kundennutzen,
-  Kurzfakt) und über obigen Endpunkt veröffentlicht.
+  Backend-Teil fertig, wartet auf Meta-Einrichtung + Routine-Freigabe:**
+  Nutzer möchte regelmäßige Posts (freie Themenwahl), von mir erstellt UND
+  veröffentlicht — **inkl. eines passenden Reels zu jedem Post** (neu
+  bestätigt 07.08.2026, nicht nur Standbild). Entscheidung nach Abwägung:
+  Facebook + Instagram werden vollautomatisch bespielt (Meta erlaubt
+  Postings per API auf eigene Seiten ohne App-Review-Wartezeit), LinkedIn +
+  TikTok bleiben vorerst manuell (ich erstelle den fertigen Post inkl.
+  Reel, Nutzer lädt ihn selbst hoch), da beide Plattformen für
+  automatisches Posten eine eigene, unsichere/langsame Freigabe verlangen.
+  Gebaut: `backend/src/socialMedia.js` (Meta-Graph-API-Calls) + Endpunkt
+  `POST /api/webhooks/social-post` in `server.js` (Shared-Secret-geschützt
+  wie der Vapi-Webhook, nimmt Bildunterschrift + Bild entgegen, hostet das
+  Bild öffentlich unter `/api/public/social-assets/`, postet auf FB-Seite +
+  verknüpftes IG-Business-Konto). Zusätzlich etabliert (07.08.2026):
+  Reel-Pipeline für 1080x1920-Kurzvideos — Szenen als HTML/CSS per
+  Headless-Chromium gerendert (gleiches Muster wie die Standbild-Grafiken),
+  Sprachausgabe pro Szene per `edge-tts` (Stimme `de-AT-IngridNeural`),
+  Zusammenbau per `ffmpeg` (Bilder mit passender Anzeigedauer per
+  concat-Demuxer + verkettetes Audio mit Stille-Puffern). Erster Post
+  danach erfolgreich erstellt und manuell übergeben (Thema "verpasster
+  Anruf = verlorene Reservierung", aus der `MARKETING.md`-Ideenliste;
+  Automatik lief noch nicht, da Meta-Zugang fehlt).
+  **Noch offen, bevor es live/automatisch laufen kann:**
+  1. Nutzer muss einmalig eine Meta-Entwickler-App einrichten und mir
+     Page-ID, IG-Business-Account-ID und einen Page-Access-Token geben
+     (Anleitung wurde im Chat gegeben); zusätzlich müssen `FB_PAGE_ID`,
+     `FB_PAGE_ACCESS_TOKEN`, `IG_BUSINESS_ACCOUNT_ID`, `SOCIAL_POST_SECRET`
+     in `/etc/ki-works/.env` gesetzt werden.
+  2. Die wiederkehrende Mo/Mi/Fr-05:00-Routine (`create_trigger`) ließ sich
+     am 07.08.2026 trotz mehrfacher Versuche und Nutzer-Bestätigung
+     ("freigegeben") nicht anlegen — Fehler „MCP tool call requires
+     approval" bei `create_trigger` UND `send_later`, offenbar eine
+     System-/App-seitige Berechtigung außerhalb des Chats, nicht durch
+     einfaches Wiederholen lösbar. Nutzer sollte in der Claude-Oberfläche
+     nach einer offenen Freigabe für „Routines/Scheduled Tasks" suchen.
+     Bis das gelöst ist: Posts nur auf explizite Nachfrage im Chat, keine
+     automatische Mo/Mi/Fr-Erstellung.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
