@@ -329,6 +329,15 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   öffentlich angezeigt, nur die Endkundenpreise. Preise gelten weiterhin
   als Entwurf (siehe MARKETING.md „Offen / noch zu klären" — z. B.
   Überschreitungspreis, Jahres- vs. Monatsabo).
+- Orb Buddy animiert (Landing-Hero/-CTA + Dashboard-Sidebar): Antennen-
+  Wackeln, periodisches Blinzeln, sanftes Schweben überall; zusätzlich eine
+  kleine pulsierende Sprechblase nur an der großen Hero-Version (CTA/
+  Sidebar bewusst ohne, um bei kleiner Größe nicht zu überladen). Technisch
+  native SVG-Animation (`<animateTransform>`/`<animate>`) statt einer neuen
+  Abhängigkeit, da `dashboard/` bisher keine Animationsbibliothek hat —
+  gleiche Technik wie beim bestehenden OrbitK-Logo. `OrbBuddy` bleibt wie
+  bisher zwischen `landing/src/App.jsx` und `dashboard/src/App.jsx`
+  dupliziert (kein gemeinsames Paket), beide Kopien synchron gehalten.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
