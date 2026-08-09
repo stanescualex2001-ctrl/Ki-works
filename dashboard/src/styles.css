@@ -368,6 +368,12 @@ button.primary:disabled { opacity: 0.5; cursor: wait; }
   50% { opacity: 0.85; box-shadow: 0 0 0 6px rgba(52,211,153,0); }
 }
 
+@keyframes orb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.orb-float { animation: orb-float 3.4s ease-in-out infinite; }
+
 /* ---- Mobil ---- */
 @media (max-width: 760px) {
   .layout { flex-direction: column; }
