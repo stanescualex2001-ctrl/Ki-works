@@ -221,6 +221,20 @@ bis auf Weiteres:** nach jeder automatischen Kundenanlage/-änderung muss
 im Vapi-Dashboard einmal manuell "Publish" geklickt werden — sichtbar als
 "Vapi-Status"-Spalte in der Kundenübersicht mit Bestätigungslink. Kein
 API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
+**Ergänzung (10.08.2026, beim Debuggen der Phase-1-Prompt-Änderung
+entdeckt):** Vapi legt bei jedem PATCH intern eine neue, nummerierte
+Version an (sichtbar über den kleinen "v5 ▾"-Dropdown direkt neben der
+Assistenten-ID oben im Editor → "Version History"). `GET
+/assistant/:id` liefert dabei nicht zwingend die neueste Version, sondern
+offenbar die zuletzt veröffentlichte — nach mehreren PATCH-Syncs
+hintereinander kann das Dashboard/die API also täuschend lange den alten
+Prompt zeigen, obwohl der Sync technisch erfolgreich war. Vapis eigenes
+"Restore version"-Feature in der Historie war bei einem Testversuch
+zusätzlich fehlerhaft ("v4 could not be restored"). **Funktionierender
+Workaround:** nicht über die Versions-Historie/Restore gehen, sondern
+einmal frisch `setup-vapi.sh <id>` laufen lassen, Vapi-Seite neu laden
+(F5) und SOFORT bei der dadurch automatisch neu geöffneten aktuellen
+Version auf "Publish" klicken.
 - Landingpage: neues Mega-Menü "Lösungen" in der Navigation (Desktop-Dropdown
   + Mobile-Accordion) — Rollen jetzt gruppiert in "Kundenkontakt" (Reception,
   Sales, Support, Orders — live) und "Interne Prozesse" (Office live, plus
