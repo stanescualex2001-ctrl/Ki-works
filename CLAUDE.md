@@ -574,8 +574,21 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   verknüpftes IG-Business-Konto). Zusätzlich etabliert (07.08.2026):
   Reel-Pipeline für 1080x1920-Kurzvideos — Szenen als HTML/CSS per
   Headless-Chromium gerendert (gleiches Muster wie die Standbild-Grafiken),
-  Sprachausgabe pro Szene per `edge-tts` (Stimme `de-AT-IngridNeural`),
-  Zusammenbau per `ffmpeg` (Bilder mit passender Anzeigedauer per
+  Sprachausgabe pro Szene per `edge-tts` (Stimme `de-AT-IngridNeural`,
+  Tempo bisher `--rate=+0%`/Standard). **Tempo-Anpassung in Arbeit
+  (10.08.2026, noch NICHT final):** Nutzer wollte ursprünglich Kiwos
+  Telefonstimme schneller ("Gespräch soll bisschen schneller sein"),
+  stellte sich aber als Missverständnis heraus — gemeint war die
+  Video-Sprachausgabe, nicht Kiwo am Telefon (siehe separater Punkt zur
+  Vapi-Azure-`speed`-Einstellung, die trotzdem wie gewünscht auf 1.3
+  gesetzt und vom Nutzer als sinnvolle Verbesserung akzeptiert wurde,
+  unabhängig vom Missverständnis). Für die Video-Sprachausgabe wurden dem
+  Nutzer drei Hörproben geschickt (Standard/+20%/+35%), er wählte
+  "Standard+10%" — bevor das als Standard übernommen wird, wollte er aber
+  noch die exakte +10%-Hörprobe selbst bestätigen (verschickt, Antwort
+  steht noch aus). Sobald bestätigt: `--rate=+10%` fest in die
+  Reel-Erstellung übernehmen. Zusammenbau per
+  `ffmpeg` (Bilder mit passender Anzeigedauer per
   concat-Demuxer + verkettetes Audio mit Stille-Puffern). Erster Post
   danach erfolgreich erstellt und manuell übergeben (Thema "verpasster
   Anruf = verlorene Reservierung", aus der `MARKETING.md`-Ideenliste;
@@ -613,6 +626,16 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
      gelöst ist: Posts nur auf explizite Nachfrage im Chat, keine
      automatische Mo/Mi/Fr-Erstellung — Nutzer weiß das und fragt bei
      Bedarf gezielt nach.
+- Kiwos Telefonstimme (Vapi, Azure `de-AT-IngridNeural`) spricht jetzt
+  schneller: `speed: 1.3` statt Standard in `backend/src/vapiAdmin.js`
+  (`voice`-Objekt) — ausgelöst durch "Gespräch soll bisschen schneller
+  sein" (10.08.2026), stellte sich im Nachhinein als Missverständnis
+  heraus (Nutzer meinte die Reel-Video-Sprachausgabe, nicht Kiwo am
+  Telefon — siehe „Social-Media-Automatisierung" oben), Nutzer wollte die
+  Telefon-Änderung aber trotzdem behalten. Muss nach jedem Deploy per
+  `bash deploy/setup-vapi.sh <restaurant-id>` erneut synchronisiert und im
+  Vapi-Dashboard manuell "published" werden (gleiche Einschränkung wie
+  bei allen Vapi-Sync-Änderungen, siehe unten).
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
