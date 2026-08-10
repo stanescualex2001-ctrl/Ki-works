@@ -338,6 +338,13 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   gleiche Technik wie beim bestehenden OrbitK-Logo. `OrbBuddy` bleibt wie
   bisher zwischen `landing/src/App.jsx` und `dashboard/src/App.jsx`
   dupliziert (kein gemeinsames Paket), beide Kopien synchron gehalten.
+- Kiwos Sprechtempo (Telefon + Reel-Videos) auf +5% erhöht, siehe oben
+  „Social-Media-Automatisierung". Dabei aufgeräumt: die alten Vapi-
+  Test-Assistenten "Kunde Test"/"Test Kunde 1"/"test kunde 2" (Reste aus
+  der Entwicklung der automatischen Kundenanlage) hat der Nutzer im
+  Vapi-Dashboard gelöscht, die zugehörigen `restaurants`-Zeilen (IDs 9-11)
+  am 10.08.2026 auch aus der Datenbank entfernt — dieser lang offene
+  Aufräum-Punkt ist damit erledigt.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -698,13 +705,6 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   weiterhin zusätzlich offen.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
-- Test-Kunden "Kunde Test", "Test Kunde 1", "test kunde 2" (angelegt zum
-  Testen der automatischen Vapi-Einrichtung) sind NICHT `[DEMO]`-markiert
-  und werden vom Cleanup-Skript daher nicht erfasst. Die zugehörigen
-  Vapi-Assistenten hat der Nutzer am 10.08.2026 bereits im Vapi-Dashboard
-  gelöscht — die passenden Zeilen in der `restaurants`-Tabelle (zeigen
-  jetzt auf einen gelöschten Vapi-Assistenten) stehen aber noch aus,
-  Befehl dafür wurde im Chat gegeben, Nutzer entscheidet selbst, wann.
 - **Vapi "Publish"-Problem** (Details siehe „Bereits erledigt"): jeder neue/
   geänderte Kunde braucht aktuell einen manuellen "Publish"-Klick im
   Vapi-Dashboard, sonst nimmt der Assistent keine Anrufe an — noch kein
