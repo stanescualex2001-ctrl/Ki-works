@@ -345,6 +345,39 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   Vapi-Dashboard gelöscht, die zugehörigen `restaurants`-Zeilen (IDs 9-11)
   am 10.08.2026 auch aus der Datenbank entfernt — dieser lang offene
   Aufräum-Punkt ist damit erledigt.
+- **Kiwo branchenneutral gemacht — Phase 1 (10.08.2026):** Nutzer besitzt
+  neben ki-works auch LEDTEK (LED-Leuchten-Händler, ledtek.at) und
+  pixelpress (Web-/KI-Agentur, pixelpress.at) und will alle drei auf
+  derselben Kiwo-Plattform laufen haben. Erster Umbau-Schritt: die
+  "Support"-Rolle (FAQ-Beantwortung + Rückruf) funktioniert jetzt sauber
+  für Nicht-Restaurant-Kunden. `backend/src/vapiAdmin.js` baut Prompt und
+  Tools jetzt aus einer `ROLE_BLOCKS`-Registry zusammen (statt zwei
+  hartcodierter `orders`/`support`-Booleans mit String-Verkettung) — eine
+  künftige neue Rolle (z. B. generische Terminbuchung, LEDTEK-Angebote,
+  pixelpress-Lead-Qualifizierung) ist dadurch nur noch ein
+  Registry-Eintrag, kein Umbau der Kernfunktion mehr. Der Grundprompt
+  erwähnt jetzt nirgends mehr "Restaurant"/"Speisekarte", wenn die
+  `orders`-Rolle aus ist. `restaurants.menu` in `restaurants.knowledge_base`
+  umbenannt (migration-017, reiner Postgres-Metadaten-Rename), Dashboard-
+  Label entsprechend auf "Wissensdatenbank" geändert. Dashboard zeigt
+  Kalender/Reservierungen/Bestellungen nur noch, wenn `orders` aktiv ist
+  (sonst leere Tabs für Support-only-Kunden). n8n-Workflows 01/06/14:
+  "Restaurant"/"Gast" in den Benachrichtigungstexten auf "Kunde"/"Anrufer"
+  generalisiert — **diese drei Workflows müssen manuell in der n8n-
+  Oberfläche nachgezogen werden** (die JSON-Dateien im Repo haben keine
+  stabile Workflow-ID, ein Reimport per CLI würde vermutlich Duplikate
+  anlegen statt zu aktualisieren, siehe Diagnose beim doppelten
+  Vapi-Assistenten weiter oben — deshalb bewusst nicht automatisiert).
+  **Noch offen (Phase 2+, nicht in diesem Schritt):** generisches
+  `create_appointment` statt `create_reservation`, LEDTEK-spezifische
+  Tools (Angebote, Lagerbestand, Bildanalyse), pixelpress-spezifische
+  Tools (Lead-Qualifizierung, Projektverwaltung), WhatsApp-Kanal,
+  Live-Weiterleitung an Menschen. Kundenanlage für ki-works/LEDTEK/
+  pixelpress läuft über das normale "+ Neuer Kunde"-Dashboard-Formular
+  (Rolle vorerst nur `support`), Wissensbasis/FAQ füllt jeder Kunde danach
+  selbst im eigenen Dashboard aus (Selbstverwaltung, wie bei Venezia) —
+  noch nicht angelegt, wartet auf Name/Adresse/Kontakt/Telefonnummer vom
+  Nutzer.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -384,20 +417,19 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   strukturieren (Rolle × Branche); erster sichtbarer Schritt (Mega-Menü auf
   der Landingpage) bereits umgesetzt, siehe „Bereits erledigt" — eigene
   Unterseiten pro Rolle/Branche gibt es aber weiterhin nicht.
-- **Multi-Tenant-SaaS-Architektur:** Nutzer-Brainstorming — ein einziger
-  Kiwo-Server soll mehrere Unternehmen/Branchen bedienen können, jeder Kunde
-  mit eigener Wissensbasis/Prompts und getrennten Daten (Restaurants, Hotels,
-  Handwerksbetriebe usw.), als Basis für ein skalierbares SaaS-Angebot.
-  Einschätzung dazu: die Grundarchitektur (ein Server, eine DB,
+- **Multi-Tenant-SaaS-Architektur — nicht mehr rein hypothetisch, aktiv in
+  Umsetzung (siehe „Bereits erledigt", Phase 1 am 10.08.2026):** Ursprünglich
+  Nutzer-Brainstorming, jetzt konkret: Nutzer besitzt neben ki-works auch
+  LEDTEK und pixelpress und will alle drei auf demselben Kiwo-Server
+  laufen haben, mit eigener Wissensbasis/Prompts und getrennten Daten.
+  Einschätzung: die Grundarchitektur (ein Server, eine DB,
   `restaurant_id`-Scoping über alle Tabellen, `customerScope`) trägt das
-  schon weitgehend. Lücke (1) "Vapi-Assistent-Erstellung manuell/hardcoded
-  auf Venezia" ist inzwischen behoben (automatisch bei Kundenanlage, siehe
-  „Bereits erledigt"). Verbleibende Lücken: (2) Prompt/Tools sind
-  Restaurant-spezifisch (Reservierung/Bestellung) — andere Branchen bräuchten
-  eigene Prompt-/Tool-Vorlagen (siehe auch Branchen-Brainstorming unten);
-  (3) Isolationsmodell bewusst als shared DB + Zeilen-Trennung vorgeschlagen
-  (kein DB-pro-Kunde). Billing/Nutzungsmessung fehlt komplett. Noch nichts
-  entschieden oder gebaut, nur vorgemerkt.
+  schon weitgehend, Lücke "Vapi-Assistent-Erstellung manuell/hardcoded" war
+  schon behoben, Lücke "Prompt/Tools Restaurant-spezifisch" ist mit Phase 1
+  für die Support-Rolle behoben (Rollen-Registry statt hartcodierter
+  Booleans). Weiterhin offen: generische Terminbuchung/Bestellung für
+  andere Branchen (Phase 2+), Billing/Nutzungsmessung fehlt komplett,
+  Isolationsmodell bleibt shared DB + Zeilen-Trennung (kein DB-pro-Kunde).
 - **Andere Branchen als Restaurants:** Nutzer-Frage, welche Branchen zum
   bestehenden Muster (Terminbuchung + FAQ + Rückruf) passen würden. Gut
   passend eingeschätzt: Arztpraxis/Zahnarzt/Physio, Friseur/Kosmetik/Wellness,
