@@ -579,7 +579,10 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   concat-Demuxer + verkettetes Audio mit Stille-Puffern). Erster Post
   danach erfolgreich erstellt und manuell übergeben (Thema "verpasster
   Anruf = verlorene Reservierung", aus der `MARKETING.md`-Ideenliste;
-  Automatik lief noch nicht, da Meta-Zugang fehlt).
+  Automatik lief noch nicht, da Meta-Zugang fehlt). Zweiter Post am
+  10.08.2026 (Montag, auf Nutzer-Nachfrage) zum Thema "Zeitersparnis/
+  15 Std. pro Woche" (Wert an den ROI-Rechner-Default angelehnt) ebenfalls
+  manuell erstellt und übergeben.
   **Noch offen, bevor es live/automatisch laufen kann:**
   1. Nutzer muss einmalig eine Meta-Entwickler-App einrichten und mir
      Page-ID, IG-Business-Account-ID und einen Page-Access-Token geben
@@ -591,10 +594,13 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
      ("freigegeben") nicht anlegen — Fehler „MCP tool call requires
      approval" bei `create_trigger` UND `send_later`, offenbar eine
      System-/App-seitige Berechtigung außerhalb des Chats, nicht durch
-     einfaches Wiederholen lösbar. Nutzer sollte in der Claude-Oberfläche
-     nach einer offenen Freigabe für „Routines/Scheduled Tasks" suchen.
-     Bis das gelöst ist: Posts nur auf explizite Nachfrage im Chat, keine
-     automatische Mo/Mi/Fr-Erstellung.
+     einfaches Wiederholen lösbar. Am 10.08.2026 erneut geprüft
+     (`list_triggers`) — derselbe Fehler besteht unverändert, kein
+     einmaliger Ausrutscher. Nutzer sollte in der Claude-Oberfläche nach
+     einer offenen Freigabe für „Routines/Scheduled Tasks" suchen. Bis das
+     gelöst ist: Posts nur auf explizite Nachfrage im Chat, keine
+     automatische Mo/Mi/Fr-Erstellung — Nutzer weiß das und fragt bei
+     Bedarf gezielt nach.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
