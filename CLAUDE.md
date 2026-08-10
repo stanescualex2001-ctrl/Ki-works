@@ -585,10 +585,16 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   manuell erstellt und übergeben. Nutzer-Feedback dazu direkt eingearbeitet:
   "ki-works.eu" am unteren Bildrand deutlich größer/fett statt kleiner
   grauer Mono-Schrift (jetzt Space Grotesk Bold, 42px, 92% Deckkraft statt
-  22px/45%) — gilt als Standard-Vorlage für alle künftigen Posts/Reels;
-  Bilder werden jetzt außerdem immer mit `SendUserFile`-Parameter
-  `display: "attach"` verschickt, damit eine Download-Option sichtbar ist
-  (vorher ohne den Parameter, Client entschied selbst render vs. attach).
+  22px/45%) — gilt als Standard-Vorlage für alle künftigen Posts/Reels,
+  rückwirkend auch auf die Schluss-Szene des bereits verschickten Reels
+  vom 10.08.2026 angewendet (Reel dafür neu gerendert und erneut
+  geschickt). Bilder werden jetzt außerdem immer mit `SendUserFile`-
+  Parameter `display: "attach"` verschickt, damit eine Download-Option
+  sichtbar ist (vorher ohne den Parameter, Client entschied selbst render
+  vs. attach) — Nutzer meldete danach aber weiterhin keinen sichtbaren
+  Download-Button; mögliches Darstellungsproblem im Client, nicht weiter
+  von hier aus behebbar (User an offizielles Claude-Code-Feedback
+  verwiesen: github.com/anthropics/claude-code/issues).
   **Noch offen, bevor es live/automatisch laufen kann:**
   1. Nutzer muss einmalig eine Meta-Entwickler-App einrichten und mir
      Page-ID, IG-Business-Account-ID und einen Page-Access-Token geben
