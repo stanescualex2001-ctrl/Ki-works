@@ -175,7 +175,7 @@ function buildAssistantBody({ restaurantName, publicUrl, webhookSecret, enabledR
       },
     ],
     transcriber: { provider: 'deepgram', model: 'nova-2', language: 'de' },
-    voice: { provider: 'azure', voiceId: 'de-AT-IngridNeural', speed: 1.15 },
+    voice: { provider: 'azure', voiceId: 'de-AT-IngridNeural', speed: 1.3 },
     model: {
       provider: 'anthropic',
       model: 'claude-haiku-4-5-20251001',
