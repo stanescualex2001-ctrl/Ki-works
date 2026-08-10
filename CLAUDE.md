@@ -377,7 +377,9 @@ API-seitiger Fix bekannt; ggf. später bei Vapi-Support nachfragen.
   (Rolle vorerst nur `support`), Wissensbasis/FAQ füllt jeder Kunde danach
   selbst im eigenen Dashboard aus (Selbstverwaltung, wie bei Venezia) —
   noch nicht angelegt, wartet auf Name/Adresse/Kontakt/Telefonnummer vom
-  Nutzer.
+  Nutzer. Nutzer wollte das am 10.08.2026 auf "morgen" verschieben — **beim
+  nächsten Gespräch proaktiv nachfragen**, ob die drei Unternehmen jetzt
+  angelegt werden sollen.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
