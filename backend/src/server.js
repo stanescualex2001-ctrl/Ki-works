@@ -316,9 +316,9 @@ app.patch('/api/restaurants/:id/settings', async (req, res) => {
       sets.push(`${key} = $${vals.length}`);
     }
   }
-  if ('menu' in req.body) {
-    vals.push(req.body.menu === '' ? null : req.body.menu);
-    sets.push(`menu = $${vals.length}`);
+  if ('knowledge_base' in req.body) {
+    vals.push(req.body.knowledge_base === '' ? null : req.body.knowledge_base);
+    sets.push(`knowledge_base = $${vals.length}`);
   }
   if ('opening_hours' in req.body) {
     vals.push(JSON.stringify(req.body.opening_hours || {}));

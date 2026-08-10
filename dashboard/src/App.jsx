@@ -1286,7 +1286,7 @@ const WEEKDAYS = [
 const CHANNEL_LABELS = { sms: 'SMS', whatsapp: 'WhatsApp', email: 'E-Mail' };
 
 // Eine offene Kundenfrage mit eigenem Antwort-Feld + eigenem Speichern-Button
-// (bewusst unabhängig vom großen Speisekarte/Öffnungszeiten/FAQ-Formular).
+// (bewusst unabhängig vom großen Wissensdatenbank/Öffnungszeiten/FAQ-Formular).
 function OpenQuestionRow({ question, onSave }) {
   const [answer, setAnswer] = useState('');
   const [state, setState] = useState({ saving: false, error: null });
@@ -1323,7 +1323,7 @@ function OpenQuestionRow({ question, onSave }) {
   );
 }
 
-// Einstellungen: Speisekarte, Öffnungszeiten, FAQ und Zugangsdaten — für den
+// Einstellungen: Wissensdatenbank, Öffnungszeiten, FAQ und Zugangsdaten — für den
 // Betreiber (nur eigener Betrieb) und den Admin (beliebiger, per BusinessPicker
 // gewählter Betrieb) gleichermaßen nutzbar.
 function Settings({ restaurantId, isAdmin }) {
@@ -1333,7 +1333,7 @@ function Settings({ restaurantId, isAdmin }) {
   const [current, setCurrent] = useState(null);
   const [loadError, setLoadError] = useState(null);
 
-  const [menu, setMenu] = useState('');
+  const [knowledgeBase, setKnowledgeBase] = useState('');
   const [hours, setHours] = useState({});
   const [faq, setFaq] = useState([]);
   const [loginEmail, setLoginEmail] = useState('');
@@ -1373,7 +1373,7 @@ function Settings({ restaurantId, isAdmin }) {
 
   useEffect(() => {
     if (!current) return;
-    setMenu(current.menu || '');
+    setKnowledgeBase(current.knowledge_base || '');
     setHours(current.opening_hours || {});
     setFaq(current.faq?.length ? current.faq : []);
     setLoginEmail(current.login_email || '');
@@ -1393,7 +1393,7 @@ function Settings({ restaurantId, isAdmin }) {
     apiFetch(`/api/restaurants/${current.id}/settings`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ menu, opening_hours: hours, faq }),
+      body: JSON.stringify({ knowledge_base: knowledgeBase, opening_hours: hours, faq }),
     })
       .then(async (r) => {
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
@@ -1438,7 +1438,7 @@ function Settings({ restaurantId, isAdmin }) {
     return apiFetch(`/api/restaurants/${current.id}/settings`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ menu, opening_hours: hours, faq: updatedFaq }),
+      body: JSON.stringify({ knowledge_base: knowledgeBase, opening_hours: hours, faq: updatedFaq }),
     })
       .then((r) => (r.ok ? r : Promise.reject(new Error(`HTTP ${r.status}`))))
       .then(() => apiFetch(`/api/callback-requests/${reqId}`, {
@@ -1465,13 +1465,13 @@ function Settings({ restaurantId, isAdmin }) {
       </div>
 
       <div className="settings-section">
-        <h2>Speisekarte</h2>
+        <h2>Wissensdatenbank</h2>
         <textarea
           rows={10}
           style={{ width: '100%', fontFamily: 'inherit', fontSize: '0.92rem' }}
-          value={menu}
-          onChange={(e) => setMenu(e.target.value)}
-          placeholder="z. B. Nr. 05 Pizza Salami — € 9,90 (Tomaten, Käse, Salami)"
+          value={knowledgeBase}
+          onChange={(e) => setKnowledgeBase(e.target.value)}
+          placeholder="z. B. Leistungen/Produkte, Preise, Aktionen — wird 1:1 als Wissensquelle für Kiwo verwendet"
         />
       </div>
 
@@ -1512,7 +1512,7 @@ function Settings({ restaurantId, isAdmin }) {
       <form className="settings-section" onSubmit={saveContent}>
         {contentMsg && <p className={contentMsg.ok ? 'hint' : 'error'}>{contentMsg.text}</p>}
         <button className="primary" type="submit" disabled={savingContent}>
-          Speisekarte, Öffnungszeiten & FAQ speichern
+          Wissensdatenbank, Öffnungszeiten & FAQ speichern
         </button>
       </form>
 
@@ -1638,7 +1638,16 @@ export default function App() {
   }
 
   const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
-  const nav = NAV.filter((item) => !item.adminOnly || isAdmin);
+  // Kalender/Reservierungen/Bestellungen nur zeigen, wenn die orders-Rolle
+  // aktiv ist — sonst sehen Support-only-Kunden (z. B. LEDTEK, pixelpress)
+  // dauerhaft leere Tabs. Ohne geladene Daten/enabled_roles (Altbestand)
+  // bewusst weiter anzeigen, damit sich bestehende Kunden nicht ändern.
+  const ordersRoleActive = !current?.enabled_roles || current.enabled_roles.includes('orders');
+  const nav = NAV.filter((item) => {
+    if (item.adminOnly && !isAdmin) return false;
+    if (['calendar', 'reservations', 'orders'].includes(item.id) && !ordersRoleActive) return false;
+    return true;
+  });
   const noPicker = ['customers', 'leads', 'system'].includes(view);
 
   const openDetail = (type, data) => setDetail({ type, data });

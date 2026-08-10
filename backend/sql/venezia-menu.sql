@@ -1,6 +1,6 @@
 -- Speisekarte Venezia (aus Speisekarte_Venezia2026). Aktualisieren: einfach dieses
 -- UPDATE erneut ausführen — der Agent nutzt die neue Karte ab dem nächsten Anruf.
-UPDATE restaurants SET menu = $menu$
+UPDATE restaurants SET knowledge_base = $menu$
 ÖFFNUNGSZEITEN: Mo-Di 10:00-22:00, MITTWOCH RUHETAG (ausgenommen Feiertage), Do-Sa 10:00-22:00, So 10:00-21:00. Durchgehend warme Küche. Adresse: Marktplatz 10, 4311 Schwertberg. Tel. 07262/62366.
 
 AKTIONEN: Firmenangebot: jede Pizza € 9,50 + GRATIS Zustellung ab 4 Pizzen. Selbstabhol-Aktion: ab 5 Pizzen jede Pizza € 9,90. Angebote ausgenommen Feiertage. Mittagsmenü 11:00-14:00 Uhr. Wochen-Specials: Montag Schnitzel bis 14 Uhr, Dienstag hausgemachtes Gulasch mit Semmelknödel bis 14 Uhr, Donnerstag Pizzatag, Freitag Fischtag bis 14 Uhr, jeden 1. Dienstag im Monat Schweinsbraten 11-14 Uhr (nur mit Reservierung!). Lieferdienst: anrufen und bestellen. Venezia macht auch CATERING für Feiern, Hochzeiten und Firmenevents. Gutscheine im Restaurant erhältlich.
