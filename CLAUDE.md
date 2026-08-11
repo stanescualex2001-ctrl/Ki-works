@@ -593,6 +593,29 @@ Version auf "Publish" klicken.
     Daten (Kreditkarten, Gesundheitsdaten) vor Speicherung — konsequente
     Weiterführung der bestehenden DSGVO-Grundausstattung
   Noch nichts entschieden oder gebaut, nur vorgemerkt.
+- **Akquise-Agent (Web-Recherche + personalisierte Kalt-E-Mails +
+  Auto-Antworten) — Brainstorming (11.08.2026):** Nutzer-Frage, wie sich
+  Agenten bauen lassen, die automatisch Kunden für alle 3 Betriebe
+  akquirieren. Mein vorgeschlagener Ablauf, dreigeteilt: (1) Recherche —
+  pro Betrieb ein Zielprofil (ki-works: Restaurants/Hotels rund um
+  Schwertberg; LEDTEK: Betriebe mit Beleuchtungsbedarf; pixelpress: Firmen
+  mit alter/fehlender Website), Agent durchsucht Web/Verzeichnisse nach
+  Kandidaten; (2) Claude schreibt pro Kandidat eine individuelle Mail
+  (bezogen auf deren Website, keine Massenmail); (3) Versand über n8n (wie
+  bestehende Mails) + Antwort-Erkennung. **Empfehlung: Schritt 3 (Versand +
+  Auto-Antworten) anfangs NICHT voll automatisch** — Kalt-E-Mail in der EU
+  ist rechtlich heikel (DSGVO/UWG, B2B mit Sachbezug eher erlaubt als
+  wahllose Massenmails, keine Rechtsprüfung erfolgt) und eine falsche
+  automatische Antwort kann dem Ruf schaden. Stattdessen erst Recherche+
+  Entwurf bauen, fertige Vorschläge landen im Dashboard zur manuellen
+  Freigabe, Vollautomatisierung erst später. Technisch würde die
+  bestehende `leads`-Tabelle erweitert (neue Spalten wie `source`,
+  `research_notes`, `outreach_status`) statt komplett neu zu bauen, dazu
+  die bereits reservierte, aber noch nicht implementierte "Sales"-Rolle
+  aus `ROLE_DEFINITIONS` (`backend/src/vapiAdmin.js`) genutzt. Offene
+  Fragen an den Nutzer (noch nicht beantwortet): mit welchem Betrieb
+  anfangen bzw. alle gleichzeitig, und ob der "Freigabe vor Versand"-Ansatz
+  so passt. Nur Konzept, nichts entschieden oder gebaut.
 - **Website-Relaunch ki-works.eu — ENTSCHIEDEN, in Umsetzung:** Nutzer hat
   Menü-Struktur, Bau-Reihenfolge und Marketing-Ansatz bestätigt (vorheriger
   Brainstorming-Stand siehe unten). Beschlossen:
@@ -677,6 +700,16 @@ Version auf "Publish" klicken.
      gelöst ist: Posts nur auf explizite Nachfrage im Chat, keine
      automatische Mo/Mi/Fr-Erstellung — Nutzer weiß das und fragt bei
      Bedarf gezielt nach.
+  3. **Alternativer Weg identifiziert (11.08.2026):** statt auf die
+     blockierte Claude-eigene Routine zu warten, könnte n8n selbst den
+     Zeitplan übernehmen — n8n hat bereits einen Zeitplan-Baustein im
+     Einsatz (Workflow 03 stündlich, 04 täglich 21 Uhr). Ein neuer
+     Mo/Mi/Fr-Workflow würde einen neuen Backend-Endpunkt aufrufen, der
+     Themenwahl+Text+Bild generiert und intern denselben
+     `/api/webhooks/social-post`-Weg nutzt. Für Reels zusätzlich nötig:
+     Chromium+ffmpeg sind bisher nur in der Chat-Sitzung vorhanden, nicht
+     auf dem Produktivserver — müsste einmalig in `deploy/install.sh`
+     ergänzt werden. Nur Idee/Architektur-Skizze, noch nicht gebaut.
 - Kiwos Telefonstimme (Vapi, Azure `de-AT-IngridNeural`) spricht jetzt
   etwas schneller: `speed: 1.05` (+5%) statt Standard in
   `backend/src/vapiAdmin.js` (`voice`-Objekt) — ausgelöst durch "Gespräch
