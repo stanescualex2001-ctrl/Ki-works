@@ -516,6 +516,40 @@ app.patch('/api/callback-requests/:id', async (req, res) => {
   res.json(rows[0]);
 });
 
+// Freigabe-Gate: Ausgaben von Kiwo-Agenten (z.B. Sales-Akquise-Mails), die
+// vor dem Ausführen eine manuelle Freigabe im Dashboard brauchen. Admin ohne
+// Betrieb-Filter sieht alle Betriebe (Meta-Ansicht), Betreiber nur eigene.
+app.get('/api/pending-actions', async (req, res) => {
+  const scope = customerScope(req);
+  const restaurantId = scope ?? req.query.restaurant_id;
+  const vals = [];
+  const cond = [`status = 'pending'`];
+  if (restaurantId) { vals.push(restaurantId); cond.push(`restaurant_id = $${vals.length}`); }
+  const { rows } = await query(
+    `SELECT pa.*, rest.name AS restaurant_name FROM pending_actions pa
+     LEFT JOIN restaurants rest ON rest.id = pa.restaurant_id
+     WHERE ${cond.join(' AND ')} ORDER BY created_at DESC LIMIT 100`,
+    vals,
+  );
+  res.json(rows);
+});
+
+app.patch('/api/pending-actions/:id', async (req, res) => {
+  const scope = customerScope(req);
+  const { status } = req.body;
+  if (!['approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  const { rows } = await query(
+    `UPDATE pending_actions SET status = $1, decided_at = now()
+     WHERE id = $2 AND status = 'pending' AND ($3::int IS NULL OR restaurant_id = $3)
+     RETURNING *`,
+    [status, req.params.id, scope],
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(rows[0]);
+});
+
 // Vapis Aufnahme-URLs sind zeitlich befristet signiert (laufen nach einiger
 // Zeit ab) — deshalb hier bei jedem Klick frisch von Vapi nachladen statt die
 // beim Anruf gespeicherte URL direkt zu verwenden.

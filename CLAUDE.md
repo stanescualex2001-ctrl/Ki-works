@@ -394,6 +394,29 @@ Version auf "Publish" klicken.
   Nutzer. Nutzer wollte das am 10.08.2026 auf "morgen" verschieben — **beim
   nächsten Gespräch proaktiv nachfragen**, ob die drei Unternehmen jetzt
   angelegt werden sollen.
+- **Generisches Freigabe-Gate für Kiwo-Agenten gebaut (12.08.2026, Pilot
+  ki-works.eu/Sales):** erster Baustein aus dem Dashboard-Struktur-
+  Brainstorming (siehe „Ideen & Zukunftsplanung"). Neue Tabelle
+  `pending_actions` (`backend/sql/migration-018-pending-actions.sql`:
+  `restaurant_id`, `role`, `kind`, `summary`, `payload` JSONB, `status`
+  pending/approved/rejected) + Endpunkte `GET/PATCH /api/pending-actions`
+  (`backend/src/server.js`, gleiches `customerScope`-Muster wie
+  `callback-requests`) + neue Dashboard-Sektion "Freigaben" (NAV-Punkt
+  zwischen Anrufe und KI-Empfehlungen, `PendingActions`-Komponente).
+  Nutzt bewusst die bestehende Admin/Betreiber-Scoping-Unterscheidung
+  statt einer neuen Architektur-Ebene: Admin sieht ohne Betrieb-Filter
+  alle offenen Freigaben aller Kunden (Meta-Dashboard-Charakter, gleiches
+  Prinzip wie der bestehende "Anfragen"-Tab), Betreiber nur die des
+  eigenen Betriebs. Lokal gegen eine frische Test-Datenbank durchgetestet
+  (Schema+alle Migrationen sauber, Scoping korrekt für Admin/zwei
+  verschiedene Test-Kunden, Freigeben/Ablehnen funktioniert, ungültiger
+  Status wird abgelehnt) — noch NICHT auf dem Produktivserver ausgerollt.
+  **Bewusst nicht Teil dieses Schritts:** der eigentliche Sales-Agent, der
+  `pending_actions`-Einträge erzeugen würde (Web-Recherche, Mail-Entwürfe
+  — separates, größeres Vorhaben, siehe Akquise-Agent-Eintrag), sowie das
+  tatsächliche Ausführen nach Freigabe (z. B. E-Mail-Versand). Aktuell
+  landet dadurch noch nichts automatisch in der neuen "Freigaben"-Liste —
+  die Tabelle ist bereit, sobald ein erster Agent (Sales) sie befüllt.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -624,6 +647,30 @@ Version auf "Publish" klicken.
   Fragen an den Nutzer (noch nicht beantwortet): mit welchem Betrieb
   anfangen bzw. alle gleichzeitig, und ob der "Freigabe vor Versand"-Ansatz
   so passt. Nur Konzept, nichts entschieden oder gebaut.
+- **Dashboard-Struktur-Brainstorming: Meta-/Business-Dashboards + 5 Agenten
+  pro Business + Freigabe-Prinzip (11.08.2026) — beantwortet den obigen
+  Akquise-Agent-Punkt teilweise:** Nutzer hat eine Grafik mitgebracht
+  (Meta-Dashboard zentral, darunter je ein Business-Dashboard für
+  ledtek.at, pixelpress.at, **Memcore** und ki-works.eu, jedes mit 5
+  Kiwo-Agenten Reception/Sales/Support/Office/Orders). **Memcore taucht
+  hier zum ersten Mal auf** (Standorte Perg/Linz/Wien) — bisher nirgends
+  im Projekt erwähnt, noch nicht als Kunde angelegt, keine weiteren
+  Details bekannt. Einheitliches Freigabe-Prinzip für jeden Agenten: (1)
+  Agent arbeitet selbstständig, (2) Ergebnis wartet im Dashboard, (3)
+  Nutzer gibt frei, erst dann live. Auf Nachfrage entschieden:
+  **Pilot-Business = ki-works.eu**, **Pilot-Agent = Sales** (meine
+  Empfehlung, da direkt am Akquise-Agent-Konzept oben anknüpfend — keine
+  Nutzer-Präferenz genannt). Vertrauens-Stufen (manche Antworten
+  automatisch, Preis/Vertrag immer mit Freigabe) explizit vom Nutzer auf
+  "später" vertagt. **Code-Befund:** die Meta-/Business-Unterscheidung aus
+  der Grafik existiert im Kern schon über `customerScope()`
+  (`backend/src/server.js`) — Admin sieht scope-los alle Betriebe,
+  Betreiber nur den eigenen; ebenso `callback_requests` (offen/beantwortet-
+  Status) als bestehende Vorlage für ein Freigabe-Muster. Erster Baustein
+  wird dadurch auf Basis bestehender Muster gebaut statt neuer
+  Architektur, siehe „Bereits erledigt" für den Stand der Umsetzung
+  (generisches `pending_actions`-Freigabe-Gate, noch ohne echten
+  Sales-Agenten dahinter — der bleibt eigenes, späteres Vorhaben).
 - **Website-Relaunch ki-works.eu — ENTSCHIEDEN, in Umsetzung:** Nutzer hat
   Menü-Struktur, Bau-Reihenfolge und Marketing-Ansatz bestätigt (vorheriger
   Brainstorming-Stand siehe unten). Beschlossen:
@@ -739,6 +786,9 @@ Version auf "Publish" klicken.
   kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
   && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
   nächsten Backend-Neustart)
+- **Migration `migration-018-pending-actions.sql` noch nicht auf dem Server
+  ausgeführt** (Freigabe-Gate-Tabelle) — gleicher Ablauf wie oben, nur mit
+  `migration-018-pending-actions.sql` statt `-016-...`
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend
