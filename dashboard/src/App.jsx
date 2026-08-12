@@ -1608,7 +1608,7 @@ const NAV = [
   { id: 'reservations', label: 'Reservierungen', icon: '🍽️' },
   { id: 'orders', label: 'Bestellungen', icon: '🛍️' },
   { id: 'calls', label: 'Anrufe', icon: '📞' },
-  { id: 'pending', label: 'Freigaben', icon: '✅' },
+  { id: 'pending', label: 'Freigaben', icon: '✅', adminOnly: true },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
   { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
@@ -1650,7 +1650,7 @@ export default function App() {
   );
   // Freigaben zeigen den aktuellen offenen Stand statt "neu seit letztem
   // Besuch" — eine offene Freigabe soll sichtbar bleiben, bis entschieden.
-  const { data: navPending } = useFetch(auth ? '/api/pending-actions' : null, refreshKey);
+  const { data: navPending } = useFetch(isAdmin ? '/api/pending-actions' : null, refreshKey);
 
   useEffect(() => {
     if (restaurantId == null) return;
@@ -1802,7 +1802,7 @@ export default function App() {
             {view === 'calls' && (
               <Calls restaurantId={restaurantId} refreshKey={refreshKey} onOpenDetail={openDetail} />
             )}
-            {view === 'pending' && <PendingActions refreshKey={refreshKey} onChanged={refresh} />}
+            {view === 'pending' && isAdmin && <PendingActions refreshKey={refreshKey} onChanged={refresh} />}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'settings' && (
               <Settings restaurantId={restaurantId} isAdmin={isAdmin} />

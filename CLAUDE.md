@@ -403,11 +403,17 @@ Version auf "Publish" klicken.
   (`backend/src/server.js`, gleiches `customerScope`-Muster wie
   `callback-requests`) + neue Dashboard-Sektion "Freigaben" (NAV-Punkt
   zwischen Anrufe und KI-Empfehlungen, `PendingActions`-Komponente).
-  Nutzt bewusst die bestehende Admin/Betreiber-Scoping-Unterscheidung
-  statt einer neuen Architektur-Ebene: Admin sieht ohne Betrieb-Filter
-  alle offenen Freigaben aller Kunden (Meta-Dashboard-Charakter, gleiches
-  Prinzip wie der bestehende "Anfragen"-Tab), Betreiber nur die des
-  eigenen Betriebs. Lokal gegen eine frische Test-Datenbank durchgetestet
+  Nutzt bewusst die bestehende Admin/Betreiber-Scoping-Unterscheidung im
+  Backend statt einer neuen Architektur-Ebene. **Korrektur (12.08.2026):**
+  der NAV-Punkt "Freigaben" war anfangs auch für Betreiber (Restaurant-
+  Kunden wie Venezia) sichtbar — Nutzer-Feedback: soll NICHT sein, das
+  Freigabe-Gate ist ein internes Steuerungs-Tool für die eigenen
+  Businesses (ki-works/LEDTEK/pixelpress/Memcore), keine Kundenfunktion.
+  Jetzt `adminOnly` wie "Anfragen"/"Kunden"/"System" — nur Admin sieht den
+  Tab und bekommt die gebündelte Meta-Ansicht aller Betriebe, Kunden-Logins
+  sehen ihn gar nicht mehr (Backend-Scoping selbst war korrekt, das war
+  reine Sichtbarkeits-Einstellung im Dashboard-Menü). Lokal gegen eine
+  frische Test-Datenbank durchgetestet
   (Schema+alle Migrationen sauber, Scoping korrekt für Admin/zwei
   verschiedene Test-Kunden, Freigeben/Ablehnen funktioniert, ungültiger
   Status wird abgelehnt) — noch NICHT auf dem Produktivserver ausgerollt.
