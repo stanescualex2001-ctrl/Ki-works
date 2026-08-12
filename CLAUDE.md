@@ -593,6 +593,14 @@ Version auf "Publish" klicken.
     Daten (Kreditkarten, Gesundheitsdaten) vor Speicherung — konsequente
     Weiterführung der bestehenden DSGVO-Grundausstattung
   Noch nichts entschieden oder gebaut, nur vorgemerkt.
+- **Verkaufsargument "eigenes Dashboard" (11.08.2026):** Nutzer-Idee — "Ihr
+  Business bekommt sein eigenes Dashboard" als Selling-Point für Neukunden
+  nutzen (bisher nur intern als Feature gesehen, nicht als Marketing-Punkt).
+  Sinnvolle Stellen dafür: Landingpage-Sektion "Alles auf einen Blick"
+  (betont bisher Features, nicht explizit "eigenes/privates" Dashboard) und
+  `MARKETING.md` als Talking Point für Akquise-Gespräche/E-Mails. Nutzer
+  noch nicht gefragt, ob/wo konkret ergänzt werden soll — beim nächsten
+  Gespräch nachfassen.
 - **Akquise-Agent (Web-Recherche + personalisierte Kalt-E-Mails +
   Auto-Antworten) — Brainstorming (11.08.2026):** Nutzer-Frage, wie sich
   Agenten bauen lassen, die automatisch Kunden für alle 3 Betriebe
