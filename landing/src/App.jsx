@@ -126,11 +126,11 @@ function OrbBuddy({ size = 44 }) {
         const dx = e.clientX - (r.left + r.width / 2);
         const dy = e.clientY - (r.top + r.height / 2);
         const dist = Math.hypot(dx, dy) || 1;
-        const strength = Math.min(dist / 400, 1);
+        const strength = Math.min(dist / 250, 1);
         setLook({
-          lean: (dx / dist) * 5 * strength,
-          eyeX: (dx / dist) * 2.6 * strength,
-          eyeY: (dy / dist) * 2.6 * strength,
+          lean: (dx / dist) * 18 * strength,
+          eyeX: (dx / dist) * 4 * strength,
+          eyeY: (dy / dist) * 4 * strength,
         });
       });
     }
