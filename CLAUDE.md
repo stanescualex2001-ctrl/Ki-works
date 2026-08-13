@@ -482,6 +482,17 @@ Version auf "Publish" klicken.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
+- **Light Mode mit Dark-Mode-Option (13.08.2026):** Nutzer-Frage, ob
+  Landingpage + Dashboards standardmäßig Light Mode mit Dark-Mode-Umschalter
+  bekommen können. Aktuell sind alle 3 Apps (`landing/`, `dashboard/`,
+  `business-dashboard/`) fest auf Dark Mode gebaut (hartcodierte dunkle
+  CSS-Variablen wie `--bg: #0A0F1D`, dunkle Verläufe/Grafiken). Technisch
+  möglich, aber Aufwand: Theme-System (helle+dunkle CSS-Variablen-Sets) in
+  allen 3 Apps, Umschalter mit gespeicherter Auswahl, Prüfung ob
+  Logo/Grafiken (OrbitK, Orb Buddy) auf hellem Hintergrund funktionieren.
+  Meine Empfehlung: zuerst nur Landingpage umbauen (größte Sichtbarkeit),
+  Dashboards später nachziehen. Nutzer hat sich noch nicht entschieden,
+  beim nächsten Gespräch nachfassen, ob und wie begonnen werden soll.
 - **Automatische Rückmeldung an den Gast:** Aktuell schließt sich der
   "Rückruf gewünscht"-Kreislauf nicht automatisch — der Betrieb trägt die
   Antwort zwar in die FAQ ein, muss den Gast aber selbst zurückrufen, um ihm
