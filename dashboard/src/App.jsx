@@ -1197,70 +1197,6 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
   );
 }
 
-const PENDING_KIND_LABEL = { outreach_email: 'Akquise-E-Mail' };
-const PENDING_ROLE_LABEL = { sales: 'Sales', support: 'Support', office: 'Office', orders: 'Orders' };
-
-// Freigabe-Gate: Ausgaben von Kiwo-Agenten (z.B. Sales-Akquise-Mails) warten
-// hier, bis der Betreiber (nur eigener Betrieb) bzw. Admin (alle Betriebe —
-// gleiche Ansicht wie "Anfragen") sie freigibt oder ablehnt. Nichts läuft
-// automatisch live, bevor hier bestätigt wurde.
-function PendingActions({ refreshKey, onChanged }) {
-  const { data: actions, error } = useFetch('/api/pending-actions', refreshKey);
-  const [deciding, setDeciding] = useState(null);
-  const decide = (id, status) => {
-    setDeciding(id);
-    apiFetch(`/api/pending-actions/${id}`, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ status }),
-    })
-      .then(() => onChanged())
-      .finally(() => setDeciding(null));
-  };
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!actions) return <p>Lade…</p>;
-  if (!actions.length) return <p>Keine offenen Freigaben.</p>;
-  return (
-    <>
-      <p>Ergebnisse von Kiwo-Agenten, die auf deine Freigabe warten, bevor sie live gehen.</p>
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Erstellt</th><th>Betrieb</th><th>Rolle</th><th>Art</th><th>Zusammenfassung</th><th>Aktion</th></tr>
-          </thead>
-          <tbody>
-            {actions.map((a) => (
-              <tr key={a.id}>
-                <td>{fmtDateTime(a.created_at)}</td>
-                <td>{a.restaurant_name || '–'}</td>
-                <td>{PENDING_ROLE_LABEL[a.role] || a.role}</td>
-                <td>{PENDING_KIND_LABEL[a.kind] || a.kind}</td>
-                <td>{a.summary}</td>
-                <td className="lead-actions">
-                  <button
-                    className="link"
-                    disabled={deciding === a.id}
-                    onClick={() => decide(a.id, 'approved')}
-                  >
-                    ✅ Freigeben
-                  </button>
-                  <button
-                    className="link"
-                    disabled={deciding === a.id}
-                    onClick={() => decide(a.id, 'rejected')}
-                  >
-                    ❌ Ablehnen
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
-}
-
 function StatusTile({ label, ok, detail }) {
   const cls = ok === true ? 'ok' : ok === false ? 'problem' : 'unknown';
   const text = ok === true ? 'OK' : ok === false ? 'Problem' : 'Unbekannt';
@@ -1608,7 +1544,6 @@ const NAV = [
   { id: 'reservations', label: 'Reservierungen', icon: '🍽️' },
   { id: 'orders', label: 'Bestellungen', icon: '🛍️' },
   { id: 'calls', label: 'Anrufe', icon: '📞' },
-  { id: 'pending', label: 'Freigaben', icon: '✅', adminOnly: true },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
   { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
@@ -1618,7 +1553,7 @@ const NAV = [
 
 const TITLES = {
   overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
-  orders: 'Bestellungen', calls: 'Anrufe', pending: 'Freigaben', reco: 'KI-Empfehlungen',
+  orders: 'Bestellungen', calls: 'Anrufe', reco: 'KI-Empfehlungen',
   settings: 'Einstellungen', customers: 'Kundenübersicht', leads: 'Anfragen',
   system: 'System-Status',
 };
@@ -1648,9 +1583,6 @@ export default function App() {
   const { data: navCalls } = useFetch(
     restaurantId != null ? `/api/calls?restaurant_id=${restaurantId}` : null, refreshKey,
   );
-  // Freigaben zeigen den aktuellen offenen Stand statt "neu seit letztem
-  // Besuch" — eine offene Freigabe soll sichtbar bleiben, bis entschieden.
-  const { data: navPending } = useFetch(isAdmin ? '/api/pending-actions' : null, refreshKey);
 
   useEffect(() => {
     if (restaurantId == null) return;
@@ -1669,7 +1601,6 @@ export default function App() {
     reservations: countNew(navReservations, 'reservations'),
     orders: countNew(navOrders, 'orders'),
     calls: countNew(navCalls, 'calls'),
-    pending: navPending?.length || 0,
   };
   const markSeen = (viewId) => {
     if (restaurantId == null) return;
@@ -1717,7 +1648,7 @@ export default function App() {
     if (['calendar', 'reservations', 'orders'].includes(item.id) && !ordersRoleActive) return false;
     return true;
   });
-  const noPicker = ['customers', 'leads', 'system', 'pending'].includes(view);
+  const noPicker = ['customers', 'leads', 'system'].includes(view);
 
   const openDetail = (type, data) => setDetail({ type, data });
   const closeDetail = () => setDetail(null);
@@ -1802,7 +1733,6 @@ export default function App() {
             {view === 'calls' && (
               <Calls restaurantId={restaurantId} refreshKey={refreshKey} onOpenDetail={openDetail} />
             )}
-            {view === 'pending' && isAdmin && <PendingActions refreshKey={refreshKey} onChanged={refresh} />}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'settings' && (
               <Settings restaurantId={restaurantId} isAdmin={isAdmin} />

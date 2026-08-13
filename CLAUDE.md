@@ -25,6 +25,7 @@ chown -R kiworks:kiworks /opt/ki-works
 
 sudo -u kiworks bash -c "cd /opt/ki-works/landing && npm install --no-audit --no-fund && npm run build"
 sudo -u kiworks bash -c "cd /opt/ki-works/dashboard && npm install --no-audit --no-fund && npm run build"
+sudo -u kiworks bash -c "cd /opt/ki-works/business-dashboard && npm install --no-audit --no-fund && npm run build"
 ```
 Nur bei Backend-Änderungen zusätzlich: `sudo -u kiworks bash -c "cd
 /opt/ki-works/backend && npm install --omit=dev --no-audit --no-fund"` und
@@ -423,6 +424,38 @@ Version auf "Publish" klicken.
   tatsächliche Ausführen nach Freigabe (z. B. E-Mail-Versand). Aktuell
   landet dadurch noch nichts automatisch in der neuen "Freigaben"-Liste —
   die Tabelle ist bereit, sobald ein erster Agent (Sales) sie befüllt.
+- **Eigenes Business-Dashboard statt Freigaben-Tab im Kunden-Dashboard
+  (13.08.2026):** Nutzer-Klarstellung zum Dashboard-Struktur-Brainstorming:
+  das Meta-/Business-Dashboard für die eigenen 4 Unternehmen (ledtek.at,
+  pixelpress.at, Memcore, ki-works.eu) soll **komplett getrennt** vom
+  bestehenden Kiwo-Kunden-Dashboard laufen (dort sind Venezia & Co. als
+  B2B-Kiwo-Kunden), damit sich jedes Unternehmen unabhängig weiterentwickeln
+  lässt. Neue eigenständige Vite+React-App **`business-dashboard/`**
+  (Geschwister von `dashboard/`/`landing/`), erreichbar unter
+  `ki-works.eu/intern/` (Unterseite, kein DNS-Aufwand — Empfehlung
+  gegenüber eigener Subdomain, da verlustfrei später nachrüstbar). Login
+  nutzt denselben bestehenden `POST /api/login`-Endpunkt, lässt aber nur
+  `role === 'admin'` durch (Kunden-Logins werden clientseitig abgewiesen) —
+  keine neue Auth nötig. Zeigt: Meta-Ansicht (alle offenen `pending_actions`
+  aller Betriebe, wiederverwendet die bestehenden Endpunkte 1:1) + 4
+  Business-Karten mit den 5 Kiwo-Rollen als Chips; Klick auf eine Karte
+  zeigt vorerst "noch nicht verknüpft", da ledtek.at/pixelpress.at/Memcore/
+  ki-works.eu weiterhin nicht als `restaurants`-Zeilen existieren (separates,
+  vom Nutzer bewusst vertagtes Thema). Design/Farben identisch zu
+  `dashboard/`/`landing/` (gleiche CSS-Variablen, OrbitK-Logo, Orb Buddy),
+  aber eigene, schlankere Komponentenstruktur ohne die
+  Restaurant-Picker-Logik des Kunden-Dashboards. Der alte "Freigaben"-Tab
+  im Kunden-Dashboard (siehe Eintrag darüber) wurde daraufhin wieder
+  entfernt (Backend-Endpunkte bleiben unverändert, werden jetzt vom neuen
+  Dashboard genutzt) — keine Doppelung mehr. `deploy/nginx/ki-works.conf`
+  um `location /intern` ergänzt, `deploy/install.sh` und der
+  Update-Ablauf oben um den Build-Schritt für `business-dashboard/`
+  ergänzt. Lokal gegen frische Test-DB durchgetestet (Admin-Login liefert
+  `role: admin`, Meta-Ansicht zeigt Test-Freigabe korrekt) — **noch NICHT
+  auf dem Produktivserver ausgerollt**, insbesondere der neue
+  nginx-Block braucht dort einen manuellen `nginx -t && systemctl reload
+  nginx` nach dem Deploy (passiert nicht automatisch durch den
+  rsync/build-Ablauf).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -810,6 +843,12 @@ Version auf "Publish" klicken.
 - **Migration `migration-018-pending-actions.sql` noch nicht auf dem Server
   ausgeführt** (Freigabe-Gate-Tabelle) — gleicher Ablauf wie oben, nur mit
   `migration-018-pending-actions.sql` statt `-016-...`
+- **Neues Business-Dashboard (`business-dashboard/`, unter `/intern`) noch
+  nicht auf dem Produktivserver ausgerollt** — braucht neben dem üblichen
+  rsync/Build-Ablauf einmalig auch `nginx -t && systemctl reload nginx`,
+  da `deploy/nginx/ki-works.conf` einen neuen `location /intern`-Block
+  bekommen hat (wird vom normalen Update-Ablauf nicht automatisch
+  übernommen)
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend

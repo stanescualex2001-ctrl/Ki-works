@@ -131,6 +131,9 @@ sudo -u kiworks bash -c "cd $APP_DIR/backend && npm install --omit=dev --no-audi
 log "Dashboard bauen"
 sudo -u kiworks bash -c "cd $APP_DIR/dashboard && npm install --no-audit --no-fund && npm run build"
 
+log "Business-Dashboard bauen"
+sudo -u kiworks bash -c "cd $APP_DIR/business-dashboard && npm install --no-audit --no-fund && npm run build"
+
 log "Landingpage bauen"
 sudo -u kiworks bash -c "cd $APP_DIR/landing && npm install --no-audit --no-fund && npm run build"
 

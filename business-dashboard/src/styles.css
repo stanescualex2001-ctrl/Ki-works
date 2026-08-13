@@ -1,0 +1,166 @@
+* { box-sizing: border-box; margin: 0; }
+:root {
+  --bg: #0A0F1D;
+  --panel: rgba(255, 255, 255, 0.035);
+  --panel-solid: #10162A;
+  --text: #F3F5FA;
+  --muted: rgba(255, 255, 255, 0.55);
+  --accent: #22D3EE;
+  --accent-strong: #06B6D4;
+  --accent-soft: rgba(34, 211, 238, 0.14);
+  --violet: #8B5CF6;
+  --violet-soft: rgba(139, 92, 246, 0.16);
+  --border: rgba(255, 255, 255, 0.09);
+  --good-bg: rgba(52, 211, 153, 0.15); --good-text: #6EE7B7;
+  --bad-bg: rgba(248, 113, 113, 0.15);  --bad-text: #FCA5A5;
+  --warn-bg: rgba(251, 191, 36, 0.15); --warn-text: #FCD34D;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+body {
+  font-family: "Inter", system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--bg); color: var(--text);
+  background-image:
+    radial-gradient(circle at 15% -10%, rgba(6,182,212,0.14), transparent 45%),
+    radial-gradient(circle at 100% 20%, rgba(139,92,246,0.12), transparent 40%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* ---- Layout: Sidebar links, Inhalt rechts ---- */
+.layout { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px) saturate(140%);
+  border-right: 1px solid var(--border);
+  padding: 1.2rem 1rem; display: flex; flex-direction: column; gap: 0.9rem;
+}
+main { flex: 1; min-width: 0; padding: 1.5rem 2rem; }
+
+/* ---- Logo-Bereich ---- */
+.logo-area { display: flex; align-items: center; gap: 0.6rem; min-height: 44px; }
+.logo-badge {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; flex-shrink: 0;
+}
+.logo-word { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+.logo-sub { font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono); margin-left: 0.4rem; }
+
+/* ---- Kiwo-Präsenz in der Sidebar ---- */
+.kiwo-presence {
+  display: flex; align-items: center; gap: 0.6rem; margin: 0.9rem 0;
+  padding: 0.55rem 0.7rem; border-radius: 12px;
+  background: var(--panel-solid); border: 1px solid var(--border);
+}
+.kiwo-presence-text { line-height: 1.2; }
+.kiwo-presence-name { font-size: 0.85rem; font-weight: 700; color: var(--text); }
+.kiwo-presence-status { font-size: 0.72rem; color: var(--muted); font-family: var(--font-mono); }
+
+/* ---- Navigation ---- */
+nav { display: flex; flex-direction: column; gap: 0.2rem; margin-top: 0.4rem; }
+nav button {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%; text-align: left;
+  border: none; background: none; padding: 0.6rem 0.7rem; border-radius: 8px;
+  font-size: 0.95rem; color: var(--muted); cursor: pointer; transition: background 0.2s, color 0.2s;
+}
+nav button:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.nav-icon { width: 1.4em; text-align: center; }
+.nav-badge {
+  margin-left: auto; min-width: 1.3em; padding: 0.05rem 0.4rem; border-radius: 999px;
+  background: var(--accent); color: #0A0F1D; font-size: 0.72rem; font-weight: 700;
+  text-align: center; line-height: 1.4;
+}
+
+.refresh {
+  margin-top: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+  padding: 0.5rem; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 0.9rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+.refresh:hover { border-color: var(--accent); color: var(--text); }
+
+/* ---- Hauptbereich ---- */
+.main-head { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.2rem; }
+.main-head-top { display: flex; align-items: baseline; gap: 0.8rem; }
+.main-head h1 { font-family: var(--font-display); font-size: 1.6rem; letter-spacing: -0.01em; }
+h2 { font-family: var(--font-display); margin: 1.2rem 0 0.6rem; font-size: 1.1rem; letter-spacing: -0.01em; }
+
+/* ---- Tabellen ---- */
+.table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; backdrop-filter: blur(16px); }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+th, td { text-align: left; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgba(255,255,255,0.02); font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.lead-actions { display: flex; gap: 0.6rem; align-items: center; }
+
+.link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 0.85rem; }
+.error { color: var(--bad-text); }
+.hint { color: var(--muted); font-size: 0.85rem; margin-top: 0.8rem; }
+
+/* ---- Business-Karten ---- */
+.business-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;
+}
+.business-card {
+  text-align: left; background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+  padding: 1.2rem; backdrop-filter: blur(16px); cursor: pointer; color: inherit; font: inherit;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.business-card:hover { transform: translateY(-2px); border-color: rgba(34,211,238,0.4); }
+.business-card-name { font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; }
+.business-card-tag { color: var(--muted); font-size: 0.82rem; margin-top: 0.15rem; }
+.business-card-roles { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.9rem; }
+.role-chip {
+  padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem;
+  background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
+}
+.role-chip.role-chip-soon { background: rgba(255,255,255,0.04); color: var(--muted); }
+.back-link { margin-bottom: 1rem; }
+
+/* ---- Login ---- */
+.login-page {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(6,182,212,0.16), transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(139,92,246,0.16), transparent 45%);
+}
+.login-card {
+  background: rgba(255,255,255,0.035); border: 1px solid var(--border); border-radius: 18px;
+  padding: 2rem; width: 340px; display: flex; flex-direction: column; gap: 0.5rem;
+  box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
+  backdrop-filter: blur(20px) saturate(140%);
+}
+.login-logo { justify-content: center; margin-bottom: 0.2rem; }
+.login-sub { color: var(--muted); font-size: 0.9rem; text-align: center; margin-bottom: 0.8rem; }
+.login-card label { font-size: 0.85rem; color: var(--muted); margin-top: 0.4rem; }
+.login-card input {
+  padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem;
+  background: var(--panel-solid); color: var(--text);
+}
+.login-card .primary { margin-top: 1rem; }
+.site-link { color: var(--muted); font-size: 0.85rem; text-decoration: none; text-align: center; }
+.site-link:hover { color: var(--accent); }
+.login-site-link { margin-top: 0.8rem; }
+
+button.primary {
+  background: linear-gradient(135deg, #22D3EE, #8B5CF6); color: #0A0F1D; border: none; border-radius: 8px;
+  padding: 0.6rem 1.1rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+button.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 30px -10px rgba(34,211,238,0.5); }
+button.primary:disabled { opacity: 0.5; cursor: wait; }
+
+@keyframes orb-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.orb-float { animation: orb-float 3.4s ease-in-out infinite; }
+
+/* ---- Mobil ---- */
+@media (max-width: 760px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; flex-direction: column; }
+  main { padding: 1rem; }
+}
