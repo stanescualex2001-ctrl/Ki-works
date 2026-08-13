@@ -128,7 +128,7 @@ function OrbBuddy({ size = 44 }) {
         const dist = Math.hypot(dx, dy) || 1;
         const strength = Math.min(dist / 250, 1);
         setLook({
-          lean: (dx / dist) * 18 * strength,
+          lean: ((dx / dist) * 18 + (dy / dist) * 12) * strength,
           eyeX: (dx / dist) * 4 * strength,
           eyeY: (dy / dist) * 4 * strength,
         });
