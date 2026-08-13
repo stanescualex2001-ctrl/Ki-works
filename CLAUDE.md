@@ -653,6 +653,21 @@ Version auf "Publish" klicken.
   Fragen an den Nutzer (noch nicht beantwortet): mit welchem Betrieb
   anfangen bzw. alle gleichzeitig, und ob der "Freigabe vor Versand"-Ansatz
   so passt. Nur Konzept, nichts entschieden oder gebaut.
+  **Technischer Nachtrag (12.08.2026, auf Nutzerfrage "wie baust du den
+  Agent?"):** `web_search`/`web_fetch` sind Anthropic-Server-Tools (laufen
+  bei Anthropic, keine eigene Such-/Lese-Schleife nötig) — ein einzelner
+  API-Aufruf mit diesen Tools + strukturierter JSON-Ausgabe reicht für
+  Recherche+Mail-Entwurf, kein Managed-Agent-Setup nötig (Aufgabe dafür zu
+  klar begrenzt). Geplante neue Datei `backend/src/salesAgent.js` — nutzt
+  (anders als `backend/src/claude.js`, das rohes `fetch()` verwendet) das
+  offizielle `@anthropic-ai/sdk`-Paket (neue, kleine Abhängigkeit),
+  robuster bei Tools+strukturierter Ausgabe. Eigener Code parst die
+  Antwort und schreibt direkt in `pending_actions` — kein Tool, das Claude
+  selbst aufruft. Auslösen per Admin-Button im Dashboard oder späterer
+  n8n-Cron (gleiches Muster wie Social-Media-Idee). Kostenhinweis: pro
+  Lauf mit echter Websuche entstehen echte Kosten — Obergrenze (z. B. max.
+  10 Kandidaten/Lauf) und güngstigeres Modell (Sonnet statt Opus)
+  empfohlen. Nur Architektur-Empfehlung, nichts gebaut.
 - **Dashboard-Struktur-Brainstorming: Meta-/Business-Dashboards + 5 Agenten
   pro Business + Freigabe-Prinzip (11.08.2026) — beantwortet den obigen
   Akquise-Agent-Punkt teilweise:** Nutzer hat eine Grafik mitgebracht
