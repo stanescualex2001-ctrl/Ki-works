@@ -479,20 +479,33 @@ Version auf "Publish" klicken.
   die vollständige (SSL-fertige) Repo-Datei ein. Noch nicht auf dem Server
   verifiziert (nächster Rollout-Schritt), lokal per `bash -n
   deploy/install.sh` auf Syntaxfehler geprüft.
+- **Light Mode (Standard) mit Dark-Mode-Umschalter für alle 3 Apps
+  (13.08.2026):** Landingpage, Kunden-Dashboard und Business-Dashboard
+  liefen bisher fest auf Dark Mode (hartcodierte dunkle CSS-Variablen).
+  Jetzt theme-fähig: `:root` = hell (Standard), `.dark`-Klasse auf
+  `<html>` = dunkel (bisheriges Design, optisch unverändert). Umschalter
+  (☀️/🌙-Button, `kiworks-theme` in localStorage) im Landing-Header
+  (Desktop + Mobile-Menü) bzw. in den Dashboard-Sidebars/Login-Screens.
+  Inline-Script in jedem HTML-Einstiegspunkt verhindert Theme-Flackern
+  beim Laden. Technisch pro App: `landing/` nutzt Tailwind v4 mit
+  CSS-Variablen (`oklch`) + `@custom-variant dark`, ~250 Tailwind-Klassen
+  auf theme-fähige Utilities umgestellt (`text-white` → `text-foreground`
+  usw., Akzentfarben wie `text-cyan-300` bekamen `dark:`-Variante mit
+  dunklerer Light-Mode-Farbe für Kontrast); `dashboard/` und
+  `business-dashboard/` nutzen einfaches CSS mit `--variablen` (kein
+  Tailwind) — dort nur `:root`/`.dark`-Block umgebaut, keine
+  Komponentenänderungen nötig außer dem neuen Umschalter-Button. Dabei
+  zwei Kontrast-Bugs gefunden und behoben: das Terminal-Mock auf der
+  Landingpage (transparentes Schwarz auf hellem Grund war fast unlesbar,
+  jetzt deckende dunkle Füllfarbe) und mehrere zu helle Akzent-Textfarben
+  (cyan/violet/emerald/amber), die auf Weiß zu wenig Kontrast gehabt
+  hätten. Lokal in beiden Modi (Desktop + Mobile) per Playwright-
+  Screenshots geprüft, committet+gepusht, Deploy-Befehle (normaler
+  rsync/Build-Ablauf, kein Backend-Neustart/nginx-Reload nötig) an Nutzer
+  gegeben.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
-- **Light Mode mit Dark-Mode-Option (13.08.2026):** Nutzer-Frage, ob
-  Landingpage + Dashboards standardmäßig Light Mode mit Dark-Mode-Umschalter
-  bekommen können. Aktuell sind alle 3 Apps (`landing/`, `dashboard/`,
-  `business-dashboard/`) fest auf Dark Mode gebaut (hartcodierte dunkle
-  CSS-Variablen wie `--bg: #0A0F1D`, dunkle Verläufe/Grafiken). Technisch
-  möglich, aber Aufwand: Theme-System (helle+dunkle CSS-Variablen-Sets) in
-  allen 3 Apps, Umschalter mit gespeicherter Auswahl, Prüfung ob
-  Logo/Grafiken (OrbitK, Orb Buddy) auf hellem Hintergrund funktionieren.
-  Meine Empfehlung: zuerst nur Landingpage umbauen (größte Sichtbarkeit),
-  Dashboards später nachziehen. Nutzer hat sich noch nicht entschieden,
-  beim nächsten Gespräch nachfassen, ob und wie begonnen werden soll.
 - **Automatische Rückmeldung an den Gast:** Aktuell schließt sich der
   "Rückruf gewünscht"-Kreislauf nicht automatisch — der Betrieb trägt die
   Antwort zwar in die FAQ ein, muss den Gast aber selbst zurückrufen, um ihm
