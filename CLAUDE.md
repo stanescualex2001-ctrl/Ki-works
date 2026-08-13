@@ -1035,14 +1035,24 @@ Version auf "Publish" klicken.
   fertig eingerichtet und dem Server zugewiesen wurde, ist von hier aus
   nicht prüfbar (kein SSH-Zugriff) — beim nächsten Gespräch nachfragen,
   falls nicht von selbst erwähnt.
-- **Preise-Sektion: Nutzen-Formulierung schärfen (13.08.2026, noch nicht
-  umgesetzt)** — Nutzer-Feedback: die aktuellen Feature-Punkte pro Tarif
-  ("Dashboard", "E-Mail-Benachrichtigungen bei Neuem", "EU-Hosting &
-  DSGVO-konform") sind zu generisch, kommunizieren den konkreten Nutzen
-  nicht. Zugesagter, aber in dieser Sitzung nicht mehr erledigter
-  Copy-Pass: Formulierungen konkreter machen (z. B. "nie wieder verpasste
-  Reservierung" statt "Dashboard"). Die Beträge selbst bleiben unverändert
-  (siehe „Wettbewerber-Preisvergleich" oben, separates Thema).
+- **Preise-Sektion: Nutzen-Formulierung schärfen (13.08.2026, für nächste
+  Sitzung bestätigt — "mach!")** — Nutzer-Feedback: die aktuellen
+  Feature-Punkte pro Tarif ("Dashboard", "E-Mail-Benachrichtigungen bei
+  Neuem", "EU-Hosting & DSGVO-konform") sind zu generisch, kommunizieren
+  den konkreten Nutzen nicht. Copy-Pass: Formulierungen konkreter machen
+  (z. B. "nie wieder verpasste Reservierung" statt "Dashboard"). Die
+  Beträge selbst bleiben unverändert (siehe „Wettbewerber-Preisvergleich"
+  oben, separates Thema). Explizit auf die nächste Sitzung vertagt
+  ("Aber alles Morgen").
+- **Orb Buddy: Mausverfolgung noch mal gewünscht — mit klarer Spezifikation
+  (13.08.2026)** — war in dieser Sitzung gebaut (siehe „Bereits erledigt"),
+  nach Nutzer-Feedback "mag ich nicht" komplett entfernt, dann hat der
+  Nutzer sich umentschieden: soll doch wieder rein, aber diesmal
+  **gleichmäßig in alle Richtungen** — Maus oben/unten/links/rechts soll
+  die Figur überall um bis zu **±20°** rotieren lassen, nicht wie beim
+  letzten (entfernten) Versuch mit unterschiedlich gewichteten
+  Horizontal-/Vertikal-Anteilen (±18°/±12°). Explizit auf die nächste
+  Sitzung vertagt ("Aber alles Morgen") — noch nicht gebaut.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
 - **Vapi "Publish"-Problem** (Details siehe „Bereits erledigt"): jeder neue/
