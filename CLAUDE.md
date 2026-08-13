@@ -947,6 +947,17 @@ Version auf "Publish" klicken.
   `bash deploy/setup-vapi.sh <restaurant-id>` erneut synchronisiert und im
   Vapi-Dashboard manuell "published" werden (gleiche Einschränkung wie
   bei allen Vapi-Sync-Änderungen, siehe unten).
+- **Wettbewerber-Preisvergleich per Recherche-Agent (13.08.2026):**
+  Nutzer-Einschätzung nach Rückfrage zur Preise-Sektion — der Solo-Tarif
+  (69 €/Monat, siehe „Bereits erledigt" → Preise-Sektion) wirkt im
+  Vergleich zum kommunizierten Wert (≈270 € Ersparnis) evtl. zu günstig
+  angesetzt. Statt aus dem Bauch heraus zu erhöhen: dieselbe
+  `web_search`/`web_fetch`-Technik wie der neue Sales-Agent
+  (`backend/src/salesAgent.js`) ließe sich für einen zweiten,
+  eigenständigen Lauf nutzen, der recherchiert, was vergleichbare Anbieter
+  (z. B. fonio.ai) für ähnlichen Funktionsumfang verlangen — Preisentscheidung
+  dann auf Datenbasis statt Vermutung. Nutzer hat bewusst entschieden,
+  das **nach** dem Sales-Agenten anzugehen, noch nicht gebaut.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
@@ -1017,7 +1028,21 @@ Version auf "Publish" klicken.
 
   Noch nichts davon behoben, nur erfasst. Größere Credential-Rotation
   (Contabo-Root-Passwort, im Setup im Klartext geteilte API-Keys) bleibt
-  weiterhin zusätzlich offen.
+  weiterhin zusätzlich offen. **Update (13.08.2026):** Contabo bietet
+  inzwischen eine kostenlose Firewall pro Server an — Nutzer hat während
+  einer Sitzung mit der Einrichtung begonnen (empfohlene Regeln: eingehend
+  nur 22/TCP, 80/TCP, 443/TCP erlauben, Rest blocken). Ob die Firewall
+  fertig eingerichtet und dem Server zugewiesen wurde, ist von hier aus
+  nicht prüfbar (kein SSH-Zugriff) — beim nächsten Gespräch nachfragen,
+  falls nicht von selbst erwähnt.
+- **Preise-Sektion: Nutzen-Formulierung schärfen (13.08.2026, noch nicht
+  umgesetzt)** — Nutzer-Feedback: die aktuellen Feature-Punkte pro Tarif
+  ("Dashboard", "E-Mail-Benachrichtigungen bei Neuem", "EU-Hosting &
+  DSGVO-konform") sind zu generisch, kommunizieren den konkreten Nutzen
+  nicht. Zugesagter, aber in dieser Sitzung nicht mehr erledigter
+  Copy-Pass: Formulierungen konkreter machen (z. B. "nie wieder verpasste
+  Reservierung" statt "Dashboard"). Die Beträge selbst bleiben unverändert
+  (siehe „Wettbewerber-Preisvergleich" oben, separates Thema).
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten)
 - **Vapi "Publish"-Problem** (Details siehe „Bereits erledigt"): jeder neue/
