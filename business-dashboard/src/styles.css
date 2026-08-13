@@ -1,6 +1,29 @@
 * { box-sizing: border-box; margin: 0; }
 :root {
+  color-scheme: light;
+  /* Light (Standard) */
+  --bg: #F3F6FC;
+  --overlay-rgb: 15, 23, 42;
+  --panel: rgba(15, 23, 42, 0.035);
+  --panel-solid: #FFFFFF;
+  --text: #10162A;
+  --muted: rgba(15, 23, 42, 0.55);
+  --accent: #0E7490;
+  --accent-strong: #0891B2;
+  --accent-soft: rgba(8, 145, 178, 0.12);
+  --violet: #7C3AED;
+  --violet-soft: rgba(124, 58, 237, 0.12);
+  --border: rgba(15, 23, 42, 0.1);
+  --good-bg: rgba(5, 150, 105, 0.12); --good-text: #047857;
+  --bad-bg: rgba(220, 38, 38, 0.1);  --bad-text: #B91C1C;
+  --warn-bg: rgba(217, 119, 6, 0.12); --warn-text: #92400E;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+.dark {
+  color-scheme: dark;
   --bg: #0A0F1D;
+  --overlay-rgb: 255, 255, 255;
   --panel: rgba(255, 255, 255, 0.035);
   --panel-solid: #10162A;
   --text: #F3F5FA;
@@ -14,8 +37,6 @@
   --good-bg: rgba(52, 211, 153, 0.15); --good-text: #6EE7B7;
   --bad-bg: rgba(248, 113, 113, 0.15);  --bad-text: #FCA5A5;
   --warn-bg: rgba(251, 191, 36, 0.15); --warn-text: #FCD34D;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 body {
   font-family: "Inter", system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -31,7 +52,7 @@ body {
 .layout { display: flex; min-height: 100vh; }
 .sidebar {
   width: 240px; flex-shrink: 0;
-  background: rgba(255,255,255,0.03);
+  background: rgba(var(--overlay-rgb),0.03);
   backdrop-filter: blur(20px) saturate(140%);
   border-right: 1px solid var(--border);
   padding: 1.2rem 1rem; display: flex; flex-direction: column; gap: 0.9rem;
@@ -64,17 +85,17 @@ nav button {
   border: none; background: none; padding: 0.6rem 0.7rem; border-radius: 8px;
   font-size: 0.95rem; color: var(--muted); cursor: pointer; transition: background 0.2s, color 0.2s;
 }
-nav button:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+nav button:hover { background: rgba(var(--overlay-rgb),0.05); color: var(--text); }
 nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .nav-icon { width: 1.4em; text-align: center; }
 .nav-badge {
   margin-left: auto; min-width: 1.3em; padding: 0.05rem 0.4rem; border-radius: 999px;
-  background: var(--accent); color: #0A0F1D; font-size: 0.72rem; font-weight: 700;
+  background: var(--accent); color: #0A0F1D; font-size: 0.72rem; font-weight: 700; /* Badge-Text bleibt fix dunkel, Badge-Hintergrund ist immer hell genug */
   text-align: center; line-height: 1.4;
 }
 
 .refresh {
-  margin-top: auto; border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+  margin-top: auto; border: 1px solid var(--border); background: rgba(var(--overlay-rgb),0.03);
   padding: 0.5rem; border-radius: 8px; cursor: pointer; color: var(--muted); font-size: 0.9rem;
   transition: border-color 0.2s, color 0.2s;
 }
@@ -91,7 +112,7 @@ h2 { font-family: var(--font-display); margin: 1.2rem 0 0.6rem; font-size: 1.1re
 table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 th, td { text-align: left; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--border); }
 tr:last-child td { border-bottom: none; }
-th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgba(255,255,255,0.02); font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgba(var(--overlay-rgb),0.02); font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .lead-actions { display: flex; gap: 0.6rem; align-items: center; }
 
 .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 0.85rem; }
@@ -115,7 +136,7 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
   padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem;
   background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
 }
-.role-chip.role-chip-soon { background: rgba(255,255,255,0.04); color: var(--muted); }
+.role-chip.role-chip-soon { background: rgba(var(--overlay-rgb),0.04); color: var(--muted); }
 .back-link { margin-bottom: 1rem; }
 
 /* ---- Login ---- */
@@ -127,7 +148,7 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
     radial-gradient(circle at 85% 75%, rgba(139,92,246,0.16), transparent 45%);
 }
 .login-card {
-  background: rgba(255,255,255,0.035); border: 1px solid var(--border); border-radius: 18px;
+  background: rgba(var(--overlay-rgb),0.035); border: 1px solid var(--border); border-radius: 18px;
   padding: 2rem; width: 340px; display: flex; flex-direction: column; gap: 0.5rem;
   box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
   backdrop-filter: blur(20px) saturate(140%);

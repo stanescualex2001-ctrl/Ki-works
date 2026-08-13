@@ -67,7 +67,7 @@ function KiwoOrb() {
         </div>
       </div>
       <div className="absolute inset-0 orbit-spin-slow" style={{ animationDuration: "60s" }}>
-        <div className="absolute inset-[32%] rounded-full border border-white/10" />
+        <div className="absolute inset-[32%] rounded-full border border-foreground/10" />
         <div className="absolute inset-[32%] rounded-full">
           <span className="absolute bottom-0 left-1/3 h-2 w-2 rounded-full bg-white shadow-[0_0_16px_rgba(255,255,255,0.8)]" />
         </div>
@@ -87,7 +87,7 @@ function KiwoOrb() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 + i * 0.18, duration: 0.6 }}
-          className="absolute glass rounded-full px-3 py-1.5 text-[11px] text-white/85 flex items-center gap-1.5 whitespace-nowrap"
+          className="absolute glass rounded-full px-3 py-1.5 text-[11px] text-foreground/85 flex items-center gap-1.5 whitespace-nowrap"
           style={c}
         >
           <span
@@ -195,15 +195,15 @@ function RoleCard({ role, featured = false }) {
         <div
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
             role.tone === "cyan"
-              ? "bg-cyan-400/10 text-cyan-300 ring-1 ring-cyan-400/20"
-              : "bg-violet-400/10 text-violet-300 ring-1 ring-violet-400/20"
+              ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300 ring-1 ring-cyan-400/20"
+              : "bg-violet-400/10 text-violet-600 dark:text-violet-300 ring-1 ring-violet-400/20"
           }`}
         >
           <Icon className="h-5 w-5" />
         </div>
         <span
           className={`rounded-full px-2.5 py-1 text-[10px] font-mono ${
-            soon ? "bg-amber-400/10 text-amber-300" : "bg-white/5 text-white/50"
+            soon ? "bg-amber-400/10 text-amber-600 dark:text-amber-300" : "bg-foreground/5 text-foreground/50"
           }`}
         >
           {soon ? "bald verfügbar" : role.tag}
@@ -212,12 +212,12 @@ function RoleCard({ role, featured = false }) {
       <h3 className={`mt-4 font-semibold ${featured ? "text-2xl md:text-3xl" : "text-lg"}`}>
         {role.name}
       </h3>
-      <p className={`mt-2 text-white/60 leading-relaxed ${featured ? "text-base" : "text-sm"}`}>
+      <p className={`mt-2 text-foreground/60 leading-relaxed ${featured ? "text-base" : "text-sm"}`}>
         {role.desc}
       </p>
       {role.id === "reception" && featured && <CallWave />}
       {!soon && (
-        <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-white/70 group-hover:text-white transition">
+        <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/70 group-hover:text-foreground transition">
           Rolle ansehen <ArrowRight className="h-3.5 w-3.5" />
         </div>
       )}
@@ -305,14 +305,14 @@ function LiveTest() {
           <span
             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
               active.tone === "cyan"
-                ? "bg-cyan-400/10 text-cyan-300 ring-1 ring-cyan-400/20"
-                : "bg-violet-400/10 text-violet-300 ring-1 ring-violet-400/20"
+                ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300 ring-1 ring-cyan-400/20"
+                : "bg-violet-400/10 text-violet-600 dark:text-violet-300 ring-1 ring-violet-400/20"
             }`}
           >
             <Icon className="h-5 w-5" />
           </span>
           <div className="min-w-0">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-foreground/40">
               agent
             </div>
             <div className="truncate text-sm font-semibold">{active.role}</div>
@@ -321,10 +321,10 @@ function LiveTest() {
         <div className="flex items-center gap-2 text-[11px] font-mono">
           <span
             className={`h-1.5 w-1.5 rounded-full ${
-              running ? "bg-cyan-400 pulse-dot" : done ? "bg-emerald-400" : "bg-white/30"
+              running ? "bg-cyan-400 pulse-dot" : done ? "bg-emerald-400" : "bg-foreground/30"
             }`}
           />
-          <span className={running ? "text-cyan-300" : done ? "text-emerald-300" : "text-white/50"}>
+          <span className={running ? "text-cyan-600 dark:text-cyan-300" : done ? "text-emerald-600 dark:text-emerald-300" : "text-foreground/50"}>
             {running ? "arbeitet…" : done ? "erledigt" : "bereit"}
           </span>
         </div>
@@ -341,20 +341,21 @@ function LiveTest() {
               className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs transition-all ${
                 isActive
                   ? c.tone === "cyan"
-                    ? "border-cyan-400/40 bg-cyan-400/10 text-cyan-200"
-                    : "border-violet-400/40 bg-violet-400/10 text-violet-200"
-                  : "border-white/10 bg-white/[0.03] text-white/70 hover:text-white"
+                    ? "border-cyan-400/40 bg-cyan-400/10 text-cyan-700 dark:text-cyan-200"
+                    : "border-violet-400/40 bg-violet-400/10 text-violet-700 dark:text-violet-200"
+                  : "border-foreground/10 bg-foreground/[0.03] text-foreground/70 hover:text-foreground"
               }`}
             >
               <Ci className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline text-white/50">{c.role}:</span>
+              <span className="hidden sm:inline text-foreground/50">{c.role}:</span>
               <span>{c.label}</span>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-5 rounded-xl border border-white/5 bg-black/30 p-4 font-mono text-[13px] min-h-[220px]">
+      {/* Terminal-Mock bleibt bewusst immer dunkel (wie ein Code-Editor), unabhängig vom Seiten-Theme */}
+      <div className="mt-5 rounded-xl border border-white/5 bg-[#0B1220] p-4 font-mono text-[13px] min-h-[220px]">
         <div className="mb-2 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-white/40">
           <span className="h-2 w-2 rounded-full bg-red-400/70" />
           <span className="h-2 w-2 rounded-full bg-amber-400/70" />
@@ -469,21 +470,21 @@ function DemoCallCard({ call }) {
           aria-label={playing ? "Pause" : "Abspielen"}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
             call.tone === "cyan"
-              ? "bg-cyan-400/15 text-cyan-300 hover:bg-cyan-400/25"
-              : "bg-violet-400/15 text-violet-300 hover:bg-violet-400/25"
+              ? "bg-cyan-400/15 text-cyan-600 dark:text-cyan-300 hover:bg-cyan-400/25"
+              : "bg-violet-400/15 text-violet-600 dark:text-violet-300 hover:bg-violet-400/25"
           }`}
         >
           {playing ? <Pause className="h-4.5 w-4.5" /> : <Play className="h-4.5 w-4.5 translate-x-0.5" />}
         </button>
         <div className="min-w-0 flex-1">
           <div className="truncate text-sm font-semibold">{call.title}</div>
-          <div className="text-[11px] font-mono text-white/40">{call.subtitle}</div>
+          <div className="text-[11px] font-mono text-foreground/40">{call.subtitle}</div>
         </div>
-        <div className="shrink-0 font-mono text-[11px] text-white/40 tabular-nums">
+        <div className="shrink-0 font-mono text-[11px] text-foreground/40 tabular-nums">
           {fmtTime(current)} / {fmtTime(duration)}
         </div>
       </div>
-      <div className="mt-3.5 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+      <div className="mt-3.5 h-1.5 w-full overflow-hidden rounded-full bg-foreground/10">
         <div
           className={`h-full rounded-full ${call.tone === "cyan" ? "bg-cyan-400" : "bg-violet-400"}`}
           style={{ width: `${pct}%` }}
@@ -513,15 +514,15 @@ const integrations = [
 function IntegrationsMarquee() {
   return (
     <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0F1D] to-transparent z-10" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0F1D] to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-background to-transparent z-10" />
       <div className="flex marquee gap-3 w-max">
         {[...integrations, ...integrations].map((t, i) => (
           <div
             key={i}
-            className="glass rounded-full px-4 py-2.5 text-sm text-white/85 whitespace-nowrap flex items-center gap-2"
+            className="glass rounded-full px-4 py-2.5 text-sm text-foreground/85 whitespace-nowrap flex items-center gap-2"
           >
-            <Plug className="h-3.5 w-3.5 text-cyan-400" />
+            <Plug className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
             {t}
           </div>
         ))}
@@ -543,22 +544,22 @@ function ROICalc() {
   }, [hours]);
   return (
     <GlowCard tone="violet" className="p-6 md:p-8">
-      <div className="flex items-center gap-2 text-xs font-mono text-violet-300/90">
+      <div className="flex items-center gap-2 text-xs font-mono text-violet-600/90 dark:text-violet-300/90">
         <TrendingUp className="h-3.5 w-3.5" /> ROI-RECHNER
       </div>
       <h3 className="mt-2 text-2xl md:text-3xl font-semibold">
         Was <span className="text-gradient">spart Kiwo</span> Ihnen?
       </h3>
-      <p className="mt-2 text-sm text-white/60">
+      <p className="mt-2 text-sm text-foreground/60">
         Wie viele Stunden wiederkehrender Arbeit fallen pro Woche an?
       </p>
       <div className="mt-6">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-white/60 font-mono">5h</span>
-          <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-mono text-cyan-300">
+          <span className="text-foreground/60 font-mono">5h</span>
+          <span className="rounded-full bg-foreground/5 px-3 py-1 text-xs font-mono text-cyan-600 dark:text-cyan-300">
             {hours} Std / Woche
           </span>
-          <span className="text-white/60 font-mono">40h</span>
+          <span className="text-foreground/60 font-mono">40h</span>
         </div>
         <input
           type="range"
@@ -567,24 +568,23 @@ function ROICalc() {
           value={hours}
           onChange={(e) => setHours(Number(e.target.value))}
           className="mt-3 w-full accent-violet-400"
-          style={{ colorScheme: "dark" }}
         />
       </div>
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
-          <div className="text-xs text-cyan-300 font-mono">Ersparnis / Monat</div>
+          <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">Ersparnis / Monat</div>
           <div className="mt-2 text-3xl font-semibold tabular-nums">
             {monthly.savedEuros.toLocaleString("de-DE")} €
           </div>
         </div>
         <div className="rounded-xl border border-violet-400/20 bg-violet-400/5 p-4">
-          <div className="text-xs text-violet-300 font-mono">Zeit / Monat</div>
+          <div className="text-xs text-violet-600 dark:text-violet-300 font-mono">Zeit / Monat</div>
           <div className="mt-2 text-3xl font-semibold tabular-nums">
             {monthly.savedHours} Std
           </div>
         </div>
       </div>
-      <p className="mt-4 text-[11px] text-white/40">
+      <p className="mt-4 text-[11px] text-foreground/40">
         Basis: ⌀ {hourlyCost} €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead).
       </p>
     </GlowCard>
@@ -629,7 +629,7 @@ const steps = [
 /* ---------- Page ---------- */
 export default function App() {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0A0F1D] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-40" />
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.18),transparent_60%)] blur-3xl" />
       <div className="pointer-events-none absolute top-[40%] right-[-10%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.22),transparent_60%)] blur-3xl" />
@@ -646,9 +646,9 @@ export default function App() {
               className="inline-flex items-center gap-2.5 rounded-full glass px-3.5 py-1.5 text-xs font-mono"
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400 pulse-dot" />
-              <span className="text-emerald-300">Plattform online</span>
-              <span className="text-white/30">|</span>
-              <span className="text-white/60">v1.0 · EU</span>
+              <span className="text-emerald-600 dark:text-emerald-300">Plattform online</span>
+              <span className="text-foreground/30">|</span>
+              <span className="text-foreground/60">v1.0 · EU</span>
             </motion.div>
 
             <motion.h1
@@ -658,16 +658,16 @@ export default function App() {
               className="mt-6 text-[2.4rem] leading-[1.05] font-semibold sm:text-5xl md:text-6xl"
             >
               <span className="text-gradient">KI-Works</span> – Die Plattform für{" "}
-              <span className="text-white">digitale KI-Mitarbeiter</span>.
+              <span className="text-foreground">digitale KI-Mitarbeiter</span>.
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="mt-5 max-w-xl text-base md:text-lg text-white/65 leading-relaxed"
+              className="mt-5 max-w-xl text-base md:text-lg text-foreground/65 leading-relaxed"
             >
-              Lernen Sie <span className="text-violet-300 font-medium">Kiwo</span> kennen –
+              Lernen Sie <span className="text-violet-600 dark:text-violet-300 font-medium">Kiwo</span> kennen –
               Ihren digitalen Mitarbeiter für Telefon, WhatsApp, E-Mail und Terminverwaltung.
             </motion.p>
 
@@ -686,21 +686,21 @@ export default function App() {
               </a>
               <a
                 href="#live"
-                className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm text-white/85 border border-white/15 hover-glow hover-glow-cyan"
+                className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm text-foreground/85 border border-foreground/15 hover-glow hover-glow-cyan"
               >
                 <Play className="h-3.5 w-3.5" /> Plattform-Demo
               </a>
             </motion.div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-white/50 font-mono">
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-foreground/50 font-mono">
               <span className="flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5 text-cyan-400" /> DSGVO · EU-Hosting
+                <Shield className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" /> DSGVO · EU-Hosting
               </span>
               <span className="flex items-center gap-1.5">
-                <Cpu className="h-3.5 w-3.5 text-violet-400" /> 12+ Integrationen
+                <Cpu className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" /> 12+ Integrationen
               </span>
               <span className="flex items-center gap-1.5">
-                <Bot className="h-3.5 w-3.5 text-cyan-400" /> 5 Rollen live · 4 bald
+                <Bot className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" /> 5 Rollen live · 4 bald
               </span>
             </div>
           </div>
@@ -716,7 +716,7 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
             <div>
-              <div className="text-xs font-mono text-violet-300/90 flex items-center gap-2">
+              <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-violet-400 pulse-dot" />
                 // rollen_ökosystem
               </div>
@@ -724,7 +724,7 @@ export default function App() {
                 Ein Kiwo. <span className="text-gradient">Viele Rollen.</span>
               </h2>
             </div>
-            <p className="max-w-md text-sm text-white/55">
+            <p className="max-w-md text-sm text-foreground/55">
               Jede Rolle ist spezialisiert – gemeinsam decken sie den Alltag Ihres Teams ab.
               Rollen ohne "bald verfügbar" sind schon heute einsatzbereit.
             </p>
@@ -748,13 +748,13 @@ export default function App() {
       <section id="live" className="relative z-10">
         <div className="mx-auto max-w-5xl px-5 py-16 sm:px-6 md:py-24">
           <div className="text-center">
-            <div className="text-xs font-mono text-cyan-300/90 inline-flex items-center gap-2">
+            <div className="text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90 inline-flex items-center gap-2">
               <Zap className="h-3.5 w-3.5" /> LIVE-EINSATZ
             </div>
             <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
               Testen Sie <span className="text-gradient">Kiwo</span>.
             </h2>
-            <p className="mt-3 text-white/60 max-w-xl mx-auto text-sm md:text-base">
+            <p className="mt-3 text-foreground/60 max-w-xl mx-auto text-sm md:text-base">
               Wählen Sie einen Befehl – Kiwo führt die Aufgabe live im Terminal aus.
             </p>
           </div>
@@ -763,13 +763,13 @@ export default function App() {
           </div>
 
           <div className="mt-16 text-center">
-            <div className="text-xs font-mono text-violet-300/90 inline-flex items-center gap-2">
+            <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 inline-flex items-center gap-2">
               <PhoneCall className="h-3.5 w-3.5" /> ZUM ANHÖREN
             </div>
             <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
               Beispiel-Gespräche mit <span className="text-gradient">Kiwo</span>.
             </h3>
-            <p className="mt-3 text-white/60 max-w-xl mx-auto text-sm md:text-base">
+            <p className="mt-3 text-foreground/60 max-w-xl mx-auto text-sm md:text-base">
               Gesprochene Beispiel-Dialoge, keine echten Gästeanrufe.
             </p>
           </div>
@@ -786,18 +786,18 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
-              <div className="text-xs font-mono text-violet-300/90 flex items-center gap-2">
+              <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 flex items-center gap-2">
                 <LayoutDashboard className="h-3.5 w-3.5" /> KUNDEN-DASHBOARD
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
                 Alles auf <span className="text-gradient">einen Blick</span>.
               </h2>
-              <p className="mt-4 text-white/65 leading-relaxed">
+              <p className="mt-4 text-foreground/65 leading-relaxed">
                 Reservierungen, Bestellungen und Anrufe laufen zentral in Ihrem eigenen
                 Dashboard zusammen – kein Zettel, kein Durcheinander zwischen Telefon,
                 WhatsApp und E-Mail.
               </p>
-              <ul className="mt-6 space-y-2.5 text-sm text-white/75">
+              <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
                 {[
                   "Alle Reservierungen, Bestellungen und Anrufe zentral an einem Ort",
                   "Benachrichtigung bei neuen Anrufen, Reservierungen und Bestellungen",
@@ -806,7 +806,7 @@ export default function App() {
                   "Speisekarte, Öffnungszeiten und FAQ jederzeit selbst anpassen",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-400/15 text-violet-300">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-400/15 text-violet-600 dark:text-violet-300">
                       <Check className="h-3 w-3" />
                     </span>
                     {f}
@@ -815,7 +815,7 @@ export default function App() {
               </ul>
               <a
                 href="/dashboard/"
-                className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-300 hover:text-violet-200 transition"
+                className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
               >
                 Dashboard ansehen <ArrowRight className="h-3.5 w-3.5" />
               </a>
@@ -823,8 +823,8 @@ export default function App() {
 
             <GlowCard tone="violet" className="p-6">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-white/50">// kiwo.dashboard</div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/15 px-2.5 py-0.5 text-[10px] font-mono text-violet-300">
+                <div className="text-xs font-mono text-foreground/50">// kiwo.dashboard</div>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/15 px-2.5 py-0.5 text-[10px] font-mono text-violet-600 dark:text-violet-300">
                   <Bell className="h-3 w-3" /> 3 neu
                 </span>
               </div>
@@ -836,26 +836,26 @@ export default function App() {
                 ].map((row) => (
                   <div
                     key={row.label}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3"
+                    className="flex items-center gap-3 rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3"
                   >
                     <span
                       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                         row.tone === "cyan"
-                          ? "bg-cyan-400/10 text-cyan-300"
-                          : "bg-violet-400/10 text-violet-300"
+                          ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300"
+                          : "bg-violet-400/10 text-violet-600 dark:text-violet-300"
                       }`}
                     >
                       <row.icon className="h-4 w-4" />
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-sm text-white/85">{row.label}</span>
-                    <span className="shrink-0 text-[11px] font-mono text-white/40">{row.meta}</span>
+                    <span className="min-w-0 flex-1 truncate text-sm text-foreground/85">{row.label}</span>
+                    <span className="shrink-0 text-[11px] font-mono text-foreground/40">{row.meta}</span>
                   </div>
                 ))}
               </div>
               <div className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
-                <div className="text-xs text-cyan-300 font-mono">Von Kiwo übernommen · dieser Monat</div>
+                <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">Von Kiwo übernommen · dieser Monat</div>
                 <div className="mt-1.5 text-2xl font-semibold tabular-nums">≈ 14 Std. · 588 €</div>
-                <div className="mt-1.5 text-[11px] text-white/40">
+                <div className="mt-1.5 text-[11px] text-foreground/40">
                   Basis: ⌀ 42 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)
                 </div>
               </div>
@@ -869,18 +869,18 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
-              <div className="text-xs font-mono text-cyan-300/90 flex items-center gap-2">
+              <div className="text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90 flex items-center gap-2">
                 <Layers className="h-3.5 w-3.5" /> KI-WORKS PLATTFORM
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
                 Kiwo läuft auf der <span className="text-gradient">KI-Works Plattform</span>.
               </h2>
-              <p className="mt-4 text-white/65 leading-relaxed">
+              <p className="mt-4 text-foreground/65 leading-relaxed">
                 Sicher, DSGVO-konform und in der EU gehostet. Kiwo verbindet sich nahtlos mit
                 Ihren bestehenden Tools – WhatsApp, Telefonanlagen, Outlook, Google Calendar
                 und Ihrem CRM.
               </p>
-              <ul className="mt-6 space-y-2.5 text-sm text-white/75">
+              <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
                 {[
                   "EU-Hosting & Ende-zu-Ende Verschlüsselung",
                   "Feingranulare Rechte pro System",
@@ -888,7 +888,7 @@ export default function App() {
                   "SSO & rollenbasierter Zugriff",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-400/15 text-cyan-300">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-400/15 text-cyan-600 dark:text-cyan-300">
                       <Check className="h-3 w-3" />
                     </span>
                     {f}
@@ -899,8 +899,8 @@ export default function App() {
 
             <GlowCard tone="cyan" className="p-6">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-white/50">// integrations.stream</div>
-                <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-mono text-emerald-300">
+                <div className="text-xs font-mono text-foreground/50">// integrations.stream</div>
+                <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-mono text-emerald-600 dark:text-emerald-300">
                   online
                 </span>
               </div>
@@ -918,12 +918,12 @@ export default function App() {
                 ].map((s) => (
                   <div
                     key={s.v}
-                    className="rounded-xl border border-white/10 bg-white/[0.03] p-3"
+                    className="rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3"
                   >
-                    <div className="text-lg font-semibold tabular-nums text-white">
+                    <div className="text-lg font-semibold tabular-nums text-foreground">
                       {s.k}
                     </div>
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-white/40">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-foreground/40">
                       {s.v}
                     </div>
                   </div>
@@ -940,13 +940,13 @@ export default function App() {
           <div className="grid gap-6 lg:grid-cols-[1fr_1.15fr] lg:items-start">
             <ROICalc />
             <div>
-              <div className="text-xs font-mono text-violet-300/90 flex items-center gap-2">
+              <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 flex items-center gap-2">
                 <Workflow className="h-3.5 w-3.5" /> ONBOARDING
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
                 In <span className="text-gradient">3 Schritten</span> zum KI-Mitarbeiter.
               </h2>
-              <p className="mt-3 text-white/60 text-sm md:text-base">
+              <p className="mt-3 text-foreground/60 text-sm md:text-base">
                 Oft in unter einer Woche produktiv – ohne IT-Projekt.
               </p>
               <div className="mt-6 space-y-3">
@@ -962,18 +962,18 @@ export default function App() {
                     >
                       <GlowCard tone={i === 1 ? "cyan" : "violet"} className="p-5">
                         <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4">
-                          <span className="font-mono text-2xl font-semibold text-white/20">
+                          <span className="font-mono text-2xl font-semibold text-foreground/20">
                             {s.n}
                           </span>
                           <div className="min-w-0">
                             <div className="truncate font-semibold">{s.title}</div>
-                            <p className="mt-1 text-sm text-white/60">{s.desc}</p>
+                            <p className="mt-1 text-sm text-foreground/60">{s.desc}</p>
                           </div>
                           <span
                             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
                               i === 1
-                                ? "bg-cyan-400/10 text-cyan-300 ring-1 ring-cyan-400/20"
-                                : "bg-violet-400/10 text-violet-300 ring-1 ring-violet-400/20"
+                                ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300 ring-1 ring-cyan-400/20"
+                                : "bg-violet-400/10 text-violet-600 dark:text-violet-300 ring-1 ring-violet-400/20"
                             }`}
                           >
                             <Icon className="h-5 w-5" />
@@ -993,13 +993,13 @@ export default function App() {
       <section id="preise" className="relative z-10">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-cyan-300/90">
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90">
               <Sparkles className="h-3.5 w-3.5" /> PREISE
             </div>
             <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
               Ein Kiwo, <span className="text-gradient">alle Rollen inklusive</span>.
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-white/60">
+            <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-foreground/60">
               Sie zahlen nach Gesprächsvolumen, nicht danach, welche Rollen aktiv sind.
               Der erste Monat ist kostenlos.
             </p>
@@ -1013,25 +1013,25 @@ export default function App() {
                 className={`p-6 md:p-8 ${tier.featured ? "md:-translate-y-2 ring-1 ring-cyan-400/30" : ""}`}
               >
                 {tier.featured && (
-                  <span className="inline-flex rounded-full bg-cyan-400/15 px-3 py-1 text-[10px] font-mono uppercase tracking-wide text-cyan-300">
+                  <span className="inline-flex rounded-full bg-cyan-400/15 px-3 py-1 text-[10px] font-mono uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
                     Meistgewählt
                   </span>
                 )}
                 <div className={`${tier.featured ? "mt-3" : ""} text-lg font-semibold`}>{tier.name}</div>
                 <div className="mt-2 flex items-baseline gap-1.5">
                   <span className="text-4xl font-semibold tabular-nums">{tier.price} €</span>
-                  <span className="text-sm text-white/45">/ Monat</span>
+                  <span className="text-sm text-foreground/45">/ Monat</span>
                 </div>
-                <div className="mt-1.5 text-sm text-white/55">
+                <div className="mt-1.5 text-sm text-foreground/55">
                   {tier.minutes.toLocaleString("de-DE")} Gesprächsminuten/Monat
                 </div>
 
-                <ul className="mt-6 space-y-2.5 text-sm text-white/75">
+                <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
                   {pricingFeatures.map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span
                         className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${
-                          tier.tone === "cyan" ? "bg-cyan-400/15 text-cyan-300" : "bg-violet-400/15 text-violet-300"
+                          tier.tone === "cyan" ? "bg-cyan-400/15 text-cyan-600 dark:text-cyan-300" : "bg-violet-400/15 text-violet-600 dark:text-violet-300"
                         }`}
                       >
                         <Check className="h-3 w-3" />
@@ -1041,10 +1041,10 @@ export default function App() {
                   ))}
                 </ul>
 
-                <div className="mt-6 rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-xs text-white/55">
+                <div className="mt-6 rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3.5 text-xs text-foreground/55">
                   ≈ {tier.savedHours} Std. Personalzeit gespart / Monat
                   <br />
-                  <span className="text-white/40">≈ {tier.savedEuros.toLocaleString("de-DE")} € Wert (⌀ 42 €/Std.)</span>
+                  <span className="text-foreground/40">≈ {tier.savedEuros.toLocaleString("de-DE")} € Wert (⌀ 42 €/Std.)</span>
                 </div>
 
                 <a
@@ -1052,7 +1052,7 @@ export default function App() {
                   className={`mt-6 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
                     tier.featured
                       ? "bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] glow-cyan hover:scale-[1.02]"
-                      : "glass border border-white/15 text-white/85 hover-glow hover-glow-violet"
+                      : "glass border border-foreground/15 text-foreground/85 hover-glow hover-glow-violet"
                   }`}
                 >
                   Jetzt kostenlos testen <ArrowRight className="h-3.5 w-3.5" />
@@ -1060,9 +1060,9 @@ export default function App() {
               </GlowCard>
             ))}
           </div>
-          <p className="mt-6 text-center text-[11px] text-white/35">
+          <p className="mt-6 text-center text-[11px] text-foreground/35">
             Alle Preise zzgl. USt. Mehr Minuten benötigt oder individuelles Paket gewünscht?{" "}
-            <a href="/kontakt.html" className="text-cyan-300 hover:text-cyan-200 transition">
+            <a href="/kontakt.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
               Sprechen Sie uns an
             </a>
             .
@@ -1081,7 +1081,7 @@ export default function App() {
               Bereit für Ihren{" "}
               <span className="text-gradient">digitalen Mitarbeiter</span>?
             </h2>
-            <p className="mt-3 text-white/60 max-w-xl mx-auto">
+            <p className="mt-3 text-foreground/60 max-w-xl mx-auto">
               Starten Sie mit einem kostenlosen Piloten – Rolle wählen, Kanäle verknüpfen,
               Kiwo übernimmt.
             </p>

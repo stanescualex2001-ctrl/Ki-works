@@ -5,6 +5,7 @@ import {
   CalendarDays, UserSearch, Receipt, Compass, Landmark,
   UtensilsCrossed, Hotel, Wrench, Stethoscope, Scissors, Car, Building2,
 } from "lucide-react";
+import { ThemeToggle, ThemeToggleRow } from "./ThemeToggle.jsx";
 
 /* ---------- Role Bento (shared: mega-menu + Rollen-Sektion auf der Startseite) ---------- */
 export const roles = [
@@ -154,25 +155,25 @@ function StatusMenuLink({ icon: Icon, name, href, status, iconTone, onNavigate }
       <a
         href={href}
         onClick={onNavigate}
-        className="flex items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/75 transition hover:bg-white/5 hover:text-white"
+        className="flex items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-foreground/75 transition hover:bg-foreground/5 hover:text-foreground"
       >
         <span className="flex items-center gap-2.5">
           <Icon className={`h-4 w-4 shrink-0 ${iconTone}`} />
           {name}
         </span>
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-300">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-600 dark:text-emerald-300">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> live
         </span>
       </a>
     );
   }
   return (
-    <span className="flex cursor-default items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-white/35">
+    <span className="flex cursor-default items-center justify-between gap-2.5 rounded-lg px-2 py-2 text-sm text-foreground/35">
       <span className="flex items-center gap-2.5">
-        <Icon className="h-4 w-4 shrink-0 text-white/25" />
+        <Icon className="h-4 w-4 shrink-0 text-foreground/25" />
         {name}
       </span>
-      <span className="text-[10px] font-mono text-white/25">bald</span>
+      <span className="text-[10px] font-mono text-foreground/25">bald</span>
     </span>
   );
 }
@@ -184,7 +185,7 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
     <div className={`grid gap-6 ${stacked ? "" : "sm:grid-cols-2"}`}>
       <div className="flex flex-col gap-5">
         <div>
-          <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+          <div className="text-[11px] font-mono uppercase tracking-wide text-foreground/40">
             Kundenkontakt
           </div>
           <div className="mt-3 flex flex-col gap-1">
@@ -195,14 +196,14 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
                 name={r.name}
                 href="/#roles"
                 status={r.status}
-                iconTone="text-cyan-300"
+                iconTone="text-cyan-600 dark:text-cyan-300"
                 onNavigate={onNavigate}
               />
             ))}
           </div>
         </div>
         <div>
-          <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+          <div className="text-[11px] font-mono uppercase tracking-wide text-foreground/40">
             Interne Prozesse
           </div>
           <div className="mt-3 flex flex-col gap-1">
@@ -213,7 +214,7 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
                 name={r.name}
                 href="/#roles"
                 status={r.status}
-                iconTone="text-cyan-300"
+                iconTone="text-cyan-600 dark:text-cyan-300"
                 onNavigate={onNavigate}
               />
             ))}
@@ -221,7 +222,7 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
         </div>
       </div>
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-wide text-white/40">
+        <div className="text-[11px] font-mono uppercase tracking-wide text-foreground/40">
           Branchen
         </div>
         <div className="mt-3 flex flex-col gap-1">
@@ -232,7 +233,7 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
               name={ind.name}
               href={ind.href || "/#roles"}
               status={ind.status}
-              iconTone="text-violet-300"
+              iconTone="text-violet-600 dark:text-violet-300"
               onNavigate={onNavigate}
             />
           ))}
@@ -285,19 +286,19 @@ export function Header() {
           </span>
           <div className="leading-tight min-w-0">
             <div className="truncate text-sm font-semibold tracking-tight">KI-Works</div>
-            <div className="truncate text-[10px] font-mono text-white/40">
+            <div className="truncate text-[10px] font-mono text-foreground/40">
               <span className="sm:hidden">agent kiwo</span>
               <span className="hidden sm:inline">platform · agent kiwo</span>
             </div>
           </div>
         </a>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-white/60">
+        <nav className="hidden md:flex items-center gap-8 text-sm text-foreground/60">
           <div ref={solutionsRef} className="relative">
             <button
               type="button"
               onClick={() => setSolutionsOpen((v) => !v)}
               aria-expanded={solutionsOpen}
-              className="flex items-center gap-1 hover:text-white transition"
+              className="flex items-center gap-1 hover:text-foreground transition"
             >
               Lösungen
               <ChevronDown className={`h-3.5 w-3.5 transition-transform ${solutionsOpen ? "rotate-180" : ""}`} />
@@ -316,23 +317,24 @@ export function Header() {
               )}
             </AnimatePresence>
           </div>
-          <a href="/#live" className="hover:text-white transition">Live testen</a>
-          <a href="/#platform" className="hover:text-white transition">Plattform</a>
-          <a href="/#preise" className="hover:text-white transition">Preise</a>
-          <a href="/#onboarding" className="hover:text-white transition">Onboarding</a>
-          <a href="/kontakt.html" className="hover:text-white transition">Kontakt</a>
+          <a href="/#live" className="hover:text-foreground transition">Live testen</a>
+          <a href="/#platform" className="hover:text-foreground transition">Plattform</a>
+          <a href="/#preise" className="hover:text-foreground transition">Preise</a>
+          <a href="/#onboarding" className="hover:text-foreground transition">Onboarding</a>
+          <a href="/kontakt.html" className="hover:text-foreground transition">Kontakt</a>
         </nav>
         <div className="justify-self-end flex items-center gap-2.5">
+          <ThemeToggle className="hidden sm:inline-flex" />
           <a
             href="/dashboard/"
-            className="inline-flex rounded-full border border-white/15 px-3 py-2 text-xs font-medium text-white/80 hover:text-white hover:border-white/30 transition whitespace-nowrap"
+            className="inline-flex rounded-full border border-foreground/15 px-3 py-2 text-xs font-medium text-foreground/80 hover:text-foreground hover:border-foreground/30 transition whitespace-nowrap"
           >
             <span className="sm:hidden">Login</span>
             <span className="hidden sm:inline">Kunden-Login</span>
           </a>
           <a
             href="/#live"
-            className="rounded-full glass px-4 py-2 text-xs font-medium text-white hover-glow hover-glow-cyan whitespace-nowrap"
+            className="rounded-full glass px-4 py-2 text-xs font-medium text-foreground hover-glow hover-glow-cyan whitespace-nowrap"
           >
             Kiwo testen
           </a>
@@ -341,7 +343,7 @@ export function Header() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-expanded={mobileOpen}
             aria-label="Menü"
-            className="ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-white/30 hover:text-white md:hidden"
+            className="ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-foreground/80 transition hover:border-foreground/30 hover:text-foreground md:hidden"
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -355,14 +357,14 @@ export function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="glass overflow-hidden border-t border-white/10 md:hidden"
+            className="glass overflow-hidden border-t border-foreground/10 md:hidden"
           >
             <div className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-5 text-sm sm:px-6">
               <button
                 type="button"
                 onClick={() => setMobileSolutionsOpen((v) => !v)}
                 aria-expanded={mobileSolutionsOpen}
-                className="flex items-center justify-between rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                className="flex items-center justify-between rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 Lösungen
                 <ChevronDown className={`h-4 w-4 transition-transform ${mobileSolutionsOpen ? "rotate-180" : ""}`} />
@@ -389,38 +391,39 @@ export function Header() {
               <a
                 href="/#live"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 Live testen
               </a>
               <a
                 href="/#platform"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 Plattform
               </a>
               <a
                 href="/#preise"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 Preise
               </a>
               <a
                 href="/#onboarding"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 Onboarding
               </a>
               <a
                 href="/kontakt.html"
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-white/80 transition hover:text-white"
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 Kontakt
               </a>
+              <ThemeToggleRow />
             </div>
           </motion.div>
         )}

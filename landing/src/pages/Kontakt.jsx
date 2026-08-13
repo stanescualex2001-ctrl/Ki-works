@@ -32,41 +32,41 @@ function ContactForm() {
   if (status === "done") {
     return (
       <div className="glass mt-10 flex items-center gap-3.5 rounded-2xl p-6">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-400/15 text-emerald-300">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-400/15 text-emerald-600 dark:text-emerald-300">
           <Check className="h-5 w-5" />
         </span>
         <div>
-          <div className="text-sm font-medium text-white/90">Danke für Ihre Nachricht!</div>
-          <div className="mt-0.5 text-sm text-white/60">Wir melden uns so schnell wie möglich bei Ihnen.</div>
+          <div className="text-sm font-medium text-foreground/90">Danke für Ihre Nachricht!</div>
+          <div className="mt-0.5 text-sm text-foreground/60">Wir melden uns so schnell wie möglich bei Ihnen.</div>
         </div>
       </div>
     );
   }
 
   const inputCls =
-    "w-full rounded-lg border border-white/10 bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/30 outline-none transition focus:border-cyan-400/40 focus:bg-white/[0.05]";
+    "w-full rounded-lg border border-foreground/10 bg-foreground/[0.03] px-4 py-2.5 text-sm text-foreground placeholder-foreground/30 outline-none transition focus:border-cyan-400/40 focus:bg-foreground/[0.05]";
 
   return (
     <form onSubmit={submit} className="glass mt-10 rounded-2xl p-6 md:p-8">
       <h2 className="text-lg font-semibold">Nachricht schreiben</h2>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        <label className="text-xs text-white/45 sm:col-span-1">
+        <label className="text-xs text-foreground/45 sm:col-span-1">
           Name*
           <input required className={`mt-1.5 ${inputCls}`} value={form.name} onChange={set("name")} />
         </label>
-        <label className="text-xs text-white/45 sm:col-span-1">
+        <label className="text-xs text-foreground/45 sm:col-span-1">
           Betrieb
           <input className={`mt-1.5 ${inputCls}`} value={form.business} onChange={set("business")} />
         </label>
-        <label className="text-xs text-white/45 sm:col-span-1">
+        <label className="text-xs text-foreground/45 sm:col-span-1">
           E-Mail*
           <input required type="email" className={`mt-1.5 ${inputCls}`} value={form.email} onChange={set("email")} />
         </label>
-        <label className="text-xs text-white/45 sm:col-span-1">
+        <label className="text-xs text-foreground/45 sm:col-span-1">
           Telefon
           <input className={`mt-1.5 ${inputCls}`} value={form.phone} onChange={set("phone")} />
         </label>
-        <label className="text-xs text-white/45 sm:col-span-2">
+        <label className="text-xs text-foreground/45 sm:col-span-2">
           Nachricht*
           <textarea
             required
@@ -78,18 +78,18 @@ function ContactForm() {
         </label>
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-300">{error}</p>}
+      {error && <p className="mt-4 text-sm text-red-600 dark:text-red-300">{error}</p>}
 
-      <label className="mt-5 flex items-start gap-2.5 text-[11px] text-white/45">
+      <label className="mt-5 flex items-start gap-2.5 text-[11px] text-foreground/45">
         <input
           type="checkbox"
           required
           checked={consent}
           onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 h-4 w-4 shrink-0 rounded border-white/20 bg-white/[0.03] accent-cyan-400"
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-foreground/20 bg-foreground/[0.03] accent-cyan-400"
         />
         Ich habe die{" "}
-        <a href="/datenschutz.html" className="text-cyan-300 hover:text-cyan-200 transition">
+        <a href="/datenschutz.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
           Datenschutzerklärung
         </a>{" "}
         gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu.*
@@ -113,31 +113,31 @@ export default function Kontakt() {
     <PageShell>
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
         <h1 className="text-3xl md:text-4xl font-semibold">Kontakt</h1>
-        <p className="mt-4 max-w-xl text-sm md:text-base text-white/65 leading-relaxed">
+        <p className="mt-4 max-w-xl text-sm md:text-base text-foreground/65 leading-relaxed">
           Fragen zu Kiwo oder der KI-Works Plattform? Schreiben Sie uns eine Nachricht — wir melden uns gerne bei
           Ihnen.
         </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           <div className="glass flex flex-1 items-center gap-3.5 rounded-2xl p-5">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300 ring-1 ring-cyan-400/20">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-600 dark:text-cyan-300 ring-1 ring-cyan-400/20">
               <Mail className="h-5 w-5" />
             </span>
             <div>
-              <div className="text-xs text-white/45">E-Mail</div>
-              <div className="mt-0.5 text-sm font-medium text-white/90">info@ki-works.eu</div>
+              <div className="text-xs text-foreground/45">E-Mail</div>
+              <div className="mt-0.5 text-sm font-medium text-foreground/90">info@ki-works.eu</div>
             </div>
           </div>
           <a
             href="tel:+436509915759"
             className="glass hover-glow hover-glow-violet flex flex-1 items-center gap-3.5 rounded-2xl p-5"
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-400/10 text-violet-300 ring-1 ring-violet-400/20">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-400/10 text-violet-600 dark:text-violet-300 ring-1 ring-violet-400/20">
               <Phone className="h-5 w-5" />
             </span>
             <div>
-              <div className="text-xs text-white/45">Telefon</div>
-              <div className="mt-0.5 text-sm font-medium text-white/90">+43 650 9915759</div>
+              <div className="text-xs text-foreground/45">Telefon</div>
+              <div className="mt-0.5 text-sm font-medium text-foreground/90">+43 650 9915759</div>
             </div>
           </a>
         </div>

@@ -37,7 +37,41 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.875rem;
+  /* Light (Standard) */
+  --background: oklch(0.99 0.004 250);
+  --foreground: oklch(0.17 0.02 260);
+  --surface: oklch(0.97 0.007 250);
+  --card: oklch(1 0 0 / 0.7);
+  --card-foreground: oklch(0.17 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.17 0.02 260);
+  --primary: oklch(0.55 0.16 210);
+  --primary-foreground: oklch(0.99 0.004 250);
+  --secondary: oklch(0.94 0.008 260);
+  --secondary-foreground: oklch(0.17 0.02 260);
+  --muted: oklch(0.95 0.007 260);
+  --muted-foreground: oklch(0.44 0.02 255);
+  --accent: oklch(0.93 0.02 285);
+  --accent-foreground: oklch(0.17 0.02 260);
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.15 0.02 260 / 0.1);
+  --input: oklch(0.15 0.02 260 / 0.12);
+  --ring: oklch(0.55 0.16 210);
+  --cyber: oklch(0.55 0.16 210);
+  --violet: oklch(0.5 0.19 295);
+  --glass-1: oklch(0.15 0.02 260 / 0.04);
+  --glass-2: oklch(0.15 0.02 260 / 0.012);
+  --glass-border: oklch(0.15 0.02 260 / 0.09);
+  --tg-1: #0F172A;
+  --tg-2: #0891B2;
+  --tg-3: #7C3AED;
+}
+
+.dark {
+  color-scheme: dark;
   --background: oklch(0.14 0.02 260);
   --foreground: oklch(0.97 0.01 250);
   --surface: oklch(0.19 0.025 260);
@@ -60,28 +94,30 @@
   --ring: oklch(0.78 0.15 210);
   --cyber: oklch(0.78 0.16 210);
   --violet: oklch(0.68 0.19 295);
-}
-
-.dark {
-  --background: oklch(0.14 0.02 260);
-  --foreground: oklch(0.97 0.01 250);
+  --glass-1: oklch(1 0 0 / 0.04);
+  --glass-2: oklch(1 0 0 / 0.01);
+  --glass-border: oklch(1 0 0 / 0.08);
+  --tg-1: #E2F3FF;
+  --tg-2: #06B6D4;
+  --tg-3: #8B5CF6;
 }
 
 @layer base {
   * { border-color: var(--color-border); }
   html, body {
-    background-color: #080C14;
+    background-color: var(--background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
   h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
 }
 
 @utility glass {
-  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  background: linear-gradient(135deg, var(--glass-1), var(--glass-2));
   backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--glass-border);
 }
 
 @utility glow-cyan {
@@ -93,7 +129,7 @@
 }
 
 @utility text-gradient {
-  background: linear-gradient(135deg, #E2F3FF 0%, #06B6D4 50%, #8B5CF6 100%);
+  background: linear-gradient(135deg, var(--tg-1) 0%, var(--tg-2) 50%, var(--tg-3) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;

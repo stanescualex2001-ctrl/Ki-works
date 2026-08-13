@@ -42,7 +42,7 @@ function A({ href, children, external = false }) {
     <a
       href={href}
       {...(opensNewTab ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="text-cyan-300 hover:text-cyan-200 transition"
+      className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition"
     >
       {children}
     </a>
@@ -55,34 +55,34 @@ export default function Datenschutz() {
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
         <h1 className="text-3xl md:text-4xl font-semibold">Datenschutzerklärung</h1>
 
-        <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-100/90">
-          <strong className="text-amber-300">Hinweis (intern):</strong> Diese Erklärung ist ein
+        <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-800/90 dark:text-amber-100/90">
+          <strong className="text-amber-600 dark:text-amber-300">Hinweis (intern):</strong> Diese Erklärung ist ein
           technischer Ausgangstext und ersetzt keine Rechtsberatung. Bitte vor Veröffentlichung von
           einem Anwalt bzw. Datenschutzberater prüfen lassen — insbesondere die Angaben zu
           Verantwortlichem, Rechtsgrundlagen und Drittland-Übermittlungen (USA).
         </div>
 
         <h2 className="mt-10 text-lg font-semibold">1. Verantwortlicher</h2>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           [Name / Firmenname], [Anschrift], E-Mail: <A href="mailto:info@ki-works.eu">info@ki-works.eu</A>{" "}
           (im Folgenden „ki-works", „wir").
         </p>
 
         <h2 className="mt-10 text-lg font-semibold">2. Wer ist wofür verantwortlich?</h2>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           Diese Erklärung betrifft zwei unterschiedliche Rollen:
         </p>
-        <ul className="mt-3 list-disc space-y-2.5 pl-5 text-sm text-white/65 leading-relaxed">
+        <ul className="mt-3 list-disc space-y-2.5 pl-5 text-sm text-foreground/65 leading-relaxed">
           <li>
-            <strong className="text-white/85">Website-Besucher und Interessenten</strong> (z. B.
+            <strong className="text-foreground/85">Website-Besucher und Interessenten</strong> (z. B.
             das Kontaktformular auf dieser Seite): Hier ist{" "}
-            <strong className="text-white/85">ki-works</strong> Verantwortlicher im Sinne der
+            <strong className="text-foreground/85">ki-works</strong> Verantwortlicher im Sinne der
             DSGVO.
           </li>
           <li>
-            <strong className="text-white/85">Gäste unserer Restaurant-/Geschäftskunden</strong>,
+            <strong className="text-foreground/85">Gäste unserer Restaurant-/Geschäftskunden</strong>,
             die telefonisch reservieren oder bestellen: Hier ist der jeweilige{" "}
-            <strong className="text-white/85">Betrieb</strong> (z. B. das Restaurant)
+            <strong className="text-foreground/85">Betrieb</strong> (z. B. das Restaurant)
             Verantwortlicher, ki-works verarbeitet die Daten in dessen Auftrag als
             Auftragsverarbeiter (Art. 28 DSGVO). Der Betrieb informiert seine Gäste eigenständig;
             ki-works stellt hierfür Hinweistexte und den telefonischen Aufzeichnungshinweis
@@ -91,10 +91,10 @@ export default function Datenschutz() {
         </ul>
 
         <h2 className="mt-10 text-lg font-semibold">3. Welche Daten wir verarbeiten</h2>
-        <div className="mt-4 overflow-x-auto rounded-xl border border-white/10">
+        <div className="mt-4 overflow-x-auto rounded-xl border border-foreground/10">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-xs text-white/45">
+              <tr className="border-b border-foreground/10 text-xs text-foreground/45">
                 <th className="px-4 py-3 font-medium">Kategorie</th>
                 <th className="px-4 py-3 font-medium">Beispiele</th>
                 <th className="px-4 py-3 font-medium">Zweck</th>
@@ -102,10 +102,10 @@ export default function Datenschutz() {
             </thead>
             <tbody>
               {datenkategorien.map((row) => (
-                <tr key={row.kategorie} className="border-b border-white/5 last:border-0 align-top">
-                  <td className="px-4 py-3 text-white/80">{row.kategorie}</td>
-                  <td className="px-4 py-3 text-white/60">{row.beispiele}</td>
-                  <td className="px-4 py-3 text-white/60">{row.zweck}</td>
+                <tr key={row.kategorie} className="border-b border-foreground/5 last:border-0 align-top">
+                  <td className="px-4 py-3 text-foreground/80">{row.kategorie}</td>
+                  <td className="px-4 py-3 text-foreground/60">{row.beispiele}</td>
+                  <td className="px-4 py-3 text-foreground/60">{row.zweck}</td>
                 </tr>
               ))}
             </tbody>
@@ -113,7 +113,7 @@ export default function Datenschutz() {
         </div>
 
         <h2 className="mt-10 text-lg font-semibold">4. Rechtsgrundlagen</h2>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           Vertragserfüllung bzw. vorvertragliche Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO) für
           Reservierungen/Bestellungen und Kundenanfragen; berechtigtes Interesse (Art. 6 Abs. 1
           lit. f DSGVO) an Betrieb und Verbesserung des Dienstes, z. B. Qualitätssicherung von
@@ -121,42 +121,42 @@ export default function Datenschutz() {
         </p>
 
         <h2 className="mt-10 text-lg font-semibold">5. Empfänger und Auftragsverarbeiter</h2>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           Zur Erbringung unseres Dienstes setzen wir folgende Dienstleister ein:
         </p>
-        <ul className="mt-3 space-y-2.5 pl-5 text-sm text-white/65 leading-relaxed list-disc">
+        <ul className="mt-3 space-y-2.5 pl-5 text-sm text-foreground/65 leading-relaxed list-disc">
           {dienstleister.map((d) => (
             <li key={d.name}>
-              <strong className="text-white/85">{d.name}</strong>
+              <strong className="text-foreground/85">{d.name}</strong>
               {d.ort && `, ${d.ort}`} — {d.zweck}
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           Bei Übermittlung in die USA stützen wir uns auf geeignete Garantien (z. B.
           EU-Standardvertragsklauseln bzw. Data Privacy Framework der jeweiligen Anbieter). [Von
           Anwalt/Datenschutzberater bestätigen lassen.]
         </p>
 
         <h2 className="mt-10 text-lg font-semibold">6. Speicherdauer</h2>
-        <ul className="mt-3 space-y-2.5 pl-5 text-sm text-white/65 leading-relaxed list-disc">
+        <ul className="mt-3 space-y-2.5 pl-5 text-sm text-foreground/65 leading-relaxed list-disc">
           <li>
-            <strong className="text-white/85">Gesprächsaufzeichnung und Transkript:</strong>{" "}
-            werden automatisiert nach <strong className="text-white/85">7 Tagen</strong> gelöscht.
+            <strong className="text-foreground/85">Gesprächsaufzeichnung und Transkript:</strong>{" "}
+            werden automatisiert nach <strong className="text-foreground/85">7 Tagen</strong> gelöscht.
           </li>
           <li>
-            <strong className="text-white/85">Reservierungs- und Bestelldaten:</strong> werden für
+            <strong className="text-foreground/85">Reservierungs- und Bestelldaten:</strong> werden für
             die Dauer der Geschäftsbeziehung bzw. gesetzlicher Aufbewahrungspflichten des
             jeweiligen Betriebs gespeichert.
           </li>
           <li>
-            <strong className="text-white/85">Kontaktanfragen:</strong> werden gelöscht, sobald
+            <strong className="text-foreground/85">Kontaktanfragen:</strong> werden gelöscht, sobald
             sie bearbeitet sind und keine gesetzliche Aufbewahrungspflicht entgegensteht.
           </li>
         </ul>
 
         <h2 className="mt-10 text-lg font-semibold">7. Ihre Rechte</h2>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
           Datenübertragbarkeit und Widerspruch. Wenden Sie sich hierfür an{" "}
           <A href="mailto:info@ki-works.eu">info@ki-works.eu</A> bzw. — bei Gästedaten — direkt an
@@ -166,7 +166,7 @@ export default function Datenschutz() {
         </p>
 
         <h2 className="mt-10 text-lg font-semibold">8. Cookies</h2>
-        <p className="mt-3 text-sm text-white/65 leading-relaxed">
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
           Diese Website verwendet keine Analyse- oder Tracking-Cookies.
         </p>
       </div>

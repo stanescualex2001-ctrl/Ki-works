@@ -1,4 +1,26 @@
 import React, { useEffect, useState, useId } from 'react';
+import { getStoredTheme, applyTheme } from './theme.js';
+
+/* ---------- Light/Dark-Umschalter ---------- */
+function ThemeToggle({ className = '' }) {
+  const [theme, setTheme] = useState(getStoredTheme);
+
+  useEffect(() => {
+    setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+  }, []);
+
+  const toggle = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    setTheme(next);
+  };
+
+  return (
+    <button type="button" className={`refresh ${className}`} onClick={toggle}>
+      {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+    </button>
+  );
+}
 
 /* ---------- Brand mark: Orbit K (identisch zum Kunden-Dashboard) ---------- */
 function OrbitKLogo({ size = 34 }) {
@@ -167,6 +189,7 @@ function Login({ onLogin }) {
           {loading ? 'Anmelden…' : 'Anmelden'}
         </button>
         <a className="site-link login-site-link" href="/">← Zur Website</a>
+        <ThemeToggle />
       </form>
     </div>
   );
@@ -293,6 +316,7 @@ export default function App() {
           </div>
         </div>
         <button className="refresh" onClick={refresh}>⟳ Aktualisieren</button>
+        <ThemeToggle />
         <button className="refresh" onClick={logout}>Abmelden</button>
       </aside>
       <main>
