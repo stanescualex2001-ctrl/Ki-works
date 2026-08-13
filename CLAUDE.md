@@ -503,6 +503,20 @@ Version auf "Publish" klicken.
   Screenshots geprüft, committet+gepusht, Deploy-Befehle (normaler
   rsync/Build-Ablauf, kein Backend-Neustart/nginx-Reload nötig) an Nutzer
   gegeben.
+- **Nachschärfung Light/Dark Mode (13.08.2026):** Nutzer-Feedback nach dem
+  obigen Umbau: (1) alle CTA-Buttons auf der Landingpage sollen das
+  Cyan-Violet-Verlauf-Design von "Kiwo kennenlernen" bekommen statt teils
+  Glass-/Outline-Optik (betraf Header „Kunden-Login"/„Kiwo testen", Hero
+  „Plattform-Demo", die 3 Preise-Buttons) — jetzt einheitlich, sieht in
+  Light und Dark gleich gut aus, da der Verlauf fixe Farben nutzt statt
+  Theme-Variablen. Reine Icon-Buttons (Menü-Toggle, Theme-Umschalter
+  selbst) bewusst ausgenommen (andere UI-Kategorie, kein CTA). (2)
+  Dark-Mode-Umschalter soll auf Mobile auch außerhalb des Menüs sichtbar
+  sein — steht jetzt immer in der mobilen Kopfzeile statt nur im
+  aufklappbaren Menü; dafür „Kunden-Login" auf sehr schmalen Screens
+  (< 640px) ins Menü verschoben, damit Logo/Umschalter/„Kiwo
+  testen"/Hamburger nicht überlaufen (bei 320px Breite trunkiert das Logo
+  stärker, aber ohne Layout-Bruch — akzeptiert, sehr seltene Bildschirmgröße).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
