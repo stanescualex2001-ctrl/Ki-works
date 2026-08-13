@@ -73,7 +73,13 @@ function KiwoOrb() {
         </div>
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
-        <OrbBuddy size={150} showBubble />
+        <OrbBuddy size={150} />
+        <div
+          className="glass absolute rounded-2xl rounded-bl-sm px-3 py-1.5 text-xs font-medium text-foreground/90 whitespace-nowrap shadow-lg"
+          style={{ left: "62%", top: "20%" }}
+        >
+          Hi, ich bin Kiwo
+        </div>
       </div>
 
       {[
@@ -103,10 +109,40 @@ function KiwoOrb() {
 }
 
 /* ---------- Kiwo character: Orb Buddy ---------- */
-function OrbBuddy({ size = 44, showBubble = false }) {
+function OrbBuddy({ size = 44 }) {
   const uid = useId().replace(/:/g, "");
+  const rootRef = useRef(null);
+  const [look, setLook] = useState({ lean: 0, eyeX: 0, eyeY: 0 });
+
+  useEffect(() => {
+    let raf = null;
+    function handlePointerMove(e) {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        const el = rootRef.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        const dx = e.clientX - (r.left + r.width / 2);
+        const dy = e.clientY - (r.top + r.height / 2);
+        const dist = Math.hypot(dx, dy) || 1;
+        const strength = Math.min(dist / 400, 1);
+        setLook({
+          lean: (dx / dist) * 5 * strength,
+          eyeX: (dx / dist) * 2.6 * strength,
+          eyeY: (dy / dist) * 2.6 * strength,
+        });
+      });
+    }
+    window.addEventListener("pointermove", handlePointerMove);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
   return (
-    <svg width={size} height={size} viewBox="0 0 200 200" aria-hidden="true" className="orb-float">
+    <svg ref={rootRef} width={size} height={size} viewBox="0 0 200 200" aria-hidden="true" className="orb-float">
       <defs>
         <radialGradient id={`ob-glow-${uid}`} cx="50%" cy="55%" r="55%">
           <stop offset="0" stopColor="#22D3EE" stopOpacity="0.55" />
@@ -127,40 +163,29 @@ function OrbBuddy({ size = 44, showBubble = false }) {
       </defs>
       <ellipse cx="100" cy="172" rx="32" ry="7" fill="#000" opacity="0.28" filter={`url(#ob-blurC-${uid})`} />
       <circle cx="100" cy="112" r="66" fill={`url(#ob-glow-${uid})`} filter={`url(#ob-blurA-${uid})`} />
-      <g>
-        <animateTransform attributeName="transform" type="rotate" values="-6 100 60;6 100 60;-6 100 60"
-                           dur="3.5s" repeatCount="indefinite" />
-        <line x1="100" y1="60" x2="100" y2="45" stroke="#67E8F9" strokeWidth="3" strokeLinecap="round" />
-        <circle cx="100" cy="40" r="9" fill="#67E8F9" opacity="0.45" filter={`url(#ob-blurB-${uid})`} />
-        <circle cx="100" cy="40" r="4.4" fill="#ECFEFF" />
-      </g>
-      <circle cx="100" cy="112" r="46" fill={`url(#ob-body-${uid})`} />
-      <ellipse cx="83" cy="92" rx="20" ry="14" fill={`url(#ob-shine-${uid})`} opacity="0.8"
-               filter={`url(#ob-blurB-${uid})`} transform="rotate(-18 83 92)" />
-      <path d="M124 132 A46 46 0 0 1 96 157" fill="none" stroke="#4C1D95" strokeWidth="10"
-            strokeLinecap="round" opacity="0.18" filter={`url(#ob-blurB-${uid})`} />
-      <g>
-        <animate attributeName="opacity" values="1;1;0.1;1;1" keyTimes="0;0.46;0.5;0.54;1"
-                 dur="4.2s" repeatCount="indefinite" />
-        <circle cx="86" cy="110" r="5.6" fill="#0B1220" />
-        <circle cx="114" cy="110" r="5.6" fill="#0B1220" />
-        <circle cx="88" cy="107.5" r="1.6" fill="#fff" />
-        <circle cx="116" cy="107.5" r="1.6" fill="#fff" />
-      </g>
-      <path d="M87 126 Q100 136 113 126" fill="none" stroke="#0B1220" strokeWidth="4.2" strokeLinecap="round" />
-      {showBubble && (
+      <g transform={`rotate(${look.lean.toFixed(2)} 100 112)`}>
         <g>
-          <rect x="138" y="50" width="46" height="28" rx="14" fill="rgba(255,255,255,0.12)"
-                stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-          <path d="M148 76 L140 86 L152 77 Z" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-          {[151, 161, 171].map((cx, i) => (
-            <circle key={cx} cx={cx} cy="64" r="2.8" fill="#fff">
-              <animate attributeName="opacity" values="0.35;1;0.35" dur="1.2s"
-                       begin={`${i * 0.15}s`} repeatCount="indefinite" />
-            </circle>
-          ))}
+          <animateTransform attributeName="transform" type="rotate" values="-6 100 60;6 100 60;-6 100 60"
+                             dur="3.5s" repeatCount="indefinite" />
+          <line x1="100" y1="60" x2="100" y2="45" stroke="#67E8F9" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="100" cy="40" r="9" fill="#67E8F9" opacity="0.45" filter={`url(#ob-blurB-${uid})`} />
+          <circle cx="100" cy="40" r="4.4" fill="#ECFEFF" />
         </g>
-      )}
+        <circle cx="100" cy="112" r="46" fill={`url(#ob-body-${uid})`} />
+        <ellipse cx="83" cy="92" rx="20" ry="14" fill={`url(#ob-shine-${uid})`} opacity="0.8"
+                 filter={`url(#ob-blurB-${uid})`} transform="rotate(-18 83 92)" />
+        <path d="M124 132 A46 46 0 0 1 96 157" fill="none" stroke="#4C1D95" strokeWidth="10"
+              strokeLinecap="round" opacity="0.18" filter={`url(#ob-blurB-${uid})`} />
+        <g transform={`translate(${look.eyeX.toFixed(2)} ${look.eyeY.toFixed(2)})`}>
+          <animate attributeName="opacity" values="1;1;0.1;1;1" keyTimes="0;0.46;0.5;0.54;1"
+                   dur="4.2s" repeatCount="indefinite" />
+          <circle cx="86" cy="110" r="5.6" fill="#0B1220" />
+          <circle cx="114" cy="110" r="5.6" fill="#0B1220" />
+          <circle cx="88" cy="107.5" r="1.6" fill="#fff" />
+          <circle cx="116" cy="107.5" r="1.6" fill="#fff" />
+        </g>
+        <path d="M87 126 Q100 136 113 126" fill="none" stroke="#0B1220" strokeWidth="4.2" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }
@@ -700,7 +725,9 @@ export default function App() {
                 <Cpu className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" /> 12+ Integrationen
               </span>
               <span className="flex items-center gap-1.5">
-                <Bot className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" /> 5 Rollen live · 4 bald
+                <Bot className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
+                {roles.filter((r) => r.status === "live").length} Rollen live ·{" "}
+                {roles.filter((r) => r.status !== "live").length} bald
               </span>
             </div>
           </div>

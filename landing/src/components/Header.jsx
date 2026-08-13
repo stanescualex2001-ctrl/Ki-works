@@ -27,7 +27,7 @@ export const roles = [
     icon: TrendingUp,
     tone: "cyan",
     category: "kundenkontakt",
-    status: "live",
+    status: "soon",
   },
   {
     id: "support",
@@ -57,7 +57,7 @@ export const roles = [
     icon: CalendarDays,
     tone: "cyan",
     category: "intern",
-    status: "live",
+    status: "soon",
   },
   {
     id: "recruiting",
