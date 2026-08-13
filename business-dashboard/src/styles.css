@@ -115,6 +115,23 @@ tr:last-child td { border-bottom: none; }
 th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgba(var(--overlay-rgb),0.02); font-family: var(--font-mono); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .lead-actions { display: flex; gap: 0.6rem; align-items: center; }
 
+.pending-row { cursor: pointer; }
+.pending-row:hover td { background: rgba(var(--overlay-rgb),0.02); }
+.pending-row-detail td { padding: 0; border-bottom: 1px solid var(--border); }
+.pending-detail {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem;
+  background: var(--panel-solid); padding: 0.9rem 1rem;
+}
+.pending-detail-field { min-width: 0; }
+.pending-detail-label {
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--muted); margin-bottom: 0.2rem;
+}
+.pending-detail-mono {
+  font-family: var(--font-mono); font-size: 0.85rem; white-space: pre-wrap; word-break: break-word;
+}
+.sales-agent-box { margin-top: 1rem; }
+
 .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 0.85rem; }
 .error { color: var(--bad-text); }
 .hint { color: var(--muted); font-size: 0.85rem; margin-top: 0.8rem; }

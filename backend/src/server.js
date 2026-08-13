@@ -8,6 +8,7 @@ import { syncVapiAssistant } from './vapiAdmin.js';
 import { notifyN8n } from './n8n.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
+import { runSalesAgent } from './salesAgent.js';
 import { sendSms, reservationSms } from './sms.js';
 import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
 import {
@@ -548,6 +549,22 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
   res.json(rows[0]);
+});
+
+// Sales-/Akquise-Agent (Pilot ki-works.eu): recherchiert per Websuche
+// passende Betriebe und legt Mail-Entwürfe als pending_actions an. Läuft
+// synchron im Request (wie /api/recommendations) — ein echter Lauf dauert
+// durch die Websuchen spürbar länger, der Button im Dashboard zeigt
+// währenddessen einen Ladezustand.
+app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
+  try {
+    const maxCandidates = Number(req.body?.maxCandidates) || 5;
+    const result = await runSalesAgent({ maxCandidates });
+    res.json(result);
+  } catch (err) {
+    console.error('Sales-Agent fehlgeschlagen:', err.message);
+    res.status(502).json({ error: err.message });
+  }
 });
 
 // Vapis Aufnahme-URLs sind zeitlich befristet signiert (laufen nach einiger

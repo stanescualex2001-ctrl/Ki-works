@@ -199,9 +199,36 @@ function Login({ onLogin }) {
 const PENDING_KIND_LABEL = { outreach_email: 'Akquise-E-Mail' };
 const PENDING_ROLE_LABEL = { sales: 'Sales', support: 'Support', office: 'Office', orders: 'Orders' };
 
+// Payload-Feldnamen menschenlesbar beschriften; unbekannte Felder werden
+// trotzdem generisch angezeigt (funktioniert für jeden pending_actions-Kind).
+const PAYLOAD_FIELD_LABEL = {
+  business_name: 'Betrieb', website: 'Website', city: 'Ort', why_fit: 'Begründung',
+  contact_email: 'Kontakt-E-Mail', subject: 'Betreff', body: 'Text', qualified_by: 'Qualifiziert durch',
+};
+
+function PendingActionDetail({ payload }) {
+  const entries = Object.entries(payload || {}).filter(([, v]) => v !== null && v !== '');
+  if (!entries.length) return null;
+  return (
+    <div className="pending-detail">
+      {entries.map(([key, value]) => (
+        <div key={key} className="pending-detail-field">
+          <div className="pending-detail-label">{PAYLOAD_FIELD_LABEL[key] || key}</div>
+          {key === 'website' || key === 'contact_email' ? (
+            <a className="site-link" href={key === 'website' ? value : `mailto:${value}`} target="_blank" rel="noreferrer">{value}</a>
+          ) : (
+            <div className={key === 'body' ? 'pending-detail-mono' : ''}>{String(value)}</div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function PendingActions({ refreshKey, onChanged }) {
   const { data: actions, error } = useFetch('/api/pending-actions', refreshKey);
   const [deciding, setDeciding] = useState(null);
+  const [expandedId, setExpandedId] = useState(null);
   const decide = (id, status) => {
     setDeciding(id);
     apiFetch(`/api/pending-actions/${id}`, {
@@ -223,17 +250,24 @@ function PendingActions({ refreshKey, onChanged }) {
         </thead>
         <tbody>
           {actions.map((a) => (
-            <tr key={a.id}>
-              <td>{fmtDateTime(a.created_at)}</td>
-              <td>{a.restaurant_name || '–'}</td>
-              <td>{PENDING_ROLE_LABEL[a.role] || a.role}</td>
-              <td>{PENDING_KIND_LABEL[a.kind] || a.kind}</td>
-              <td>{a.summary}</td>
-              <td className="lead-actions">
-                <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>✅ Freigeben</button>
-                <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
-              </td>
-            </tr>
+            <React.Fragment key={a.id}>
+              <tr className="pending-row" onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}>
+                <td>{fmtDateTime(a.created_at)}</td>
+                <td>{a.restaurant_name || '–'}</td>
+                <td>{PENDING_ROLE_LABEL[a.role] || a.role}</td>
+                <td>{PENDING_KIND_LABEL[a.kind] || a.kind}</td>
+                <td>{a.summary}</td>
+                <td className="lead-actions" onClick={(e) => e.stopPropagation()}>
+                  <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>✅ Freigeben</button>
+                  <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
+                </td>
+              </tr>
+              {expandedId === a.id && (
+                <tr className="pending-row-detail">
+                  <td colSpan={6}><PendingActionDetail payload={a.payload} /></td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>
@@ -270,16 +304,67 @@ function BusinessGrid({ onOpen }) {
   );
 }
 
-function BusinessDetail({ business, onBack }) {
+function SalesAgentRunner({ onDone }) {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  const run = () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    apiFetch('/api/sales-agent/run', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ maxCandidates: 5 }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setResult(d);
+        onDone();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div className="sales-agent-box">
+      <button className="primary" disabled={loading} onClick={run}>
+        {loading ? 'Claude recherchiert…' : 'Sales-Agent starten'}
+      </button>
+      {result && (
+        <p className="hint" style={{ margin: '0.6rem 0 0' }}>
+          {result.found} Kandidaten gefunden, {result.drafted} Entwürfe erstellt
+          {result.skipped ? `, ${result.skipped} übersprungen` : ''}.
+        </p>
+      )}
+      {error && <p className="error" style={{ margin: '0.6rem 0 0' }}>Fehler: {error}</p>}
+    </div>
+  );
+}
+
+function BusinessDetail({ business, onBack, onSalesAgentDone }) {
   return (
     <>
       <button className="link back-link" onClick={onBack}>← Zurück zur Übersicht</button>
       <h1 style={{ marginBottom: '0.3rem' }}>{business.name}</h1>
-      <p className="hint">
-        Noch nicht mit einem Kiwo-Kunden verknüpft. Sobald {business.name} als echter Kunde im
-        System angelegt ist, erscheinen hier die Freigaben der einzelnen Kiwo-Rollen für diesen
-        Betrieb.
-      </p>
+      {business.id === 'ki-works' ? (
+        <>
+          <p className="hint">
+            Pilot-Rolle Sales: recherchiert per Websuche passende Restaurants/Gasthäuser im
+            Zielgebiet und legt individuelle Akquise-Mail-Entwürfe zur Freigabe an
+            (landen unten in der Meta-Ansicht unter „Sales" / „Akquise-E-Mail").
+          </p>
+          <SalesAgentRunner onDone={onSalesAgentDone} />
+        </>
+      ) : (
+        <p className="hint">
+          Noch nicht mit einem Kiwo-Kunden verknüpft. Sobald {business.name} als echter Kunde im
+          System angelegt ist, erscheinen hier die Freigaben der einzelnen Kiwo-Rollen für diesen
+          Betrieb.
+        </p>
+      )}
     </>
   );
 }
@@ -321,7 +406,11 @@ export default function App() {
       </aside>
       <main>
         {openBusiness ? (
-          <BusinessDetail business={openBusiness} onBack={() => setOpenBusiness(null)} />
+          <BusinessDetail
+            business={openBusiness}
+            onBack={() => setOpenBusiness(null)}
+            onSalesAgentDone={refresh}
+          />
         ) : (
           <>
             <header className="main-head">
