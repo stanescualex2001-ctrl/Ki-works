@@ -157,8 +157,51 @@ sleep 3
 systemctl --no-pager --lines=0 status ki-works-api n8n || true
 
 # --- nginx --------------------------------------------------------------------------
-log "nginx konfigurieren"
-install -m 644 "$APP_DIR/deploy/nginx/ki-works.conf" /etc/nginx/sites-available/ki-works.conf
+# Bootstrap zuerst OHNE SSL (deploy/nginx/ki-works.conf im Repo enthält seit
+# 13.08.2026 die SSL-Zeilen fest eingetragen — die Zertifikatsdateien gibt es
+# aber bei einem Neu-Aufsetzen hier noch nicht, ein `nginx -t` würde damit
+# fehlschlagen). Nach erfolgreichem Certbot-Lauf wird unten die vollständige
+# Repo-Datei eingespielt.
+log "nginx vorläufig ohne SSL konfigurieren (Bootstrap für Certbot)"
+cat > /etc/nginx/sites-available/ki-works.conf <<EOF
+server {
+    listen 80;
+    server_name $DOMAIN www.$DOMAIN;
+    root $APP_DIR/landing/dist;
+    index index.html;
+    location /api/ {
+        proxy_pass http://127.0.0.1:3001;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+    }
+    location /dashboard {
+        alias $APP_DIR/dashboard/dist;
+        try_files \$uri \$uri/ /dashboard/index.html;
+    }
+    location /intern {
+        alias $APP_DIR/business-dashboard/dist;
+        try_files \$uri \$uri/ /intern/index.html;
+    }
+    location / {
+        try_files \$uri /index.html;
+    }
+}
+server {
+    listen 80;
+    server_name n8n.$DOMAIN;
+    location / {
+        proxy_pass http://127.0.0.1:5678;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 300s;
+    }
+}
+EOF
 ln -sf /etc/nginx/sites-available/ki-works.conf /etc/nginx/sites-enabled/ki-works.conf
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
@@ -167,7 +210,10 @@ nginx -t && systemctl reload nginx
 log "SSL-Zertifikate anfordern (setzt DNS auf diese Server-IP voraus)"
 certbot --nginx --non-interactive --agree-tos -m "$CERTBOT_EMAIL" \
   -d "$DOMAIN" -d "www.$DOMAIN" -d "n8n.$DOMAIN" --redirect \
-  || echo "WARNUNG: certbot fehlgeschlagen (DNS prüfen!). Später erneut: certbot --nginx -d $DOMAIN -d www.$DOMAIN -d n8n.$DOMAIN"
+  && { log "Zertifikate erhalten — vollständige Repo-Konfiguration (mit fest eingetragenen SSL-Pfaden) einspielen"; \
+       install -m 644 "$APP_DIR/deploy/nginx/ki-works.conf" /etc/nginx/sites-available/ki-works.conf; \
+       nginx -t && systemctl reload nginx; } \
+  || echo "WARNUNG: certbot fehlgeschlagen (DNS prüfen!). Später erneut: certbot --nginx -d $DOMAIN -d www.$DOMAIN -d n8n.$DOMAIN — danach deploy/nginx/ki-works.conf einspielen und nginx neu laden."
 
 # --- Zusammenfassung ----------------------------------------------------------------------
 cat > $ENV_DIR/credentials.txt <<EOF

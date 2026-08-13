@@ -456,6 +456,29 @@ Version auf "Publish" klicken.
   nginx-Block braucht dort einen manuellen `nginx -t && systemctl reload
   nginx` nach dem Deploy (passiert nicht automatisch durch den
   rsync/build-Ablauf).
+- **Website-Ausfall behoben + Ursache dauerhaft gefixt (13.08.2026):** beim
+  Ausrollen des `/intern`-nginx-Blocks (siehe oben) führte ein `cp` der
+  Repo-Datei `deploy/nginx/ki-works.conf` auf den Server dazu, dass die
+  Seite komplett unerreichbar wurde. Ursache: die Repo-Vorlage enthielt nur
+  reines HTTP (`listen 80`), während die tatsächlich laufende Server-Datei
+  zusätzlich SSL-Blöcke (`listen 443 ssl`, Zertifikatspfade) enthielt, die
+  Certbot dort früher automatisch reinpatcht hatte — nie zurück ins Repo
+  übernommen. Der `cp` hat diese SSL-Blöcke gelöscht, danach hörte nichts
+  mehr auf Port 443. Live per copy-paste-Befehlen diagnostiziert (nginx
+  lief noch, Zertifikat war weiterhin gültig bis 04.10.2026, nur die
+  Config fehlte) und mit einer wiederhergestellten Vollkonfiguration
+  (bestehendes, weiterhin gültiges Zertifikat referenziert, kein neues
+  angefordert) behoben — Nutzer bestätigt: „läuft". **Dauerhafter Fix
+  gegen Wiederholung:** `deploy/nginx/ki-works.conf` enthält die SSL-Blöcke
+  jetzt fest im Repo (inkl. Kommentar zur Historie) — ein künftiger `cp`
+  kann die SSL-Konfiguration nicht mehr versehentlich löschen. Da ein
+  frischer Server aber noch kein Zertifikat hat, würde `nginx -t` beim
+  Ersteinrichten mit dieser Datei sofort scheitern — `deploy/install.sh`
+  baut deshalb jetzt zuerst eine temporäre reine HTTP-Konfiguration auf,
+  fordert danach per Certbot das Zertifikat an, und spielt erst bei Erfolg
+  die vollständige (SSL-fertige) Repo-Datei ein. Noch nicht auf dem Server
+  verifiziert (nächster Rollout-Schritt), lokal per `bash -n
+  deploy/install.sh` auf Syntaxfehler geprüft.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
