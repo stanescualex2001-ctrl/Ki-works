@@ -5,7 +5,7 @@ import {
   CalendarDays, UserSearch, Receipt, Compass, Landmark,
   UtensilsCrossed, Hotel, Wrench, Stethoscope, Scissors, Car, Building2,
 } from "lucide-react";
-import { ThemeToggle, ThemeToggleRow } from "./ThemeToggle.jsx";
+import { ThemeToggle } from "./ThemeToggle.jsx";
 
 /* ---------- Role Bento (shared: mega-menu + Rollen-Sektion auf der Startseite) ---------- */
 export const roles = [
@@ -324,17 +324,16 @@ export function Header() {
           <a href="/kontakt.html" className="hover:text-foreground transition">Kontakt</a>
         </nav>
         <div className="justify-self-end flex items-center gap-2.5">
-          <ThemeToggle className="hidden sm:inline-flex" />
+          <ThemeToggle />
           <a
             href="/dashboard/"
-            className="inline-flex rounded-full border border-foreground/15 px-3 py-2 text-xs font-medium text-foreground/80 hover:text-foreground hover:border-foreground/30 transition whitespace-nowrap"
+            className="hidden rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-3 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap sm:inline-flex"
           >
-            <span className="sm:hidden">Login</span>
-            <span className="hidden sm:inline">Kunden-Login</span>
+            Kunden-Login
           </a>
           <a
             href="/#live"
-            className="rounded-full glass px-4 py-2 text-xs font-medium text-foreground hover-glow hover-glow-cyan whitespace-nowrap"
+            className="rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap"
           >
             Kiwo testen
           </a>
@@ -423,7 +422,13 @@ export function Header() {
               >
                 Kontakt
               </a>
-              <ThemeToggleRow />
+              <a
+                href="/dashboard/"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
+              >
+                Kunden-Login
+              </a>
             </div>
           </motion.div>
         )}

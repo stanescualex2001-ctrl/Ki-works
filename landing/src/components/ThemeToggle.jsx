@@ -27,29 +27,3 @@ export function ThemeToggle({ className = "inline-flex" }) {
     </button>
   );
 }
-
-/* Volle Zeile fürs Mobile-Menü (gleiche Optik wie die anderen Menüpunkte) */
-export function ThemeToggleRow() {
-  const [theme, setTheme] = useState(getStoredTheme);
-
-  useEffect(() => {
-    setTheme(document.documentElement.classList.contains("dark") ? "dark" : "light");
-  }, []);
-
-  function toggle() {
-    const next = theme === "dark" ? "light" : "dark";
-    applyTheme(next);
-    setTheme(next);
-  }
-
-  return (
-    <button
-      type="button"
-      onClick={toggle}
-      className="flex items-center justify-between rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground sm:hidden"
-    >
-      {theme === "dark" ? "Light Mode" : "Dark Mode"}
-      {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-    </button>
-  );
-}

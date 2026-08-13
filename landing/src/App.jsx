@@ -686,7 +686,7 @@ export default function App() {
               </a>
               <a
                 href="#live"
-                className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-sm text-foreground/85 border border-foreground/15 hover-glow hover-glow-cyan"
+                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
                 <Play className="h-3.5 w-3.5" /> Plattform-Demo
               </a>
@@ -1049,11 +1049,7 @@ export default function App() {
 
                 <a
                   href="/kontakt.html"
-                  className={`mt-6 flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
-                    tier.featured
-                      ? "bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] glow-cyan hover:scale-[1.02]"
-                      : "glass border border-foreground/15 text-foreground/85 hover-glow hover-glow-violet"
-                  }`}
+                  className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
                 >
                   Jetzt kostenlos testen <ArrowRight className="h-3.5 w-3.5" />
                 </a>
