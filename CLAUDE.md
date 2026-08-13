@@ -517,6 +517,61 @@ Version auf "Publish" klicken.
   (< 640px) ins Menü verschoben, damit Logo/Umschalter/„Kiwo
   testen"/Hamburger nicht überlaufen (bei 320px Breite trunkiert das Logo
   stärker, aber ohne Layout-Bruch — akzeptiert, sehr seltene Bildschirmgröße).
+- **Falsche "Live"-Status im Mega-Menü behoben (13.08.2026):** Nutzer-Fund —
+  Kiwo Sales und Kiwo Office zeigten "Live" im Mega-Menü, obwohl beide laut
+  `ROLE_DEFINITIONS` (`backend/src/vapiAdmin.js`) technisch noch nicht
+  implementiert sind (nur Reception/Support/Orders sind es). Ursache:
+  `landing/src/components/Header.jsx` setzte `status: "live"` hartcodiert
+  für alle 5 Rollen. Jetzt korrigiert (Sales/Office → `status: "soon"`).
+  Dabei zweite hartcodierte Fundstelle entdeckt und mitgefixt: die
+  Hero-Statuszeile ("5 Rollen live · 4 bald") war ebenfalls eine feste
+  Zahl statt aus dem `roles`-Array berechnet — zeigt jetzt automatisch
+  "3 Rollen live · 6 bald" und bleibt bei künftigen Rollen-Änderungen
+  korrekt, ohne von Hand nachgepflegt werden zu müssen.
+- **Orb Buddy: Sprechblasentext + Mausverfolgung (13.08.2026):** Die
+  bisherige Sprechblase am Hero-Orb Buddy zeigte nur drei animierte Punkte
+  ("..."), jetzt echten Text "Hi, ich bin Kiwo" (als eigenes HTML-Element
+  neben dem SVG-Charakter, da echter Text in der SVG-Sprechblase zu wenig
+  Platz gehabt hätte). Zusätzlich neue Mausverfolgung: Kiwo dreht sich
+  leicht in Richtung Mauszeiger (SVG-`transform`-Rotation um den
+  Körpermittelpunkt) und die Pupillen verschieben sich zusätzlich minimal
+  — reagiert per `pointermove`-Listener (rAF-gedrosselt) auf die
+  Cursor-Position irgendwo auf der Seite, nicht nur beim Hovern über den
+  Orb selbst. Gilt für alle `OrbBuddy`-Instanzen der Landingpage (Hero +
+  CTA-Sektion).
+- **Sales-/Akquise-Agent v1 gebaut (Pilot ki-works.eu, 13.08.2026):**
+  Erster Baustein des lang vorbereiteten Akquise-Agent-Konzepts (siehe
+  weiter unten „Akquise-Agent"-Brainstorming) — auf Nutzer-Freigabe hin
+  umgesetzt. Neu: `backend/src/salesAgent.js` (`runSalesAgent()`) nutzt
+  `@anthropic-ai/sdk` mit Claudes Server-Tools `web_search_20260209`/
+  `web_fetch_20260209` (Modell `claude-sonnet-5`), recherchiert bis zu 5
+  passende Restaurants/Gasthäuser im Zielgebiet Schwertberg/Mühlviertel/
+  Oberösterreich, entwirft je eine individuelle deutsche Akquise-Mail und
+  schreibt sie als `pending_actions`-Zeilen (`role: 'sales'`,
+  `kind: 'outreach_email'`) — **kein automatischer Versand**, reine
+  Freigabe-Vorbereitung. Einfache Dopplungs-Vermeidung: bereits
+  vorhandene Sales-`pending_actions` werden vor jedem Lauf als
+  Ausschlussliste in den Prompt gegeben. Neuer Endpunkt
+  `POST /api/sales-agent/run` (`adminOnly`) in `backend/src/server.js`,
+  läuft synchron wie das bestehende `/api/recommendations`. Im
+  Business-Dashboard (`business-dashboard/src/App.jsx`): Button
+  "Sales-Agent starten" auf der ki-works.eu-Karte (einzige Karte mit
+  echter Funktion, die anderen 3 bleiben Platzhalter), zeigt Ladezustand
+  und Ergebniszahl; `PendingActions`-Zeilen sind jetzt aufklappbar und
+  zeigen das volle `payload` (Betreff, Mailtext, Kontakt, Website,
+  Begründung) — nötig, damit der Admin die Mail vor Freigabe wirklich
+  lesen kann, gilt generisch für alle `pending_actions`-Kinds.
+  **Architektur bewusst zukunftsoffen gehalten:** Qualifizierungskriterien
+  als eigene benannte Konstante (nicht im Prompt-String vergraben),
+  Lead-Feldset und `role: 'sales'` so gewählt, dass sie später ohne
+  Schema-Bruch auch eine echte Vapi-Telefonrolle "Kiwo Sales" (Live-
+  Anrufqualifizierung, verkaufbares Produkt-Feature) mitversorgen können
+  — diese Telefonrolle selbst ist aber **nicht** Teil dieses Schritts,
+  bleibt offen (siehe unten). Lokal nur bis Build/Syntax-Check verifiziert
+  (`node --check`, `npm run build` für `business-dashboard/`) — ein echter
+  Lauf mit echter Websuche verursacht reale Kosten, deshalb bewusst noch
+  nicht ausgeführt. **Noch nicht auf dem Server ausgerollt** (siehe
+  „Offene Punkte").
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
