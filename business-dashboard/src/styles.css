@@ -132,6 +132,21 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
 }
 .sales-agent-box { margin-top: 1rem; }
 
+.social-post-detail {
+  display: grid; grid-template-columns: 200px 1fr; gap: 1.1rem;
+  background: var(--panel-solid); padding: 0.9rem 1rem;
+}
+.social-post-image { width: 100%; border-radius: 10px; border: 1px solid var(--border); }
+.social-post-fields { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+.social-post-fields textarea {
+  width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel); color: var(--text); font: inherit; resize: vertical;
+}
+.social-post-actions { display: flex; gap: 0.9rem; align-items: center; margin-top: 0.2rem; }
+@media (max-width: 640px) {
+  .social-post-detail { grid-template-columns: 1fr; }
+}
+
 .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 0.85rem; }
 .error { color: var(--bad-text); }
 .hint { color: var(--muted); font-size: 0.85rem; margin-top: 0.8rem; }

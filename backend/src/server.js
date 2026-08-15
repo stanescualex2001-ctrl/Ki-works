@@ -9,6 +9,7 @@ import { notifyN8n } from './n8n.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
+import { runSocialAgent } from './socialAgent.js';
 import { sendSms, reservationSms } from './sms.js';
 import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
 import {
@@ -535,20 +536,67 @@ app.get('/api/pending-actions', async (req, res) => {
   res.json(rows);
 });
 
+// payload (optional) überschreibt/ergänzt einzelne Felder vor dem Entscheiden
+// (z. B. Caption-Text bearbeiten) — für alle pending_actions-Kinds nutzbar.
+// Für role 'social' + kind 'post' löst eine Freigabe zusätzlich die echte
+// Veröffentlichung aus (Facebook + Instagram); schlägt sie auf beiden
+// Plattformen fehl, bleibt die Aktion "pending" (Bearbeitung wird trotzdem
+// gespeichert, damit ein erneuter Versuch nicht die Änderungen verliert).
 app.patch('/api/pending-actions/:id', async (req, res) => {
   const scope = customerScope(req);
-  const { status } = req.body;
+  const { status, payload: payloadEdit } = req.body || {};
   if (!['approved', 'rejected'].includes(status)) {
     return res.status(400).json({ error: 'invalid status' });
   }
-  const { rows } = await query(
-    `UPDATE pending_actions SET status = $1, decided_at = now()
-     WHERE id = $2 AND status = 'pending' AND ($3::int IS NULL OR restaurant_id = $3)
-     RETURNING *`,
-    [status, req.params.id, scope],
+  const { rows: currentRows } = await query(
+    `SELECT * FROM pending_actions WHERE id = $1 AND status = 'pending' AND ($2::int IS NULL OR restaurant_id = $2)`,
+    [req.params.id, scope],
   );
-  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  const action = currentRows[0];
+  if (!action) return res.status(404).json({ error: 'not found' });
+  let payload = payloadEdit ? { ...action.payload, ...payloadEdit } : action.payload;
+
+  if (status === 'approved' && action.role === 'social' && action.kind === 'post') {
+    const results = {};
+    try {
+      results.facebook = await publishFacebookPhoto({ imageUrl: payload.imageUrl, caption: payload.caption });
+    } catch (err) {
+      results.facebook = { error: err.message };
+    }
+    try {
+      results.instagram = await publishInstagramPhoto({ imageUrl: payload.imageUrl, caption: payload.caption });
+    } catch (err) {
+      results.instagram = { error: err.message };
+    }
+    payload = { ...payload, published: results };
+    if (results.facebook?.error && results.instagram?.error) {
+      await query('UPDATE pending_actions SET payload = $1 WHERE id = $2', [JSON.stringify(payload), action.id]);
+      return res.status(502).json({
+        error: `Veröffentlichung fehlgeschlagen (Facebook: ${results.facebook.error}; Instagram: ${results.instagram.error})`,
+      });
+    }
+  }
+
+  const { rows } = await query(
+    `UPDATE pending_actions SET status = $1, payload = $2, decided_at = now()
+     WHERE id = $3 RETURNING *`,
+    [status, JSON.stringify(payload), action.id],
+  );
   res.json(rows[0]);
+});
+
+// Social-Media-Agent (Pilot ki-works.eu, Bild-Posts): wählt ein Thema, textet
+// Headline/Subline/Caption per Claude, rendert die Grafik und legt einen
+// pending_actions-Entwurf an (role 'social', kind 'post') — Veröffentlichung
+// erst nach Freigabe im Dashboard (siehe PATCH oben).
+app.post('/api/social-agent/run', adminOnly, async (req, res) => {
+  try {
+    const action = await runSocialAgent({ assetsDir: SOCIAL_ASSETS_DIR });
+    res.json(action);
+  } catch (err) {
+    console.error('Social-Agent fehlgeschlagen:', err.message);
+    res.status(502).json({ error: err.message });
+  }
 });
 
 // Sales-/Akquise-Agent (Pilot ki-works.eu): recherchiert per Websuche

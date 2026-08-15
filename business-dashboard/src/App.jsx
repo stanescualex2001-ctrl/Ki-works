@@ -196,8 +196,8 @@ function Login({ onLogin }) {
 }
 
 // ---------------------------------------------------------------- Meta-Ansicht (alle Freigaben)
-const PENDING_KIND_LABEL = { outreach_email: 'Akquise-E-Mail' };
-const PENDING_ROLE_LABEL = { sales: 'Sales', support: 'Support', office: 'Office', orders: 'Orders' };
+const PENDING_KIND_LABEL = { outreach_email: 'Akquise-E-Mail', post: 'Social-Media-Post' };
+const PENDING_ROLE_LABEL = { sales: 'Sales', social: 'Social', support: 'Support', office: 'Office', orders: 'Orders' };
 
 // Payload-Feldnamen menschenlesbar beschriften; unbekannte Felder werden
 // trotzdem generisch angezeigt (funktioniert für jeden pending_actions-Kind).
@@ -225,6 +225,63 @@ function PendingActionDetail({ payload }) {
   );
 }
 
+// Social-Media-Post-Entwurf: Bildvorschau + editierbare Caption. Freigeben
+// löst die echte Veröffentlichung auf Facebook/Instagram aus (Backend),
+// deshalb hier eigene Buttons statt der generischen Freigeben/Ablehnen-Zeile.
+function SocialPostDetail({ action, onChanged }) {
+  const [caption, setCaption] = useState(action.payload.caption || '');
+  const [loading, setLoading] = useState(null);
+  const [error, setError] = useState(null);
+
+  const decide = (status) => {
+    setLoading(status);
+    setError(null);
+    apiFetch(`/api/pending-actions/${action.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status, payload: { caption } }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        onChanged();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(null));
+  };
+
+  return (
+    <div className="social-post-detail">
+      <img className="social-post-image" src={action.payload.imageUrl} alt="" />
+      <div className="social-post-fields">
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Headline im Bild</div>
+          <div>{action.payload.headline}</div>
+        </div>
+        {action.payload.subline && (
+          <div className="pending-detail-field">
+            <div className="pending-detail-label">Subline im Bild</div>
+            <div>{action.payload.subline}</div>
+          </div>
+        )}
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Beitragstext (bearbeitbar)</div>
+          <textarea rows={5} value={caption} onChange={(e) => setCaption(e.target.value)} />
+        </div>
+        {error && <p className="error">Fehler: {error}</p>}
+        <div className="social-post-actions">
+          <button className="primary" disabled={!!loading} onClick={() => decide('approved')}>
+            {loading === 'approved' ? 'Veröffentliche…' : '✅ Freigeben & veröffentlichen'}
+          </button>
+          <button className="link" disabled={!!loading} onClick={() => decide('rejected')}>
+            {loading === 'rejected' ? '…' : '❌ Verwerfen'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PendingActions({ refreshKey, onChanged }) {
   const { data: actions, error } = useFetch('/api/pending-actions', refreshKey);
   const [deciding, setDeciding] = useState(null);
@@ -241,7 +298,7 @@ function PendingActions({ refreshKey, onChanged }) {
   };
   if (error) return <p className="error">Fehler: {error}</p>;
   if (!actions) return <p>Lade…</p>;
-  if (!actions.length) return <p className="hint">Keine offenen Freigaben — hier landen künftig die Ergebnisse der Kiwo-Agenten (z. B. Sales-Akquise-Mails), sobald sie aktiv sind.</p>;
+  if (!actions.length) return <p className="hint">Keine offenen Freigaben — hier landen die Ergebnisse der Kiwo-Agenten (z. B. Sales-Akquise-Mails, Social-Media-Posts), sobald du sie startest.</p>;
   return (
     <div className="table-wrap">
       <table>
@@ -258,13 +315,25 @@ function PendingActions({ refreshKey, onChanged }) {
                 <td>{PENDING_KIND_LABEL[a.kind] || a.kind}</td>
                 <td>{a.summary}</td>
                 <td className="lead-actions" onClick={(e) => e.stopPropagation()}>
-                  <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>✅ Freigeben</button>
-                  <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
+                  {a.kind === 'post' ? (
+                    <button className="link" onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}>
+                      {expandedId === a.id ? '▲ Schließen' : '👁 Vorschau & Freigabe'}
+                    </button>
+                  ) : (
+                    <>
+                      <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>✅ Freigeben</button>
+                      <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
+                    </>
+                  )}
                 </td>
               </tr>
               {expandedId === a.id && (
                 <tr className="pending-row-detail">
-                  <td colSpan={6}><PendingActionDetail payload={a.payload} /></td>
+                  <td colSpan={6}>
+                    {a.kind === 'post'
+                      ? <SocialPostDetail action={a} onChanged={() => { onChanged(); setExpandedId(null); }} />
+                      : <PendingActionDetail payload={a.payload} />}
+                  </td>
                 </tr>
               )}
             </React.Fragment>
@@ -344,7 +413,42 @@ function SalesAgentRunner({ onDone }) {
   );
 }
 
-function BusinessDetail({ business, onBack, onSalesAgentDone }) {
+function SocialAgentRunner({ onDone }) {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+
+  const run = () => {
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    apiFetch('/api/social-agent/run', { method: 'POST' })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setResult(d);
+        onDone();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div className="sales-agent-box">
+      <button className="primary" disabled={loading} onClick={run}>
+        {loading ? 'Claude entwirft Post…' : 'Social-Post erzeugen'}
+      </button>
+      {result && (
+        <p className="hint" style={{ margin: '0.6rem 0 0' }}>
+          Entwurf „{result.summary}" erstellt — Bild+Text zur Freigabe unten in der Meta-Ansicht.
+        </p>
+      )}
+      {error && <p className="error" style={{ margin: '0.6rem 0 0' }}>Fehler: {error}</p>}
+    </div>
+  );
+}
+
+function BusinessDetail({ business, onBack, onAgentDone }) {
   return (
     <>
       <button className="link back-link" onClick={onBack}>← Zurück zur Übersicht</button>
@@ -356,7 +460,15 @@ function BusinessDetail({ business, onBack, onSalesAgentDone }) {
             Zielgebiet und legt individuelle Akquise-Mail-Entwürfe zur Freigabe an
             (landen unten in der Meta-Ansicht unter „Sales" / „Akquise-E-Mail").
           </p>
-          <SalesAgentRunner onDone={onSalesAgentDone} />
+          <SalesAgentRunner onDone={onAgentDone} />
+
+          <h3 style={{ marginTop: '1.6rem' }}>Social-Media (Bild-Posts)</h3>
+          <p className="hint" style={{ marginTop: '0.3rem' }}>
+            Claude wählt ein Thema, texted Headline/Caption und erstellt die Grafik automatisch.
+            Vor der Veröffentlichung auf Facebook/Instagram kannst du den Text bearbeiten und
+            musst freigeben (landet unten unter „Social" / „Social-Media-Post").
+          </p>
+          <SocialAgentRunner onDone={onAgentDone} />
         </>
       ) : (
         <p className="hint">
@@ -409,7 +521,7 @@ export default function App() {
           <BusinessDetail
             business={openBusiness}
             onBack={() => setOpenBusiness(null)}
-            onSalesAgentDone={refresh}
+            onAgentDone={refresh}
           />
         ) : (
           <>

@@ -581,6 +581,53 @@ Version auf "Publish" klicken.
   nginx` erfolgreich für den neuen `/intern`-Block. Ein erster echter
   Lauf mit echter Websuche steht weiterhin aus (siehe „Offene Punkte" —
   braucht Anthropic-API-Guthaben).
+- **Social-Media-Agent v1 gebaut (Bild-Posts, Pilot ki-works.eu,
+  15.08.2026):** Antwort auf "können wir einen Agenten für die
+  Mo/Mi/Fr-Posts ins Business-Dashboard integrieren" — nutzt dasselbe
+  Freigabe-Muster wie der Sales-Agent (Entwurf landet in
+  `pending_actions`, Admin gibt frei). Bewusst nur **Bild-Posts**, Reels
+  bleiben ein separater, späterer Schritt (Nutzer-Entscheidung). Neu:
+  `backend/src/socialGraphic.js` rendert eine quadratische 1080×1080-
+  Grafik aus Headline/Subline per SVG + `sharp` — **bewusst kein
+  Headless-Chromium** (wie beim bisherigen manuellen Vorgehen im Chat),
+  da ein dauerhaft laufender Server-Prozess dafür unnötig schwer wäre;
+  Space-Grotesk-Schriftdateien liegen dafür fest im Repo
+  (`backend/assets/fonts/`, Google-Fonts-Original, OFL-Lizenz), damit die
+  Optik unabhängig von auf dem Server installierten System-Fonts
+  konsistent bleibt. `backend/src/socialAgent.js` (`runSocialAgent()`)
+  lässt Claude (`@anthropic-ai/sdk`, kein Websearch nötig) ein neues
+  Thema + Headline/Subline/Caption texten (Dopplungs-Vermeidung über
+  bereits vorhandene `pending_actions`-Themen plus eine hartcodierte
+  Liste der beiden schon manuell veröffentlichten Alt-Themen), rendert
+  das Bild und legt einen `pending_actions`-Eintrag an
+  (`role: 'social'`, `kind: 'post'`). Neuer Endpunkt
+  `POST /api/social-agent/run` (`adminOnly`). **Unterschied zum
+  Sales-Agent:** eine Freigabe hier ist nicht nur eine Notiz, sondern
+  löst die echte Veröffentlichung aus — `PATCH /api/pending-actions/:id`
+  wurde dafür erweitert: akzeptiert jetzt optional ein `payload`-Feld
+  (Caption vor der Freigabe bearbeiten, generisch für alle Kinds nutzbar)
+  und ruft bei `role: 'social'`/`kind: 'post'` + Freigabe die
+  bestehenden `publishFacebookPhoto`/`publishInstagramPhoto`
+  (`backend/src/socialMedia.js`) direkt auf; schlägt die Veröffentlichung
+  auf **beiden** Plattformen fehl, bleibt der Eintrag auf "pending"
+  (Bearbeitung wird trotzdem gespeichert, kein Datenverlust bei einem
+  späteren erneuten Versuch), bei mindestens einem Erfolg gilt er als
+  freigegeben. Im Business-Dashboard: neuer Button "Social-Post
+  erzeugen" neben dem Sales-Agent-Button auf der ki-works.eu-Karte; die
+  Freigaben-Tabelle zeigt für `kind: 'post'`-Zeilen statt der generischen
+  Feldliste eine eigene Vorschau (Bild + editierbares Textfeld für die
+  Caption + "Freigeben & veröffentlichen"/"Verwerfen" statt der
+  normalen Schnell-Freigeben-Buttons, damit vor dem Live-Gang immer erst
+  das Bild gesehen wird). Lokal gegen frische Test-DB voll durchgetestet
+  (u. a. der Kern-Fall ohne Meta-Zugangsdaten: Freigabe schlägt korrekt
+  mit 502 fehl, Eintrag bleibt "pending", Caption-Bearbeitung wird
+  trotzdem gespeichert; Ablehnen-Flow; Regressionstest, dass die
+  bestehende Sales-Agent-Freigabe unverändert funktioniert, also keine
+  Veröffentlichung auslöst). **Noch nicht auf dem Produktivserver
+  ausgerollt**, siehe „Offene Punkte". Setzt weiterhin die noch
+  ausstehende Meta-App-Einrichtung voraus (siehe
+  „Social-Media-Automatisierung" unten) — bis dahin liefert eine Freigabe
+  im Dashboard den erwarteten 502-Fehler statt eine echte Veröffentlichung.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -979,6 +1026,16 @@ Version auf "Publish" klicken.
 - Sales-Agent: erster echter Lauf mit Websuche steht noch aus (braucht
   Anthropic-API-Guthaben) — sobald möglich über den Button im
   Business-Dashboard (ki-works.eu-Karte) testen
+- **Social-Media-Agent v1 (Bild-Posts) noch nicht auf dem Produktivserver
+  ausgerollt** — braucht zusätzlich zum üblichen rsync/Build-Ablauf
+  einmalig `sudo -u kiworks bash -c "cd /opt/ki-works/backend && npm
+  install --omit=dev --no-audit --no-fund"` (neue Abhängigkeit `sharp`)
+  vor dem Backend-Neustart. Ein echter Freigabe-Testlauf setzt zusätzlich
+  die Meta-App-Einrichtung voraus (siehe „Social-Media-Automatisierung"
+  unten) — ohne `FB_PAGE_ID`/`FB_PAGE_ACCESS_TOKEN`/
+  `IG_BUSINESS_ACCOUNT_ID` in `/etc/ki-works/.env` schlägt eine Freigabe
+  im Dashboard kontrolliert mit Fehlermeldung fehl (Entwurf bleibt
+  erhalten, kein Datenverlust).
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend
