@@ -623,11 +623,16 @@ Version auf "Publish" klicken.
   mit 502 fehl, Eintrag bleibt "pending", Caption-Bearbeitung wird
   trotzdem gespeichert; Ablehnen-Flow; Regressionstest, dass die
   bestehende Sales-Agent-Freigabe unverändert funktioniert, also keine
-  Veröffentlichung auslöst). **Noch nicht auf dem Produktivserver
-  ausgerollt**, siehe „Offene Punkte". Setzt weiterhin die noch
+  Veröffentlichung auslöst). **Auf dem Produktivserver ausgerollt
+  (15.08.2026):** Nutzer hat den Deploy durchgeführt, `npm install` für
+  die neue `sharp`-Abhängigkeit bestätigt (per `ls node_modules | grep
+  sharp` verifiziert), Backend neu gestartet. Setzt weiterhin die noch
   ausstehende Meta-App-Einrichtung voraus (siehe
   „Social-Media-Automatisierung" unten) — bis dahin liefert eine Freigabe
   im Dashboard den erwarteten 502-Fehler statt eine echte Veröffentlichung.
+  Zusätzlich braucht ein erster echter Testlauf (Button "Social-Post
+  erzeugen") Anthropic-API-Guthaben, das laut Nutzer aktuell (15.08.2026)
+  weiterhin nicht ausreicht — gleiche Einschränkung wie beim Sales-Agent.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1023,19 +1028,18 @@ Version auf "Publish" klicken.
   kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
   && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
   nächsten Backend-Neustart)
-- Sales-Agent: erster echter Lauf mit Websuche steht noch aus (braucht
-  Anthropic-API-Guthaben) — sobald möglich über den Button im
-  Business-Dashboard (ki-works.eu-Karte) testen
-- **Social-Media-Agent v1 (Bild-Posts) noch nicht auf dem Produktivserver
-  ausgerollt** — braucht zusätzlich zum üblichen rsync/Build-Ablauf
-  einmalig `sudo -u kiworks bash -c "cd /opt/ki-works/backend && npm
-  install --omit=dev --no-audit --no-fund"` (neue Abhängigkeit `sharp`)
-  vor dem Backend-Neustart. Ein echter Freigabe-Testlauf setzt zusätzlich
-  die Meta-App-Einrichtung voraus (siehe „Social-Media-Automatisierung"
-  unten) — ohne `FB_PAGE_ID`/`FB_PAGE_ACCESS_TOKEN`/
-  `IG_BUSINESS_ACCOUNT_ID` in `/etc/ki-works/.env` schlägt eine Freigabe
-  im Dashboard kontrolliert mit Fehlermeldung fehl (Entwurf bleibt
-  erhalten, kein Datenverlust).
+- Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
+  aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
+  bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer
+  (15.08.2026) aktuell weiterhin nicht ausreichend. Sobald aufgeladen:
+  Business-Dashboard (ki-works.eu-Karte) → "Sales-Agent starten" bzw.
+  "Social-Post erzeugen" testen. Social-Media-Agent zusätzlich: eine
+  echte Veröffentlichung (nicht nur der Text-/Bildentwurf) setzt außerdem
+  die noch offene Meta-App-Einrichtung voraus (siehe
+  „Social-Media-Automatisierung" unten) — ohne `FB_PAGE_ID`/
+  `FB_PAGE_ACCESS_TOKEN`/`IG_BUSINESS_ACCOUNT_ID` in `/etc/ki-works/.env`
+  schlägt eine Freigabe im Dashboard kontrolliert mit Fehlermeldung fehl
+  (Entwurf bleibt erhalten, kein Datenverlust).
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend
