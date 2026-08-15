@@ -528,17 +528,19 @@ Version auf "Publish" klicken.
   Zahl statt aus dem `roles`-Array berechnet — zeigt jetzt automatisch
   "3 Rollen live · 6 bald" und bleibt bei künftigen Rollen-Änderungen
   korrekt, ohne von Hand nachgepflegt werden zu müssen.
-- **Orb Buddy: Sprechblasentext + Mausverfolgung (13.08.2026):** Die
+- **Orb Buddy: Sprechblasentext geändert + Positions-Fix (13.08.2026):** Die
   bisherige Sprechblase am Hero-Orb Buddy zeigte nur drei animierte Punkte
   ("..."), jetzt echten Text "Hi, ich bin Kiwo" (als eigenes HTML-Element
   neben dem SVG-Charakter, da echter Text in der SVG-Sprechblase zu wenig
-  Platz gehabt hätte). Zusätzlich neue Mausverfolgung: Kiwo dreht sich
-  leicht in Richtung Mauszeiger (SVG-`transform`-Rotation um den
-  Körpermittelpunkt) und die Pupillen verschieben sich zusätzlich minimal
-  — reagiert per `pointermove`-Listener (rAF-gedrosselt) auf die
-  Cursor-Position irgendwo auf der Seite, nicht nur beim Hovern über den
-  Orb selbst. Gilt für alle `OrbBuddy`-Instanzen der Landingpage (Hero +
-  CTA-Sektion).
+  Platz gehabt hätte). Dabei einen Positionsfehler behoben: die Blase war
+  relativ zum großen Hero-Container statt zur Figur selbst positioniert
+  (dadurch weit oben, überlappend mit den Status-Badges) — jetzt in einem
+  150×150-Wrapper direkt um `OrbBuddy` verankert, sitzt daher zuverlässig
+  neben Kiwo. **Mausverfolgung (Rotation + Pupillenbewegung per
+  `pointermove`) wurde in derselben Sitzung ebenfalls gebaut, nach
+  Nutzer-Feedback ("mag ich nicht") aber wieder komplett entfernt** — für
+  die nächste Sitzung ist ein Neubau mit klarerer Spezifikation vorgemerkt
+  (siehe „Offene Punkte").
 - **Sales-/Akquise-Agent v1 gebaut (Pilot ki-works.eu, 13.08.2026):**
   Erster Baustein des lang vorbereiteten Akquise-Agent-Konzepts (siehe
   weiter unten „Akquise-Agent"-Brainstorming) — auf Nutzer-Freigabe hin
@@ -570,8 +572,15 @@ Version auf "Publish" klicken.
   bleibt offen (siehe unten). Lokal nur bis Build/Syntax-Check verifiziert
   (`node --check`, `npm run build` für `business-dashboard/`) — ein echter
   Lauf mit echter Websuche verursacht reale Kosten, deshalb bewusst noch
-  nicht ausgeführt. **Noch nicht auf dem Server ausgerollt** (siehe
-  „Offene Punkte").
+  nicht ausgeführt. **Auf dem Produktivserver ausgerollt (13.08.2026):**
+  Nutzer hat den kompletten Deploy live durchgeführt — rsync/Build für
+  alle 3 Frontends, `npm install` für die neue `@anthropic-ai/sdk`-
+  Abhängigkeit, `systemctl restart ki-works-api`,
+  `migration-018-pending-actions.sql` lief mit "already exists,
+  skipping" (war also schon vorhanden), `nginx -t && systemctl reload
+  nginx` erfolgreich für den neuen `/intern`-Block. Ein erster echter
+  Lauf mit echter Websuche steht weiterhin aus (siehe „Offene Punkte" —
+  braucht Anthropic-API-Guthaben).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -967,15 +976,9 @@ Version auf "Publish" klicken.
   kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
   && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
   nächsten Backend-Neustart)
-- **Migration `migration-018-pending-actions.sql` noch nicht auf dem Server
-  ausgeführt** (Freigabe-Gate-Tabelle) — gleicher Ablauf wie oben, nur mit
-  `migration-018-pending-actions.sql` statt `-016-...`
-- **Neues Business-Dashboard (`business-dashboard/`, unter `/intern`) noch
-  nicht auf dem Produktivserver ausgerollt** — braucht neben dem üblichen
-  rsync/Build-Ablauf einmalig auch `nginx -t && systemctl reload nginx`,
-  da `deploy/nginx/ki-works.conf` einen neuen `location /intern`-Block
-  bekommen hat (wird vom normalen Update-Ablauf nicht automatisch
-  übernommen)
+- Sales-Agent: erster echter Lauf mit Websuche steht noch aus (braucht
+  Anthropic-API-Guthaben) — sobald möglich über den Button im
+  Business-Dashboard (ki-works.eu-Karte) testen
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
   weiterhin ausstehend
