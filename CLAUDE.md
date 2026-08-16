@@ -698,6 +698,22 @@ Version auf "Publish" klicken.
   simulierte künftige Karte, Kunden-Scope kann Filter nicht missbrauchen,
   bestehender Telefon-Audit-Pfad weiterhin unverändert korrekt). **Noch
   nicht auf dem Produktivserver ausgerollt**, siehe „Offene Punkte".
+- **Onboarding-Sektion an echten (manuellen) Setup-Prozess angepasst
+  (16.08.2026):** Nutzer-Fund per Screenshot — die 3 Onboarding-Schritte
+  auf der Landingpage ("Rolle wählen", "Kanäle verknüpfen", "Kiwo
+  arbeitet für Sie") suggerierten Selbstbedienung, tatsächlich läuft die
+  Einrichtung manuell über Kontaktformular + gemeinsames Setup mit dem
+  Team (kein Self-Service-Flow vorhanden). Schritte umbenannt in "Kontakt
+  aufnehmen" / "Gemeinsames Setup" / "Kiwo übernimmt", Überschrift von
+  "In 3 Schritten zum KI-Mitarbeiter" auf "So funktioniert's" geändert;
+  dieselbe alte Formulierung wiederholte sich in der finalen CTA-Sektion
+  ("Rolle wählen, Kanäle verknüpfen, Kiwo übernimmt") — dort ebenfalls
+  angepasst, spiegelt jetzt dieselben drei neuen Schritt-Titel. Texte in
+  einer zweiten Runde vom Nutzer noch verkürzt/geschärft (Schritt 1 nennt
+  keine einzelnen Rollen mehr — passte sonst nicht zum
+  "alle Rollen inklusive"-Preisversprechen, siehe Preise-Sektion, die
+  genau diese Formulierung bereits unverändert enthielt). `landing/`
+  gebaut und Prerendering geprüft.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
