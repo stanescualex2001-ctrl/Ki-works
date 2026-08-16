@@ -6,13 +6,13 @@ import { query } from './db.js';
 import { logError } from './monitoring.js';
 
 export async function logAction({
-  restaurantId = null, source, action, summary, details = {}, callId = null,
+  restaurantId = null, business = null, source, action, summary, details = {}, callId = null,
 }) {
   try {
     await query(
-      `INSERT INTO audit_log (restaurant_id, source, action, summary, details, call_id)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [restaurantId, source, action, summary, JSON.stringify(details), callId],
+      `INSERT INTO audit_log (restaurant_id, business, source, action, summary, details, call_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+      [restaurantId, business, source, action, summary, JSON.stringify(details), callId],
     );
   } catch (err) {
     logError('audit-log', err);

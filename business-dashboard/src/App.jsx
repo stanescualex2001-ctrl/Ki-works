@@ -448,7 +448,70 @@ function SocialAgentRunner({ onDone }) {
   );
 }
 
-function BusinessDetail({ business, onBack, onAgentDone }) {
+const AUDIT_SOURCE_LABEL = { phone: 'Telefon (Kiwo)', sales_agent: 'Sales-Agent', social_agent: 'Social-Agent' };
+
+// Wie PendingActionDetail, aber mit JSON.stringify für verschachtelte Werte
+// (details enthält z. B. {args, result} oder {results: {facebook, instagram}}
+// — dafür reicht String(value) nicht).
+function AuditDetail({ details }) {
+  const entries = Object.entries(details || {}).filter(([, v]) => v !== null && v !== undefined && v !== '');
+  if (!entries.length) return null;
+  return (
+    <div className="pending-detail">
+      {entries.map(([key, value]) => (
+        <div key={key} className="pending-detail-field">
+          <div className="pending-detail-label">{key}</div>
+          <div className="pending-detail-mono">
+            {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Protokoll der Aktionen, die Kiwo-Agenten FÜR DIESES BUSINESS selbst
+// ausgeführt haben (nicht zu verwechseln mit den Freigaben oben — das hier
+// ist die abgeschlossene Historie). Generisch über business.id gefiltert,
+// funktioniert also automatisch für jede neue Karte, sobald ein Agent für
+// sie Einträge schreibt — keine Code-Änderung pro Business nötig.
+function BusinessAuditLog({ businessId, refreshKey }) {
+  const { data: entries, error } = useFetch(`/api/audit-log?business=${businessId}`, refreshKey);
+  const [expandedId, setExpandedId] = useState(null);
+
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (!entries) return <p>Lade…</p>;
+  if (!entries.length) return <p className="hint">Noch keine protokollierten Aktionen für dieses Business.</p>;
+
+  return (
+    <div className="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Zeitpunkt</th><th>Quelle</th><th>Aktion</th><th>Zusammenfassung</th></tr>
+        </thead>
+        <tbody>
+          {entries.map((e) => (
+            <React.Fragment key={e.id}>
+              <tr className="pending-row" onClick={() => setExpandedId(expandedId === e.id ? null : e.id)}>
+                <td>{fmtDateTime(e.created_at)}</td>
+                <td>{AUDIT_SOURCE_LABEL[e.source] || e.source}</td>
+                <td>{e.action}</td>
+                <td>{e.summary}</td>
+              </tr>
+              {expandedId === e.id && (
+                <tr className="pending-row-detail">
+                  <td colSpan={4}><AuditDetail details={e.details} /></td>
+                </tr>
+              )}
+            </React.Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
   return (
     <>
       <button className="link back-link" onClick={onBack}>← Zurück zur Übersicht</button>
@@ -477,6 +540,12 @@ function BusinessDetail({ business, onBack, onAgentDone }) {
           Betrieb.
         </p>
       )}
+
+      <h3 style={{ marginTop: '1.6rem' }}>Aktivitätsprotokoll</h3>
+      <p className="hint" style={{ marginTop: '0.3rem' }}>
+        Protokollierte Aktionen der Kiwo-Agenten für {business.name}.
+      </p>
+      <BusinessAuditLog businessId={business.id} refreshKey={refreshKey} />
     </>
   );
 }
@@ -522,6 +591,7 @@ export default function App() {
             business={openBusiness}
             onBack={() => setOpenBusiness(null)}
             onAgentDone={refresh}
+            refreshKey={refreshKey}
           />
         ) : (
           <>

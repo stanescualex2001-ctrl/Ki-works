@@ -675,6 +675,29 @@ Version auf "Publish" klicken.
   Punkte". SSO und feingranulare Rechte pro System bleiben bewusst
   offene, größere Vorhaben (siehe „Ideen & Zukunftsplanung") — dafür gibt
   es aktuell keine Website-Behauptung mehr, die das verspricht.
+- **Audit-Log auch im Business-Dashboard, generisch für alle 4 Karten
+  (16.08.2026):** Nutzer-Nachfrage nach dem obigen Audit-Log — sollte auch
+  intern sichtbar sein, nicht nur im Kunden-Dashboard, und zwar **für alle
+  Business-Karten (ledtek/pixelpress/Memcore/ki-works) und automatisch für
+  künftig neue Karten**, ohne dass dafür jedes Mal Code angepasst werden
+  muss. Dafür `audit_log` um eine `business`-Spalte ergänzt
+  (migration-020, nullable TEXT + Index) — identifiziert, zu welcher
+  Business-Dashboard-Karte ein Eintrag ohne `restaurant_id` gehört (Sales-/
+  Social-Agent-Läufe schreiben jetzt `business: 'ki-works'`).
+  `GET /api/audit-log` akzeptiert jetzt optional `?business=` (nur wirksam
+  ohne `customerScope` — Kunden können den Filter nicht nutzen, per echtem
+  JWT-Test verifiziert). Im Business-Dashboard zeigt eine neue generische
+  Sektion "Aktivitätsprotokoll" unter jeder der 4 Karten (nicht nur
+  ki-works.eu) das Protokoll gefiltert nach `business.id` aus der
+  bestehenden `BUSINESSES`-Liste — sobald eine der anderen 3 Karten
+  eigene Agenten bekommt, die mit ihrem `business`-Wert loggen, taucht
+  das automatisch dort auf, ganz ohne Dashboard-Code-Änderung (lokal
+  durchgespielt: eine `ledtek`-Zeile eingefügt, ohne Codeänderung sofort
+  unter dem `?business=ledtek`-Filter sichtbar). Lokal gegen frische
+  Test-DB verifiziert (Migration, Business-Filter für vorhandene und
+  simulierte künftige Karte, Kunden-Scope kann Filter nicht missbrauchen,
+  bestehender Telefon-Audit-Pfad weiterhin unverändert korrekt). **Noch
+  nicht auf dem Produktivserver ausgerollt**, siehe „Offene Punkte".
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1070,13 +1093,16 @@ Version auf "Publish" klicken.
   kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
   && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
   nächsten Backend-Neustart)
-- **Migration `migration-019-audit-log.sql` noch nicht auf dem Server
-  ausgeführt** (Audit-Log-Tabelle) — gleicher Ablauf wie oben, nur mit
-  `migration-019-audit-log.sql` statt `-016-...`. Landingpage-Copy-Fix
-  (`landing/`) und Kunden-Dashboard-Tab "Aktivitätsprotokoll"
-  (`dashboard/`) sind normale Frontend-Änderungen, laufen über den
-  üblichen rsync/Build-Schritt — nur die Migration ist ein zusätzlicher,
-  manueller Schritt.
+- **Migrationen `migration-019-audit-log.sql` und
+  `migration-020-audit-log-business.sql` noch nicht auf dem Server
+  ausgeführt** (Audit-Log-Tabelle + `business`-Spalte fürs
+  Business-Dashboard) — gleicher Ablauf wie oben, beide nacheinander
+  laufen lassen (`-019-...` vor `-020-...`, da letztere die Spalte auf
+  der Tabelle aus `-019-...` ergänzt). Landingpage-Copy-Fix (`landing/`),
+  Kunden-Dashboard-Tab "Aktivitätsprotokoll" (`dashboard/`) und die neue
+  Business-Dashboard-Sektion (`business-dashboard/`) sind normale
+  Frontend-Änderungen, laufen über den üblichen rsync/Build-Schritt — nur
+  die beiden Migrationen sind ein zusätzlicher, manueller Schritt.
 - Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
   aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
   bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer

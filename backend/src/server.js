@@ -540,14 +540,18 @@ app.get('/api/pending-actions', async (req, res) => {
 // Audit-Log: jede protokollierte Kiwo-Aktion (Telefon-Tool-Aufrufe, Sales-/
 // Social-Agent-Läufe, echte Social-Media-Veröffentlichung). Kunden sehen nur
 // die eigenen Einträge (customerScope filtert automatisch); interne
-// Agenten-Aktionen ohne restaurant_id (Sales/Social für ki-works.eu selbst)
-// sieht nur der Admin.
+// Business-Aktionen ohne restaurant_id (Sales/Social für ki-works.eu selbst,
+// künftig auch weitere eigene Businesses) sind per business-Query-Param
+// filterbar — nur für Admin (Business-Dashboard), Kunden können den
+// business-Filter nicht nutzen.
 app.get('/api/audit-log', async (req, res) => {
   const scope = customerScope(req);
   const restaurantId = scope ?? req.query.restaurant_id;
+  const business = scope ? null : req.query.business;
   const vals = [];
   const cond = [];
   if (restaurantId) { vals.push(restaurantId); cond.push(`restaurant_id = $${vals.length}`); }
+  if (business) { vals.push(business); cond.push(`business = $${vals.length}`); }
   const where = cond.length ? `WHERE ${cond.join(' AND ')}` : '';
   const { rows } = await query(
     `SELECT * FROM audit_log ${where} ORDER BY created_at DESC LIMIT 200`,
@@ -591,6 +595,7 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
     payload = { ...payload, published: results };
     const failed = Boolean(results.facebook?.error && results.instagram?.error);
     await logAction({
+      business: 'ki-works',
       source: 'social_agent',
       action: 'publish',
       summary: failed

@@ -109,6 +109,7 @@ export async function runSocialAgent({ assetsDir }) {
   );
 
   await logAction({
+    business: 'ki-works',
     source: 'social_agent',
     action: 'draft_created',
     summary: `Social-Post-Entwurf erstellt: „${draft.headline}"`,
