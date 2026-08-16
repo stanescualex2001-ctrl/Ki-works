@@ -604,7 +604,7 @@ const steps = [
   {
     n: "01",
     title: "Kontakt aufnehmen",
-    desc: "Sie schreiben uns über das Kontaktformular, welche Rollen Sie brauchen (z. B. Reception, Support, Bestellannahme).",
+    desc: "Sie schreiben uns kurz über das Kontaktformular, wir melden uns.",
     icon: Mail,
   },
   {
@@ -616,7 +616,7 @@ const steps = [
   {
     n: "03",
     title: "Kiwo übernimmt",
-    desc: "Ab dann läuft Kiwo automatisch für Sie, Sie behalten alles im Dashboard im Blick.",
+    desc: "Alle Rollen sind aktiv, Sie behalten alles im Dashboard im Blick.",
     icon: Sparkles,
   },
 ];
@@ -1075,8 +1075,8 @@ export default function App() {
               <span className="text-gradient">digitalen Mitarbeiter</span>?
             </h2>
             <p className="mt-3 text-foreground/60 max-w-xl mx-auto">
-              Starten Sie mit einem kostenlosen Piloten – schreiben Sie uns, wir richten Kiwo
-              für Sie ein.
+              Starten Sie mit einem kostenlosen Piloten – Kontakt aufnehmen, gemeinsames Setup,
+              Kiwo übernimmt.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <a
