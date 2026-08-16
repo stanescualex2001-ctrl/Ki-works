@@ -3,6 +3,7 @@ import { summarizeCall, classifyOutcome } from './claude.js';
 import { notifyN8n } from './n8n.js';
 import { sendSms, reservationSms, orderSms, cancellationSms, rescheduleSms } from './sms.js';
 import { logError } from './monitoring.js';
+import { logAction } from './auditLog.js';
 
 // Naive datetimes from the assistant ("2026-07-06T19:00") are Vienna local time.
 function viennaOffsetMs(date) {
@@ -259,6 +260,17 @@ async function handleToolCalls(message, restaurant) {
       : { error: `Unbekannte Funktion: ${name}` };
     const value = out.result ?? out.error;
     results.push({ toolCallId: call.id, result: typeof value === 'string' ? value : JSON.stringify(value) });
+    // Bewusst nicht awaited — Vapi wartet live auf die Tool-Antwort, das
+    // Audit-Log darf die Gesprächslatenz nicht verzögern (logAction fängt
+    // eigene Fehler intern ab, kein unhandled rejection möglich).
+    logAction({
+      restaurantId: restaurant?.id ?? null,
+      source: 'phone',
+      action: name,
+      summary: out.error ? `${name} fehlgeschlagen: ${String(out.error).slice(0, 160)}` : `${name} ausgeführt`,
+      details: { args, result: value },
+      callId,
+    });
   }
   return { results };
 }

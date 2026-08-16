@@ -175,6 +175,18 @@ tr.clickable-row:hover td { background: rgba(var(--overlay-rgb),0.04); }
 .link-strong:hover { text-decoration-color: var(--accent); color: var(--accent); }
 .lead-actions { display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-start; }
 
+.audit-detail-row td { padding: 0; }
+.audit-detail {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.7rem;
+  background: rgba(var(--overlay-rgb),0.02); padding: 0.9rem 1rem;
+}
+.audit-detail-field { min-width: 0; }
+.audit-detail-label {
+  font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em;
+  color: var(--muted); margin-bottom: 0.2rem;
+}
+.audit-detail-value { font-family: var(--font-mono); font-size: 0.82rem; white-space: pre-wrap; word-break: break-word; }
+
 /* ---- Badges (Status immer mit Text, nie nur Farbe) ---- */
 .badge { padding: 0.18rem 0.55rem; border-radius: 999px; font-size: 0.78rem; background: rgba(var(--overlay-rgb),0.08); }
 .badge-confirmed, .badge-reservation { background: var(--good-bg); color: var(--good-text); }

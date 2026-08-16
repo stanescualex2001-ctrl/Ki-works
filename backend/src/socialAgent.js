@@ -10,6 +10,7 @@ import fs from 'fs';
 import path from 'path';
 import { query } from './db.js';
 import { renderSocialImage } from './socialGraphic.js';
+import { logAction } from './auditLog.js';
 
 const MODEL = process.env.SOCIAL_AGENT_MODEL || 'claude-sonnet-5';
 
@@ -106,5 +107,13 @@ export async function runSocialAgent({ assetsDir }) {
      VALUES (NULL, 'social', 'post', $1, $2) RETURNING *`,
     [draft.headline, JSON.stringify(payload)],
   );
+
+  await logAction({
+    source: 'social_agent',
+    action: 'draft_created',
+    summary: `Social-Post-Entwurf erstellt: „${draft.headline}"`,
+    details: { topic: payload.topic, headline: draft.headline },
+  });
+
   return rows[0];
 }

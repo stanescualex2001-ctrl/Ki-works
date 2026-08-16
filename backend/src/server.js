@@ -10,6 +10,7 @@ import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent } from './socialAgent.js';
+import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
 import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
 import {
@@ -536,6 +537,25 @@ app.get('/api/pending-actions', async (req, res) => {
   res.json(rows);
 });
 
+// Audit-Log: jede protokollierte Kiwo-Aktion (Telefon-Tool-Aufrufe, Sales-/
+// Social-Agent-Läufe, echte Social-Media-Veröffentlichung). Kunden sehen nur
+// die eigenen Einträge (customerScope filtert automatisch); interne
+// Agenten-Aktionen ohne restaurant_id (Sales/Social für ki-works.eu selbst)
+// sieht nur der Admin.
+app.get('/api/audit-log', async (req, res) => {
+  const scope = customerScope(req);
+  const restaurantId = scope ?? req.query.restaurant_id;
+  const vals = [];
+  const cond = [];
+  if (restaurantId) { vals.push(restaurantId); cond.push(`restaurant_id = $${vals.length}`); }
+  const where = cond.length ? `WHERE ${cond.join(' AND ')}` : '';
+  const { rows } = await query(
+    `SELECT * FROM audit_log ${where} ORDER BY created_at DESC LIMIT 200`,
+    vals,
+  );
+  res.json(rows);
+});
+
 // payload (optional) überschreibt/ergänzt einzelne Felder vor dem Entscheiden
 // (z. B. Caption-Text bearbeiten) — für alle pending_actions-Kinds nutzbar.
 // Für role 'social' + kind 'post' löst eine Freigabe zusätzlich die echte
@@ -569,7 +589,16 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
       results.instagram = { error: err.message };
     }
     payload = { ...payload, published: results };
-    if (results.facebook?.error && results.instagram?.error) {
+    const failed = Boolean(results.facebook?.error && results.instagram?.error);
+    await logAction({
+      source: 'social_agent',
+      action: 'publish',
+      summary: failed
+        ? `Veröffentlichung fehlgeschlagen: „${payload.headline}"`
+        : `Post veröffentlicht: „${payload.headline}"`,
+      details: { headline: payload.headline, results },
+    });
+    if (failed) {
       await query('UPDATE pending_actions SET payload = $1 WHERE id = $2', [JSON.stringify(payload), action.id]);
       return res.status(502).json({
         error: `Veröffentlichung fehlgeschlagen (Facebook: ${results.facebook.error}; Instagram: ${results.instagram.error})`,

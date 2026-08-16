@@ -633,6 +633,48 @@ Version auf "Publish" klicken.
   Zusätzlich braucht ein erster echter Testlauf (Button "Social-Post
   erzeugen") Anthropic-API-Guthaben, das laut Nutzer aktuell (15.08.2026)
   weiterhin nicht ausreicht — gleiche Einschränkung wie beim Sales-Agent.
+- **Website-Versprechen korrigiert + echtes Audit-Log gebaut (16.08.2026):**
+  Nutzer-Frage zur Multi-Agent-Architektur deckte eine Diskrepanz auf: die
+  Landingpage (`landing/src/App.jsx`, Abschnitt "KI-Works Plattform")
+  versprach "Audit-Logs für jede Aktion von Kiwo", "SSO & rollenbasierter
+  Zugriff", "Feingranulare Rechte pro System" und "Ende-zu-Ende
+  Verschlüsselung" — laut eigenem Sicherheits-Audit (siehe „Offene
+  Punkte") stimmte davon nichts (nur Fehler-Logging, kein SSO, nur
+  Admin/Kunde-Rollen, keine echte E2E-Verschlüsselung). **Sofort behoben:**
+  die vier Punkte durch das ersetzt, was wirklich zutrifft ("EU-Hosting &
+  TLS-verschlüsselte Übertragung", "Strikte Datentrennung zwischen
+  Kunden", "Passwortgeschützter Zugang für Admin & Kunden", "Automatisiertes
+  Backup & Fehler-Monitoring"). **Danach echten Audit-Log gebaut**, damit
+  der Audit-Log-Punkt nicht nur gestrichen, sondern nachgeliefert wird:
+  neue Tabelle `audit_log` (migration-019, Spalten `restaurant_id`,
+  `source`, `action`, `summary`, `details` JSONB, `call_id`) +
+  `backend/src/auditLog.js` (`logAction()`, best-effort/fehlerfest wie
+  `logError`). Eingehängt an drei Stellen: (1) zentral in
+  `handleToolCalls` (`backend/src/vapi.js`) — protokolliert JEDEN
+  Telefon-Tool-Aufruf (Reservierung/Bestellung/Stornierung/Rückruf-Wunsch
+  usw.) automatisch, ohne einzelne Handler-Funktionen anzufassen, bewusst
+  nicht awaited (darf die Live-Gesprächslatenz nicht verzögern); (2)
+  `runSalesAgent()` protokolliert jeden Lauf; (3) `runSocialAgent()`
+  protokolliert jeden Entwurf, die PATCH-Freigabe in `server.js`
+  protokolliert zusätzlich den echten Facebook/Instagram-Veröffentlichungs-
+  versuch (Erfolg oder Fehlschlag). Neuer Endpunkt `GET /api/audit-log`
+  nutzt dasselbe `customerScope`-Muster wie `pending-actions` — Kunden
+  sehen nur eigene Einträge, interne Agenten-Zeilen ohne `restaurant_id`
+  (Sales/Social für ki-works.eu selbst) sieht nur der Admin. Neuer Tab
+  "Aktivitätsprotokoll" im **Kunden-Dashboard** (`dashboard/src/App.jsx`,
+  nicht nur intern) — bewusst dort platziert, weil das Website-Versprechen
+  an Restaurant-Kunden gerichtet ist, nicht nur ans eigene Team; für alle
+  Rollen sichtbar (auch Support-only-Kunden ohne `orders`-Rolle, da z. B.
+  `request_callback` ebenfalls protokolliert wird). Lokal gegen frische
+  Test-DB komplett durchgetestet: echter Tool-Call über den Vapi-Webhook
+  simuliert → Audit-Zeile korrekt erstellt; Kunden-Scope per echtem JWT
+  geprüft (sieht nur eigene Zeile, nicht die interne Sales-Agent-Zeile);
+  Social-Publish-Fehlschlag ohne Meta-Zugangsdaten protokolliert korrekt
+  trotz 502-Antwort; Regressionstest auf bestehende Endpunkte bestanden.
+  **Noch nicht auf dem Produktivserver ausgerollt**, siehe „Offene
+  Punkte". SSO und feingranulare Rechte pro System bleiben bewusst
+  offene, größere Vorhaben (siehe „Ideen & Zukunftsplanung") — dafür gibt
+  es aktuell keine Website-Behauptung mehr, die das verspricht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1028,6 +1070,13 @@ Version auf "Publish" klicken.
   kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
   && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
   nächsten Backend-Neustart)
+- **Migration `migration-019-audit-log.sql` noch nicht auf dem Server
+  ausgeführt** (Audit-Log-Tabelle) — gleicher Ablauf wie oben, nur mit
+  `migration-019-audit-log.sql` statt `-016-...`. Landingpage-Copy-Fix
+  (`landing/`) und Kunden-Dashboard-Tab "Aktivitätsprotokoll"
+  (`dashboard/`) sind normale Frontend-Änderungen, laufen über den
+  üblichen rsync/Build-Schritt — nur die Migration ist ein zusätzlicher,
+  manueller Schritt.
 - Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
   aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
   bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer

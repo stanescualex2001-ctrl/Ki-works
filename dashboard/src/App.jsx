@@ -689,6 +689,67 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
   );
 }
 
+const AUDIT_SOURCE_LABEL = { phone: 'Telefon (Kiwo)', sales_agent: 'Sales-Agent', social_agent: 'Social-Agent' };
+
+function AuditLogDetail({ details }) {
+  const entries = Object.entries(details || {}).filter(([, v]) => v !== null && v !== undefined && v !== '');
+  if (!entries.length) return null;
+  return (
+    <div className="audit-detail">
+      {entries.map(([key, value]) => (
+        <div key={key} className="audit-detail-field">
+          <div className="audit-detail-label">{key}</div>
+          <div className="audit-detail-value">
+            {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Zeigt jede protokollierte Kiwo-Aktion (Telefon-Tool-Aufrufe, ggf. Sales-/
+// Social-Agent bei ki-works.eu selbst) — Grundlage für das
+// "Audit-Logs für jede Aktion von Kiwo"-Versprechen auf der Landingpage.
+function AuditLog({ restaurantId, refreshKey }) {
+  const { data: entries, error } = useFetch(`/api/audit-log?restaurant_id=${restaurantId}`, refreshKey);
+  const [expandedId, setExpandedId] = useState(null);
+
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (!entries) return <p>Lade…</p>;
+  if (!entries.length) return <p>Noch keine protokollierten Aktionen.</p>;
+
+  return (
+    <>
+      <p className="hint">
+        Jede Aktion, die Kiwo für Sie ausführt, wird hier protokolliert.
+      </p>
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Zeitpunkt</th><th>Quelle</th><th>Aktion</th><th>Zusammenfassung</th></tr>
+          </thead>
+          <tbody>
+            {entries.map((e) => (
+              <React.Fragment key={e.id}>
+                <tr className="clickable-row" onClick={() => setExpandedId(expandedId === e.id ? null : e.id)}>
+                  <td>{fmtDateTime(e.created_at)}</td>
+                  <td>{AUDIT_SOURCE_LABEL[e.source] || e.source}</td>
+                  <td>{e.action}</td>
+                  <td>{e.summary}</td>
+                </tr>
+                {expandedId === e.id && (
+                  <tr className="audit-detail-row"><td colSpan={4}><AuditLogDetail details={e.details} /></td></tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
 function Calls({ restaurantId, refreshKey, onOpenDetail }) {
   const { data: calls, error } = useFetch(`/api/calls?restaurant_id=${restaurantId}`, refreshKey);
   const { data: reservations } = useFetch(`/api/reservations?restaurant_id=${restaurantId}`, refreshKey);
@@ -1567,6 +1628,7 @@ const NAV = [
   { id: 'reservations', label: 'Reservierungen', icon: '🍽️' },
   { id: 'orders', label: 'Bestellungen', icon: '🛍️' },
   { id: 'calls', label: 'Anrufe', icon: '📞' },
+  { id: 'audit', label: 'Aktivitätsprotokoll', icon: '📋' },
   { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
   { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
   { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
@@ -1576,7 +1638,7 @@ const NAV = [
 
 const TITLES = {
   overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
-  orders: 'Bestellungen', calls: 'Anrufe', reco: 'KI-Empfehlungen',
+  orders: 'Bestellungen', calls: 'Anrufe', audit: 'Aktivitätsprotokoll', reco: 'KI-Empfehlungen',
   settings: 'Einstellungen', customers: 'Kundenübersicht', leads: 'Anfragen',
   system: 'System-Status',
 };
@@ -1756,6 +1818,9 @@ export default function App() {
             )}
             {view === 'calls' && (
               <Calls restaurantId={restaurantId} refreshKey={refreshKey} onOpenDetail={openDetail} />
+            )}
+            {view === 'audit' && (
+              <AuditLog restaurantId={restaurantId} refreshKey={refreshKey} />
             )}
             {view === 'reco' && <Recommendations restaurantId={restaurantId} />}
             {view === 'settings' && (

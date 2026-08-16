@@ -879,10 +879,10 @@ export default function App() {
               </p>
               <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
                 {[
-                  "EU-Hosting & Ende-zu-Ende Verschlüsselung",
-                  "Feingranulare Rechte pro System",
-                  "Audit-Logs für jede Aktion von Kiwo",
-                  "SSO & rollenbasierter Zugriff",
+                  "EU-Hosting & TLS-verschlüsselte Übertragung",
+                  "Strikte Datentrennung zwischen Kunden",
+                  "Passwortgeschützter Zugang für Admin & Kunden",
+                  "Automatisiertes Backup & Fehler-Monitoring",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2">
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-400/15 text-cyan-600 dark:text-cyan-300">

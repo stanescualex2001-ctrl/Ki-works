@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { query } from './db.js';
+import { logAction } from './auditLog.js';
 
 const MODEL = process.env.SALES_AGENT_MODEL || 'claude-sonnet-5';
 
@@ -127,6 +128,13 @@ export async function runSalesAgent({ maxCandidates = 5 } = {}) {
     );
     drafted += 1;
   }
+
+  await logAction({
+    source: 'sales_agent',
+    action: 'run',
+    summary: `Sales-Agent-Lauf: ${candidates.length} Kandidaten gefunden, ${drafted} Entwürfe erstellt`,
+    details: { found: candidates.length, drafted, skipped, maxCandidates },
+  });
 
   return { found: candidates.length, drafted, skipped };
 }
