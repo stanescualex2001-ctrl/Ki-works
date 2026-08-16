@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
-  Workflow, Plug, Users, Layers, Play, Pause, Bell, LayoutDashboard,
+  Workflow, Plug, Layers, Play, Pause, Bell, LayoutDashboard,
   ShoppingBag,
 } from "lucide-react";
 import { Header, roles } from "./components/Header.jsx";
@@ -603,20 +603,20 @@ const pricingTiers = [
 const steps = [
   {
     n: "01",
-    title: "Rolle wählen",
-    desc: "Reception, Sales, Support, Office oder Orders – oder eine Kombination.",
-    icon: Users,
+    title: "Kontakt aufnehmen",
+    desc: "Sie schreiben uns über das Kontaktformular, welche Rollen Sie brauchen (z. B. Reception, Support, Bestellannahme).",
+    icon: Mail,
   },
   {
     n: "02",
-    title: "Kanäle verknüpfen",
-    desc: "Telefonanlage, WhatsApp, E-Mail, Kalender & CRM sicher verbinden.",
+    title: "Gemeinsames Setup",
+    desc: "Wir richten Kiwo für Ihren Betrieb ein und verknüpfen Ihre Kanäle (WhatsApp, Kalender, Telefon).",
     icon: Plug,
   },
   {
     n: "03",
-    title: "Kiwo arbeitet für Sie",
-    desc: "Ab Tag 1 produktiv – Sie prüfen nur noch die Ergebnisse.",
+    title: "Kiwo übernimmt",
+    desc: "Ab dann läuft Kiwo automatisch für Sie, Sie behalten alles im Dashboard im Blick.",
     icon: Sparkles,
   },
 ];
@@ -941,7 +941,7 @@ export default function App() {
                 <Workflow className="h-3.5 w-3.5" /> ONBOARDING
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
-                In <span className="text-gradient">3 Schritten</span> zum KI-Mitarbeiter.
+                So <span className="text-gradient">funktioniert's</span>.
               </h2>
               <p className="mt-3 text-foreground/60 text-sm md:text-base">
                 Oft in unter einer Woche produktiv – ohne IT-Projekt.
@@ -1075,8 +1075,8 @@ export default function App() {
               <span className="text-gradient">digitalen Mitarbeiter</span>?
             </h2>
             <p className="mt-3 text-foreground/60 max-w-xl mx-auto">
-              Starten Sie mit einem kostenlosen Piloten – Rolle wählen, Kanäle verknüpfen,
-              Kiwo übernimmt.
+              Starten Sie mit einem kostenlosen Piloten – schreiben Sie uns, wir richten Kiwo
+              für Sie ein.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <a
