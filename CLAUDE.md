@@ -1132,6 +1132,32 @@ Version auf "Publish" klicken.
   den USA rechtlich nutzbar, ein Anbieterwechsel wäre unnötiger Aufwand.
   Der EU AI Act (Transparenzpflicht "das ist eine KI") ist über die
   bestehende Kiwo-Begrüßung vermutlich schon erfüllt.
+- **`audit_log` ist kein compliance-taugliches Audit-Log (16.08.2026,
+  Nutzer-Nachfrage nach dem neu gebauten Aktivitätsprotokoll) —
+  konkrete Lücken:** (1) **Wer:** bei Telefon-Aktionen wird die
+  Anrufernummer mitgeloggt, aber interne Aktionen (Agenten-Starts,
+  Freigabe-Klicks) lassen sich keiner Person zuordnen — es gibt aktuell
+  nur einen einzigen geteilten Admin-Account (`ADMIN_EMAIL`/
+  `ADMIN_PASSWORD`), der Login-Token trägt nicht mal einen echten Namen
+  (hartcodiert `"Betreiber"`); außerdem wird eine normale
+  Freigabe/Ablehnung (z. B. einer Sales-Mail) aktuell gar nicht
+  protokolliert, nur Agenten-Läufe und die Social-Veröffentlichung
+  selbst. (2) **Rechtsgrundlage:** kein Feld dafür — gehört ohnehin eher
+  in ein separates Verarbeitungsverzeichnis (ROPA) als in einzelne
+  Log-Zeilen. (3) **Unveränderlichkeit:** ganz normale Postgres-Tabelle,
+  das Backend hat vollen Schreibzugriff, kein Append-only-Schutz, kein
+  Hash-Chaining, kein WORM-Speicher — Einträge könnten technisch
+  verändert/gelöscht werden, ohne dass es auffällt. Das aktuelle
+  `audit_log` erfüllt damit das Website-Versprechen "Kiwo protokolliert
+  transparent, was es tut", aber NICHT den Anspruch eines rechtlich
+  belastbaren Audit-Logs (z. B. bei Betriebsprüfung/Aufsichtsbehörde).
+  **Bewusst nicht sofort mitgebaut** — hängt eng an der oben stehenden,
+  bereits offenen Rechtsprüfung (AVV/DPIA) und sollte zusammen mit dieser
+  angegangen werden, nicht isoliert. Für eine spätere Umsetzung nötig:
+  echte Mehrbenutzer-Admin-Identität (aktuell nicht vorhanden),
+  lückenlose Protokollierung aller Freigabe-Entscheidungen, technische
+  Unveränderlichkeit (z. B. Datenbank-Rechte einschränken oder
+  Hash-Chaining).
 - **Technisches Sicherheits-Audit (03.08.2026) — konkrete Lücken gefunden**
   (Nutzer-Frage "wie ist ki-works/Kiwo gegen Hacker abgesichert", zwei
   Explore-Agents haben Backend + Server-Infrastruktur geprüft). Positiv
