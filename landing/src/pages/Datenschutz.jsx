@@ -1,4 +1,5 @@
 import { PageShell } from "../components/PageShell.jsx";
+import { LegalLanguageNotice } from "../components/LegalLanguageNotice.jsx";
 
 const datenkategorien = [
   {
@@ -51,9 +52,10 @@ function A({ href, children, external = false }) {
 
 export default function Datenschutz() {
   return (
-    <PageShell>
+    <PageShell page="legal">
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
         <h1 className="text-3xl md:text-4xl font-semibold">Datenschutzerklärung</h1>
+        <LegalLanguageNotice />
 
         <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-800/90 dark:text-amber-100/90">
           <strong className="text-amber-600 dark:text-amber-300">Hinweis (intern):</strong> Diese Erklärung ist ein

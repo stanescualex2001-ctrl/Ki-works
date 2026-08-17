@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "overview": "Übersicht",
+    "calendar": "Kalender",
+    "reservations": "Reservierungen",
+    "orders": "Bestellungen",
+    "calls": "Anrufe",
+    "audit": "Aktivitätsprotokoll",
+    "reco": "KI-Empfehlungen",
+    "settings": "Einstellungen",
+    "customers": "Kunden (Betreiber)",
+    "leads": "Anfragen",
+    "system": "System"
+  },
+  "pageTitle": {
+    "overview": "Übersicht",
+    "calendar": "Kalender",
+    "reservations": "Reservierungen",
+    "orders": "Bestellungen",
+    "calls": "Anrufe",
+    "audit": "Aktivitätsprotokoll",
+    "reco": "KI-Empfehlungen",
+    "settings": "Einstellungen",
+    "customers": "Kundenübersicht",
+    "leads": "Anfragen",
+    "system": "System-Status"
+  },
+  "sidebar": {
+    "kiwoStatus": "bereit",
+    "refresh": "Aktualisieren",
+    "logout": "Abmelden",
+    "operator": "Betreiber",
+    "backToWebsite": "Zur Website"
+  },
+  "languageToggle": {
+    "ariaLabel": "Sprache wählen"
+  }
+}

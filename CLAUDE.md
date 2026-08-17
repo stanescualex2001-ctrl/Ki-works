@@ -742,6 +742,68 @@ Version auf "Publish" klicken.
   mitgezogen. Lokal verifiziert: Build + SSR-Prerendering fehlerfrei,
   gerenderte HTML-Ausgabe stichprobenartig auf alle neuen Zahlen geprüft,
   Marge rechnerisch für alle 3 Tarife über der Kostenbasis bestätigt.
+- **Mehrsprachigkeit DE/EN/RO — Phase 0 (Infrastruktur) fertig (17.08.2026):**
+  Nutzer-Wunsch: ganze Website + Kunden-Dashboard mehrsprachig, automatische
+  Spracherkennung, Flaggen-Umschalter. Sprachen (nach Rückfrage/Ergänzung):
+  Deutsch (Standard), Englisch, **Rumänisch**. Erkennung bewusst per
+  Browser-Sprache (`navigator.language`), nicht IP-Geolocation (keine
+  Server-Zusatzkomplexität, kein zusätzlicher DSGVO-Prüfpunkt).
+  Architektur: **kein `react-i18next`/`react-intl`**, eigenes leichtes
+  Dictionary+Context-System (`t(key)`-Lookup) — Begründung: `landing/`
+  wird nur einmalig beim Build serverseitig gerendert
+  (`react-dom/server`/`scripts/prerender.js`, kein Request-Server), eine
+  Library brächte dort nur Overhead; passt außerdem zum bestehenden
+  Projekt-Stil (Light/Dark-Theme ist genauso ohne Library gelöst). Neue
+  Sprache = neue `<locale>.json` + ein Registry-Eintrag, kein Umbau
+  (gleiches Muster wie `ROLE_BLOCKS` in `vapiAdmin.js`).
+  **`landing/`:** neues `src/i18n/` (Runtime + `de.json`/`en.json`/
+  `ro.json`), Locale wird immer explizit als Prop durchgereicht (nie
+  eigenständig `window`/`navigator` gelesen — läuft auch in Node beim
+  SSR-Prerender). Neue Routen `/en/` und `/ro/` (eigene `en/index.html`/
+  `ro/index.html`/`*/kontakt.html`-Shells, `vite.config.js`-Multi-Entry
+  erweitert, `entry-server.jsx`/`prerender.js` rendern jede Sprache
+  separat) — **kein erzwungener Redirect**, `/` bleibt Standard-Deutsch,
+  ein dismissbares Banner schlägt bei erkannter Fremdsprache die passende
+  Seite vor (rein client-seitig nach Hydration, ändert den
+  Crawler-HTML-Output nicht). `hreflang`-Alternates (de/en/ro/x-default)
+  in allen 4 Home-/Kontakt-Shells + `sitemap.xml`. Neuer Flaggen-Dropdown
+  (`LanguageToggle.jsx`, 🇩🇪/🇬🇧/🇷🇴) im Header — echte Links auf die
+  jeweils andere Sprachversion (kein SPA-Routing), rendert immer alle
+  Sprach-Links ins HTML (nur per CSS ausgeblendet), bleibt dadurch auch
+  im SSR-Output für Crawler vorhanden. `Header.jsx`/`Footer.jsx` bekommen
+  einen `page`-Prop ("home"/"kontakt"/"legal"), damit Nav-Anker/Links auf
+  der jeweiligen Sprachversion bleiben statt zur deutschen Startseite
+  zurückzuspringen. **Impressum/Datenschutz bleiben bewusst nur
+  Deutsch** (Risiko von Nuancenverlust bei KI-Übersetzung rechtlich
+  bindender Texte) — kurzer zweisprachiger Hinweis
+  (`LegalLanguageNotice.jsx`) erscheint dort, wenn die Browsersprache
+  des Besuchers nicht Deutsch ist. **`dashboard/`:** eigenes,
+  eigenständiges `src/i18n/` (kein SSR-Zwang, Provider darf
+  `navigator.language` + `localStorage` selbst lesen, exakt analog zu
+  `theme.js`/`getStoredTheme`) — Locale-Wahl per Klick zyklisch
+  DE→EN→RO→DE (`LanguageToggle` direkt neben dem bestehenden
+  `ThemeToggle` in der Sidebar). Nur die Sidebar-Navigation
+  (`NAV`/`pageTitle`, Aktualisieren/Abmelden/Zur-Website/Kiwo-Status)
+  ist in diesem Schritt migriert — bewusst begrenzter erster Nachweis,
+  nicht die komplette App (~1845 Zeilen). **Bewusst noch NICHT
+  übersetzt** (spätere Phasen): der komplette Inhalt von `landing/`s
+  Startseite (Hero/Rollen/Preise/FAQ/etc., ~1000 Zeilen), das
+  Kontaktformular selbst, und der gesamte übrige Dashboard-Inhalt
+  (Übersicht/Kalender/Reservierungen/Bestellungen/etc., inkl.
+  Login-Bildschirm) — bleiben vorerst hartcodiert Deutsch, auch auf
+  `/en/`/`/ro/`-Seiten. Ein Bug beim Testen gefunden und behoben: das
+  Sprach-Vorschlag-Banner (`z-20`) blockierte per CSS-Stacking-Kontext
+  die Klicks auf das offene Sprach-Dropdown im Header (ebenfalls `z-20`,
+  aber später im DOM) — auf `z-10` reduziert. Lokal mit Playwright
+  verifiziert: `landing/`- und `dashboard/`-Build fehlerfrei,
+  SSR-Prerendering aller 8 `landing/`-Seiten (3 Sprachen × Home/Kontakt +
+  2 fixe Rechtstexte) geprüft, `hreflang`/Locale-bewusste Links per Grep
+  bestätigt, Sprachdropdown per echtem Headless-Browser-Klick getestet
+  (DE→EN-Navigation funktioniert), Dashboard bootet mit neuem
+  `I18nProvider` ohne Laufzeitfehler. `deploy/nginx/ki-works.conf` +
+  `deploy/install.sh`: `try_files` um `$uri/` ergänzt (fehlte vorher —
+  `/en/`/`/ro/` hätten sonst nicht auf die passende `index.html`
+  aufgelöst). **Noch nicht auf dem Produktivserver ausgerollt.**
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1130,6 +1192,15 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **Mehrsprachigkeit DE/EN/RO — nur Phase 0 (Infrastruktur + Sidebar-Nav)
+  fertig, nicht ausgerollt.** Rest (siehe „Bereits erledigt" für Details):
+  Phase 1 `landing/`-Hauptseite komplett übersetzen, Phase 2
+  Kontaktformular-Labels, Phase 3 restlicher Dashboard-Inhalt (Login,
+  Übersicht, Kalender, Reservierungen, Bestellungen, Anrufe,
+  Einstellungen — Priorität Admin-Bereiche mit Nutzer klären, da nur
+  intern genutzt). Deploy braucht zusätzlich zum üblichen rsync/Build
+  auch den geänderten `deploy/nginx/ki-works.conf` (`try_files`-Fix) —
+  `nginx -t && systemctl reload nginx` nicht vergessen.
 - **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
   ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
   `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U

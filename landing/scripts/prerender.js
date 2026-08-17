@@ -13,10 +13,14 @@ const ssrEntry = path.join(dir, "..", "dist-server", "entry-server.js");
 const { renderHome, renderImpressum, renderDatenschutz, renderKontakt } = await import(`file://${ssrEntry}`);
 
 const pages = [
-  { file: "index.html", render: renderHome },
+  { file: "index.html", render: () => renderHome("de") },
+  { file: "en/index.html", render: () => renderHome("en") },
+  { file: "ro/index.html", render: () => renderHome("ro") },
   { file: "impressum.html", render: renderImpressum },
   { file: "datenschutz.html", render: renderDatenschutz },
-  { file: "kontakt.html", render: renderKontakt },
+  { file: "kontakt.html", render: () => renderKontakt("de") },
+  { file: "en/kontakt.html", render: () => renderKontakt("en") },
+  { file: "ro/kontakt.html", render: () => renderKontakt("ro") },
 ];
 
 for (const { file, render } of pages) {

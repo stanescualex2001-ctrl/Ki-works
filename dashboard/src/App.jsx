@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useMemo, useId, useRef } from 'react';
 import { getStoredTheme, applyTheme } from './theme.js';
+import { useI18n, SUPPORTED_LOCALES } from './i18n/index.jsx';
 
 /* ---------- Light/Dark-Umschalter ---------- */
 function ThemeToggle({ className = '' }) {
@@ -18,6 +19,25 @@ function ThemeToggle({ className = '' }) {
   return (
     <button type="button" className={`refresh ${className}`} onClick={toggle}>
       {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+    </button>
+  );
+}
+
+/* ---------- Sprach-Umschalter (DE/EN/RO, zyklisch wie ThemeToggle) ---------- */
+const LOCALE_FLAG = { de: '🇩🇪', en: '🇬🇧', ro: '🇷🇴' };
+const LOCALE_NATIVE = { de: 'Deutsch', en: 'English', ro: 'Română' };
+function LanguageToggle({ className = '' }) {
+  const { locale, setLocale, t } = useI18n();
+  const nextLocale = SUPPORTED_LOCALES[(SUPPORTED_LOCALES.indexOf(locale) + 1) % SUPPORTED_LOCALES.length];
+  return (
+    <button
+      type="button"
+      className={`refresh ${className}`}
+      onClick={() => setLocale(nextLocale)}
+      aria-label={t('languageToggle.ariaLabel')}
+      title={t('languageToggle.ariaLabel')}
+    >
+      {LOCALE_FLAG[nextLocale]} {LOCALE_NATIVE[nextLocale]}
     </button>
   );
 }
@@ -1622,28 +1642,24 @@ function Settings({ restaurantId, isAdmin }) {
 }
 
 // ---------------------------------------------------------------- shell
+// label/Titel kommen jetzt aus i18n (t('nav.<id>')/t('pageTitle.<id>')) statt
+// hier hartcodiert zu stehen — id bleibt die stabile Referenz.
 const NAV = [
-  { id: 'overview', label: 'Übersicht', icon: '📊' },
-  { id: 'calendar', label: 'Kalender', icon: '📅' },
-  { id: 'reservations', label: 'Reservierungen', icon: '🍽️' },
-  { id: 'orders', label: 'Bestellungen', icon: '🛍️' },
-  { id: 'calls', label: 'Anrufe', icon: '📞' },
-  { id: 'audit', label: 'Aktivitätsprotokoll', icon: '📋' },
-  { id: 'reco', label: 'KI-Empfehlungen', icon: '💡' },
-  { id: 'settings', label: 'Einstellungen', icon: '⚙️' },
-  { id: 'customers', label: 'Kunden (Betreiber)', icon: '🏢', divider: true, adminOnly: true },
-  { id: 'leads', label: 'Anfragen', icon: '📥', adminOnly: true },
-  { id: 'system', label: 'System', icon: '🛠️', adminOnly: true },
+  { id: 'overview', icon: '📊' },
+  { id: 'calendar', icon: '📅' },
+  { id: 'reservations', icon: '🍽️' },
+  { id: 'orders', icon: '🛍️' },
+  { id: 'calls', icon: '📞' },
+  { id: 'audit', icon: '📋' },
+  { id: 'reco', icon: '💡' },
+  { id: 'settings', icon: '⚙️' },
+  { id: 'customers', icon: '🏢', divider: true, adminOnly: true },
+  { id: 'leads', icon: '📥', adminOnly: true },
+  { id: 'system', icon: '🛠️', adminOnly: true },
 ];
 
-const TITLES = {
-  overview: 'Übersicht', calendar: 'Kalender', reservations: 'Reservierungen',
-  orders: 'Bestellungen', calls: 'Anrufe', audit: 'Aktivitätsprotokoll', reco: 'KI-Empfehlungen',
-  settings: 'Einstellungen', customers: 'Kundenübersicht', leads: 'Anfragen',
-  system: 'System-Status',
-};
-
 export default function App() {
+  const { t } = useI18n();
   const [auth, setAuth] = useState(loadAuth);
   const [view, setView] = useState('overview');
   const [refreshKey, setRefreshKey] = useState(0);
@@ -1759,7 +1775,7 @@ export default function App() {
           <OrbBuddy size={40} />
           <div className="kiwo-presence-text">
             <div className="kiwo-presence-name">Kiwo</div>
-            <div className="kiwo-presence-status">bereit</div>
+            <div className="kiwo-presence-status">{t('sidebar.kiwoStatus')}</div>
           </div>
         </div>
 
@@ -1773,23 +1789,24 @@ export default function App() {
                 className={view === item.id ? 'active' : ''}
                 onClick={() => { setView(item.id); markSeen(item.id); }}
               >
-                <span className="nav-icon">{item.icon}</span> {item.label}
+                <span className="nav-icon">{item.icon}</span> {t(`nav.${item.id}`)}
                 {!!unseenCounts[item.id] && <span className="nav-badge">{unseenCounts[item.id]}</span>}
               </button>
             </React.Fragment>
           ))}
         </nav>
 
-        <button className="refresh" onClick={refresh}>⟳ Aktualisieren</button>
+        <button className="refresh" onClick={refresh}>⟳ {t('sidebar.refresh')}</button>
         <ThemeToggle />
-        <button className="refresh" onClick={logout}>Abmelden ({isAdmin ? 'Betreiber' : auth.name})</button>
-        <a className="site-link" href="/">← Zur Website</a>
+        <LanguageToggle />
+        <button className="refresh" onClick={logout}>{t('sidebar.logout')} ({isAdmin ? t('sidebar.operator') : auth.name})</button>
+        <a className="site-link" href="/">← {t('sidebar.backToWebsite')}</a>
       </aside>
 
       <main>
         <header className="main-head">
           <div className="main-head-top">
-            <h1>{TITLES[view]}</h1>
+            <h1>{t(`pageTitle.${view}`)}</h1>
             {!noPicker && current && <span className="current-name">{current.name}</span>}
           </div>
           {isAdmin && !noPicker && restaurants && (

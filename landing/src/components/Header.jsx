@@ -6,6 +6,8 @@ import {
   UtensilsCrossed, Hotel, Wrench, Stethoscope, Scissors, Car, Building2,
 } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle.jsx";
+import { LanguageToggle } from "./LanguageToggle.jsx";
+import { useI18n, localizedPath } from "../i18n/index.jsx";
 
 /* ---------- Role Bento (shared: mega-menu + Rollen-Sektion auf der Startseite) ---------- */
 export const roles = [
@@ -103,13 +105,13 @@ export const roles = [
 
 /* ---------- Industries (Mega-Menü "Branchen") ---------- */
 export const industries = [
-  { name: "Restaurants", icon: UtensilsCrossed, href: "/#live", status: "live" },
-  { name: "Hotels", icon: Hotel, status: "soon" },
-  { name: "Handwerker", icon: Wrench, status: "soon" },
-  { name: "Arztpraxen", icon: Stethoscope, status: "soon" },
-  { name: "Friseure & Salons", icon: Scissors, status: "soon" },
-  { name: "Autowerkstätten", icon: Car, status: "soon" },
-  { name: "Immobilien", icon: Building2, status: "soon" },
+  { id: "restaurants", icon: UtensilsCrossed, anchor: "#live", status: "live" },
+  { id: "hotels", icon: Hotel, status: "soon" },
+  { id: "handwerker", icon: Wrench, status: "soon" },
+  { id: "arztpraxen", icon: Stethoscope, status: "soon" },
+  { id: "friseure", icon: Scissors, status: "soon" },
+  { id: "autowerkstaetten", icon: Car, status: "soon" },
+  { id: "immobilien", icon: Building2, status: "soon" },
 ];
 
 /* ---------- Brand mark: Orbit K (ring + K-monogram, orbiting channel dots) ---------- */
@@ -150,6 +152,7 @@ function OrbitKLogo({ size = 34 }) {
 
 /* ---------- Solutions menu content (shared: desktop dropdown + mobile accordion) ---------- */
 function StatusMenuLink({ icon: Icon, name, href, status, iconTone, onNavigate }) {
+  const { t } = useI18n();
   if (status === "live") {
     return (
       <a
@@ -162,7 +165,7 @@ function StatusMenuLink({ icon: Icon, name, href, status, iconTone, onNavigate }
           {name}
         </span>
         <span className="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-600 dark:text-emerald-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> live
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> {t("nav.statusLive")}
         </span>
       </a>
     );
@@ -173,12 +176,13 @@ function StatusMenuLink({ icon: Icon, name, href, status, iconTone, onNavigate }
         <Icon className="h-4 w-4 shrink-0 text-foreground/25" />
         {name}
       </span>
-      <span className="text-[10px] font-mono text-foreground/25">bald</span>
+      <span className="text-[10px] font-mono text-foreground/25">{t("nav.statusSoon")}</span>
     </span>
   );
 }
 
-function SolutionsMenuContent({ onNavigate, stacked = false }) {
+function SolutionsMenuContent({ onNavigate, stacked = false, homeHref }) {
+  const { t } = useI18n();
   const kundenkontakt = roles.filter((r) => r.category === "kundenkontakt");
   const intern = roles.filter((r) => r.category === "intern");
   return (
@@ -186,15 +190,15 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
       <div className="flex flex-col gap-5">
         <div>
           <div className="text-[11px] font-mono uppercase tracking-wide text-foreground/40">
-            Kundenkontakt
+            {t("nav.categoryCustomer")}
           </div>
           <div className="mt-3 flex flex-col gap-1">
             {kundenkontakt.map((r) => (
               <StatusMenuLink
                 key={r.id}
                 icon={r.icon}
-                name={r.name}
-                href="/#roles"
+                name={t(`roles.${r.id}`)}
+                href={`${homeHref}#roles`}
                 status={r.status}
                 iconTone="text-cyan-600 dark:text-cyan-300"
                 onNavigate={onNavigate}
@@ -204,15 +208,15 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
         </div>
         <div>
           <div className="text-[11px] font-mono uppercase tracking-wide text-foreground/40">
-            Interne Prozesse
+            {t("nav.categoryInternal")}
           </div>
           <div className="mt-3 flex flex-col gap-1">
             {intern.map((r) => (
               <StatusMenuLink
                 key={r.id}
                 icon={r.icon}
-                name={r.name}
-                href="/#roles"
+                name={t(`roles.${r.id}`)}
+                href={`${homeHref}#roles`}
                 status={r.status}
                 iconTone="text-cyan-600 dark:text-cyan-300"
                 onNavigate={onNavigate}
@@ -223,15 +227,15 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
       </div>
       <div>
         <div className="text-[11px] font-mono uppercase tracking-wide text-foreground/40">
-          Branchen
+          {t("nav.categoryIndustries")}
         </div>
         <div className="mt-3 flex flex-col gap-1">
           {industries.map((ind) => (
             <StatusMenuLink
-              key={ind.name}
+              key={ind.id}
               icon={ind.icon}
-              name={ind.name}
-              href={ind.href || "/#roles"}
+              name={t(`industries.${ind.id}`)}
+              href={`${homeHref}${ind.anchor || "#roles"}`}
               status={ind.status}
               iconTone="text-violet-600 dark:text-violet-300"
               onNavigate={onNavigate}
@@ -243,8 +247,14 @@ function SolutionsMenuContent({ onNavigate, stacked = false }) {
   );
 }
 
-/* ---------- Header (Nav) — geteilt zwischen Startseite, Impressum, Datenschutz ---------- */
-export function Header() {
+/* ---------- Header (Nav) — geteilt zwischen Startseite, Kontakt, Impressum, Datenschutz ---------- */
+// page: "home" | "kontakt" | "legal" — bestimmt, wohin Logo/Nav-Anker/
+// Kontakt-Link je nach aktueller Sprache zeigen (siehe i18n/index.jsx
+// localizedPath) und ob der Sprachumschalter eine Zielseite hat.
+export function Header({ page = "home" }) {
+  const { locale, t } = useI18n();
+  const homeHref = localizedPath("home", locale);
+  const kontaktHref = localizedPath("kontakt", locale);
   const [solutionsOpen, setSolutionsOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
@@ -280,7 +290,7 @@ export function Header() {
   return (
     <header className="relative z-20">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 md:flex md:justify-between">
-        <a href="/" className="flex min-w-0 items-center gap-2.5">
+        <a href={homeHref} className="flex min-w-0 items-center gap-2.5">
           <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
             <OrbitKLogo size={36} />
           </span>
@@ -300,7 +310,7 @@ export function Header() {
               aria-expanded={solutionsOpen}
               className="flex items-center gap-1 hover:text-foreground transition"
             >
-              Lösungen
+              {t("nav.solutions")}
               <ChevronDown className={`h-3.5 w-3.5 transition-transform ${solutionsOpen ? "rotate-180" : ""}`} />
             </button>
             <AnimatePresence>
@@ -312,36 +322,37 @@ export function Header() {
                   transition={{ duration: 0.15 }}
                   className="glass absolute left-1/2 top-full z-30 mt-3 w-[520px] -translate-x-1/2 rounded-2xl p-5 shadow-2xl"
                 >
-                  <SolutionsMenuContent onNavigate={() => setSolutionsOpen(false)} />
+                  <SolutionsMenuContent onNavigate={() => setSolutionsOpen(false)} homeHref={homeHref} />
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
-          <a href="/#live" className="hover:text-foreground transition">Live testen</a>
-          <a href="/#platform" className="hover:text-foreground transition">Plattform</a>
-          <a href="/#preise" className="hover:text-foreground transition">Preise</a>
-          <a href="/#onboarding" className="hover:text-foreground transition">Onboarding</a>
-          <a href="/kontakt.html" className="hover:text-foreground transition">Kontakt</a>
+          <a href={`${homeHref}#live`} className="hover:text-foreground transition">{t("nav.liveTest")}</a>
+          <a href={`${homeHref}#platform`} className="hover:text-foreground transition">{t("nav.platform")}</a>
+          <a href={`${homeHref}#preise`} className="hover:text-foreground transition">{t("nav.pricing")}</a>
+          <a href={`${homeHref}#onboarding`} className="hover:text-foreground transition">{t("nav.onboarding")}</a>
+          <a href={kontaktHref} className="hover:text-foreground transition">{t("nav.contact")}</a>
         </nav>
         <div className="justify-self-end flex items-center gap-2.5">
+          <LanguageToggle page={page} />
           <ThemeToggle />
           <a
             href="/dashboard/"
             className="hidden rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-3 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap sm:inline-flex"
           >
-            Kunden-Login
+            {t("nav.customerLogin")}
           </a>
           <a
-            href="/#live"
+            href={`${homeHref}#live`}
             className="rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap"
           >
-            Kiwo testen
+            {t("nav.tryKiwo")}
           </a>
           <button
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
             aria-expanded={mobileOpen}
-            aria-label="Menü"
+            aria-label={t("nav.menuAriaLabel")}
             className="ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-foreground/80 transition hover:border-foreground/30 hover:text-foreground md:hidden"
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -365,7 +376,7 @@ export function Header() {
                 aria-expanded={mobileSolutionsOpen}
                 className="flex items-center justify-between rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Lösungen
+                {t("nav.solutions")}
                 <ChevronDown className={`h-4 w-4 transition-transform ${mobileSolutionsOpen ? "rotate-180" : ""}`} />
               </button>
               <AnimatePresence>
@@ -379,6 +390,7 @@ export function Header() {
                   >
                     <SolutionsMenuContent
                       stacked
+                      homeHref={homeHref}
                       onNavigate={() => {
                         setMobileOpen(false);
                         setMobileSolutionsOpen(false);
@@ -388,46 +400,46 @@ export function Header() {
                 )}
               </AnimatePresence>
               <a
-                href="/#live"
+                href={`${homeHref}#live`}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Live testen
+                {t("nav.liveTest")}
               </a>
               <a
-                href="/#platform"
+                href={`${homeHref}#platform`}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Plattform
+                {t("nav.platform")}
               </a>
               <a
-                href="/#preise"
+                href={`${homeHref}#preise`}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Preise
+                {t("nav.pricing")}
               </a>
               <a
-                href="/#onboarding"
+                href={`${homeHref}#onboarding`}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Onboarding
+                {t("nav.onboarding")}
               </a>
               <a
-                href="/kontakt.html"
+                href={kontaktHref}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Kontakt
+                {t("nav.contact")}
               </a>
               <a
                 href="/dashboard/"
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
-                Kunden-Login
+                {t("nav.customerLogin")}
               </a>
             </div>
           </motion.div>

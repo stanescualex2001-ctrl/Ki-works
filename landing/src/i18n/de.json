@@ -1,0 +1,57 @@
+{
+  "nav": {
+    "solutions": "Lösungen",
+    "liveTest": "Live testen",
+    "platform": "Plattform",
+    "pricing": "Preise",
+    "onboarding": "Onboarding",
+    "contact": "Kontakt",
+    "customerLogin": "Kunden-Login",
+    "tryKiwo": "Kiwo testen",
+    "menuAriaLabel": "Menü",
+    "categoryCustomer": "Kundenkontakt",
+    "categoryInternal": "Interne Prozesse",
+    "categoryIndustries": "Branchen",
+    "statusLive": "live",
+    "statusSoon": "bald"
+  },
+  "roles": {
+    "reception": "Kiwo Reception",
+    "sales": "Kiwo Sales",
+    "support": "Kiwo Support",
+    "orders": "Kiwo Orders",
+    "office": "Kiwo Office",
+    "recruiting": "Kiwo Recruiting",
+    "collection": "Kiwo Collection",
+    "onboarding": "Kiwo Onboarding",
+    "finance": "Kiwo Finance"
+  },
+  "industries": {
+    "restaurants": "Restaurants",
+    "hotels": "Hotels",
+    "handwerker": "Handwerker",
+    "arztpraxen": "Arztpraxen",
+    "friseure": "Friseure & Salons",
+    "autowerkstaetten": "Autowerkstätten",
+    "immobilien": "Immobilien"
+  },
+  "footer": {
+    "tagline": "agent kiwo v1.0",
+    "customerLogin": "Kunden-Login",
+    "contact": "Kontakt",
+    "imprint": "Impressum",
+    "privacy": "Datenschutz",
+    "systemsOperational": "systems operational"
+  },
+  "languageToggle": {
+    "ariaLabel": "Sprache wählen"
+  },
+  "languageBanner": {
+    "text": "Diese Seite ist auch auf Deutsch verfügbar.",
+    "cta": "Auf Deutsch ansehen",
+    "dismissAriaLabel": "Hinweis schließen"
+  },
+  "legalNotice": {
+    "germanOnly": "Diese Seite ist nur auf Deutsch verfügbar. / This page is only available in German."
+  }
+}

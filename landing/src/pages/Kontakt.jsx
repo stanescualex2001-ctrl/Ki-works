@@ -110,7 +110,7 @@ function ContactForm() {
 
 export default function Kontakt() {
   return (
-    <PageShell>
+    <PageShell page="kontakt">
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
         <h1 className="text-3xl md:text-4xl font-semibold">Kontakt</h1>
         <p className="mt-4 max-w-xl text-sm md:text-base text-foreground/65 leading-relaxed">

@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "calendar": "Calendar",
+    "reservations": "Reservations",
+    "orders": "Orders",
+    "calls": "Calls",
+    "audit": "Activity Log",
+    "reco": "AI Recommendations",
+    "settings": "Settings",
+    "customers": "Customers (Operators)",
+    "leads": "Inquiries",
+    "system": "System"
+  },
+  "pageTitle": {
+    "overview": "Overview",
+    "calendar": "Calendar",
+    "reservations": "Reservations",
+    "orders": "Orders",
+    "calls": "Calls",
+    "audit": "Activity Log",
+    "reco": "AI Recommendations",
+    "settings": "Settings",
+    "customers": "Customer Overview",
+    "leads": "Inquiries",
+    "system": "System Status"
+  },
+  "sidebar": {
+    "kiwoStatus": "ready",
+    "refresh": "Refresh",
+    "logout": "Log out",
+    "operator": "Operator",
+    "backToWebsite": "Back to website"
+  },
+  "languageToggle": {
+    "ariaLabel": "Choose language"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "overview": "Prezentare generală",
+    "calendar": "Calendar",
+    "reservations": "Rezervări",
+    "orders": "Comenzi",
+    "calls": "Apeluri",
+    "audit": "Jurnal de activitate",
+    "reco": "Recomandări AI",
+    "settings": "Setări",
+    "customers": "Clienți (operatori)",
+    "leads": "Solicitări",
+    "system": "Sistem"
+  },
+  "pageTitle": {
+    "overview": "Prezentare generală",
+    "calendar": "Calendar",
+    "reservations": "Rezervări",
+    "orders": "Comenzi",
+    "calls": "Apeluri",
+    "audit": "Jurnal de activitate",
+    "reco": "Recomandări AI",
+    "settings": "Setări",
+    "customers": "Prezentare clienți",
+    "leads": "Solicitări",
+    "system": "Stare sistem"
+  },
+  "sidebar": {
+    "kiwoStatus": "pregătit",
+    "refresh": "Actualizează",
+    "logout": "Deconectare",
+    "operator": "Operator",
+    "backToWebsite": "Înapoi la site"
+  },
+  "languageToggle": {
+    "ariaLabel": "Alegeți limba"
+  }
+}

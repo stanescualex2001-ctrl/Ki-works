@@ -8,6 +8,8 @@ import {
 } from "lucide-react";
 import { Header, roles } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
+import { LanguageSuggestionBanner } from "./components/LanguageSuggestionBanner.jsx";
+import { useI18n, DEFAULT_LOCALE } from "./i18n/index.jsx";
 
 /* ============================================================
    Design tokens (semantic):
@@ -623,13 +625,15 @@ const steps = [
 
 /* ---------- Page ---------- */
 export default function App() {
+  const { locale } = useI18n();
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-40" />
       <div className="pointer-events-none absolute -top-40 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(6,182,212,0.18),transparent_60%)] blur-3xl" />
       <div className="pointer-events-none absolute top-[40%] right-[-10%] h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.22),transparent_60%)] blur-3xl" />
 
-      <Header />
+      <Header page="home" />
+      {locale === DEFAULT_LOCALE && <LanguageSuggestionBanner page="home" />}
 
       {/* Hero */}
       <section className="relative z-10">
@@ -1092,7 +1096,7 @@ export default function App() {
         </div>
       </section>
 
-      <Footer />
+      <Footer page="home" />
     </div>
   );
 }
