@@ -714,6 +714,34 @@ Version auf "Publish" klicken.
   "alle Rollen inklusive"-Preisversprechen, siehe Preise-Sektion, die
   genau diese Formulierung bereits unverändert enthielt). `landing/`
   gebaut und Prerendering geprüft.
+- **Preise auf reale Anrufzahlen umgestellt + Stundensatz belegt
+  (17.08.2026):** Nutzer hat zwei Rechercheergebnisse mitgebracht und um
+  Prüfung vor jeder Live-Änderung gebeten. (1) Die Minutenpakete
+  basierten auf einer nie belegten internen Annahme in `MARKETING.md`
+  ("20–100 Anrufe/Monat") — recherchierte DACH-Marktdaten zeigen
+  50–120 Anrufe/**Woche** für ein durchschnittliches Restaurant, Faktor
+  4–15x höher; Solo (300 Min) deckte damit nicht mal ein kleines
+  Restaurant ab (~540 Min/Monat realistischer Bedarf). (2) Der
+  "⌀ 42 €/Std."-Wert für "Personalzeit gespart" (ROI-Rechner + alle 3
+  Preiskarten) war im Code nirgends hergeleitet oder belegt.
+  Nutzer-Entscheidung nach Rückfrage: der neuen Anrufzahlen-Recherche
+  folgen (Pakete deutlich anheben) und Stundensatz auf ~21 €/Std. setzen
+  (KV-Fachkraft-Vollkosten Gastronomie AT ~17-18 € + moderater
+  Overhead-Aufschlag). Umgesetzt in `landing/src/App.jsx`: Pakete
+  Solo 300→**600 Min/99 €**, Team 1000→**1500 Min/249 €**,
+  Scale 2500→**3500 Min/499 €** (Marge bleibt bei allen Stufen deutlich
+  über der Kostenbasis 0,085 €/Min, ~40-49 % Bruttomarge); `hourlyCost`
+  42→21 an allen drei Stellen (ROI-Rechner, Preiskarten, Dashboard-
+  Vorschau-Kachel in der "Alles auf einen Blick"-Sektion). Zusätzlich:
+  bisher offener Überschreitungspreis jetzt auf **0,20 €/zusätzliche
+  Minute** festgelegt (reine Nachberechnung, kein Anruf-Abbruch/keine
+  automatische Sperre) und auf der Preise-Seite kommuniziert — braucht
+  kein neues Billing-System, wird wie bisher manuell nachverfolgt/in
+  Rechnung gestellt. `MARKETING.md` (Tarif-Tabelle, Anruf-Annahme,
+  Verkaufsargument-Beispielrechnung, "Offen/noch zu klären") konsistent
+  mitgezogen. Lokal verifiziert: Build + SSR-Prerendering fehlerfrei,
+  gerenderte HTML-Ausgabe stichprobenartig auf alle neuen Zahlen geprüft,
+  Marge rechnerisch für alle 3 Tarife über der Kostenbasis bestätigt.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1089,17 +1117,16 @@ Version auf "Publish" klicken.
   `bash deploy/setup-vapi.sh <restaurant-id>` erneut synchronisiert und im
   Vapi-Dashboard manuell "published" werden (gleiche Einschränkung wie
   bei allen Vapi-Sync-Änderungen, siehe unten).
-- **Wettbewerber-Preisvergleich per Recherche-Agent (13.08.2026):**
-  Nutzer-Einschätzung nach Rückfrage zur Preise-Sektion — der Solo-Tarif
-  (69 €/Monat, siehe „Bereits erledigt" → Preise-Sektion) wirkt im
-  Vergleich zum kommunizierten Wert (≈270 € Ersparnis) evtl. zu günstig
-  angesetzt. Statt aus dem Bauch heraus zu erhöhen: dieselbe
-  `web_search`/`web_fetch`-Technik wie der neue Sales-Agent
-  (`backend/src/salesAgent.js`) ließe sich für einen zweiten,
-  eigenständigen Lauf nutzen, der recherchiert, was vergleichbare Anbieter
-  (z. B. fonio.ai) für ähnlichen Funktionsumfang verlangen — Preisentscheidung
-  dann auf Datenbasis statt Vermutung. Nutzer hat bewusst entschieden,
-  das **nach** dem Sales-Agenten anzugehen, noch nicht gebaut.
+- **Wettbewerber-Preisvergleich per Recherche-Agent — Grundidee durch
+  manuelle Recherche erledigt (13.08. → 17.08.2026):** ursprünglich als
+  eigener `web_search`/`web_fetch`-Agentenlauf (wie `salesAgent.js`)
+  angedacht, um die Preise auf Datenbasis statt Vermutung zu setzen. Der
+  Nutzer hat die Recherche stattdessen selbst mitgebracht (DACH-
+  Marktdaten zu Anrufaufkommen + Lohnkosten Gastronomie) — siehe
+  „Preise auf reale Anrufzahlen umgestellt" oben unter „Bereits erledigt".
+  Ein automatisierter
+  Recherche-Agent für künftige Preis-Updates bleibt eine mögliche, aber
+  nicht mehr dringende Idee.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
@@ -1221,10 +1248,11 @@ Version auf "Publish" klicken.
   Feature-Punkte pro Tarif ("Dashboard", "E-Mail-Benachrichtigungen bei
   Neuem", "EU-Hosting & DSGVO-konform") sind zu generisch, kommunizieren
   den konkreten Nutzen nicht. Copy-Pass: Formulierungen konkreter machen
-  (z. B. "nie wieder verpasste Reservierung" statt "Dashboard"). Die
-  Beträge selbst bleiben unverändert (siehe „Wettbewerber-Preisvergleich"
-  oben, separates Thema). Explizit auf die nächste Sitzung vertagt
-  ("Aber alles Morgen").
+  (z. B. "nie wieder verpasste Reservierung" statt "Dashboard"). War
+  ursprünglich als "Beträge bleiben unverändert, nur Wording" vertagt —
+  die Beträge selbst haben sich seither aber durchs Preise-Repricing
+  (17.08.2026, siehe „Bereits erledigt") bereits geändert; der eigentliche
+  Copy-Pass zu den Feature-Punkten steht weiterhin aus.
 - **Orb Buddy: Mausverfolgung noch mal gewünscht — mit klarer Spezifikation
   (13.08.2026)** — war in dieser Sitzung gebaut (siehe „Bereits erledigt"),
   nach Nutzer-Feedback "mag ich nicht" komplett entfernt, dann hat der
