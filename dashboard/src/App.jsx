@@ -386,7 +386,7 @@ function StatRow({ title, row, onNavigate }) {
 // diesem Kunden), nicht nur die letzten 7 Tage — zeigt die kumulierte Wirkung.
 function RoiTile({ totalCalls, firstCallAt }) {
   const minutesPerCall = 4;
-  const hourlyCost = 42;
+  const hourlyCost = 21;
   const hours = ((totalCalls || 0) * minutesPerCall) / 60;
   const euros = Math.round(hours * hourlyCost);
   const daysLive = firstCallAt
@@ -409,6 +409,43 @@ function RoiTile({ totalCalls, firstCallAt }) {
   );
 }
 
+// Minuten-Nutzung im laufenden Monat vs. gebuchtes Tarif-Kontingent — rein
+// informativ (Anzeige, kein automatisches Billing, siehe CLAUDE.md
+// „Offene Punkte"). Ohne hinterlegten Tarif nur der Verbrauch ohne Vergleich.
+function UsageTile({ restaurantId, refreshKey }) {
+  const { data: usage } = useFetch(
+    restaurantId != null ? `/api/usage?restaurant_id=${restaurantId}` : null, refreshKey,
+  );
+  if (!usage) return null;
+  const pct = usage.minutesIncluded ? Math.min(100, Math.round((usage.minutesUsed / usage.minutesIncluded) * 100)) : null;
+  return (
+    <section className="roi-tile">
+      <div className="roi-tile-label">Gesprächsminuten diesen Monat</div>
+      <div className="roi-tile-values">
+        <span className="roi-tile-value">
+          {usage.minutesUsed.toLocaleString('de-DE')}
+          {usage.minutesIncluded ? ` / ${usage.minutesIncluded.toLocaleString('de-DE')} Min.` : ' Min.'}
+        </span>
+        {usage.overageMinutes > 0 && (
+          <span className="roi-tile-value warn-text">
+            +{usage.overageMinutes} Min. ≈ {usage.overageCost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €
+          </span>
+        )}
+      </div>
+      {pct != null && (
+        <div className="usage-bar">
+          <div className="usage-bar-fill" style={{ width: `${pct}%` }} />
+        </div>
+      )}
+      <div className="roi-tile-note">
+        {usage.tierLabel
+          ? `Tarif ${usage.tierLabel} · Überschreitung ${usage.overageRatePerMinute.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €/Min. · kein Anruf wird abgebrochen`
+          : 'Noch kein Tarif hinterlegt — reine Verbrauchsanzeige ohne Kontingent-Vergleich.'}
+      </div>
+    </section>
+  );
+}
+
 function Overview({ restaurantId, refreshKey, onNavigate }) {
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
@@ -416,6 +453,7 @@ function Overview({ restaurantId, refreshKey, onNavigate }) {
   return (
     <>
       <RoiTile totalCalls={pick(weekly)?.total_calls} firstCallAt={pick(weekly)?.first_call_at} />
+      <UsageTile restaurantId={restaurantId} refreshKey={refreshKey} />
       <StatRow title="Heute" row={pick(daily)} onNavigate={onNavigate} />
       <StatRow title="Letzte 7 Tage" row={pick(weekly)} onNavigate={onNavigate} />
     </>
@@ -918,6 +956,50 @@ function RolesForm({ restaurant, onDone, onCancel }) {
   );
 }
 
+const PRICING_TIER_OPTIONS = [
+  { value: '', label: '– kein Tarif –' },
+  { value: 'solo', label: 'Solo (600 Min. / 99 €)' },
+  { value: 'team', label: 'Team (1.500 Min. / 249 €)' },
+  { value: 'scale', label: 'Scale (3.500 Min. / 499 €)' },
+];
+
+function PricingTierForm({ restaurant, onDone, onCancel }) {
+  const [tier, setTier] = useState(restaurant.pricing_tier || '');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch(`/api/restaurants/${restaurant.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ pricing_tier: tier || null }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onDone();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>Preistarif für „{restaurant.name}"</strong>
+      <label>Tarif
+        <select value={tier} onChange={(e) => setTier(e.target.value)}>
+          {PRICING_TIER_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+      </label>
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>Speichern</button>
+        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+      </div>
+    </form>
+  );
+}
+
 function AccessForm({ restaurant, onDone, onCancel }) {
   const [email, setEmail] = useState(restaurant.login_email || restaurant.contact_email || '');
   const [password, setPassword] = useState('');
@@ -1029,6 +1111,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const [sortBy, setSortBy] = useState('name-asc');
   const [editing, setEditing] = useState(null);
   const [editingRoles, setEditingRoles] = useState(null);
+  const [editingTier, setEditingTier] = useState(null);
   const [adding, setAdding] = useState(false);
   const [inviteMsg, setInviteMsg] = useState(null);
 
@@ -1115,11 +1198,18 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
           onDone={() => { setEditingRoles(null); onChanged(); }}
         />
       )}
+      {editingTier && (
+        <PricingTierForm
+          restaurant={info(editingTier)}
+          onCancel={() => setEditingTier(null)}
+          onDone={() => { setEditingTier(null); onChanged(); }}
+        />
+      )}
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Kunde</th><th>Login</th><th>KI-Nummer</th><th>Vapi-Status</th>
+              <th>Kunde</th><th>Login</th><th>KI-Nummer</th><th>Vapi-Status</th><th>Tarif</th>
               <th>Anrufe heute</th><th>Res. heute</th>
               <th>Anrufe 7 T</th><th>Res. 7 T</th><th>Gäste 7 T</th><th></th>
             </tr>
@@ -1151,6 +1241,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                       </>
                     )}
                   </td>
+                  <td>{PRICING_TIER_OPTIONS.find((o) => o.value === r.pricing_tier)?.label.replace(/ \(.*\)/, '') || '–'}</td>
                   <td>{d.calls}</td>
                   <td>{d.reservations}</td>
                   <td>{w.calls ?? '–'}</td>
@@ -1165,6 +1256,9 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                     </button>
                     <button className="link" onClick={() => setEditingRoles(d.restaurant_id)}>
                       Rollen ändern
+                    </button>
+                    <button className="link" onClick={() => setEditingTier(d.restaurant_id)}>
+                      Tarif ändern
                     </button>
                   </td>
                 </tr>

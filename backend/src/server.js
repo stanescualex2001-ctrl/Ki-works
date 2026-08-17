@@ -258,7 +258,7 @@ app.post('/api/restaurants', adminOnly, async (req, res) => {
 
 app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
   const allowed = ['name', 'address', 'contact_email', 'contact_phone',
-    'vapi_phone_number', 'vapi_assistant_id', 'login_email', 'vapi_published'];
+    'vapi_phone_number', 'vapi_assistant_id', 'login_email', 'vapi_published', 'pricing_tier'];
   const sets = [];
   const vals = [];
   for (const key of allowed) {
@@ -736,6 +736,54 @@ app.get('/api/stats/daily/by-restaurant', async (req, res) =>
   res.json(await scopedStats(req, '1 day')));
 app.get('/api/stats/weekly/by-restaurant', async (req, res) =>
   res.json(await scopedStats(req, '7 days')));
+
+// Minuten-Kontingente je Tarif (siehe landing/src/App.jsx pricingTiers —
+// bei einer künftigen Preisänderung dort UND hier anpassen) + einheitlicher
+// Überschreitungspreis (siehe MARKETING.md Tarif-Tabelle).
+const PRICING_TIERS = {
+  solo: { label: 'Solo', minutesIncluded: 600 },
+  team: { label: 'Team', minutesIncluded: 1500 },
+  scale: { label: 'Scale', minutesIncluded: 3500 },
+};
+const OVERAGE_RATE_PER_MINUTE = 0.20;
+
+// Verbrauchte Gesprächsminuten im laufenden Kalendermonat + Vergleich gegen
+// das Kontingent des gebuchten Tarifs (rein informativ — es gibt noch kein
+// automatisches Billing, siehe CLAUDE.md „Offene Punkte").
+app.get('/api/usage', async (req, res) => {
+  const scope = customerScope(req);
+  const restaurantId = scope ?? req.query.restaurant_id;
+  if (!restaurantId) return res.status(400).json({ error: 'restaurant_id required' });
+
+  const { rows: restaurantRows } = await query(
+    'SELECT pricing_tier FROM restaurants WHERE id = $1', [restaurantId],
+  );
+  if (!restaurantRows[0]) return res.status(404).json({ error: 'not found' });
+  const tierKey = restaurantRows[0].pricing_tier;
+  const tier = PRICING_TIERS[tierKey] || null;
+
+  const { rows } = await query(
+    `SELECT COALESCE(sum(duration_seconds), 0) AS total_seconds
+     FROM calls
+     WHERE restaurant_id = $1
+       AND created_at >= date_trunc('month', now())
+       AND created_at < date_trunc('month', now()) + interval '1 month'`,
+    [restaurantId],
+  );
+  const minutesUsed = Math.round((rows[0].total_seconds || 0) / 60);
+  const overageMinutes = tier ? Math.max(0, minutesUsed - tier.minutesIncluded) : 0;
+
+  res.json({
+    tier: tierKey || null,
+    tierLabel: tier?.label || null,
+    minutesIncluded: tier?.minutesIncluded ?? null,
+    minutesUsed,
+    overageMinutes,
+    overageCost: Math.round(overageMinutes * OVERAGE_RATE_PER_MINUTE * 100) / 100,
+    overageRatePerMinute: OVERAGE_RATE_PER_MINUTE,
+    periodStart: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10),
+  });
+});
 
 // KI-Empfehlungen für einen Betrieb auf Basis der Wochenzahlen.
 app.get('/api/recommendations', async (req, res) => {

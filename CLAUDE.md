@@ -804,6 +804,40 @@ Version auf "Publish" klicken.
   `deploy/install.sh`: `try_files` um `$uri/` ergänzt (fehlte vorher —
   `/en/`/`/ro/` hätten sonst nicht auf die passende `index.html`
   aufgelöst). **Noch nicht auf dem Produktivserver ausgerollt.**
+- **Nutzungsmessung + Anzeige pro Kunde (17.08.2026):** Antwort auf die
+  Nutzer-Frage, wie der Überschreitungspreis (0,20 €/Min., siehe
+  Preise-Repricing oben) eigentlich gemessen/abgerechnet wird — bisher
+  gar nicht, obwohl `calls.duration_seconds` die Rohdaten dafür längst
+  liefert. Erster Baustein: **reine Anzeige, kein Billing.** Neue Spalte
+  `restaurants.pricing_tier` (migration-021, `solo`/`team`/`scale`/NULL),
+  vom Admin über einen neuen "Tarif ändern"-Button im Kunden-Bereich
+  setzbar (`PricingTierForm`, gleiches Muster wie `RolesForm`) — nur
+  Admin darf das (per Test mit echtem Kunden-JWT bestätigt: 403 bei
+  Fremdänderung). Neuer Endpunkt `GET /api/usage` (customerScope-bewusst)
+  summiert `calls.duration_seconds` für den laufenden Kalendermonat,
+  vergleicht gegen das Kontingent des Tarifs (Minuten-Werte fix im Code
+  hinterlegt, siehe `PRICING_TIERS` in `backend/src/server.js` —
+  **müssen bei einer künftigen Preisänderung manuell mit
+  `landing/src/App.jsx` `pricingTiers` synchron gehalten werden, kein
+  gemeinsamer Quellort**), berechnet Überschreitungsminuten × 0,20 €.
+  Neue Kachel im Kunden-Dashboard direkt unter der bestehenden
+  Ersparnis-Kachel in der Übersicht (`UsageTile`) — Balkenanzeige
+  Verbrauch/Kontingent, Überschreitung in Rot mit geschätzten Kosten;
+  ohne hinterlegten Tarif nur der reine Verbrauch ohne Vergleich. Dabei
+  eine zweite, bisher übersehene Stelle mit der alten unbelegten
+  "42 €/Std."-Zahl gefunden und mitkorrigiert: die Ersparnis-Kachel
+  (`RoiTile`) im Kunden-Dashboard hatte den Preise-Fix vom selben Tag
+  nicht mitbekommen (eigene, unabhängige Komponente) — jetzt ebenfalls
+  21 €/Std. Lokal gegen frische Test-DB verifiziert: Überschreitungs-
+  Berechnung (650 Min. verbraucht bei 600 Min. Solo-Kontingent → 50 Min.
+  × 0,20 € = 10,00 €), Anrufe aus Vormonaten werden korrekt NICHT
+  mitgezählt (Kalendermonat-Grenze), Kunde ohne Tarif zeigt Verbrauch
+  ohne Kontingent-Vergleich, Kunden-Scope kann weder fremde Restaurant-
+  Nutzung abfragen noch den eigenen Tarif selbst ändern. **Automatische
+  Abrechnung (PayPal/Bank o. Ä.) ist explizit ein späterer, noch nicht
+  begonnener Schritt** — dieser Baustein liefert nur die Diskussions-/
+  Anzeige-Grundlage dafür. **Noch nicht auf dem Produktivserver
+  ausgerollt.**
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
