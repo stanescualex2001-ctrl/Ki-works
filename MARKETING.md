@@ -165,33 +165,61 @@ zwei Optionen, keine davon erfordert Einzelpreise pro Rolle:
    Audelia es z. B. mit "Individuelle Stimme" nur ab Scale macht) — Hebel
    für spätere Preiserhöhung/Upsell ohne A-la-carte-Komplexität.
 
-### Vorläufige Tarif-Tabelle (Entwurf)
+### Tarif-Tabelle (Stand 17.08.2026 — auf reales Anrufaufkommen umgestellt)
 
-| Paket | Minuten inkl. | Preis/Monat | Effektiv €/Min | Marge über Kosten |
-|---|---|---|---|---|
-| Solo  | 300  | 69 €  | 0,23 €  | ~2,7x (63 % Bruttomarge) |
-| Team  | 1000 | 199 € | 0,199 € | ~2,3x (57 % Bruttomarge) |
-| Scale | 2500 | 399 € | 0,16 €  | ~1,9x (47 % Bruttomarge) |
+**Update 17.08.2026:** die ursprüngliche Annahme "20–100 Anrufe/Monat"
+unten war nie belegt, nur eine grobe interne Schätzung. Nutzer-Recherche
+(mehrere Quellen, DACH-Raum, nicht einzeln zitiert) kommt auf deutlich
+höhere Werte: **50–120 Anrufe/Woche** für ein durchschnittliches
+Restaurant (⌀ 2-3 Min/Anruf), stark frequentierte Lokale bis zu 120
+Anrufe/**Tag**. Damit war v. a. Solo (300 Min) weit unter dem
+realistischen Bedarf selbst eines kleinen Restaurants (~540 Min/Monat bei
+50 Anrufen/Woche) — Kontingent wäre nach ca. 2 Wochen aufgebraucht
+gewesen. Pakete deshalb wie folgt angehoben (Kostenbasis weiterhin
+0,085 €/Min):
 
-Überschreitung des Kontingents: eigener Cent-Betrag/Minute, noch nicht
-festgelegt. Zielgruppe kleine Restaurants dürfte meist im Solo-Bereich
-landen (realistisch 20–100 Anrufe/Monat à 2-3 Min = 40-300 Min).
+| Paket | Minuten inkl. | Preis/Monat | Effektiv €/Min | Kosten | Marge |
+|---|---|---|---|---|---|
+| Solo  | 600  | 99 €  | 0,165 € | 51 €     | ~1,9x (~49 % Bruttomarge) |
+| Team  | 1500 | 249 € | 0,166 € | 127,50 € | ~2,0x (~49 % Bruttomarge) |
+| Scale | 3500 | 499 € | 0,143 € | 297,50 € | ~1,7x (~40 % Bruttomarge) |
+
+Einordnung: Solo deckt jetzt ein kleines Restaurant (~50 Anrufe/Woche ≈
+540 Min) mit Puffer, Team das obere Ende "durchschnittlich" (85–120
+Anrufe/Woche ≈ 915–1300 Min), Scale deutlich mehr als "stark frequentiert"
+im Wochen-Maßstab. Die absolute Spitze aus der Recherche (120 Anrufe/Tag
+≈ 9.000 Min/Monat) bewusst NICHT als Scale-Zielwert angesetzt — dafür
+gibt es den Hinweis auf der Preise-Seite, sich für ein individuelles
+Paket zu melden. Effektive €/Min bleiben in der Größenordnung der
+Konkurrenz (fonio ~0,10 €/Min flach, Audelia 0,17–0,33 €/Min).
+
+**Überschreitung des Kontingents (jetzt entschieden, siehe „Offen/noch
+zu klären" unten):** 0,20 €/zusätzliche Minute, einheitlich über alle
+Tarife — reine Nachberechnung, kein automatisches Sperren oder
+Abbrechen von Anrufen. Auf der Preise-Seite entsprechend kommuniziert.
 
 ### Verkaufsargument statt Preis-Hebel: Ersparnis vs. echte Arbeitskraft
 
 Kosten-plus-Marge legt nur die Preis-Untergrenze fest — den eigentlichen
-Wert zeigt der bereits gebaute **ROI-Rechner** der Landingpage (⌀ 42 €/Std.
-Vollkosten Arbeitskraft). Beispielrechnung: 300 Gesprächsminuten (Solo)
-entsprechen bei einem Menschen eher 6-7 Std. echter Arbeitszeit (inkl.
-Notizen/Systemeingabe) → ca. 270-290 € Personalkosten für dieselbe
-Arbeit — der Solo-Tarif (69 €) kostet also weniger als ein Viertel davon.
-**Idee für die künftige Preise-Seite:** unter jedem Paket "≈ X Std.
-Personalzeit gespart = Y € Wert" anzeigen, mit derselben Rechenlogik wie
-im bestehenden ROI-Rechner.
+Wert zeigt der bereits gebaute **ROI-Rechner** der Landingpage (⌀ 21 €/Std.
+Vollkosten Arbeitskraft — **Update 17.08.2026:** vorher 42 €/Std., aber
+nirgends belegt/hergeleitet; auf Nutzer-Nachfrage geprüft und auf einen
+verteidigbaren Wert korrigiert: KV-Mindestlohn Gastronomie AT ~12,4–12,85 €
+brutto/Std. + ~30–35 % Lohnnebenkosten ≈ 17-18 € Vollkosten reiner
+Arbeitszeit, plus moderater Overhead-Aufschlag → 21 €/Std.).
+Beispielrechnung: 600 Gesprächsminuten (Solo, neuer Wert s. o.)
+entsprechen bei einem Menschen eher 13 Std. echter Arbeitszeit (inkl.
+Notizen/Systemeingabe, Faktor ~1,3 auf die reine Gesprächszeit) → ca.
+270 € Personalkosten für dieselbe Arbeit — der Solo-Tarif (99 €) kostet
+also weniger als 40 % davon. Auf der Preise-Seite bereits umgesetzt:
+unter jedem Paket "≈ X Std. Personalzeit gespart = Y € Wert" mit
+derselben Rechenlogik wie im ROI-Rechner (`landing/src/App.jsx`,
+`pricingTiers`-Array).
 
 ### Offen / noch zu klären
 
-- Preis für Überschreitung des Minutenkontingents
+- ~~Preis für Überschreitung des Minutenkontingents~~ **Entschieden
+  (17.08.2026):** 0,20 €/Minute, siehe Tarif-Tabelle oben.
 - Ob Minuten- oder Konversationsbasis (siehe VITAS-Vorbild) das bessere
   Modell für Kiwo ist
 - Jahres- vs. Monatsabo (fonio bietet z. B. -15 % bei Jährlich)

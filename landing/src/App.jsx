@@ -529,7 +529,7 @@ function IntegrationsMarquee() {
 /* ---------- ROI ---------- */
 function ROICalc() {
   const [hours, setHours] = useState(15);
-  const hourlyCost = 42;
+  const hourlyCost = 21;
   const monthly = useMemo(() => {
     const savedHours = hours * 4.33;
     return {
@@ -594,9 +594,9 @@ const pricingFeatures = [
   "EU-Hosting & DSGVO-konform",
 ];
 const pricingTiers = [
-  { name: "Solo", minutes: 300, price: 69, savedHours: 6, savedEuros: 270, tone: "violet" },
-  { name: "Team", minutes: 1000, price: 199, savedHours: 22, savedEuros: 910, tone: "cyan", featured: true },
-  { name: "Scale", minutes: 2500, price: 399, savedHours: 54, savedEuros: 2275, tone: "violet" },
+  { name: "Solo", minutes: 600, price: 99, savedHours: 13, savedEuros: 273, tone: "violet" },
+  { name: "Team", minutes: 1500, price: 249, savedHours: 33, savedEuros: 693, tone: "cyan", featured: true },
+  { name: "Scale", minutes: 3500, price: 499, savedHours: 76, savedEuros: 1596, tone: "violet" },
 ];
 
 /* ---------- Onboarding ---------- */
@@ -851,9 +851,9 @@ export default function App() {
               </div>
               <div className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
                 <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">Von Kiwo übernommen · dieser Monat</div>
-                <div className="mt-1.5 text-2xl font-semibold tabular-nums">≈ 14 Std. · 588 €</div>
+                <div className="mt-1.5 text-2xl font-semibold tabular-nums">≈ 14 Std. · 294 €</div>
                 <div className="mt-1.5 text-[11px] text-foreground/40">
-                  Basis: ⌀ 42 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)
+                  Basis: ⌀ 21 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)
                 </div>
               </div>
             </GlowCard>
@@ -1041,7 +1041,7 @@ export default function App() {
                 <div className="mt-6 rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3.5 text-xs text-foreground/55">
                   ≈ {tier.savedHours} Std. Personalzeit gespart / Monat
                   <br />
-                  <span className="text-foreground/40">≈ {tier.savedEuros.toLocaleString("de-DE")} € Wert (⌀ 42 €/Std.)</span>
+                  <span className="text-foreground/40">≈ {tier.savedEuros.toLocaleString("de-DE")} € Wert (⌀ 21 €/Std.)</span>
                 </div>
 
                 <a
@@ -1054,7 +1054,9 @@ export default function App() {
             ))}
           </div>
           <p className="mt-6 text-center text-[11px] text-foreground/35">
-            Alle Preise zzgl. USt. Mehr Minuten benötigt oder individuelles Paket gewünscht?{" "}
+            Alle Preise zzgl. USt. Kontingent aufgebraucht? 0,20 €/Minute zusätzlich —
+            kein Anruf wird abgebrochen, keine automatische Sperre. Individuelles Paket
+            gewünscht?{" "}
             <a href="/kontakt.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
               Sprechen Sie uns an
             </a>
