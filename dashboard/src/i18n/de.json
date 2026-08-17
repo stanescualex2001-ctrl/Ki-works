@@ -34,5 +34,329 @@
   },
   "languageToggle": {
     "ariaLabel": "Sprache wählen"
+  },
+  "themeToggle": {
+    "light": "☀️ Light Mode",
+    "dark": "🌙 Dark Mode"
+  },
+  "common": {
+    "loading": "Lade…",
+    "error": "Fehler: {{message}}",
+    "close": "Schließen",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "recording": {
+    "notAvailable": "Aufnahme nicht verfügbar.",
+    "notAvailableExpired": "Aufnahme nicht verfügbar (evtl. abgelaufen)."
+  },
+  "login": {
+    "subtitle": "Ihr digitaler KI-Mitarbeiter — Anmeldung",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "submit": "Anmelden",
+    "submitting": "Anmelden…"
+  },
+  "consent": {
+    "subtitle": "Bevor es losgeht, {{name}}",
+    "introBefore": "Bevor Sie das Dashboard nutzen können, benötigen wir Ihre Zustimmung zur Verarbeitung der Gästedaten (Reservierungen, Bestellungen, Anrufprotokolle) im Rahmen unserer",
+    "linkText": "Datenschutzerklärung",
+    "introAfter": "und der damit verbundenen Auftragsverarbeitung.",
+    "checkboxLabel": "Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung der Gästedaten gemäß Auftragsverarbeitung zu.",
+    "confirm": "Bestätigen und fortfahren",
+    "confirming": "Wird gespeichert…"
+  },
+  "setupPassword": {
+    "subtitle": "Ihr Passwort festlegen",
+    "minLength": "Mindestens 8 Zeichen.",
+    "mismatch": "Passwörter stimmen nicht überein.",
+    "success": "✅ Passwort gespeichert. Sie können sich jetzt anmelden.",
+    "goToLogin": "Zur Anmeldung",
+    "newPassword": "Neues Passwort",
+    "repeatPassword": "Passwort wiederholen",
+    "save": "Passwort speichern",
+    "saving": "Speichern…"
+  },
+  "stats": {
+    "calls": "Anrufe",
+    "reservations": "Reservierungen",
+    "phoneReservations": "davon telefonisch (KI)",
+    "guests": "Gäste",
+    "orders": "Bestellungen"
+  },
+  "overview": {
+    "today": "Heute",
+    "last7Days": "Letzte 7 Tage"
+  },
+  "roiTile": {
+    "label": "Von Kiwo übernommen",
+    "liveSinceDay": " — seit {{days}} Tag live",
+    "liveSinceDays": " — seit {{days}} Tagen live",
+    "hoursValue": "{{hours}} Std",
+    "note": "Basis: {{calls}} Anrufe × {{minutes}} Min. manuelle Bearbeitungszeit × Ø {{cost}} €/Std Vollkosten (Gehalt, Lohnnebenkosten & Overhead)"
+  },
+  "usageTile": {
+    "label": "Gesprächsminuten diesen Monat",
+    "minutesOnly": "{{used}} Min.",
+    "minutesOfIncluded": "{{used}} / {{included}} Min.",
+    "overage": "+{{minutes}} Min. ≈ {{cost}} €",
+    "tierNote": "Tarif {{tier}} · Überschreitung {{rate}} €/Min. · kein Anruf wird abgebrochen",
+    "noTierNote": "Noch kein Tarif hinterlegt — reine Verbrauchsanzeige ohne Kontingent-Vergleich."
+  },
+  "detail": {
+    "callTitle": "📞 Anruf",
+    "number": "Nummer",
+    "unknownNumber": "Unbekannt",
+    "time": "Zeit",
+    "duration": "Dauer",
+    "durationMinutes": "{{min}} min",
+    "outcome": "Ergebnis",
+    "summary": "Zusammenfassung",
+    "callbackRequested": "Rückruf gewünscht",
+    "viewLinkedReservation": "🍽️ Verknüpfte Reservierung ansehen",
+    "viewLinkedOrder": "🛍️ Verknüpfte Bestellung ansehen",
+    "listenRecording": "Aufnahme anhören",
+    "transcript": "Transkript",
+    "noTranscript": "Kein Transkript verfügbar.",
+    "reservationTitle": "🍽️ Reservierung",
+    "orderTitle": "🛍️ Bestellung",
+    "name": "Name",
+    "phone": "Telefon",
+    "reservedTime": "Zeit",
+    "partySize": "Personen",
+    "orderItems": "Bestellung",
+    "pickupTime": "Abholzeit",
+    "source": "Quelle",
+    "sourcePhone": "📞 Telefon",
+    "sourceDashboard": "Dashboard",
+    "notes": "Notizen",
+    "received": "Eingegangen",
+    "status": "Status"
+  },
+  "businessPicker": {
+    "placeholder": "🔍 Betrieb suchen…",
+    "noResults": "Keine Treffer"
+  },
+  "status": {
+    "confirmed": "Bestätigt",
+    "cancelled": "Storniert",
+    "no_show": "Nicht erschienen",
+    "completed": "Abgeschlossen"
+  },
+  "reservations": {
+    "empty": "Noch keine Reservierungen.",
+    "colDateTime": "Datum/Zeit",
+    "colName": "Name",
+    "colPhone": "Telefon",
+    "colParty": "Pers.",
+    "colSource": "Quelle",
+    "colStatus": "Status",
+    "colNotes": "Notizen",
+    "cancel": "Stornieren"
+  },
+  "calendar": {
+    "previous": "← Vorherige",
+    "next": "Nächste →",
+    "today": "Heute",
+    "hint": "Klick auf einen Eintrag zeigt alle Details und erlaubt eine Status-Änderung.",
+    "reservationChip": "🍽️ {{name}} ({{party}})"
+  },
+  "auditLog": {
+    "sourcePhone": "Telefon (Kiwo)",
+    "sourceSalesAgent": "Sales-Agent",
+    "sourceSocialAgent": "Social-Agent",
+    "hint": "Jede Aktion, die Kiwo für Sie ausführt, wird hier protokolliert.",
+    "empty": "Noch keine protokollierten Aktionen.",
+    "colTime": "Zeitpunkt",
+    "colSource": "Quelle",
+    "colAction": "Aktion",
+    "colSummary": "Zusammenfassung"
+  },
+  "calls": {
+    "unknownNumber": "Unbekannte Nummer",
+    "viewReservation": "🍽️ Reservierung ansehen",
+    "viewOrder": "🛍️ Bestellung ansehen",
+    "empty": "Noch keine Anrufe.",
+    "callbackBadge": "📞 Rückruf gewünscht"
+  },
+  "recommendations": {
+    "intro": "Claude analysiert die Zahlen der letzten 7 Tage und gibt konkrete Tipps für diesen Betrieb.",
+    "generate": "Empfehlungen generieren",
+    "generating": "Claude denkt nach…"
+  },
+  "roles": {
+    "orders": "Bestellungen & Reservierungen",
+    "support": "Support & Rückruf",
+    "sales": "Sales",
+    "office": "Office",
+    "comingSoon": " (bald verfügbar)"
+  },
+  "rolesForm": {
+    "title": "Rollen für „{{name}}\""
+  },
+  "pricingTier": {
+    "none": "– kein Tarif –",
+    "solo": "Solo (600 Min. / 99 €)",
+    "team": "Team (1.500 Min. / 249 €)",
+    "scale": "Scale (3.500 Min. / 499 €)"
+  },
+  "pricingTierForm": {
+    "title": "Preistarif für „{{name}}\"",
+    "tierLabel": "Tarif"
+  },
+  "accessForm": {
+    "title": "Login für „{{name}}\"",
+    "emailLabel": "Login-E-Mail",
+    "passwordLabel": "Passwort",
+    "passwordHintUnchanged": " (leer = unverändert)",
+    "passwordPlaceholder": "Neues Passwort"
+  },
+  "newCustomerForm": {
+    "title": "Neuen Kunden anlegen",
+    "nameLabel": "Name*",
+    "emailLabel": "Kontakt-E-Mail",
+    "phoneLabel": "Kontakt-Telefon",
+    "numberLabel": "KI-Telefonnummer (falls schon vorhanden)",
+    "rolesLabel": "Rollen",
+    "create": "Anlegen"
+  },
+  "customers": {
+    "intro": "Alle Kennzahlen deiner Geschäftskunden auf einen Blick — dein Bericht, ohne E-Mail-Flut.",
+    "searchPlaceholder": "🔍 Kunde suchen…",
+    "sortNameAsc": "Name (A-Z)",
+    "sortNameDesc": "Name (Z-A)",
+    "sortNewest": "Neueste zuerst",
+    "sortOldest": "Älteste zuerst",
+    "sortCallsDesc": "Anrufe 7 T (meiste zuerst)",
+    "sortReservationsDesc": "Reservierungen 7 T (meiste zuerst)",
+    "countLabel": "{{shown}} von {{total}} Kunden",
+    "addButton": "+ Neuer Kunde",
+    "inviteSending": "Wird gesendet…",
+    "inviteSent": "✅ Einladung gesendet",
+    "inviteError": "Fehler beim Senden",
+    "vapiSetupOk": "✅ Kunde angelegt, Vapi-Assistent eingerichtet. Status siehe Spalte \"Vapi-Status\" unten.",
+    "vapiSetupWarningHint": " Hinweis: {{warning}}",
+    "vapiSetupFailed": "⚠️ Kunde angelegt, Vapi-Einrichtung fehlgeschlagen: {{warning}}",
+    "colCustomer": "Kunde",
+    "colLogin": "Login",
+    "colAiNumber": "KI-Nummer",
+    "colVapiStatus": "Vapi-Status",
+    "colTier": "Tarif",
+    "colCallsToday": "Anrufe heute",
+    "colResToday": "Res. heute",
+    "colCalls7": "Anrufe 7 T",
+    "colRes7": "Res. 7 T",
+    "colGuests7": "Gäste 7 T",
+    "noAccess": "kein Zugang",
+    "publishDone": "✅ Erledigt",
+    "publishNeeded": "⚠️ Publish nötig",
+    "markPublished": "✔ Als erledigt markieren",
+    "changeAccess": "Zugang ändern",
+    "createAccess": "Zugang anlegen",
+    "sendInvite": "Einladung senden",
+    "changeRoles": "Rollen ändern",
+    "changeTier": "Tarif ändern"
+  },
+  "orderStatus": {
+    "new": "🆕 Neu",
+    "in_progress": "👨‍🍳 In Arbeit",
+    "ready": "✅ Abholbereit",
+    "completed": "📦 Abgeschlossen",
+    "cancelled": "❌ Storniert"
+  },
+  "orders": {
+    "colReceived": "Eingegangen",
+    "colName": "Name",
+    "colPhone": "Telefon",
+    "colOrder": "Bestellung",
+    "colPickup": "Abholzeit",
+    "colNotes": "Notizen",
+    "colStatus": "Status",
+    "empty": "Noch keine Bestellungen."
+  },
+  "leadStatus": {
+    "new": "🆕 Neu",
+    "contacted": "📞 Kontaktiert",
+    "won": "✅ Gewonnen",
+    "lost": "❌ Verloren"
+  },
+  "leads": {
+    "intro": "Anfragen über das Formular auf ki-works.eu.",
+    "empty": "Noch keine Anfragen über die Website.",
+    "colReceived": "Eingegangen",
+    "colName": "Name",
+    "colBusiness": "Betrieb",
+    "colEmail": "E-Mail",
+    "colPhone": "Telefon",
+    "colMessage": "Nachricht",
+    "colStatus": "Status",
+    "viewCustomer": "Zum Kunden →",
+    "convert": "In Kunde umwandeln & einladen",
+    "converting": "Wird umgewandelt…"
+  },
+  "system": {
+    "ok": "OK",
+    "problem": "Problem",
+    "unknown": "Unbekannt",
+    "db": "Datenbank",
+    "n8n": "n8n",
+    "disk": "Festplatte",
+    "diskPercent": "{{percent}}% belegt",
+    "ssl": "SSL-Zertifikat",
+    "sslDaysLeft": "noch {{days}} Tage",
+    "backup": "Letztes Backup",
+    "backupAgo": "vor {{hours}}h ({{file}})",
+    "uptime": "Backend-Laufzeit",
+    "lastChecked": "Zuletzt geprüft: {{time}}",
+    "errorLogTitle": "Fehlerprotokoll (letzte 30 Tage)",
+    "noEntries": "Keine Einträge.",
+    "colTime": "Zeit",
+    "colLevel": "Stufe",
+    "colSource": "Quelle",
+    "colMessage": "Meldung",
+    "unitDay": "d",
+    "unitHour": "h",
+    "unitMinute": "min"
+  },
+  "weekday": {
+    "mon": "Montag",
+    "tue": "Dienstag",
+    "wed": "Mittwoch",
+    "thu": "Donnerstag",
+    "fri": "Freitag",
+    "sat": "Samstag",
+    "sun": "Sonntag"
+  },
+  "channel": {
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
+    "email": "E-Mail"
+  },
+  "openQuestion": {
+    "answerVia": " · Antwort per {{channel}}",
+    "placeholder": "Antwort eintragen…",
+    "save": "Speichern",
+    "saving": "Speichert…"
+  },
+  "settings": {
+    "openQuestionsTitle": "Offene Fragen von Kunden",
+    "noOpenQuestions": "Keine offenen Fragen.",
+    "knowledgeBaseTitle": "Wissensdatenbank",
+    "knowledgeBasePlaceholder": "z. B. Leistungen/Produkte, Preise, Aktionen — wird 1:1 als Wissensquelle für Kiwo verwendet",
+    "openingHoursTitle": "Öffnungszeiten",
+    "openingHoursPlaceholder": "11:00-22:00 · mit Pause: 11:00-14:00, 17:00-22:00 · oder geschlossen",
+    "faqTitle": "FAQ",
+    "faqQuestionPlaceholder": "Frage",
+    "faqAnswerPlaceholder": "Antwort",
+    "faqRemove": "Entfernen",
+    "faqAdd": "+ Frage hinzufügen",
+    "saveContent": "Wissensdatenbank, Öffnungszeiten & FAQ speichern",
+    "saved": "Gespeichert.",
+    "credentialsTitle": "Zugangsdaten",
+    "loginEmailLabel": "Login-E-Mail",
+    "currentPasswordLabel": "Aktuelles Passwort",
+    "currentPasswordPlaceholder": "zur Bestätigung",
+    "newPasswordLabel": "Neues Passwort (leer = unverändert)",
+    "saveCredentials": "Zugangsdaten speichern"
   }
 }

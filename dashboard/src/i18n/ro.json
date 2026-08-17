@@ -34,5 +34,329 @@
   },
   "languageToggle": {
     "ariaLabel": "Alegeți limba"
+  },
+  "themeToggle": {
+    "light": "☀️ Mod luminos",
+    "dark": "🌙 Mod întunecat"
+  },
+  "common": {
+    "loading": "Se încarcă…",
+    "error": "Eroare: {{message}}",
+    "close": "Închide",
+    "save": "Salvează",
+    "cancel": "Anulează"
+  },
+  "recording": {
+    "notAvailable": "Înregistrarea nu este disponibilă.",
+    "notAvailableExpired": "Înregistrarea nu este disponibilă (posibil expirată)."
+  },
+  "login": {
+    "subtitle": "Angajatul dvs. digital AI — Autentificare",
+    "email": "E-mail",
+    "password": "Parolă",
+    "submit": "Autentificare",
+    "submitting": "Se conectează…"
+  },
+  "consent": {
+    "subtitle": "Înainte de a începe, {{name}}",
+    "introBefore": "Înainte de a putea folosi tabloul de bord, avem nevoie de consimțământul dvs. pentru prelucrarea datelor oaspeților (rezervări, comenzi, jurnale de apeluri) în cadrul",
+    "linkText": "politicii de confidențialitate",
+    "introAfter": "și a prelucrării de date asociate acesteia.",
+    "checkboxLabel": "Am citit politica de confidențialitate și sunt de acord cu prelucrarea datelor oaspeților conform contractului de prelucrare a datelor.",
+    "confirm": "Confirmă și continuă",
+    "confirming": "Se salvează…"
+  },
+  "setupPassword": {
+    "subtitle": "Stabiliți-vă parola",
+    "minLength": "Minimum 8 caractere.",
+    "mismatch": "Parolele nu coincid.",
+    "success": "✅ Parolă salvată. Acum vă puteți autentifica.",
+    "goToLogin": "Spre autentificare",
+    "newPassword": "Parolă nouă",
+    "repeatPassword": "Repetați parola",
+    "save": "Salvează parola",
+    "saving": "Se salvează…"
+  },
+  "stats": {
+    "calls": "Apeluri",
+    "reservations": "Rezervări",
+    "phoneReservations": "din care telefonic (AI)",
+    "guests": "Oaspeți",
+    "orders": "Comenzi"
+  },
+  "overview": {
+    "today": "Astăzi",
+    "last7Days": "Ultimele 7 zile"
+  },
+  "roiTile": {
+    "label": "Preluat de Kiwo",
+    "liveSinceDay": " — activ de {{days}} zi",
+    "liveSinceDays": " — activ de {{days}} zile",
+    "hoursValue": "{{hours}} ore",
+    "note": "Bază de calcul: {{calls}} apeluri × {{minutes}} min. timp de procesare manuală × medie {{cost}} €/oră cost total (salariu, contribuții salariale & costuri generale)"
+  },
+  "usageTile": {
+    "label": "Minute de convorbire luna aceasta",
+    "minutesOnly": "{{used}} min.",
+    "minutesOfIncluded": "{{used}} / {{included}} min.",
+    "overage": "+{{minutes}} min. ≈ {{cost}} €",
+    "tierNote": "Plan {{tier}} · depășire {{rate}} €/min. · niciun apel nu este întrerupt",
+    "noTierNote": "Niciun plan atribuit încă — afișaj simplu al consumului, fără comparație cu un plafon."
+  },
+  "detail": {
+    "callTitle": "📞 Apel",
+    "number": "Număr",
+    "unknownNumber": "Necunoscut",
+    "time": "Ora",
+    "duration": "Durată",
+    "durationMinutes": "{{min}} min",
+    "outcome": "Rezultat",
+    "summary": "Rezumat",
+    "callbackRequested": "Rechemare dorită",
+    "viewLinkedReservation": "🍽️ Vezi rezervarea asociată",
+    "viewLinkedOrder": "🛍️ Vezi comanda asociată",
+    "listenRecording": "Ascultă înregistrarea",
+    "transcript": "Transcriere",
+    "noTranscript": "Nicio transcriere disponibilă.",
+    "reservationTitle": "🍽️ Rezervare",
+    "orderTitle": "🛍️ Comandă",
+    "name": "Nume",
+    "phone": "Telefon",
+    "reservedTime": "Ora",
+    "partySize": "Persoane",
+    "orderItems": "Comandă",
+    "pickupTime": "Ora ridicării",
+    "source": "Sursă",
+    "sourcePhone": "📞 Telefon",
+    "sourceDashboard": "Tablou de bord",
+    "notes": "Note",
+    "received": "Primit",
+    "status": "Stare"
+  },
+  "businessPicker": {
+    "placeholder": "🔍 Căutați un business…",
+    "noResults": "Niciun rezultat"
+  },
+  "status": {
+    "confirmed": "Confirmată",
+    "cancelled": "Anulată",
+    "no_show": "Neprezentare",
+    "completed": "Finalizată"
+  },
+  "reservations": {
+    "empty": "Încă nu există rezervări.",
+    "colDateTime": "Data/Ora",
+    "colName": "Nume",
+    "colPhone": "Telefon",
+    "colParty": "Pers.",
+    "colSource": "Sursă",
+    "colStatus": "Stare",
+    "colNotes": "Note",
+    "cancel": "Anulează"
+  },
+  "calendar": {
+    "previous": "← Anterioară",
+    "next": "Următoarea →",
+    "today": "Astăzi",
+    "hint": "Click pe o intrare pentru a vedea toate detaliile și a schimba starea.",
+    "reservationChip": "🍽️ {{name}} ({{party}})"
+  },
+  "auditLog": {
+    "sourcePhone": "Telefon (Kiwo)",
+    "sourceSalesAgent": "Agent de vânzări",
+    "sourceSocialAgent": "Agent social media",
+    "hint": "Fiecare acțiune pe care Kiwo o face pentru dvs. este înregistrată aici.",
+    "empty": "Încă nu există acțiuni înregistrate.",
+    "colTime": "Moment",
+    "colSource": "Sursă",
+    "colAction": "Acțiune",
+    "colSummary": "Rezumat"
+  },
+  "calls": {
+    "unknownNumber": "Număr necunoscut",
+    "viewReservation": "🍽️ Vezi rezervarea",
+    "viewOrder": "🛍️ Vezi comanda",
+    "empty": "Încă nu există apeluri.",
+    "callbackBadge": "📞 Rechemare dorită"
+  },
+  "recommendations": {
+    "intro": "Claude analizează cifrele ultimelor 7 zile și oferă sfaturi concrete pentru acest business.",
+    "generate": "Generează recomandări",
+    "generating": "Claude analizează…"
+  },
+  "roles": {
+    "orders": "Comenzi & rezervări",
+    "support": "Suport & rechemări",
+    "sales": "Vânzări",
+    "office": "Birou",
+    "comingSoon": " (disponibil în curând)"
+  },
+  "rolesForm": {
+    "title": "Roluri pentru „{{name}}”"
+  },
+  "pricingTier": {
+    "none": "– niciun plan –",
+    "solo": "Solo (600 min. / 99 €)",
+    "team": "Team (1.500 min. / 249 €)",
+    "scale": "Scale (3.500 min. / 499 €)"
+  },
+  "pricingTierForm": {
+    "title": "Plan tarifar pentru „{{name}}”",
+    "tierLabel": "Plan"
+  },
+  "accessForm": {
+    "title": "Autentificare pentru „{{name}}”",
+    "emailLabel": "E-mail de autentificare",
+    "passwordLabel": "Parolă",
+    "passwordHintUnchanged": " (necompletat = neschimbat)",
+    "passwordPlaceholder": "Parolă nouă"
+  },
+  "newCustomerForm": {
+    "title": "Adaugă client nou",
+    "nameLabel": "Nume*",
+    "emailLabel": "E-mail de contact",
+    "phoneLabel": "Telefon de contact",
+    "numberLabel": "Număr de telefon AI (dacă există deja)",
+    "rolesLabel": "Roluri",
+    "create": "Creează"
+  },
+  "customers": {
+    "intro": "Toate cifrele clienților dvs. de afaceri dintr-o privire — raportul dvs., fără avalanșă de e-mailuri.",
+    "searchPlaceholder": "🔍 Căutați un client…",
+    "sortNameAsc": "Nume (A-Z)",
+    "sortNameDesc": "Nume (Z-A)",
+    "sortNewest": "Cele mai noi primele",
+    "sortOldest": "Cele mai vechi primele",
+    "sortCallsDesc": "Apeluri, 7 zile (cele mai multe primele)",
+    "sortReservationsDesc": "Rezervări, 7 zile (cele mai multe primele)",
+    "countLabel": "{{shown}} din {{total}} clienți",
+    "addButton": "+ Client nou",
+    "inviteSending": "Se trimite…",
+    "inviteSent": "✅ Invitație trimisă",
+    "inviteError": "Eroare la trimitere",
+    "vapiSetupOk": "✅ Client creat, asistentul Vapi este configurat. Vezi coloana „Stare Vapi” de mai jos.",
+    "vapiSetupWarningHint": " Observație: {{warning}}",
+    "vapiSetupFailed": "⚠️ Client creat, configurarea Vapi a eșuat: {{warning}}",
+    "colCustomer": "Client",
+    "colLogin": "Autentificare",
+    "colAiNumber": "Număr AI",
+    "colVapiStatus": "Stare Vapi",
+    "colTier": "Plan",
+    "colCallsToday": "Apeluri azi",
+    "colResToday": "Rez. azi",
+    "colCalls7": "Apeluri 7 z",
+    "colRes7": "Rez. 7 z",
+    "colGuests7": "Oaspeți 7 z",
+    "noAccess": "fără acces",
+    "publishDone": "✅ Finalizat",
+    "publishNeeded": "⚠️ Necesită publicare",
+    "markPublished": "✔ Marchează ca finalizat",
+    "changeAccess": "Schimbă accesul",
+    "createAccess": "Creează acces",
+    "sendInvite": "Trimite invitație",
+    "changeRoles": "Schimbă rolurile",
+    "changeTier": "Schimbă planul"
+  },
+  "orderStatus": {
+    "new": "🆕 Nouă",
+    "in_progress": "👨‍🍳 În lucru",
+    "ready": "✅ Gata de ridicare",
+    "completed": "📦 Finalizată",
+    "cancelled": "❌ Anulată"
+  },
+  "orders": {
+    "colReceived": "Primită",
+    "colName": "Nume",
+    "colPhone": "Telefon",
+    "colOrder": "Comandă",
+    "colPickup": "Ora ridicării",
+    "colNotes": "Note",
+    "colStatus": "Stare",
+    "empty": "Încă nu există comenzi."
+  },
+  "leadStatus": {
+    "new": "🆕 Nouă",
+    "contacted": "📞 Contactat",
+    "won": "✅ Câștigat",
+    "lost": "❌ Pierdut"
+  },
+  "leads": {
+    "intro": "Solicitări trimise prin formularul de pe ki-works.eu.",
+    "empty": "Încă nu există solicitări prin site.",
+    "colReceived": "Primită",
+    "colName": "Nume",
+    "colBusiness": "Business",
+    "colEmail": "E-mail",
+    "colPhone": "Telefon",
+    "colMessage": "Mesaj",
+    "colStatus": "Stare",
+    "viewCustomer": "La client →",
+    "convert": "Transformă în client & invită",
+    "converting": "Se transformă…"
+  },
+  "system": {
+    "ok": "OK",
+    "problem": "Problemă",
+    "unknown": "Necunoscut",
+    "db": "Bază de date",
+    "n8n": "n8n",
+    "disk": "Spațiu de stocare",
+    "diskPercent": "{{percent}}% ocupat",
+    "ssl": "Certificat SSL",
+    "sslDaysLeft": "încă {{days}} zile",
+    "backup": "Ultima copie de siguranță",
+    "backupAgo": "acum {{hours}}h ({{file}})",
+    "uptime": "Timp de funcționare backend",
+    "lastChecked": "Ultima verificare: {{time}}",
+    "errorLogTitle": "Jurnal de erori (ultimele 30 de zile)",
+    "noEntries": "Nicio înregistrare.",
+    "colTime": "Ora",
+    "colLevel": "Nivel",
+    "colSource": "Sursă",
+    "colMessage": "Mesaj",
+    "unitDay": "z",
+    "unitHour": "h",
+    "unitMinute": "min"
+  },
+  "weekday": {
+    "mon": "Luni",
+    "tue": "Marți",
+    "wed": "Miercuri",
+    "thu": "Joi",
+    "fri": "Vineri",
+    "sat": "Sâmbătă",
+    "sun": "Duminică"
+  },
+  "channel": {
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
+    "email": "E-mail"
+  },
+  "openQuestion": {
+    "answerVia": " · Răspuns prin {{channel}}",
+    "placeholder": "Introduceți răspunsul…",
+    "save": "Salvează",
+    "saving": "Se salvează…"
+  },
+  "settings": {
+    "openQuestionsTitle": "Întrebări deschise de la clienți",
+    "noOpenQuestions": "Nicio întrebare deschisă.",
+    "knowledgeBaseTitle": "Bază de cunoștințe",
+    "knowledgeBasePlaceholder": "de ex. servicii/produse, prețuri, promoții — folosit ca atare drept sursă de cunoștințe pentru Kiwo",
+    "openingHoursTitle": "Program de funcționare",
+    "openingHoursPlaceholder": "11:00-22:00 · cu pauză: 11:00-14:00, 17:00-22:00 · sau închis",
+    "faqTitle": "Întrebări frecvente",
+    "faqQuestionPlaceholder": "Întrebare",
+    "faqAnswerPlaceholder": "Răspuns",
+    "faqRemove": "Elimină",
+    "faqAdd": "+ Adaugă întrebare",
+    "saveContent": "Salvează baza de cunoștințe, programul & întrebările frecvente",
+    "saved": "Salvat.",
+    "credentialsTitle": "Date de acces",
+    "loginEmailLabel": "E-mail de autentificare",
+    "currentPasswordLabel": "Parola actuală",
+    "currentPasswordPlaceholder": "pentru confirmare",
+    "newPasswordLabel": "Parolă nouă (necompletat = neschimbat)",
+    "saveCredentials": "Salvează datele de acces"
   }
 }

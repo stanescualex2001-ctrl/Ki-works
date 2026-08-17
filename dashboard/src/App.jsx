@@ -4,6 +4,7 @@ import { useI18n, SUPPORTED_LOCALES } from './i18n/index.jsx';
 
 /* ---------- Light/Dark-Umschalter ---------- */
 function ThemeToggle({ className = '' }) {
+  const { t } = useI18n();
   const [theme, setTheme] = useState(getStoredTheme);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ function ThemeToggle({ className = '' }) {
 
   return (
     <button type="button" className={`refresh ${className}`} onClick={toggle}>
-      {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      {theme === 'dark' ? t('themeToggle.light') : t('themeToggle.dark')}
     </button>
   );
 }
@@ -128,11 +129,36 @@ function OrbBuddy({ size = 44 }) {
   );
 }
 
-const fmtDateTime = (iso) =>
-  iso ? new Date(iso).toLocaleString('de-AT', { dateStyle: 'medium', timeStyle: 'short' }) : '–';
-const fmtTime = (iso) =>
-  iso ? new Date(iso).toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' }) : '–';
+const LOCALE_INTL = { de: 'de-AT', en: 'en-US', ro: 'ro-RO' };
+const fmtDateTime = (iso, locale = 'de-AT') =>
+  iso ? new Date(iso).toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) : '–';
+const fmtTime = (iso, locale = 'de-AT') =>
+  iso ? new Date(iso).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : '–';
 const AUTH_KEY = 'kiworks-auth';
+
+// Sprachneutrale Status-/Tarif-Schlüssel + Hooks, die die passenden i18n-Texte
+// nachschlagen (statt hartcodierter deutscher Label-Objekte auf Modul-Ebene,
+// die kein useI18n() aufrufen könnten).
+const STATUS_KEYS = ['confirmed', 'cancelled', 'no_show', 'completed'];
+function useStatusLabels() {
+  const { t } = useI18n();
+  return useMemo(() => Object.fromEntries(STATUS_KEYS.map((k) => [k, t(`status.${k}`)])), [t]);
+}
+
+const ORDER_STATUS_KEYS = ['new', 'in_progress', 'ready', 'completed', 'cancelled'];
+function useOrderStatusLabels() {
+  const { t } = useI18n();
+  return useMemo(() => Object.fromEntries(ORDER_STATUS_KEYS.map((k) => [k, t(`orderStatus.${k}`)])), [t]);
+}
+
+const PRICING_TIER_KEYS = ['', 'solo', 'team', 'scale'];
+function usePricingTierOptions() {
+  const { t } = useI18n();
+  return useMemo(
+    () => PRICING_TIER_KEYS.map((k) => ({ value: k, label: t(`pricingTier.${k || 'none'}`) })),
+    [t],
+  );
+}
 
 // ---------------------------------------------------------------- auth utils
 const loadAuth = () => {
@@ -153,15 +179,15 @@ function apiFetch(url, opts = {}) {
 
 // Öffnet ein Fenster synchron (sonst blockt der Popup-Blocker), lädt dann die
 // aktuell gültige Aufnahme-URL nach (Vapis Links sind zeitlich befristet).
-function openRecording(callId) {
+function openRecording(callId, t) {
   const win = window.open('', '_blank');
   apiFetch(`/api/calls/${callId}/recording`)
     .then((r) => r.json())
     .then((d) => {
       if (d.url && win) win.location.href = d.url;
-      else { win?.close(); alert(d.error || 'Aufnahme nicht verfügbar (evtl. abgelaufen).'); }
+      else { win?.close(); alert(d.error || t('recording.notAvailableExpired')); }
     })
-    .catch(() => { win?.close(); alert('Aufnahme nicht verfügbar.'); });
+    .catch(() => { win?.close(); alert(t('recording.notAvailable')); });
 }
 
 function useFetch(url, refreshKey) {
@@ -189,6 +215,7 @@ function useFetch(url, refreshKey) {
 
 // ---------------------------------------------------------------- Login
 function Login({ onLogin }) {
+  const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -219,18 +246,18 @@ function Login({ onLogin }) {
           <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
           <span className="logo-word">KI-Works</span>
         </div>
-        <p className="login-sub">Ihr digitaler KI-Mitarbeiter — Anmeldung</p>
-        <label htmlFor="login-email">E-Mail</label>
+        <p className="login-sub">{t('login.subtitle')}</p>
+        <label htmlFor="login-email">{t('login.email')}</label>
         <input id="login-email" type="email" required autoComplete="username"
           value={email} onChange={(e) => setEmail(e.target.value)} />
-        <label htmlFor="login-pass">Passwort</label>
+        <label htmlFor="login-pass">{t('login.password')}</label>
         <input id="login-pass" type="password" required autoComplete="current-password"
           value={password} onChange={(e) => setPassword(e.target.value)} />
         {error && <p className="error">{error}</p>}
         <button className="primary" type="submit" disabled={loading}>
-          {loading ? 'Anmelden…' : 'Anmelden'}
+          {loading ? t('login.submitting') : t('login.submit')}
         </button>
-        <a className="site-link login-site-link" href="/">← Zur Website</a>
+        <a className="site-link login-site-link" href="/">← {t('sidebar.backToWebsite')}</a>
         <ThemeToggle className="login-theme-toggle" />
       </form>
     </div>
@@ -239,6 +266,7 @@ function Login({ onLogin }) {
 
 // DSGVO: Pflicht-Zustimmung beim ersten Login eines Kunden-Zugangs.
 function ConsentGate({ restaurantName, onAccepted, onLogout }) {
+  const { t } = useI18n();
   const [checked, setChecked] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -261,24 +289,21 @@ function ConsentGate({ restaurantName, onAccepted, onLogout }) {
           <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
           <span className="logo-word">KI-Works</span>
         </div>
-        <p className="login-sub">Bevor es losgeht, {restaurantName}</p>
+        <p className="login-sub">{t('consent.subtitle', { name: restaurantName })}</p>
         <p>
-          Bevor Sie das Dashboard nutzen können, benötigen wir Ihre Zustimmung zur
-          Verarbeitung der Gästedaten (Reservierungen, Bestellungen, Anrufprotokolle)
-          im Rahmen unserer{' '}
-          <a href="/datenschutz.html" target="_blank" rel="noreferrer">Datenschutzerklärung</a>{' '}
-          und der damit verbundenen Auftragsverarbeitung.
+          {t('consent.introBefore')}{' '}
+          <a href="/datenschutz.html" target="_blank" rel="noreferrer">{t('consent.linkText')}</a>{' '}
+          {t('consent.introAfter')}
         </p>
         <label className="consent-checkbox">
           <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} />
-          Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung der
-          Gästedaten gemäß Auftragsverarbeitung zu.
+          {t('consent.checkboxLabel')}
         </label>
         {error && <p className="error">{error}</p>}
         <button className="primary" disabled={!checked || saving} onClick={confirm}>
-          {saving ? 'Wird gespeichert…' : 'Bestätigen und fortfahren'}
+          {saving ? t('consent.confirming') : t('consent.confirm')}
         </button>
-        <button type="button" className="link-strong" onClick={onLogout}>Abmelden</button>
+        <button type="button" className="link-strong" onClick={onLogout}>{t('sidebar.logout')}</button>
       </div>
     </div>
   );
@@ -286,6 +311,7 @@ function ConsentGate({ restaurantName, onAccepted, onLogout }) {
 
 // Öffentliche Seite: Kunde setzt sein eigenes Passwort über den Einladungslink.
 function SetupPassword({ token, onDone }) {
+  const { t } = useI18n();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [state, setState] = useState({ loading: false, error: null, success: false });
@@ -293,11 +319,11 @@ function SetupPassword({ token, onDone }) {
   const submit = (e) => {
     e.preventDefault();
     if (password.length < 8) {
-      setState({ loading: false, error: 'Mindestens 8 Zeichen.', success: false });
+      setState({ loading: false, error: t('setupPassword.minLength'), success: false });
       return;
     }
     if (password !== confirm) {
-      setState({ loading: false, error: 'Passwörter stimmen nicht überein.', success: false });
+      setState({ loading: false, error: t('setupPassword.mismatch'), success: false });
       return;
     }
     setState({ loading: true, error: null, success: false });
@@ -321,23 +347,23 @@ function SetupPassword({ token, onDone }) {
           <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
           <span className="logo-word">KI-Works</span>
         </div>
-        <p className="login-sub">Ihr Passwort festlegen</p>
+        <p className="login-sub">{t('setupPassword.subtitle')}</p>
         {state.success ? (
           <>
-            <p>✅ Passwort gespeichert. Sie können sich jetzt anmelden.</p>
-            <button className="primary" onClick={onDone}>Zur Anmeldung</button>
+            <p>{t('setupPassword.success')}</p>
+            <button className="primary" onClick={onDone}>{t('setupPassword.goToLogin')}</button>
           </>
         ) : (
           <form onSubmit={submit}>
-            <label htmlFor="su-pw">Neues Passwort</label>
+            <label htmlFor="su-pw">{t('setupPassword.newPassword')}</label>
             <input id="su-pw" type="password" required value={password}
               onChange={(e) => setPassword(e.target.value)} />
-            <label htmlFor="su-pw2">Passwort wiederholen</label>
+            <label htmlFor="su-pw2">{t('setupPassword.repeatPassword')}</label>
             <input id="su-pw2" type="password" required value={confirm}
               onChange={(e) => setConfirm(e.target.value)} />
             {state.error && <p className="error">{state.error}</p>}
             <button className="primary" type="submit" disabled={state.loading}>
-              {state.loading ? 'Speichern…' : 'Passwort speichern'}
+              {state.loading ? t('setupPassword.saving') : t('setupPassword.save')}
             </button>
           </form>
         )}
@@ -362,21 +388,22 @@ function StatCard({ label, value, onClick }) {
 }
 
 function StatRow({ title, row, onNavigate }) {
+  const { t } = useI18n();
   return (
     <section>
       <h2>{title}</h2>
       <div className="stat-grid">
-        <StatCard label="Anrufe" value={row?.calls} onClick={onNavigate && (() => onNavigate('calls'))} />
+        <StatCard label={t('stats.calls')} value={row?.calls} onClick={onNavigate && (() => onNavigate('calls'))} />
         <StatCard
-          label="Reservierungen" value={row?.reservations}
+          label={t('stats.reservations')} value={row?.reservations}
           onClick={onNavigate && (() => onNavigate('reservations'))}
         />
         <StatCard
-          label="davon telefonisch (KI)" value={row?.phone_reservations}
+          label={t('stats.phoneReservations')} value={row?.phone_reservations}
           onClick={onNavigate && (() => onNavigate('reservations'))}
         />
-        <StatCard label="Gäste" value={row?.guests} onClick={onNavigate && (() => onNavigate('reservations'))} />
-        <StatCard label="Bestellungen" value={row?.orders} onClick={onNavigate && (() => onNavigate('orders'))} />
+        <StatCard label={t('stats.guests')} value={row?.guests} onClick={onNavigate && (() => onNavigate('reservations'))} />
+        <StatCard label={t('stats.orders')} value={row?.orders} onClick={onNavigate && (() => onNavigate('orders'))} />
       </div>
     </section>
   );
@@ -385,6 +412,8 @@ function StatRow({ title, row, onNavigate }) {
 // Ersparnis-Kachel: echte Anruf-Zahlen seit dem ersten Anruf (= Live-Start bei
 // diesem Kunden), nicht nur die letzten 7 Tage — zeigt die kumulierte Wirkung.
 function RoiTile({ totalCalls, firstCallAt }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const minutesPerCall = 4;
   const hourlyCost = 21;
   const hours = ((totalCalls || 0) * minutesPerCall) / 60;
@@ -395,15 +424,17 @@ function RoiTile({ totalCalls, firstCallAt }) {
   return (
     <section className="roi-tile">
       <div className="roi-tile-label">
-        Von Kiwo übernommen{daysLive ? ` — seit ${daysLive} ${daysLive === 1 ? 'Tag' : 'Tagen'} live` : ''}
+        {t('roiTile.label')}
+        {daysLive ? t(daysLive === 1 ? 'roiTile.liveSinceDay' : 'roiTile.liveSinceDays', { days: daysLive }) : ''}
       </div>
       <div className="roi-tile-values">
-        <span className="roi-tile-value">{hours.toLocaleString('de-DE', { maximumFractionDigits: 1 })} Std</span>
-        <span className="roi-tile-value">{euros.toLocaleString('de-DE')} €</span>
+        <span className="roi-tile-value">
+          {t('roiTile.hoursValue', { hours: hours.toLocaleString(intlLocale, { maximumFractionDigits: 1 }) })}
+        </span>
+        <span className="roi-tile-value">{euros.toLocaleString(intlLocale)} €</span>
       </div>
       <div className="roi-tile-note">
-        Basis: {totalCalls || 0} Anrufe × {minutesPerCall} Min. manuelle Bearbeitungszeit × Ø {hourlyCost} €/Std Vollkosten
-        (Gehalt, Lohnnebenkosten &amp; Overhead)
+        {t('roiTile.note', { calls: totalCalls || 0, minutes: minutesPerCall, cost: hourlyCost })}
       </div>
     </section>
   );
@@ -413,6 +444,8 @@ function RoiTile({ totalCalls, firstCallAt }) {
 // informativ (Anzeige, kein automatisches Billing, siehe CLAUDE.md
 // „Offene Punkte"). Ohne hinterlegten Tarif nur der Verbrauch ohne Vergleich.
 function UsageTile({ restaurantId, refreshKey }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const { data: usage } = useFetch(
     restaurantId != null ? `/api/usage?restaurant_id=${restaurantId}` : null, refreshKey,
   );
@@ -420,15 +453,22 @@ function UsageTile({ restaurantId, refreshKey }) {
   const pct = usage.minutesIncluded ? Math.min(100, Math.round((usage.minutesUsed / usage.minutesIncluded) * 100)) : null;
   return (
     <section className="roi-tile">
-      <div className="roi-tile-label">Gesprächsminuten diesen Monat</div>
+      <div className="roi-tile-label">{t('usageTile.label')}</div>
       <div className="roi-tile-values">
         <span className="roi-tile-value">
-          {usage.minutesUsed.toLocaleString('de-DE')}
-          {usage.minutesIncluded ? ` / ${usage.minutesIncluded.toLocaleString('de-DE')} Min.` : ' Min.'}
+          {usage.minutesIncluded
+            ? t('usageTile.minutesOfIncluded', {
+                used: usage.minutesUsed.toLocaleString(intlLocale),
+                included: usage.minutesIncluded.toLocaleString(intlLocale),
+              })
+            : t('usageTile.minutesOnly', { used: usage.minutesUsed.toLocaleString(intlLocale) })}
         </span>
         {usage.overageMinutes > 0 && (
           <span className="roi-tile-value warn-text">
-            +{usage.overageMinutes} Min. ≈ {usage.overageCost.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €
+            {t('usageTile.overage', {
+              minutes: usage.overageMinutes,
+              cost: usage.overageCost.toLocaleString(intlLocale, { minimumFractionDigits: 2 }),
+            })}
           </span>
         )}
       </div>
@@ -439,14 +479,18 @@ function UsageTile({ restaurantId, refreshKey }) {
       )}
       <div className="roi-tile-note">
         {usage.tierLabel
-          ? `Tarif ${usage.tierLabel} · Überschreitung ${usage.overageRatePerMinute.toLocaleString('de-DE', { minimumFractionDigits: 2 })} €/Min. · kein Anruf wird abgebrochen`
-          : 'Noch kein Tarif hinterlegt — reine Verbrauchsanzeige ohne Kontingent-Vergleich.'}
+          ? t('usageTile.tierNote', {
+              tier: usage.tierLabel,
+              rate: usage.overageRatePerMinute.toLocaleString(intlLocale, { minimumFractionDigits: 2 }),
+            })
+          : t('usageTile.noTierNote')}
       </div>
     </section>
   );
 }
 
 function Overview({ restaurantId, refreshKey, onNavigate }) {
+  const { t } = useI18n();
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const pick = (rows) => rows?.find((r) => String(r.restaurant_id) === String(restaurantId));
@@ -454,14 +498,18 @@ function Overview({ restaurantId, refreshKey, onNavigate }) {
     <>
       <RoiTile totalCalls={pick(weekly)?.total_calls} firstCallAt={pick(weekly)?.first_call_at} />
       <UsageTile restaurantId={restaurantId} refreshKey={refreshKey} />
-      <StatRow title="Heute" row={pick(daily)} onNavigate={onNavigate} />
-      <StatRow title="Letzte 7 Tage" row={pick(weekly)} onNavigate={onNavigate} />
+      <StatRow title={t('overview.today')} row={pick(daily)} onNavigate={onNavigate} />
+      <StatRow title={t('overview.last7Days')} row={pick(weekly)} onNavigate={onNavigate} />
     </>
   );
 }
 
 // Zeigt alle Felder einer Reservierung/Bestellung/eines Anrufs + Status-Änderung.
 function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
+  const STATUS_LABELS = useStatusLabels();
+  const ORDER_STATUS = useOrderStatusLabels();
   if (!item) return null;
   const { type, data } = item;
 
@@ -469,16 +517,17 @@ function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
     return (
       <div className="modal-backdrop" onClick={onClose}>
         <div className="modal" onClick={(e) => e.stopPropagation()}>
-          <button className="modal-close" onClick={onClose} aria-label="Schließen">×</button>
-          <h2>📞 Anruf</h2>
+          <button className="modal-close" onClick={onClose} aria-label={t('common.close')}>×</button>
+          <h2>{t('detail.callTitle')}</h2>
           <dl className="detail-list">
-            <dt>Nummer</dt><dd>{data.caller_number || 'Unbekannt'}</dd>
-            <dt>Zeit</dt><dd>{fmtDateTime(data.started_at || data.created_at)}</dd>
-            <dt>Dauer</dt><dd>{data.duration_seconds != null ? `${Math.round(data.duration_seconds / 60)} min` : '–'}</dd>
-            <dt>Ergebnis</dt><dd><span className={`badge badge-${data.outcome}`}>{data.outcome || '–'}</span></dd>
-            <dt>Zusammenfassung</dt><dd>{data.summary || '–'}</dd>
+            <dt>{t('detail.number')}</dt><dd>{data.caller_number || t('detail.unknownNumber')}</dd>
+            <dt>{t('detail.time')}</dt><dd>{fmtDateTime(data.started_at || data.created_at, intlLocale)}</dd>
+            <dt>{t('detail.duration')}</dt>
+            <dd>{data.duration_seconds != null ? t('detail.durationMinutes', { min: Math.round(data.duration_seconds / 60) }) : '–'}</dd>
+            <dt>{t('detail.outcome')}</dt><dd><span className={`badge badge-${data.outcome}`}>{data.outcome || '–'}</span></dd>
+            <dt>{t('detail.summary')}</dt><dd>{data.summary || '–'}</dd>
             {data.callback_topic && (
-              <><dt>Rückruf gewünscht</dt><dd><span className="badge badge-callback">📞 {data.callback_topic}</span></dd></>
+              <><dt>{t('detail.callbackRequested')}</dt><dd><span className="badge badge-callback">📞 {data.callback_topic}</span></dd></>
             )}
           </dl>
           {data.linkedReservation && (
@@ -487,22 +536,22 @@ function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
                 className="link"
                 onClick={() => onOpenDetail('reservation', data.linkedReservation)}
               >
-                🍽️ Verknüpfte Reservierung ansehen
+                {t('detail.viewLinkedReservation')}
               </button>
             </p>
           )}
           {data.linkedOrder && (
             <p>
               <button className="link" onClick={() => onOpenDetail('order', data.linkedOrder)}>
-                🛍️ Verknüpfte Bestellung ansehen
+                {t('detail.viewLinkedOrder')}
               </button>
             </p>
           )}
           {data.recording_url && (
-            <p><button type="button" className="link" onClick={() => openRecording(data.id)}>Aufnahme anhören</button></p>
+            <p><button type="button" className="link" onClick={() => openRecording(data.id, t)}>{t('detail.listenRecording')}</button></p>
           )}
-          <label className="side-label" htmlFor="detail-transcript">Transkript</label>
-          <div className="transcript-box" id="detail-transcript">{data.transcript || 'Kein Transkript verfügbar.'}</div>
+          <label className="side-label" htmlFor="detail-transcript">{t('detail.transcript')}</label>
+          <div className="transcript-box" id="detail-transcript">{data.transcript || t('detail.noTranscript')}</div>
         </div>
       </div>
     );
@@ -513,27 +562,27 @@ function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose} aria-label="Schließen">×</button>
-        <h2>{isReservation ? '🍽️ Reservierung' : '🛍️ Bestellung'}</h2>
+        <button className="modal-close" onClick={onClose} aria-label={t('common.close')}>×</button>
+        <h2>{isReservation ? t('detail.reservationTitle') : t('detail.orderTitle')}</h2>
         <dl className="detail-list">
-          <dt>Name</dt><dd>{data.customer_name}</dd>
-          <dt>Telefon</dt><dd>{data.customer_phone || '–'}</dd>
+          <dt>{t('detail.name')}</dt><dd>{data.customer_name}</dd>
+          <dt>{t('detail.phone')}</dt><dd>{data.customer_phone || '–'}</dd>
           {isReservation ? (
             <>
-              <dt>Zeit</dt><dd>{fmtDateTime(data.reserved_at)}</dd>
-              <dt>Personen</dt><dd>{data.party_size}</dd>
+              <dt>{t('detail.reservedTime')}</dt><dd>{fmtDateTime(data.reserved_at, intlLocale)}</dd>
+              <dt>{t('detail.partySize')}</dt><dd>{data.party_size}</dd>
             </>
           ) : (
             <>
-              <dt>Bestellung</dt><dd>{data.items}</dd>
-              <dt>Abholzeit</dt><dd>{data.requested_at ? fmtDateTime(data.requested_at) : '–'}</dd>
+              <dt>{t('detail.orderItems')}</dt><dd>{data.items}</dd>
+              <dt>{t('detail.pickupTime')}</dt><dd>{data.requested_at ? fmtDateTime(data.requested_at, intlLocale) : '–'}</dd>
             </>
           )}
-          <dt>Quelle</dt><dd>{data.source === 'phone' ? '📞 Telefon' : 'Dashboard'}</dd>
-          <dt>Notizen</dt><dd>{data.notes || '–'}</dd>
-          <dt>Eingegangen</dt><dd>{fmtDateTime(data.created_at)}</dd>
+          <dt>{t('detail.source')}</dt><dd>{data.source === 'phone' ? t('detail.sourcePhone') : t('detail.sourceDashboard')}</dd>
+          <dt>{t('detail.notes')}</dt><dd>{data.notes || '–'}</dd>
+          <dt>{t('detail.received')}</dt><dd>{fmtDateTime(data.created_at, intlLocale)}</dd>
         </dl>
-        <label className="side-label" htmlFor="detail-status">Status</label>
+        <label className="side-label" htmlFor="detail-status">{t('detail.status')}</label>
         <select
           id="detail-status" value={data.status}
           onChange={(e) => onStatusChange(type, data.id, e.target.value)}
@@ -550,6 +599,7 @@ function DetailModal({ item, onClose, onStatusChange, onOpenDetail }) {
 // Tastendruck) — auf Fokus wird der Text nur markiert, damit man direkt lostippen
 // oder mit Backspace/Entf normal löschen kann.
 function BusinessPicker({ restaurants, restaurantId, onSelect }) {
+  const { t } = useI18n();
   const [text, setText] = useState('');
   const [open, setOpen] = useState(false);
   const current = restaurants.find((r) => String(r.id) === String(restaurantId));
@@ -570,7 +620,7 @@ function BusinessPicker({ restaurants, restaurantId, onSelect }) {
   return (
     <div className="business-picker">
       <input
-        type="text" className="business-picker-input" placeholder="🔍 Betrieb suchen…"
+        type="text" className="business-picker-input" placeholder={t('businessPicker.placeholder')}
         autoComplete="off" value={text}
         onFocus={() => { setOpen(true); setText(''); }}
         onChange={(e) => { setText(e.target.value); setOpen(true); }}
@@ -581,7 +631,7 @@ function BusinessPicker({ restaurants, restaurantId, onSelect }) {
       />
       {open && (
         <ul className="business-picker-list">
-          {matches.length === 0 && <li className="business-picker-empty">Keine Treffer</li>}
+          {matches.length === 0 && <li className="business-picker-empty">{t('businessPicker.noResults')}</li>}
           {matches.map((r) => (
             <li key={r.id}>
               <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => selectRestaurant(r)}>
@@ -595,11 +645,10 @@ function BusinessPicker({ restaurants, restaurantId, onSelect }) {
   );
 }
 
-const STATUS_LABELS = {
-  confirmed: 'Bestätigt', cancelled: 'Storniert', no_show: 'Nicht erschienen', completed: 'Abgeschlossen',
-};
-
 function Reservations({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
+  const STATUS_LABELS = useStatusLabels();
   const { data: reservations, error } = useFetch(
     `/api/reservations?restaurant_id=${restaurantId}`, refreshKey,
   );
@@ -611,14 +660,19 @@ function Reservations({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
     }).then(onChanged);
   }, [onChanged]);
 
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!reservations) return <p>Lade…</p>;
-  if (!reservations.length) return <p>Noch keine Reservierungen.</p>;
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!reservations) return <p>{t('common.loading')}</p>;
+  if (!reservations.length) return <p>{t('reservations.empty')}</p>;
   return (
     <div className="table-wrap">
       <table>
         <thead>
-          <tr><th>Datum/Zeit</th><th>Name</th><th>Telefon</th><th>Pers.</th><th>Quelle</th><th>Status</th><th>Notizen</th><th></th></tr>
+          <tr>
+            <th>{t('reservations.colDateTime')}</th><th>{t('reservations.colName')}</th>
+            <th>{t('reservations.colPhone')}</th><th>{t('reservations.colParty')}</th>
+            <th>{t('reservations.colSource')}</th><th>{t('reservations.colStatus')}</th>
+            <th>{t('reservations.colNotes')}</th><th></th>
+          </tr>
         </thead>
         <tbody>
           {reservations.map((r) => (
@@ -626,11 +680,11 @@ function Reservations({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
               key={r.id} className={`clickable-row${r.status === 'cancelled' ? ' muted' : ''}`}
               onClick={() => onOpenDetail('reservation', r)}
             >
-              <td>{fmtDateTime(r.reserved_at)}</td>
+              <td>{fmtDateTime(r.reserved_at, intlLocale)}</td>
               <td>{r.customer_name}</td>
               <td>{r.customer_phone || '–'}</td>
               <td>{r.party_size}</td>
-              <td>{r.source === 'phone' ? '📞 Telefon' : 'Dashboard'}</td>
+              <td>{r.source === 'phone' ? t('detail.sourcePhone') : t('detail.sourceDashboard')}</td>
               <td><span className={`badge badge-${r.status}`}>{STATUS_LABELS[r.status] || r.status}</span></td>
               <td>{r.notes || ''}</td>
               <td>
@@ -639,7 +693,7 @@ function Reservations({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
                     className="link"
                     onClick={(e) => { e.stopPropagation(); setStatus(r.id, 'cancelled'); }}
                   >
-                    Stornieren
+                    {t('reservations.cancel')}
                   </button>
                 )}
               </td>
@@ -660,6 +714,8 @@ const mondayOf = (d) => {
 };
 
 function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
+  const { t: translate, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const [weekStart, setWeekStart] = useState(() => mondayOf(new Date()));
   const { data: reservations } = useFetch(`/api/reservations?restaurant_id=${restaurantId}`, refreshKey);
   const { data: orders } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
@@ -670,7 +726,7 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
   const hours = useMemo(() => Array.from({ length: 16 }, (_, i) => i + 8), []); // 08–23 Uhr
 
   const weekEnd = useMemo(() => { const e = new Date(weekStart); e.setDate(e.getDate() + 7); return e; }, [weekStart]);
-  const inWeek = (iso) => { if (!iso) return false; const t = new Date(iso); return t >= weekStart && t < weekEnd; };
+  const inWeek = (iso) => { if (!iso) return false; const d = new Date(iso); return d >= weekStart && d < weekEnd; };
   const dayIndex = (iso) => Math.floor((new Date(iso) - weekStart) / 86400000);
 
   const resByCell = {};
@@ -689,7 +745,7 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
   const rangeLabel = () => {
     const end = new Date(weekStart); end.setDate(end.getDate() + 6);
     const opts = { day: '2-digit', month: '2-digit' };
-    return `${weekStart.toLocaleDateString('de-AT', opts)}–${end.toLocaleDateString('de-AT', { ...opts, year: 'numeric' })}`;
+    return `${weekStart.toLocaleDateString(intlLocale, opts)}–${end.toLocaleDateString(intlLocale, { ...opts, year: 'numeric' })}`;
   };
   const shiftWeek = (delta) => setWeekStart((s) => { const n = new Date(s); n.setDate(n.getDate() + delta * 7); return n; });
   const loading = !reservations || !orders;
@@ -697,18 +753,18 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
   return (
     <>
       <div className="toolbar">
-        <button className="link" onClick={() => shiftWeek(-1)}>← Vorherige</button>
+        <button className="link" onClick={() => shiftWeek(-1)}>{translate('calendar.previous')}</button>
         <strong>{rangeLabel()}</strong>
-        <button className="link" onClick={() => shiftWeek(1)}>Nächste →</button>
-        <button className="link" onClick={() => setWeekStart(mondayOf(new Date()))}>Heute</button>
+        <button className="link" onClick={() => shiftWeek(1)}>{translate('calendar.next')}</button>
+        <button className="link" onClick={() => setWeekStart(mondayOf(new Date()))}>{translate('calendar.today')}</button>
       </div>
-      {loading ? <p>Lade…</p> : (
+      {loading ? <p>{translate('common.loading')}</p> : (
         <div className="table-wrap">
           <div className="week-grid">
             <div className="week-cell week-corner" />
             {days.map((d, i) => (
               <div className="week-cell week-day-head" key={i}>
-                {d.toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit' })}
+                {d.toLocaleDateString(intlLocale, { weekday: 'short', day: '2-digit', month: '2-digit' })}
               </div>
             ))}
             {hours.map((h) => (
@@ -723,7 +779,7 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
                           key={`r${r.id}`} className="event-chip reservation" title={r.notes || ''}
                           onClick={() => onOpenDetail('reservation', r)}
                         >
-                          🍽️ {r.customer_name} ({r.party_size})
+                          {translate('calendar.reservationChip', { name: r.customer_name, party: r.party_size })}
                         </button>
                       ))}
                       {(ordByCell[key] || []).map((o) => (
@@ -742,12 +798,10 @@ function WeekCalendar({ restaurantId, refreshKey, onOpenDetail }) {
           </div>
         </div>
       )}
-      <p className="hint">Klick auf einen Eintrag zeigt alle Details und erlaubt eine Status-Änderung.</p>
+      <p className="hint">{translate('calendar.hint')}</p>
     </>
   );
 }
-
-const AUDIT_SOURCE_LABEL = { phone: 'Telefon (Kiwo)', sales_agent: 'Sales-Agent', social_agent: 'Social-Agent' };
 
 function AuditLogDetail({ details }) {
   const entries = Object.entries(details || {}).filter(([, v]) => v !== null && v !== undefined && v !== '');
@@ -770,28 +824,33 @@ function AuditLogDetail({ details }) {
 // Social-Agent bei ki-works.eu selbst) — Grundlage für das
 // "Audit-Logs für jede Aktion von Kiwo"-Versprechen auf der Landingpage.
 function AuditLog({ restaurantId, refreshKey }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
+  const AUDIT_SOURCE_LABEL = {
+    phone: t('auditLog.sourcePhone'), sales_agent: t('auditLog.sourceSalesAgent'), social_agent: t('auditLog.sourceSocialAgent'),
+  };
   const { data: entries, error } = useFetch(`/api/audit-log?restaurant_id=${restaurantId}`, refreshKey);
   const [expandedId, setExpandedId] = useState(null);
 
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!entries) return <p>Lade…</p>;
-  if (!entries.length) return <p>Noch keine protokollierten Aktionen.</p>;
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!entries) return <p>{t('common.loading')}</p>;
+  if (!entries.length) return <p>{t('auditLog.empty')}</p>;
 
   return (
     <>
       <p className="hint">
-        Jede Aktion, die Kiwo für Sie ausführt, wird hier protokolliert.
+        {t('auditLog.hint')}
       </p>
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>Zeitpunkt</th><th>Quelle</th><th>Aktion</th><th>Zusammenfassung</th></tr>
+            <tr><th>{t('auditLog.colTime')}</th><th>{t('auditLog.colSource')}</th><th>{t('auditLog.colAction')}</th><th>{t('auditLog.colSummary')}</th></tr>
           </thead>
           <tbody>
             {entries.map((e) => (
               <React.Fragment key={e.id}>
                 <tr className="clickable-row" onClick={() => setExpandedId(expandedId === e.id ? null : e.id)}>
-                  <td>{fmtDateTime(e.created_at)}</td>
+                  <td>{fmtDateTime(e.created_at, intlLocale)}</td>
                   <td>{AUDIT_SOURCE_LABEL[e.source] || e.source}</td>
                   <td>{e.action}</td>
                   <td>{e.summary}</td>
@@ -809,13 +868,15 @@ function AuditLog({ restaurantId, refreshKey }) {
 }
 
 function Calls({ restaurantId, refreshKey, onOpenDetail }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const { data: calls, error } = useFetch(`/api/calls?restaurant_id=${restaurantId}`, refreshKey);
   const { data: reservations } = useFetch(`/api/reservations?restaurant_id=${restaurantId}`, refreshKey);
   const { data: orders } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
 
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!calls) return <p>Lade…</p>;
-  if (!calls.length) return <p>Noch keine Anrufe.</p>;
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!calls) return <p>{t('common.loading')}</p>;
+  if (!calls.length) return <p>{t('calls.empty')}</p>;
 
   const reservationFor = (callId) => (reservations || []).find((r) => r.call_id === callId);
   const orderFor = (callId) => (orders || []).find((o) => o.call_id === callId);
@@ -829,11 +890,11 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
         return (
           <div className="call-card clickable-row" key={c.id} onClick={openCall}>
             <div className="call-head">
-              <strong>{c.caller_number || 'Unbekannte Nummer'}</strong>
-              <span>{fmtDateTime(c.started_at || c.created_at)}</span>
-              {c.duration_seconds != null && <span>{Math.round(c.duration_seconds / 60)} min</span>}
+              <strong>{c.caller_number || t('calls.unknownNumber')}</strong>
+              <span>{fmtDateTime(c.started_at || c.created_at, intlLocale)}</span>
+              {c.duration_seconds != null && <span>{t('detail.durationMinutes', { min: Math.round(c.duration_seconds / 60) })}</span>}
               <span className={`badge badge-${c.outcome}`}>{c.outcome || '–'}</span>
-              {c.callback_topic && <span className="badge badge-callback">📞 Rückruf gewünscht</span>}
+              {c.callback_topic && <span className="badge badge-callback">{t('calls.callbackBadge')}</span>}
             </div>
             {c.summary && <p className="call-summary">{c.summary}</p>}
             <div className="call-actions">
@@ -841,9 +902,9 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
                 <button
                   type="button"
                   className="link"
-                  onClick={(e) => { e.stopPropagation(); openRecording(c.id); }}
+                  onClick={(e) => { e.stopPropagation(); openRecording(c.id, t); }}
                 >
-                  Aufnahme anhören
+                  {t('detail.listenRecording')}
                 </button>
               )}
               {res && (
@@ -851,12 +912,12 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
                   className="link"
                   onClick={(e) => { e.stopPropagation(); onOpenDetail('reservation', res); }}
                 >
-                  🍽️ Reservierung ansehen
+                  {t('calls.viewReservation')}
                 </button>
               )}
               {ord && (
                 <button className="link" onClick={(e) => { e.stopPropagation(); onOpenDetail('order', ord); }}>
-                  🛍️ Bestellung ansehen
+                  {t('calls.viewOrder')}
                 </button>
               )}
             </div>
@@ -868,6 +929,7 @@ function Calls({ restaurantId, refreshKey, onOpenDetail }) {
 }
 
 function Recommendations({ restaurantId }) {
+  const { t } = useI18n();
   const [state, setState] = useState({ loading: false, text: null, error: null });
   const generate = () => {
     setState({ loading: true, text: null, error: null });
@@ -878,11 +940,11 @@ function Recommendations({ restaurantId }) {
   };
   return (
     <>
-      <p>Claude analysiert die Zahlen der letzten 7 Tage und gibt konkrete Tipps für diesen Betrieb.</p>
+      <p>{t('recommendations.intro')}</p>
       <button className="primary" onClick={generate} disabled={state.loading}>
-        {state.loading ? 'Claude denkt nach…' : 'Empfehlungen generieren'}
+        {state.loading ? t('recommendations.generating') : t('recommendations.generate')}
       </button>
-      {state.error && <p className="error">Fehler: {state.error}</p>}
+      {state.error && <p className="error">{t('common.error', { message: state.error })}</p>}
       {state.text && <div className="reco-box">{state.text}</div>}
     </>
   );
@@ -892,17 +954,18 @@ function Recommendations({ restaurantId }) {
 // Muss mit ROLE_DEFINITIONS in backend/src/vapiAdmin.js synchron gehalten
 // werden. "implemented: false" heißt: noch keine Tools/Prompt-Logik dafür
 // gebaut (nur Marketing-Versprechen auf der Landingpage) — nicht anhakbar.
-const ROLE_OPTIONS = [
-  { id: 'orders', label: 'Bestellungen & Reservierungen', implemented: true },
-  { id: 'support', label: 'Support & Rückruf', implemented: true },
-  { id: 'sales', label: 'Sales', implemented: false },
-  { id: 'office', label: 'Office', implemented: false },
+const ROLE_META = [
+  { id: 'orders', implemented: true },
+  { id: 'support', implemented: true },
+  { id: 'sales', implemented: false },
+  { id: 'office', implemented: false },
 ];
 
 function RoleCheckboxes({ roles, onToggle }) {
+  const { t } = useI18n();
   return (
     <div className="role-checkboxes">
-      {ROLE_OPTIONS.map((r) => (
+      {ROLE_META.map((r) => (
         <label key={r.id} className={r.implemented ? '' : 'role-disabled'}>
           <input
             type="checkbox"
@@ -910,7 +973,7 @@ function RoleCheckboxes({ roles, onToggle }) {
             disabled={!r.implemented}
             onChange={() => onToggle(r.id)}
           />
-          {r.label}{!r.implemented && ' (bald verfügbar)'}
+          {t(`roles.${r.id}`)}{!r.implemented && t('roles.comingSoon')}
         </label>
       ))}
     </div>
@@ -920,6 +983,7 @@ function RoleCheckboxes({ roles, onToggle }) {
 // Formular zum nachträglichen Ändern der freigeschalteten Kiwo-Rollen
 // eines Bestandskunden (löst nach dem Speichern eine Vapi-Neusynchronisierung aus).
 function RolesForm({ restaurant, onDone, onCancel }) {
+  const { t } = useI18n();
   const [roles, setRoles] = useState(restaurant.enabled_roles || ['orders', 'support']);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -945,25 +1009,20 @@ function RolesForm({ restaurant, onDone, onCancel }) {
 
   return (
     <form className="access-form" onSubmit={save}>
-      <strong>Rollen für „{restaurant.name}"</strong>
+      <strong>{t('rolesForm.title', { name: restaurant.name })}</strong>
       <RoleCheckboxes roles={roles} onToggle={toggle} />
       {error && <p className="error">{error}</p>}
       <div className="form-row">
-        <button className="primary" type="submit" disabled={saving}>Speichern</button>
-        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+        <button className="primary" type="submit" disabled={saving}>{t('common.save')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
       </div>
     </form>
   );
 }
 
-const PRICING_TIER_OPTIONS = [
-  { value: '', label: '– kein Tarif –' },
-  { value: 'solo', label: 'Solo (600 Min. / 99 €)' },
-  { value: 'team', label: 'Team (1.500 Min. / 249 €)' },
-  { value: 'scale', label: 'Scale (3.500 Min. / 499 €)' },
-];
-
 function PricingTierForm({ restaurant, onDone, onCancel }) {
+  const { t } = useI18n();
+  const tierOptions = usePricingTierOptions();
   const [tier, setTier] = useState(restaurant.pricing_tier || '');
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -985,22 +1044,23 @@ function PricingTierForm({ restaurant, onDone, onCancel }) {
 
   return (
     <form className="access-form" onSubmit={save}>
-      <strong>Preistarif für „{restaurant.name}"</strong>
-      <label>Tarif
+      <strong>{t('pricingTierForm.title', { name: restaurant.name })}</strong>
+      <label>{t('pricingTierForm.tierLabel')}
         <select value={tier} onChange={(e) => setTier(e.target.value)}>
-          {PRICING_TIER_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          {tierOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </label>
       {error && <p className="error">{error}</p>}
       <div className="form-row">
-        <button className="primary" type="submit" disabled={saving}>Speichern</button>
-        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+        <button className="primary" type="submit" disabled={saving}>{t('common.save')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
       </div>
     </form>
   );
 }
 
 function AccessForm({ restaurant, onDone, onCancel }) {
+  const { t } = useI18n();
   const [email, setEmail] = useState(restaurant.login_email || restaurant.contact_email || '');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -1023,18 +1083,18 @@ function AccessForm({ restaurant, onDone, onCancel }) {
 
   return (
     <form className="access-form" onSubmit={save}>
-      <strong>Login für „{restaurant.name}"</strong>
-      <label>Login-E-Mail
+      <strong>{t('accessForm.title', { name: restaurant.name })}</strong>
+      <label>{t('accessForm.emailLabel')}
         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
       </label>
-      <label>Passwort {restaurant.login_email ? '(leer = unverändert)' : ''}
+      <label>{t('accessForm.passwordLabel')} {restaurant.login_email ? t('accessForm.passwordHintUnchanged') : ''}
         <input type="text" value={password} onChange={(e) => setPassword(e.target.value)}
-          required={!restaurant.login_email} placeholder="Neues Passwort" />
+          required={!restaurant.login_email} placeholder={t('accessForm.passwordPlaceholder')} />
       </label>
       {error && <p className="error">{error}</p>}
       <div className="form-row">
-        <button className="primary" type="submit" disabled={saving}>Speichern</button>
-        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+        <button className="primary" type="submit" disabled={saving}>{t('common.save')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
       </div>
     </form>
   );
@@ -1042,6 +1102,7 @@ function AccessForm({ restaurant, onDone, onCancel }) {
 
 // Formular zum Anlegen eines neuen Kunden (nur Betreiber).
 function NewCustomerForm({ onDone, onCancel }) {
+  const { t } = useI18n();
   const [name, setName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactPhone, setContactPhone] = useState('');
@@ -1078,32 +1139,34 @@ function NewCustomerForm({ onDone, onCancel }) {
 
   return (
     <form className="access-form" onSubmit={save}>
-      <strong>Neuen Kunden anlegen</strong>
-      <label>Name*
+      <strong>{t('newCustomerForm.title')}</strong>
+      <label>{t('newCustomerForm.nameLabel')}
         <input required value={name} onChange={(e) => setName(e.target.value)} />
       </label>
-      <label>Kontakt-E-Mail
+      <label>{t('newCustomerForm.emailLabel')}
         <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
       </label>
-      <label>Kontakt-Telefon
+      <label>{t('newCustomerForm.phoneLabel')}
         <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
       </label>
-      <label>KI-Telefonnummer (falls schon vorhanden)
+      <label>{t('newCustomerForm.numberLabel')}
         <input value={vapiNumber} onChange={(e) => setVapiNumber(e.target.value)} />
       </label>
-      <label>Rollen
+      <label>{t('newCustomerForm.rolesLabel')}
         <RoleCheckboxes roles={roles} onToggle={toggleRole} />
       </label>
       {error && <p className="error">{error}</p>}
       <div className="form-row">
-        <button className="primary" type="submit" disabled={saving}>Anlegen</button>
-        <button type="button" className="link" onClick={onCancel}>Abbrechen</button>
+        <button className="primary" type="submit" disabled={saving}>{t('newCustomerForm.create')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
       </div>
     </form>
   );
 }
 
 function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
+  const { t, locale } = useI18n();
+  const tierOptions = usePricingTierOptions();
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
   const { data: weekly } = useFetch('/api/stats/weekly/by-restaurant', refreshKey);
   const { data: restaurants } = useFetch('/api/restaurants', refreshKey);
@@ -1116,10 +1179,10 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const [inviteMsg, setInviteMsg] = useState(null);
 
   const sendInvite = (id) => {
-    setInviteMsg('Wird gesendet…');
+    setInviteMsg(t('customers.inviteSending'));
     apiFetch(`/api/restaurants/${id}/invite`, { method: 'POST' })
-      .then((r) => (r.ok ? setInviteMsg('✅ Einladung gesendet') : setInviteMsg('Fehler beim Senden')))
-      .catch(() => setInviteMsg('Fehler beim Senden'));
+      .then((r) => (r.ok ? setInviteMsg(t('customers.inviteSent')) : setInviteMsg(t('customers.inviteError'))))
+      .catch(() => setInviteMsg(t('customers.inviteError')));
   };
 
   const markPublished = (id) => {
@@ -1130,7 +1193,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
     }).then((r) => r.ok && onChanged());
   };
 
-  if (!daily || !weekly || !restaurants) return <p>Lade…</p>;
+  if (!daily || !weekly || !restaurants) return <p>{t('common.loading')}</p>;
   const weekOf = (id) => weekly.find((w) => w.restaurant_id === id) || {};
   const info = (id) => restaurants.find((r) => r.id === id) || {};
   const q = search.trim().toLowerCase();
@@ -1141,8 +1204,8 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
       .some((v) => (v || '').toLowerCase().includes(q));
   });
   const SORTERS = {
-    'name-asc': (a, b) => a.name.localeCompare(b.name, 'de'),
-    'name-desc': (a, b) => b.name.localeCompare(a.name, 'de'),
+    'name-asc': (a, b) => a.name.localeCompare(b.name, locale),
+    'name-desc': (a, b) => b.name.localeCompare(a.name, locale),
     'newest': (a, b) => new Date(info(b.restaurant_id).created_at || 0) - new Date(info(a.restaurant_id).created_at || 0),
     'oldest': (a, b) => new Date(info(a.restaurant_id).created_at || 0) - new Date(info(b.restaurant_id).created_at || 0),
     'calls-desc': (a, b) => (weekOf(b.restaurant_id).calls || 0) - (weekOf(a.restaurant_id).calls || 0),
@@ -1152,22 +1215,22 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
 
   return (
     <>
-      <p>Alle Kennzahlen deiner Geschäftskunden auf einen Blick — dein Bericht, ohne E-Mail-Flut.</p>
+      <p>{t('customers.intro')}</p>
       <div className="toolbar">
         <input
-          type="search" className="search" placeholder="🔍 Kunde suchen…"
+          type="search" className="search" placeholder={t('customers.searchPlaceholder')}
           value={search} onChange={(e) => setSearch(e.target.value)}
         />
         <select className="sort-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-          <option value="name-asc">Name (A-Z)</option>
-          <option value="name-desc">Name (Z-A)</option>
-          <option value="newest">Neueste zuerst</option>
-          <option value="oldest">Älteste zuerst</option>
-          <option value="calls-desc">Anrufe 7 T (meiste zuerst)</option>
-          <option value="reservations-desc">Reservierungen 7 T (meiste zuerst)</option>
+          <option value="name-asc">{t('customers.sortNameAsc')}</option>
+          <option value="name-desc">{t('customers.sortNameDesc')}</option>
+          <option value="newest">{t('customers.sortNewest')}</option>
+          <option value="oldest">{t('customers.sortOldest')}</option>
+          <option value="calls-desc">{t('customers.sortCallsDesc')}</option>
+          <option value="reservations-desc">{t('customers.sortReservationsDesc')}</option>
         </select>
-        <span className="hint">{rows.length} von {daily.length} Kunden</span>
-        <button className="primary" onClick={() => setAdding(true)}>+ Neuer Kunde</button>
+        <span className="hint">{t('customers.countLabel', { shown: rows.length, total: daily.length })}</span>
+        <button className="primary" onClick={() => setAdding(true)}>{t('customers.addButton')}</button>
       </div>
       {inviteMsg && <p className="hint">{inviteMsg}</p>}
       {adding && (
@@ -1178,8 +1241,8 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
             onChanged();
             if (result?.vapi) {
               setInviteMsg(result.vapi.ok
-                ? `✅ Kunde angelegt, Vapi-Assistent eingerichtet. Status siehe Spalte "Vapi-Status" unten.${result.vapi.warning ? ` Hinweis: ${result.vapi.warning}` : ''}`
-                : `⚠️ Kunde angelegt, Vapi-Einrichtung fehlgeschlagen: ${result.vapi.warning}`);
+                ? t('customers.vapiSetupOk') + (result.vapi.warning ? t('customers.vapiSetupWarningHint', { warning: result.vapi.warning }) : '')
+                : t('customers.vapiSetupFailed', { warning: result.vapi.warning }));
             }
           }}
         />
@@ -1209,9 +1272,10 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
         <table>
           <thead>
             <tr>
-              <th>Kunde</th><th>Login</th><th>KI-Nummer</th><th>Vapi-Status</th><th>Tarif</th>
-              <th>Anrufe heute</th><th>Res. heute</th>
-              <th>Anrufe 7 T</th><th>Res. 7 T</th><th>Gäste 7 T</th><th></th>
+              <th>{t('customers.colCustomer')}</th><th>{t('customers.colLogin')}</th>
+              <th>{t('customers.colAiNumber')}</th><th>{t('customers.colVapiStatus')}</th><th>{t('customers.colTier')}</th>
+              <th>{t('customers.colCallsToday')}</th><th>{t('customers.colResToday')}</th>
+              <th>{t('customers.colCalls7')}</th><th>{t('customers.colRes7')}</th><th>{t('customers.colGuests7')}</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -1225,23 +1289,23 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                       {d.name}
                     </button>
                   </td>
-                  <td>{r.login_email || <span className="warn-text">kein Zugang</span>}</td>
+                  <td>{r.login_email || <span className="warn-text">{t('customers.noAccess')}</span>}</td>
                   <td>{r.vapi_phone_number || '–'}</td>
                   <td className="vapi-status-cell">
                     {!r.vapi_assistant_id ? (
                       <span className="hint">–</span>
                     ) : r.vapi_published ? (
-                      <span className="ok-text">✅ Erledigt</span>
+                      <span className="ok-text">{t('customers.publishDone')}</span>
                     ) : (
                       <>
-                        <span className="warn-text">⚠️ Publish nötig</span>
+                        <span className="warn-text">{t('customers.publishNeeded')}</span>
                         <button type="button" className="link" onClick={() => markPublished(d.restaurant_id)}>
-                          ✔ Als erledigt markieren
+                          {t('customers.markPublished')}
                         </button>
                       </>
                     )}
                   </td>
-                  <td>{PRICING_TIER_OPTIONS.find((o) => o.value === r.pricing_tier)?.label.replace(/ \(.*\)/, '') || '–'}</td>
+                  <td>{tierOptions.find((o) => o.value === r.pricing_tier)?.label.replace(/ \(.*\)/, '') || '–'}</td>
                   <td>{d.calls}</td>
                   <td>{d.reservations}</td>
                   <td>{w.calls ?? '–'}</td>
@@ -1249,16 +1313,16 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                   <td>{w.guests ?? '–'}</td>
                   <td className="lead-actions">
                     <button className="link" onClick={() => setEditing(d.restaurant_id)}>
-                      {r.login_email ? 'Zugang ändern' : 'Zugang anlegen'}
+                      {r.login_email ? t('customers.changeAccess') : t('customers.createAccess')}
                     </button>
                     <button className="link" onClick={() => sendInvite(d.restaurant_id)}>
-                      Einladung senden
+                      {t('customers.sendInvite')}
                     </button>
                     <button className="link" onClick={() => setEditingRoles(d.restaurant_id)}>
-                      Rollen ändern
+                      {t('customers.changeRoles')}
                     </button>
                     <button className="link" onClick={() => setEditingTier(d.restaurant_id)}>
-                      Tarif ändern
+                      {t('customers.changeTier')}
                     </button>
                   </td>
                 </tr>
@@ -1271,12 +1335,10 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   );
 }
 
-const ORDER_STATUS = {
-  new: '🆕 Neu', in_progress: '👨‍🍳 In Arbeit', ready: '✅ Abholbereit',
-  completed: '📦 Abgeschlossen', cancelled: '❌ Storniert',
-};
-
 function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
+  const ORDER_STATUS = useOrderStatusLabels();
   const { data: orders, error } = useFetch(`/api/orders?restaurant_id=${restaurantId}`, refreshKey);
   const setStatus = (id, status) => {
     apiFetch(`/api/orders/${id}`, {
@@ -1285,14 +1347,18 @@ function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
       body: JSON.stringify({ status }),
     }).then(onChanged);
   };
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!orders) return <p>Lade…</p>;
-  if (!orders.length) return <p>Noch keine Bestellungen.</p>;
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!orders) return <p>{t('common.loading')}</p>;
+  if (!orders.length) return <p>{t('orders.empty')}</p>;
   return (
     <div className="table-wrap">
       <table>
         <thead>
-          <tr><th>Eingegangen</th><th>Name</th><th>Telefon</th><th>Bestellung</th><th>Abholzeit</th><th>Notizen</th><th>Status</th></tr>
+          <tr>
+            <th>{t('orders.colReceived')}</th><th>{t('orders.colName')}</th><th>{t('orders.colPhone')}</th>
+            <th>{t('orders.colOrder')}</th><th>{t('orders.colPickup')}</th><th>{t('orders.colNotes')}</th>
+            <th>{t('orders.colStatus')}</th>
+          </tr>
         </thead>
         <tbody>
           {orders.map((o) => (
@@ -1300,11 +1366,11 @@ function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
               key={o.id} className={`clickable-row${['completed', 'cancelled'].includes(o.status) ? ' muted' : ''}`}
               onClick={() => onOpenDetail('order', o)}
             >
-              <td>{fmtDateTime(o.created_at)}</td>
+              <td>{fmtDateTime(o.created_at, intlLocale)}</td>
               <td><strong>{o.customer_name}</strong></td>
               <td>{o.customer_phone || '–'}</td>
               <td>{o.items}</td>
-              <td>{o.requested_at ? fmtTime(o.requested_at) : '–'}</td>
+              <td>{o.requested_at ? fmtTime(o.requested_at, intlLocale) : '–'}</td>
               <td>{o.notes || ''}</td>
               <td>
                 <select
@@ -1326,9 +1392,15 @@ function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
   );
 }
 
-const LEAD_STATUS = { new: '🆕 Neu', contacted: '📞 Kontaktiert', won: '✅ Gewonnen', lost: '❌ Verloren' };
+const LEAD_STATUS_KEYS = ['new', 'contacted', 'won', 'lost'];
 
 function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
+  const LEAD_STATUS = useMemo(
+    () => Object.fromEntries(LEAD_STATUS_KEYS.map((k) => [k, t(`leadStatus.${k}`)])),
+    [t],
+  );
   const { data: leads, error } = useFetch('/api/leads', refreshKey);
   const [converting, setConverting] = useState(null);
   const setStatus = (id, status) => {
@@ -1346,21 +1418,25 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
       .catch(() => {})
       .finally(() => setConverting(null));
   };
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!leads) return <p>Lade…</p>;
-  if (!leads.length) return <p>Noch keine Anfragen über die Website.</p>;
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!leads) return <p>{t('common.loading')}</p>;
+  if (!leads.length) return <p>{t('leads.empty')}</p>;
   return (
     <>
-      <p>Anfragen über das Formular auf ki-works.eu.</p>
+      <p>{t('leads.intro')}</p>
       <div className="table-wrap">
         <table>
           <thead>
-            <tr><th>Eingegangen</th><th>Name</th><th>Betrieb</th><th>E-Mail</th><th>Telefon</th><th>Nachricht</th><th>Status</th></tr>
+            <tr>
+              <th>{t('leads.colReceived')}</th><th>{t('leads.colName')}</th><th>{t('leads.colBusiness')}</th>
+              <th>{t('leads.colEmail')}</th><th>{t('leads.colPhone')}</th><th>{t('leads.colMessage')}</th>
+              <th>{t('leads.colStatus')}</th>
+            </tr>
           </thead>
           <tbody>
             {leads.map((l) => (
               <tr key={l.id} className={['won', 'lost'].includes(l.status) ? 'muted' : ''}>
-                <td>{fmtDateTime(l.created_at)}</td>
+                <td>{fmtDateTime(l.created_at, intlLocale)}</td>
                 <td><strong>{l.name}</strong></td>
                 <td>{l.business || '–'}</td>
                 <td>{l.email || '–'}</td>
@@ -1378,11 +1454,11 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
                   </select>
                   {l.converted_restaurant_id ? (
                     <button className="link" onClick={() => onOpenRestaurant(l.converted_restaurant_id)}>
-                      Zum Kunden →
+                      {t('leads.viewCustomer')}
                     </button>
                   ) : (
                     <button className="link" disabled={converting === l.id} onClick={() => convert(l.id)}>
-                      {converting === l.id ? 'Wird umgewandelt…' : 'In Kunde umwandeln & einladen'}
+                      {converting === l.id ? t('leads.converting') : t('leads.convert')}
                     </button>
                   )}
                 </td>
@@ -1396,8 +1472,9 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
 }
 
 function StatusTile({ label, ok, detail }) {
+  const { t } = useI18n();
   const cls = ok === true ? 'ok' : ok === false ? 'problem' : 'unknown';
-  const text = ok === true ? 'OK' : ok === false ? 'Problem' : 'Unbekannt';
+  const text = ok === true ? t('system.ok') : ok === false ? t('system.problem') : t('system.unknown');
   return (
     <div className={`status-tile status-${cls}`}>
       <div className="status-label">{label}</div>
@@ -1407,14 +1484,17 @@ function StatusTile({ label, ok, detail }) {
   );
 }
 
-function fmtUptime(seconds) {
+function fmtUptime(seconds, t) {
   if (seconds == null) return '–';
   const d = Math.floor(seconds / 86400);
   const h = Math.floor((seconds % 86400) / 3600);
   const m = Math.floor((seconds % 3600) / 60);
-  if (d > 0) return `${d}d ${h}h`;
-  if (h > 0) return `${h}h ${m}min`;
-  return `${m}min`;
+  const unitD = t('system.unitDay');
+  const unitH = t('system.unitHour');
+  const unitM = t('system.unitMinute');
+  if (d > 0) return `${d}${unitD} ${h}${unitH}`;
+  if (h > 0) return `${h}${unitH} ${m}${unitM}`;
+  return `${m}${unitM}`;
 }
 
 // Admin-Ansicht: Server-Gesundheit (live geprüft) + Fehlerprotokoll.
@@ -1422,47 +1502,51 @@ function fmtUptime(seconds) {
 // läuft (DB/n8n nicht erreichbar, Platte voll, SSL läuft ab, Backup fehlt) —
 // einen kompletten Server-Ausfall kann dieser Check naturgemäß nicht melden.
 function SystemStatus({ refreshKey }) {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const { data: status, error } = useFetch('/api/admin/system-status', refreshKey);
   const { data: errors } = useFetch('/api/admin/errors?limit=50', refreshKey);
 
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!status) return <p>Lade…</p>;
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!status) return <p>{t('common.loading')}</p>;
 
   return (
     <>
       <div className="stat-grid">
-        <StatusTile label="Datenbank" ok={status.db.ok} detail={status.db.detail} />
-        <StatusTile label="n8n" ok={status.n8n.ok} detail={status.n8n.detail} />
+        <StatusTile label={t('system.db')} ok={status.db.ok} detail={status.db.detail} />
+        <StatusTile label={t('system.n8n')} ok={status.n8n.ok} detail={status.n8n.detail} />
         <StatusTile
-          label="Festplatte"
+          label={t('system.disk')}
           ok={status.disk.ok}
-          detail={status.disk.percent != null ? `${status.disk.percent}% belegt` : status.disk.detail}
+          detail={status.disk.percent != null ? t('system.diskPercent', { percent: status.disk.percent }) : status.disk.detail}
         />
         <StatusTile
-          label="SSL-Zertifikat"
+          label={t('system.ssl')}
           ok={status.ssl.ok}
-          detail={status.ssl.daysLeft != null ? `noch ${status.ssl.daysLeft} Tage` : status.ssl.detail}
+          detail={status.ssl.daysLeft != null ? t('system.sslDaysLeft', { days: status.ssl.daysLeft }) : status.ssl.detail}
         />
         <StatusTile
-          label="Letztes Backup"
+          label={t('system.backup')}
           ok={status.backup.ok}
-          detail={status.backup.hoursAgo != null ? `vor ${status.backup.hoursAgo}h (${status.backup.file})` : status.backup.detail}
+          detail={status.backup.hoursAgo != null
+            ? t('system.backupAgo', { hours: status.backup.hoursAgo, file: status.backup.file })
+            : status.backup.detail}
         />
-        <StatusTile label="Backend-Laufzeit" ok={true} detail={fmtUptime(status.uptimeSeconds)} />
+        <StatusTile label={t('system.uptime')} ok={true} detail={fmtUptime(status.uptimeSeconds, t)} />
       </div>
-      <p className="muted">Zuletzt geprüft: {fmtDateTime(status.checkedAt)}</p>
+      <p className="muted">{t('system.lastChecked', { time: fmtDateTime(status.checkedAt, intlLocale) })}</p>
 
-      <h2>Fehlerprotokoll (letzte 30 Tage)</h2>
-      {!errors?.length ? <p>Keine Einträge.</p> : (
+      <h2>{t('system.errorLogTitle')}</h2>
+      {!errors?.length ? <p>{t('system.noEntries')}</p> : (
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Zeit</th><th>Stufe</th><th>Quelle</th><th>Meldung</th></tr>
+              <tr><th>{t('system.colTime')}</th><th>{t('system.colLevel')}</th><th>{t('system.colSource')}</th><th>{t('system.colMessage')}</th></tr>
             </thead>
             <tbody>
               {errors.map((e) => (
                 <tr key={e.id}>
-                  <td>{fmtDateTime(e.created_at)}</td>
+                  <td>{fmtDateTime(e.created_at, intlLocale)}</td>
                   <td><span className={`badge badge-${e.level}`}>{e.level}</span></td>
                   <td>{e.source}</td>
                   <td>{e.message}</td>
@@ -1476,16 +1560,18 @@ function SystemStatus({ refreshKey }) {
   );
 }
 
-const WEEKDAYS = [
-  ['mon', 'Montag'], ['tue', 'Dienstag'], ['wed', 'Mittwoch'], ['thu', 'Donnerstag'],
-  ['fri', 'Freitag'], ['sat', 'Samstag'], ['sun', 'Sonntag'],
-];
-
-const CHANNEL_LABELS = { sms: 'SMS', whatsapp: 'WhatsApp', email: 'E-Mail' };
+const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
 // Eine offene Kundenfrage mit eigenem Antwort-Feld + eigenem Speichern-Button
 // (bewusst unabhängig vom großen Wissensdatenbank/Öffnungszeiten/FAQ-Formular).
+const CHANNEL_KEYS = ['sms', 'whatsapp', 'email'];
+
 function OpenQuestionRow({ question, onSave }) {
+  const { t } = useI18n();
+  const CHANNEL_LABELS = useMemo(
+    () => Object.fromEntries(CHANNEL_KEYS.map((k) => [k, t(`channel.${k}`)])),
+    [t],
+  );
   const [answer, setAnswer] = useState('');
   const [state, setState] = useState({ saving: false, error: null });
 
@@ -1503,18 +1589,18 @@ function OpenQuestionRow({ question, onSave }) {
         {question.caller_number && <span className="hint"> · {question.caller_number}</span>}
         {question.preferred_channel && (
           <span className="hint">
-            {' '}· Antwort per {CHANNEL_LABELS[question.preferred_channel] || question.preferred_channel}
+            {t('openQuestion.answerVia', { channel: CHANNEL_LABELS[question.preferred_channel] || question.preferred_channel })}
             {question.contact ? `: ${question.contact}` : ''}
           </span>
         )}
       </div>
       <input
-        placeholder="Antwort eintragen…"
+        placeholder={t('openQuestion.placeholder')}
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
       />
       <button type="button" className="link" disabled={state.saving || !answer.trim()} onClick={save}>
-        {state.saving ? 'Speichert…' : 'Speichern'}
+        {state.saving ? t('openQuestion.saving') : t('openQuestion.save')}
       </button>
       {state.error && <p className="error">{state.error}</p>}
     </div>
@@ -1525,6 +1611,7 @@ function OpenQuestionRow({ question, onSave }) {
 // Betreiber (nur eigener Betrieb) und den Admin (beliebiger, per BusinessPicker
 // gewählter Betrieb) gleichermaßen nutzbar.
 function Settings({ restaurantId, isAdmin }) {
+  const { t } = useI18n();
   // Bewusst NICHT an den globalen 30s-Auto-Refresh gekoppelt: das würde
   // laufende Eingaben in den Feldern immer wieder zurücksetzen. Stattdessen
   // lädt diese Ansicht ihre Daten nur beim Öffnen bzw. Betrieb-Wechsel neu.
@@ -1582,7 +1669,7 @@ function Settings({ restaurantId, isAdmin }) {
   }, [current?.id]);
 
   if (loadError) return <p className="error">{loadError}</p>;
-  if (!current) return <p>Lade…</p>;
+  if (!current) return <p>{t('common.loading')}</p>;
 
   const saveContent = (e) => {
     e.preventDefault();
@@ -1595,7 +1682,7 @@ function Settings({ restaurantId, isAdmin }) {
     })
       .then(async (r) => {
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
-        setContentMsg({ ok: true, text: 'Gespeichert.' });
+        setContentMsg({ ok: true, text: t('settings.saved') });
       })
       .catch((err) => setContentMsg({ ok: false, text: err.message }))
       .finally(() => setSavingContent(false));
@@ -1615,7 +1702,7 @@ function Settings({ restaurantId, isAdmin }) {
     })
       .then(async (r) => {
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
-        setCredsMsg({ ok: true, text: 'Gespeichert.' });
+        setCredsMsg({ ok: true, text: t('settings.saved') });
         setCurrentPassword('');
         setNewPassword('');
       })
@@ -1653,83 +1740,83 @@ function Settings({ restaurantId, isAdmin }) {
   return (
     <>
       <div className="settings-section">
-        <h2>Offene Fragen von Kunden</h2>
+        <h2>{t('settings.openQuestionsTitle')}</h2>
         {openQuestionsError && <p className="error">{openQuestionsError}</p>}
         {openQuestions.length === 0 ? (
-          <p className="hint">Keine offenen Fragen.</p>
+          <p className="hint">{t('settings.noOpenQuestions')}</p>
         ) : (
           openQuestions.map((q) => <OpenQuestionRow key={q.id} question={q} onSave={saveQuestionAnswer} />)
         )}
       </div>
 
       <div className="settings-section">
-        <h2>Wissensdatenbank</h2>
+        <h2>{t('settings.knowledgeBaseTitle')}</h2>
         <textarea
           rows={10}
           style={{ width: '100%', fontFamily: 'inherit', fontSize: '0.92rem' }}
           value={knowledgeBase}
           onChange={(e) => setKnowledgeBase(e.target.value)}
-          placeholder="z. B. Leistungen/Produkte, Preise, Aktionen — wird 1:1 als Wissensquelle für Kiwo verwendet"
+          placeholder={t('settings.knowledgeBasePlaceholder')}
         />
       </div>
 
       <div className="settings-section">
-        <h2>Öffnungszeiten</h2>
-        {WEEKDAYS.map(([key, label]) => (
+        <h2>{t('settings.openingHoursTitle')}</h2>
+        {WEEKDAY_KEYS.map((key) => (
           <div className="hours-row" key={key}>
-            <label>{label}</label>
+            <label>{t(`weekday.${key}`)}</label>
             <input
               value={hours[key] || ''}
               onChange={(e) => setHours((h) => ({ ...h, [key]: e.target.value }))}
-              placeholder="11:00-22:00 · mit Pause: 11:00-14:00, 17:00-22:00 · oder geschlossen"
+              placeholder={t('settings.openingHoursPlaceholder')}
             />
           </div>
         ))}
       </div>
 
       <div className="settings-section">
-        <h2>FAQ</h2>
+        <h2>{t('settings.faqTitle')}</h2>
         {faq.map((item, i) => (
           <div className="faq-row" key={i}>
             <input
-              placeholder="Frage"
+              placeholder={t('settings.faqQuestionPlaceholder')}
               value={item.question}
               onChange={(e) => updateFaqItem(i, 'question', e.target.value)}
             />
             <input
-              placeholder="Antwort"
+              placeholder={t('settings.faqAnswerPlaceholder')}
               value={item.answer}
               onChange={(e) => updateFaqItem(i, 'answer', e.target.value)}
             />
-            <button type="button" className="link" onClick={() => removeFaqItem(i)}>Entfernen</button>
+            <button type="button" className="link" onClick={() => removeFaqItem(i)}>{t('settings.faqRemove')}</button>
           </div>
         ))}
-        <button type="button" className="link" onClick={addFaqItem}>+ Frage hinzufügen</button>
+        <button type="button" className="link" onClick={addFaqItem}>{t('settings.faqAdd')}</button>
       </div>
 
       <form className="settings-section" onSubmit={saveContent}>
         {contentMsg && <p className={contentMsg.ok ? 'hint' : 'error'}>{contentMsg.text}</p>}
         <button className="primary" type="submit" disabled={savingContent}>
-          Wissensdatenbank, Öffnungszeiten & FAQ speichern
+          {t('settings.saveContent')}
         </button>
       </form>
 
       <form className="access-form settings-section" onSubmit={saveCredentials}>
-        <strong>Zugangsdaten</strong>
-        <label>Login-E-Mail
+        <strong>{t('settings.credentialsTitle')}</strong>
+        <label>{t('settings.loginEmailLabel')}
           <input type="email" required value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} />
         </label>
         {!isAdmin && (
-          <label>Aktuelles Passwort
+          <label>{t('settings.currentPasswordLabel')}
             <input type="password" value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)} placeholder="zur Bestätigung" />
+              onChange={(e) => setCurrentPassword(e.target.value)} placeholder={t('settings.currentPasswordPlaceholder')} />
           </label>
         )}
-        <label>Neues Passwort (leer = unverändert)
+        <label>{t('settings.newPasswordLabel')}
           <input type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
         </label>
         {credsMsg && <p className={credsMsg.ok ? 'hint' : 'error'}>{credsMsg.text}</p>}
-        <button className="primary" type="submit" disabled={savingCreds}>Zugangsdaten speichern</button>
+        <button className="primary" type="submit" disabled={savingCreds}>{t('settings.saveCredentials')}</button>
       </form>
     </>
   );
@@ -1907,7 +1994,7 @@ export default function App() {
             <BusinessPicker restaurants={restaurants} restaurantId={restaurantId} onSelect={setRestaurantId} />
           )}
         </header>
-        {restaurantId == null && !noPicker ? <p>Lade…</p> : (
+        {restaurantId == null && !noPicker ? <p>{t('common.loading')}</p> : (
           <>
             {view === 'overview' && (
               <Overview restaurantId={restaurantId} refreshKey={refreshKey} onNavigate={setView} />

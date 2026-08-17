@@ -34,5 +34,329 @@
   },
   "languageToggle": {
     "ariaLabel": "Choose language"
+  },
+  "themeToggle": {
+    "light": "☀️ Light mode",
+    "dark": "🌙 Dark mode"
+  },
+  "common": {
+    "loading": "Loading…",
+    "error": "Error: {{message}}",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "recording": {
+    "notAvailable": "Recording not available.",
+    "notAvailableExpired": "Recording not available (may have expired)."
+  },
+  "login": {
+    "subtitle": "Your digital AI employee — Sign in",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…"
+  },
+  "consent": {
+    "subtitle": "Before we get started, {{name}}",
+    "introBefore": "Before you can use the dashboard, we need your consent to process guest data (reservations, orders, call logs) as part of our",
+    "linkText": "privacy policy",
+    "introAfter": "and the associated data processing.",
+    "checkboxLabel": "I have read the privacy policy and consent to the processing of guest data under the data processing agreement.",
+    "confirm": "Confirm and continue",
+    "confirming": "Saving…"
+  },
+  "setupPassword": {
+    "subtitle": "Set your password",
+    "minLength": "At least 8 characters.",
+    "mismatch": "Passwords do not match.",
+    "success": "✅ Password saved. You can now sign in.",
+    "goToLogin": "Go to sign in",
+    "newPassword": "New password",
+    "repeatPassword": "Repeat password",
+    "save": "Save password",
+    "saving": "Saving…"
+  },
+  "stats": {
+    "calls": "Calls",
+    "reservations": "Reservations",
+    "phoneReservations": "of which by phone (AI)",
+    "guests": "Guests",
+    "orders": "Orders"
+  },
+  "overview": {
+    "today": "Today",
+    "last7Days": "Last 7 days"
+  },
+  "roiTile": {
+    "label": "Handled by Kiwo",
+    "liveSinceDay": " — live for {{days}} day",
+    "liveSinceDays": " — live for {{days}} days",
+    "hoursValue": "{{hours}} hrs",
+    "note": "Basis: {{calls}} calls × {{minutes}} min. manual handling time × avg. {{cost}} €/hr fully loaded cost (salary, payroll overhead & general overhead)"
+  },
+  "usageTile": {
+    "label": "Call minutes this month",
+    "minutesOnly": "{{used}} min.",
+    "minutesOfIncluded": "{{used}} / {{included}} min.",
+    "overage": "+{{minutes}} min. ≈ {{cost}} €",
+    "tierNote": "Plan {{tier}} · overage {{rate}} €/min. · no call is ever cut off",
+    "noTierNote": "No plan assigned yet — this is a pure usage display without a quota comparison."
+  },
+  "detail": {
+    "callTitle": "📞 Call",
+    "number": "Number",
+    "unknownNumber": "Unknown",
+    "time": "Time",
+    "duration": "Duration",
+    "durationMinutes": "{{min}} min",
+    "outcome": "Outcome",
+    "summary": "Summary",
+    "callbackRequested": "Callback requested",
+    "viewLinkedReservation": "🍽️ View linked reservation",
+    "viewLinkedOrder": "🛍️ View linked order",
+    "listenRecording": "Listen to recording",
+    "transcript": "Transcript",
+    "noTranscript": "No transcript available.",
+    "reservationTitle": "🍽️ Reservation",
+    "orderTitle": "🛍️ Order",
+    "name": "Name",
+    "phone": "Phone",
+    "reservedTime": "Time",
+    "partySize": "Party size",
+    "orderItems": "Order",
+    "pickupTime": "Pickup time",
+    "source": "Source",
+    "sourcePhone": "📞 Phone",
+    "sourceDashboard": "Dashboard",
+    "notes": "Notes",
+    "received": "Received",
+    "status": "Status"
+  },
+  "businessPicker": {
+    "placeholder": "🔍 Search business…",
+    "noResults": "No matches"
+  },
+  "status": {
+    "confirmed": "Confirmed",
+    "cancelled": "Cancelled",
+    "no_show": "No-show",
+    "completed": "Completed"
+  },
+  "reservations": {
+    "empty": "No reservations yet.",
+    "colDateTime": "Date/Time",
+    "colName": "Name",
+    "colPhone": "Phone",
+    "colParty": "Guests",
+    "colSource": "Source",
+    "colStatus": "Status",
+    "colNotes": "Notes",
+    "cancel": "Cancel"
+  },
+  "calendar": {
+    "previous": "← Previous",
+    "next": "Next →",
+    "today": "Today",
+    "hint": "Click an entry to see all details and change its status.",
+    "reservationChip": "🍽️ {{name}} ({{party}})"
+  },
+  "auditLog": {
+    "sourcePhone": "Phone (Kiwo)",
+    "sourceSalesAgent": "Sales agent",
+    "sourceSocialAgent": "Social agent",
+    "hint": "Every action Kiwo takes on your behalf is logged here.",
+    "empty": "No logged actions yet.",
+    "colTime": "Time",
+    "colSource": "Source",
+    "colAction": "Action",
+    "colSummary": "Summary"
+  },
+  "calls": {
+    "unknownNumber": "Unknown number",
+    "viewReservation": "🍽️ View reservation",
+    "viewOrder": "🛍️ View order",
+    "empty": "No calls yet.",
+    "callbackBadge": "📞 Callback requested"
+  },
+  "recommendations": {
+    "intro": "Claude analyzes the last 7 days of numbers and gives concrete tips for this business.",
+    "generate": "Generate recommendations",
+    "generating": "Claude is thinking…"
+  },
+  "roles": {
+    "orders": "Orders & reservations",
+    "support": "Support & callbacks",
+    "sales": "Sales",
+    "office": "Office",
+    "comingSoon": " (coming soon)"
+  },
+  "rolesForm": {
+    "title": "Roles for “{{name}}”"
+  },
+  "pricingTier": {
+    "none": "– no plan –",
+    "solo": "Solo (600 min. / €99)",
+    "team": "Team (1,500 min. / €249)",
+    "scale": "Scale (3,500 min. / €499)"
+  },
+  "pricingTierForm": {
+    "title": "Pricing plan for “{{name}}”",
+    "tierLabel": "Plan"
+  },
+  "accessForm": {
+    "title": "Login for “{{name}}”",
+    "emailLabel": "Login email",
+    "passwordLabel": "Password",
+    "passwordHintUnchanged": " (leave empty = unchanged)",
+    "passwordPlaceholder": "New password"
+  },
+  "newCustomerForm": {
+    "title": "Add new customer",
+    "nameLabel": "Name*",
+    "emailLabel": "Contact email",
+    "phoneLabel": "Contact phone",
+    "numberLabel": "AI phone number (if already available)",
+    "rolesLabel": "Roles",
+    "create": "Create"
+  },
+  "customers": {
+    "intro": "All the numbers for your business customers at a glance — your report, without the email flood.",
+    "searchPlaceholder": "🔍 Search customer…",
+    "sortNameAsc": "Name (A-Z)",
+    "sortNameDesc": "Name (Z-A)",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortCallsDesc": "Calls, 7d (most first)",
+    "sortReservationsDesc": "Reservations, 7d (most first)",
+    "countLabel": "{{shown}} of {{total}} customers",
+    "addButton": "+ New customer",
+    "inviteSending": "Sending…",
+    "inviteSent": "✅ Invitation sent",
+    "inviteError": "Error sending invitation",
+    "vapiSetupOk": "✅ Customer created, Vapi assistant set up. See the \"Vapi status\" column below for status.",
+    "vapiSetupWarningHint": " Note: {{warning}}",
+    "vapiSetupFailed": "⚠️ Customer created, Vapi setup failed: {{warning}}",
+    "colCustomer": "Customer",
+    "colLogin": "Login",
+    "colAiNumber": "AI number",
+    "colVapiStatus": "Vapi status",
+    "colTier": "Plan",
+    "colCallsToday": "Calls today",
+    "colResToday": "Res. today",
+    "colCalls7": "Calls, 7d",
+    "colRes7": "Res., 7d",
+    "colGuests7": "Guests, 7d",
+    "noAccess": "no access",
+    "publishDone": "✅ Done",
+    "publishNeeded": "⚠️ Publish needed",
+    "markPublished": "✔ Mark as done",
+    "changeAccess": "Change access",
+    "createAccess": "Create access",
+    "sendInvite": "Send invitation",
+    "changeRoles": "Change roles",
+    "changeTier": "Change plan"
+  },
+  "orderStatus": {
+    "new": "🆕 New",
+    "in_progress": "👨‍🍳 In progress",
+    "ready": "✅ Ready for pickup",
+    "completed": "📦 Completed",
+    "cancelled": "❌ Cancelled"
+  },
+  "orders": {
+    "colReceived": "Received",
+    "colName": "Name",
+    "colPhone": "Phone",
+    "colOrder": "Order",
+    "colPickup": "Pickup time",
+    "colNotes": "Notes",
+    "colStatus": "Status",
+    "empty": "No orders yet."
+  },
+  "leadStatus": {
+    "new": "🆕 New",
+    "contacted": "📞 Contacted",
+    "won": "✅ Won",
+    "lost": "❌ Lost"
+  },
+  "leads": {
+    "intro": "Inquiries submitted through the form on ki-works.eu.",
+    "empty": "No inquiries via the website yet.",
+    "colReceived": "Received",
+    "colName": "Name",
+    "colBusiness": "Business",
+    "colEmail": "Email",
+    "colPhone": "Phone",
+    "colMessage": "Message",
+    "colStatus": "Status",
+    "viewCustomer": "Go to customer →",
+    "convert": "Convert to customer & invite",
+    "converting": "Converting…"
+  },
+  "system": {
+    "ok": "OK",
+    "problem": "Problem",
+    "unknown": "Unknown",
+    "db": "Database",
+    "n8n": "n8n",
+    "disk": "Disk",
+    "diskPercent": "{{percent}}% used",
+    "ssl": "SSL certificate",
+    "sslDaysLeft": "{{days}} days left",
+    "backup": "Last backup",
+    "backupAgo": "{{hours}}h ago ({{file}})",
+    "uptime": "Backend uptime",
+    "lastChecked": "Last checked: {{time}}",
+    "errorLogTitle": "Error log (last 30 days)",
+    "noEntries": "No entries.",
+    "colTime": "Time",
+    "colLevel": "Level",
+    "colSource": "Source",
+    "colMessage": "Message",
+    "unitDay": "d",
+    "unitHour": "h",
+    "unitMinute": "min"
+  },
+  "weekday": {
+    "mon": "Monday",
+    "tue": "Tuesday",
+    "wed": "Wednesday",
+    "thu": "Thursday",
+    "fri": "Friday",
+    "sat": "Saturday",
+    "sun": "Sunday"
+  },
+  "channel": {
+    "sms": "SMS",
+    "whatsapp": "WhatsApp",
+    "email": "Email"
+  },
+  "openQuestion": {
+    "answerVia": " · Reply via {{channel}}",
+    "placeholder": "Enter answer…",
+    "save": "Save",
+    "saving": "Saving…"
+  },
+  "settings": {
+    "openQuestionsTitle": "Open customer questions",
+    "noOpenQuestions": "No open questions.",
+    "knowledgeBaseTitle": "Knowledge base",
+    "knowledgeBasePlaceholder": "e.g. services/products, prices, promotions — used 1:1 as a knowledge source for Kiwo",
+    "openingHoursTitle": "Opening hours",
+    "openingHoursPlaceholder": "11:00-22:00 · with break: 11:00-14:00, 17:00-22:00 · or closed",
+    "faqTitle": "FAQ",
+    "faqQuestionPlaceholder": "Question",
+    "faqAnswerPlaceholder": "Answer",
+    "faqRemove": "Remove",
+    "faqAdd": "+ Add question",
+    "saveContent": "Save knowledge base, opening hours & FAQ",
+    "saved": "Saved.",
+    "credentialsTitle": "Login credentials",
+    "loginEmailLabel": "Login email",
+    "currentPasswordLabel": "Current password",
+    "currentPasswordPlaceholder": "to confirm",
+    "newPasswordLabel": "New password (leave empty = unchanged)",
+    "saveCredentials": "Save login credentials"
   }
 }
