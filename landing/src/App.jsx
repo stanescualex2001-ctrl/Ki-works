@@ -49,6 +49,7 @@ function GlowCard({ children, className = "", tone = "cyan" }) {
 
 /* ---------- Hero Orb ---------- */
 function KiwoOrb() {
+  const { t } = useI18n();
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[520px]">
       <div className="absolute inset-8 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(6,182,212,0.35),transparent_60%)] blur-2xl float-blob" />
@@ -81,16 +82,16 @@ function KiwoOrb() {
             className="glass absolute rounded-2xl rounded-bl-sm px-3 py-1.5 text-xs font-medium text-foreground/90 whitespace-nowrap shadow-lg"
             style={{ left: "68%", top: "14%" }}
           >
-            Hi, ich bin Kiwo
+            {t("heroOrb.speechBubble")}
           </div>
         </div>
       </div>
 
       {[
-        { t: "Anruf angenommen", top: "6%", left: "4%", tone: "cyan" },
-        { t: "Termin gebucht", top: "16%", right: "2%", tone: "violet" },
-        { t: "WhatsApp beantwortet", bottom: "16%", left: "0%", tone: "violet" },
-        { t: "Lead qualifiziert", bottom: "6%", right: "6%", tone: "cyan" },
+        { label: t("heroOrb.badgeCall"), top: "6%", left: "4%", tone: "cyan" },
+        { label: t("heroOrb.badgeAppointment"), top: "16%", right: "2%", tone: "violet" },
+        { label: t("heroOrb.badgeWhatsapp"), bottom: "16%", left: "0%", tone: "violet" },
+        { label: t("heroOrb.badgeLead"), bottom: "6%", right: "6%", tone: "cyan" },
       ].map((c, i) => (
         <motion.div
           key={i}
@@ -184,6 +185,7 @@ function CallWave() {
 }
 
 function RoleCard({ role, featured = false }) {
+  const { t } = useI18n();
   const Icon = role.icon;
   const soon = role.status === "soon";
   return (
@@ -203,19 +205,19 @@ function RoleCard({ role, featured = false }) {
             soon ? "bg-amber-400/10 text-amber-600 dark:text-amber-300" : "bg-foreground/5 text-foreground/50"
           }`}
         >
-          {soon ? "bald verfügbar" : role.tag}
+          {soon ? t("roleCard.soon") : t(`roleTag.${role.id}`)}
         </span>
       </div>
       <h3 className={`mt-4 font-semibold ${featured ? "text-2xl md:text-3xl" : "text-lg"}`}>
-        {role.name}
+        {t(`roles.${role.id}`)}
       </h3>
       <p className={`mt-2 text-foreground/60 leading-relaxed ${featured ? "text-base" : "text-sm"}`}>
-        {role.desc}
+        {t(`roleDesc.${role.id}`)}
       </p>
       {role.id === "reception" && featured && <CallWave />}
       {!soon && (
         <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/70 group-hover:text-foreground transition">
-          Rolle ansehen <ArrowRight className="h-3.5 w-3.5" />
+          {t("roleCard.viewRole")} <ArrowRight className="h-3.5 w-3.5" />
         </div>
       )}
     </GlowCard>
@@ -224,52 +226,24 @@ function RoleCard({ role, featured = false }) {
 
 /* ---------- Live Test Command Interface ---------- */
 
-const commands = [
-  {
-    id: "call",
-    role: "Kiwo Reception",
-    label: "Nimm einen Anruf an",
-    tone: "violet",
-    icon: PhoneCall,
-    steps: [
-      "Eingehender Anruf von +49 30 ...",
-      "Kiwo antwortet: \"Guten Tag, hier ist Kiwo für ki-works.eu…\"",
-      "Anliegen erkannt: Rückrufbitte, Priorität mittel.",
-      "Ticket #A-2481 erstellt und im CRM protokolliert.",
-      "Erledigt in 11 Sek. ✓",
-    ],
-  },
-  {
-    id: "calendar",
-    role: "Kiwo Office",
-    label: "Trage einen Termin ein",
-    tone: "cyan",
-    icon: CalendarDays,
-    steps: [
-      "E-Mail \"Terminvorschlag Do 14:00\" erkannt.",
-      "Kalender geprüft: Slot Do 14:00–14:45 frei.",
-      "Einladung an Kunde und Kollegin gesendet.",
-      "Erinnerung 24h vorher automatisch geplant.",
-      "Erledigt in 6 Sek. ✓",
-    ],
-  },
-  {
-    id: "whatsapp",
-    role: "Kiwo Support",
-    label: "Beantworte eine WhatsApp",
-    tone: "violet",
-    icon: MessageCircle,
-    steps: [
-      "Neue WhatsApp: \"Ist heute noch geöffnet?\"",
-      "Öffnungszeiten aus Knowledge Base geladen.",
-      "Antwort formuliert im Ton Ihrer Marke.",
-      "Antwort gesendet · Empfangsbestätigung ✓",
-      "Erledigt in 3 Sek. ✓",
-    ],
-  },
+const commandMeta = [
+  { id: "call", tone: "violet", icon: PhoneCall },
+  { id: "calendar", tone: "cyan", icon: CalendarDays },
+  { id: "whatsapp", tone: "violet", icon: MessageCircle },
 ];
 
 function LiveTest() {
+  const { t } = useI18n();
+  const commands = useMemo(
+    () =>
+      commandMeta.map((c) => ({
+        ...c,
+        role: t(`liveTest.commands.${c.id}.role`),
+        label: t(`liveTest.commands.${c.id}.label`),
+        steps: t(`liveTest.commands.${c.id}.steps`),
+      })),
+    [t],
+  );
   const [active, setActive] = useState(commands[0]);
   const [step, setStep] = useState(0);
   const [running, setRunning] = useState(false);
@@ -310,7 +284,7 @@ function LiveTest() {
           </span>
           <div className="min-w-0">
             <div className="text-[10px] font-mono uppercase tracking-wider text-foreground/40">
-              agent
+              {t("liveTest.agentLabel")}
             </div>
             <div className="truncate text-sm font-semibold">{active.role}</div>
           </div>
@@ -322,7 +296,7 @@ function LiveTest() {
             }`}
           />
           <span className={running ? "text-cyan-600 dark:text-cyan-300" : done ? "text-emerald-600 dark:text-emerald-300" : "text-foreground/50"}>
-            {running ? "arbeitet…" : done ? "erledigt" : "bereit"}
+            {running ? t("liveTest.stateWorking") : done ? t("liveTest.stateDone") : t("liveTest.stateReady")}
           </span>
         </div>
       </div>
@@ -376,7 +350,7 @@ function LiveTest() {
           {running && (
             <div className="flex items-center gap-2 text-white/50">
               <span className="text-violet-400">›</span>
-              <span>Kiwo arbeitet</span>
+              <span>{t("liveTest.workingLine")}</span>
               <span className="flex gap-1">
                 <span className="h-1 w-1 rounded-full bg-violet-400 typing-dot" />
                 <span
@@ -392,7 +366,7 @@ function LiveTest() {
           )}
           {!running && step === 0 && (
             <div className="text-white/40">
-              › Wähle einen Befehl oben, um Kiwo live zu testen.
+              {t("liveTest.placeholder")}
             </div>
           )}
         </div>
@@ -403,27 +377,9 @@ function LiveTest() {
 
 /* ---------- Demo-Gespräche (gesprochene Beispiel-Dialoge, keine echten Anrufe) ---------- */
 const demoCalls = [
-  {
-    id: "reservierung",
-    title: "Tischreservierung",
-    subtitle: "Beispiel-Gespräch",
-    src: "/demo-audio/reservierung.mp3",
-    tone: "violet",
-  },
-  {
-    id: "bestellung",
-    title: "Bestellung zur Abholung",
-    subtitle: "Beispiel-Gespräch",
-    src: "/demo-audio/bestellung.mp3",
-    tone: "cyan",
-  },
-  {
-    id: "oeffnungszeiten",
-    title: "Öffnungszeiten & Reservierung",
-    subtitle: "Beispiel-Gespräch",
-    src: "/demo-audio/oeffnungszeiten.mp3",
-    tone: "violet",
-  },
+  { id: "reservierung", src: "/demo-audio/reservierung.mp3", tone: "violet" },
+  { id: "bestellung", src: "/demo-audio/bestellung.mp3", tone: "cyan" },
+  { id: "oeffnungszeiten", src: "/demo-audio/oeffnungszeiten.mp3", tone: "violet" },
 ];
 
 function fmtTime(s) {
@@ -434,6 +390,7 @@ function fmtTime(s) {
 }
 
 function DemoCallCard({ call }) {
+  const { t } = useI18n();
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -464,7 +421,7 @@ function DemoCallCard({ call }) {
         <button
           type="button"
           onClick={toggle}
-          aria-label={playing ? "Pause" : "Abspielen"}
+          aria-label={playing ? t("demo.pause") : t("demo.play")}
           className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition ${
             call.tone === "cyan"
               ? "bg-cyan-400/15 text-cyan-600 dark:text-cyan-300 hover:bg-cyan-400/25"
@@ -474,8 +431,8 @@ function DemoCallCard({ call }) {
           {playing ? <Pause className="h-4.5 w-4.5" /> : <Play className="h-4.5 w-4.5 translate-x-0.5" />}
         </button>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold">{call.title}</div>
-          <div className="text-[11px] font-mono text-foreground/40">{call.subtitle}</div>
+          <div className="truncate text-sm font-semibold">{t(`demo.calls.${call.id}`)}</div>
+          <div className="text-[11px] font-mono text-foreground/40">{t("demo.subtitleTag")}</div>
         </div>
         <div className="shrink-0 font-mono text-[11px] text-foreground/40 tabular-nums">
           {fmtTime(current)} / {fmtTime(duration)}
@@ -529,7 +486,11 @@ function IntegrationsMarquee() {
 }
 
 /* ---------- ROI ---------- */
+const LOCALE_INTL = { de: "de-DE", en: "en-US", ro: "ro-RO" };
+
 function ROICalc() {
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const [hours, setHours] = useState(15);
   const hourlyCost = 21;
   const monthly = useMemo(() => {
@@ -542,21 +503,21 @@ function ROICalc() {
   return (
     <GlowCard tone="violet" className="p-6 md:p-8">
       <div className="flex items-center gap-2 text-xs font-mono text-violet-600/90 dark:text-violet-300/90">
-        <TrendingUp className="h-3.5 w-3.5" /> ROI-RECHNER
+        <TrendingUp className="h-3.5 w-3.5" /> {t("roi.eyebrow")}
       </div>
       <h3 className="mt-2 text-2xl md:text-3xl font-semibold">
-        Was <span className="text-gradient">spart Kiwo</span> Ihnen?
+        {t("roi.headingPrefix")} <span className="text-gradient">{t("roi.headingHighlight")}</span> {t("roi.headingSuffix")}
       </h3>
       <p className="mt-2 text-sm text-foreground/60">
-        Wie viele Stunden wiederkehrender Arbeit fallen pro Woche an?
+        {t("roi.subtitle")}
       </p>
       <div className="mt-6">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-foreground/60 font-mono">5h</span>
+          <span className="text-foreground/60 font-mono">{t("roi.min")}</span>
           <span className="rounded-full bg-foreground/5 px-3 py-1 text-xs font-mono text-cyan-600 dark:text-cyan-300">
-            {hours} Std / Woche
+            {hours} {t("roi.unit")}
           </span>
-          <span className="text-foreground/60 font-mono">40h</span>
+          <span className="text-foreground/60 font-mono">{t("roi.max")}</span>
         </div>
         <input
           type="range"
@@ -569,32 +530,26 @@ function ROICalc() {
       </div>
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
-          <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">Ersparnis / Monat</div>
+          <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">{t("roi.savingsLabel")}</div>
           <div className="mt-2 text-3xl font-semibold tabular-nums">
-            {monthly.savedEuros.toLocaleString("de-DE")} €
+            {monthly.savedEuros.toLocaleString(intlLocale)} €
           </div>
         </div>
         <div className="rounded-xl border border-violet-400/20 bg-violet-400/5 p-4">
-          <div className="text-xs text-violet-600 dark:text-violet-300 font-mono">Zeit / Monat</div>
+          <div className="text-xs text-violet-600 dark:text-violet-300 font-mono">{t("roi.timeLabel")}</div>
           <div className="mt-2 text-3xl font-semibold tabular-nums">
-            {monthly.savedHours} Std
+            {monthly.savedHours} {t("roi.hoursUnit")}
           </div>
         </div>
       </div>
       <p className="mt-4 text-[11px] text-foreground/40">
-        Basis: ⌀ {hourlyCost} €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead).
+        {t("roi.basis", { cost: hourlyCost })}
       </p>
     </GlowCard>
   );
 }
 
 /* ---------- Preise ---------- */
-const pricingFeatures = [
-  "Alle freigeschalteten Kiwo-Rollen inklusive",
-  "Dashboard: Reservierungen, Bestellungen & Anrufe",
-  "E-Mail-Benachrichtigungen bei Neuem",
-  "EU-Hosting & DSGVO-konform",
-];
 const pricingTiers = [
   { name: "Solo", minutes: 600, price: 99, savedHours: 13, savedEuros: 273, tone: "violet" },
   { name: "Team", minutes: 1500, price: 249, savedHours: 33, savedEuros: 693, tone: "cyan", featured: true },
@@ -602,30 +557,16 @@ const pricingTiers = [
 ];
 
 /* ---------- Onboarding ---------- */
-const steps = [
-  {
-    n: "01",
-    title: "Kontakt aufnehmen",
-    desc: "Sie schreiben uns kurz über das Kontaktformular, wir melden uns.",
-    icon: Mail,
-  },
-  {
-    n: "02",
-    title: "Gemeinsames Setup",
-    desc: "Wir richten Kiwo für Ihren Betrieb ein und verknüpfen Ihre Kanäle (WhatsApp, Kalender, Telefon).",
-    icon: Plug,
-  },
-  {
-    n: "03",
-    title: "Kiwo übernimmt",
-    desc: "Alle Rollen sind aktiv, Sie behalten alles im Dashboard im Blick.",
-    icon: Sparkles,
-  },
+const stepMeta = [
+  { n: "01", key: "step1", icon: Mail },
+  { n: "02", key: "step2", icon: Plug },
+  { n: "03", key: "step3", icon: Sparkles },
 ];
 
 /* ---------- Page ---------- */
 export default function App() {
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
+  const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-40" />
@@ -645,9 +586,9 @@ export default function App() {
               className="inline-flex items-center gap-2.5 rounded-full glass px-3.5 py-1.5 text-xs font-mono"
             >
               <span className="h-2 w-2 rounded-full bg-emerald-400 pulse-dot" />
-              <span className="text-emerald-600 dark:text-emerald-300">Plattform online</span>
+              <span className="text-emerald-600 dark:text-emerald-300">{t("hero.badgeStatus")}</span>
               <span className="text-foreground/30">|</span>
-              <span className="text-foreground/60">v1.0 · EU</span>
+              <span className="text-foreground/60">{t("hero.badgeVersion")}</span>
             </motion.div>
 
             <motion.h1
@@ -656,8 +597,7 @@ export default function App() {
               transition={{ delay: 0.1 }}
               className="mt-6 text-[2.4rem] leading-[1.05] font-semibold sm:text-5xl md:text-6xl"
             >
-              <span className="text-gradient">KI-Works</span> – Die Plattform für{" "}
-              <span className="text-foreground">digitale KI-Mitarbeiter</span>.
+              <span className="text-gradient">{t("hero.titleBrand")}</span> {t("hero.titleRest")}
             </motion.h1>
 
             <motion.p
@@ -666,8 +606,8 @@ export default function App() {
               transition={{ delay: 0.2 }}
               className="mt-5 max-w-xl text-base md:text-lg text-foreground/65 leading-relaxed"
             >
-              Lernen Sie <span className="text-violet-600 dark:text-violet-300 font-medium">Kiwo</span> kennen –
-              Ihren digitalen Mitarbeiter für Telefon, WhatsApp, E-Mail und Terminverwaltung.
+              {t("hero.subtitlePrefix")} <span className="text-violet-600 dark:text-violet-300 font-medium">{t("hero.subtitleName")}</span>{" "}
+              {t("hero.subtitleSuffix")}
             </motion.p>
 
             <motion.div
@@ -680,28 +620,30 @@ export default function App() {
                 href="#roles"
                 className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
-                Kiwo kennenlernen
+                {t("hero.ctaPrimary")}
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </a>
               <a
                 href="#live"
                 className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
-                <Play className="h-3.5 w-3.5" /> Plattform-Demo
+                <Play className="h-3.5 w-3.5" /> {t("hero.ctaSecondary")}
               </a>
             </motion.div>
 
             <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-foreground/50 font-mono">
               <span className="flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" /> DSGVO · EU-Hosting
+                <Shield className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" /> {t("hero.statGdpr")}
               </span>
               <span className="flex items-center gap-1.5">
-                <Cpu className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" /> 12+ Integrationen
+                <Cpu className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" /> {t("hero.statIntegrations")}
               </span>
               <span className="flex items-center gap-1.5">
                 <Bot className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
-                {roles.filter((r) => r.status === "live").length} Rollen live ·{" "}
-                {roles.filter((r) => r.status !== "live").length} bald
+                {t("hero.statRoles", {
+                  live: roles.filter((r) => r.status === "live").length,
+                  soon: roles.filter((r) => r.status !== "live").length,
+                })}
               </span>
             </div>
           </div>
@@ -719,15 +661,14 @@ export default function App() {
             <div>
               <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-violet-400 pulse-dot" />
-                // rollen_ökosystem
+                {t("rolesSection.eyebrow")}
               </div>
               <h2 className="mt-2 text-3xl md:text-4xl font-semibold">
-                Ein Kiwo. <span className="text-gradient">Viele Rollen.</span>
+                {t("rolesSection.headingPrefix")} <span className="text-gradient">{t("rolesSection.headingHighlight")}</span>
               </h2>
             </div>
             <p className="max-w-md text-sm text-foreground/55">
-              Jede Rolle ist spezialisiert – gemeinsam decken sie den Alltag Ihres Teams ab.
-              Rollen ohne "bald verfügbar" sind schon heute einsatzbereit.
+              {t("rolesSection.subtitle")}
             </p>
           </div>
 
@@ -750,13 +691,13 @@ export default function App() {
         <div className="mx-auto max-w-5xl px-5 py-16 sm:px-6 md:py-24">
           <div className="text-center">
             <div className="text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90 inline-flex items-center gap-2">
-              <Zap className="h-3.5 w-3.5" /> LIVE-EINSATZ
+              <Zap className="h-3.5 w-3.5" /> {t("liveTest.eyebrow")}
             </div>
             <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
-              Testen Sie <span className="text-gradient">Kiwo</span>.
+              {t("liveTest.headingPrefix")} <span className="text-gradient">{t("liveTest.headingHighlight")}</span>
             </h2>
             <p className="mt-3 text-foreground/60 max-w-xl mx-auto text-sm md:text-base">
-              Wählen Sie einen Befehl – Kiwo führt die Aufgabe live im Terminal aus.
+              {t("liveTest.subtitle")}
             </p>
           </div>
           <div className="mt-8">
@@ -765,13 +706,13 @@ export default function App() {
 
           <div className="mt-16 text-center">
             <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 inline-flex items-center gap-2">
-              <PhoneCall className="h-3.5 w-3.5" /> ZUM ANHÖREN
+              <PhoneCall className="h-3.5 w-3.5" /> {t("demo.eyebrow")}
             </div>
             <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
-              Beispiel-Gespräche mit <span className="text-gradient">Kiwo</span>.
+              {t("demo.headingPrefix")} <span className="text-gradient">{t("demo.headingHighlight")}</span>
             </h3>
             <p className="mt-3 text-foreground/60 max-w-xl mx-auto text-sm md:text-base">
-              Gesprochene Beispiel-Dialoge, keine echten Gästeanrufe.
+              {t("demo.subtitle")}
             </p>
           </div>
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -788,24 +729,16 @@ export default function App() {
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
               <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 flex items-center gap-2">
-                <LayoutDashboard className="h-3.5 w-3.5" /> KUNDEN-DASHBOARD
+                <LayoutDashboard className="h-3.5 w-3.5" /> {t("dashboardSection.eyebrow")}
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
-                Alles auf <span className="text-gradient">einen Blick</span>.
+                {t("dashboardSection.headingPrefix")} <span className="text-gradient">{t("dashboardSection.headingHighlight")}</span>
               </h2>
               <p className="mt-4 text-foreground/65 leading-relaxed">
-                Reservierungen, Bestellungen und Anrufe laufen zentral in Ihrem eigenen
-                Dashboard zusammen – kein Zettel, kein Durcheinander zwischen Telefon,
-                WhatsApp und E-Mail.
+                {t("dashboardSection.desc")}
               </p>
               <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
-                {[
-                  "Alle Reservierungen, Bestellungen und Anrufe zentral an einem Ort",
-                  "Benachrichtigung bei neuen Anrufen, Reservierungen und Bestellungen",
-                  "Wochenkalender und Detailansicht auf einen Blick",
-                  "Anruf-Zusammenfassungen und Aufnahmen direkt nachhören",
-                  "Speisekarte, Öffnungszeiten und FAQ jederzeit selbst anpassen",
-                ].map((f) => (
+                {t("dashboardSection.features").map((f) => (
                   <li key={f} className="flex items-center gap-2">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-400/15 text-violet-600 dark:text-violet-300">
                       <Check className="h-3 w-3" />
@@ -818,22 +751,22 @@ export default function App() {
                 href="/dashboard/"
                 className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
               >
-                Dashboard ansehen <ArrowRight className="h-3.5 w-3.5" />
+                {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
               </a>
             </div>
 
             <GlowCard tone="violet" className="p-6">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-foreground/50">// kiwo.dashboard</div>
+                <div className="text-xs font-mono text-foreground/50">{t("dashboardSection.mockLabel")}</div>
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/15 px-2.5 py-0.5 text-[10px] font-mono text-violet-600 dark:text-violet-300">
-                  <Bell className="h-3 w-3" /> 3 neu
+                  <Bell className="h-3 w-3" /> {t("dashboardSection.newBadge")}
                 </span>
               </div>
               <div className="mt-4 space-y-2.5">
                 {[
-                  { icon: PhoneCall, tone: "cyan", label: "Neuer Anruf", meta: "vor 2 Min." },
-                  { icon: ShoppingBag, tone: "violet", label: "Bestellung · 2× Pizza Margherita", meta: "vor 12 Min." },
-                  { icon: CalendarDays, tone: "cyan", label: "Reservierung · 4 Pers., Fr 19:00", meta: "vor 34 Min." },
+                  { icon: PhoneCall, tone: "cyan", label: t("dashboardSection.rowCall"), meta: t("dashboardSection.metaCall") },
+                  { icon: ShoppingBag, tone: "violet", label: t("dashboardSection.rowOrder"), meta: t("dashboardSection.metaOrder") },
+                  { icon: CalendarDays, tone: "cyan", label: t("dashboardSection.rowReservation"), meta: t("dashboardSection.metaReservation") },
                 ].map((row) => (
                   <div
                     key={row.label}
@@ -854,10 +787,10 @@ export default function App() {
                 ))}
               </div>
               <div className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
-                <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">Von Kiwo übernommen · dieser Monat</div>
-                <div className="mt-1.5 text-2xl font-semibold tabular-nums">≈ 14 Std. · 294 €</div>
+                <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">{t("dashboardSection.savedLabel")}</div>
+                <div className="mt-1.5 text-2xl font-semibold tabular-nums">{t("dashboardSection.savedValue")}</div>
                 <div className="mt-1.5 text-[11px] text-foreground/40">
-                  Basis: ⌀ 21 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)
+                  {t("dashboardSection.savedBasis")}
                 </div>
               </div>
             </GlowCard>
@@ -871,23 +804,16 @@ export default function App() {
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
               <div className="text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90 flex items-center gap-2">
-                <Layers className="h-3.5 w-3.5" /> KI-WORKS PLATTFORM
+                <Layers className="h-3.5 w-3.5" /> {t("platformSection.eyebrow")}
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
-                Kiwo läuft auf der <span className="text-gradient">KI-Works Plattform</span>.
+                {t("platformSection.headingPrefix")} <span className="text-gradient">{t("platformSection.headingHighlight")}</span>
               </h2>
               <p className="mt-4 text-foreground/65 leading-relaxed">
-                Sicher, DSGVO-konform und in der EU gehostet. Kiwo verbindet sich nahtlos mit
-                Ihren bestehenden Tools – WhatsApp, Telefonanlagen, Outlook, Google Calendar
-                und Ihrem CRM.
+                {t("platformSection.desc")}
               </p>
               <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
-                {[
-                  "EU-Hosting & TLS-verschlüsselte Übertragung",
-                  "Strikte Datentrennung zwischen Kunden",
-                  "Passwortgeschützter Zugang für Admin & Kunden",
-                  "Automatisiertes Backup & Fehler-Monitoring",
-                ].map((f) => (
+                {t("platformSection.features").map((f) => (
                   <li key={f} className="flex items-center gap-2">
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cyan-400/15 text-cyan-600 dark:text-cyan-300">
                       <Check className="h-3 w-3" />
@@ -900,9 +826,9 @@ export default function App() {
 
             <GlowCard tone="cyan" className="p-6">
               <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-foreground/50">// integrations.stream</div>
+                <div className="text-xs font-mono text-foreground/50">{t("platformSection.mockLabel")}</div>
                 <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-[10px] font-mono text-emerald-600 dark:text-emerald-300">
-                  online
+                  {t("platformSection.onlineBadge")}
                 </span>
               </div>
               <div className="mt-4">
@@ -913,9 +839,9 @@ export default function App() {
               </div>
               <div className="mt-6 grid grid-cols-3 gap-3 text-center">
                 {[
-                  { k: "99.98%", v: "Uptime" },
-                  { k: "< 400ms", v: "Antwortzeit" },
-                  { k: "EU", v: "Datenhaltung" },
+                  { k: "99.98%", v: t("platformSection.statUptime") },
+                  { k: "< 400ms", v: t("platformSection.statResponse") },
+                  { k: "EU", v: t("platformSection.statData") },
                 ].map((s) => (
                   <div
                     key={s.v}
@@ -942,16 +868,16 @@ export default function App() {
             <ROICalc />
             <div>
               <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 flex items-center gap-2">
-                <Workflow className="h-3.5 w-3.5" /> ONBOARDING
+                <Workflow className="h-3.5 w-3.5" /> {t("onboardingSection.eyebrow")}
               </div>
               <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
-                So <span className="text-gradient">funktioniert's</span>.
+                {t("onboardingSection.headingPrefix")} <span className="text-gradient">{t("onboardingSection.headingHighlight")}</span>
               </h2>
               <p className="mt-3 text-foreground/60 text-sm md:text-base">
-                Oft in unter einer Woche produktiv – ohne IT-Projekt.
+                {t("onboardingSection.subtitle")}
               </p>
               <div className="mt-6 space-y-3">
-                {steps.map((s, i) => {
+                {stepMeta.map((s, i) => {
                   const Icon = s.icon;
                   return (
                     <motion.div
@@ -967,8 +893,8 @@ export default function App() {
                             {s.n}
                           </span>
                           <div className="min-w-0">
-                            <div className="truncate font-semibold">{s.title}</div>
-                            <p className="mt-1 text-sm text-foreground/60">{s.desc}</p>
+                            <div className="truncate font-semibold">{t(`onboardingSection.steps.${s.key}.title`)}</div>
+                            <p className="mt-1 text-sm text-foreground/60">{t(`onboardingSection.steps.${s.key}.desc`)}</p>
                           </div>
                           <span
                             className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
@@ -995,14 +921,13 @@ export default function App() {
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90">
-              <Sparkles className="h-3.5 w-3.5" /> PREISE
+              <Sparkles className="h-3.5 w-3.5" /> {t("pricing.eyebrow")}
             </div>
             <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
-              Ein Kiwo, <span className="text-gradient">alle Rollen inklusive</span>.
+              {t("pricing.headingPrefix")} <span className="text-gradient">{t("pricing.headingHighlight")}</span>
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm md:text-base text-foreground/60">
-              Sie zahlen nach Gesprächsvolumen, nicht danach, welche Rollen aktiv sind.
-              Der erste Monat ist kostenlos.
+              {t("pricing.subtitle")}
             </p>
           </div>
 
@@ -1015,20 +940,20 @@ export default function App() {
               >
                 {tier.featured && (
                   <span className="inline-flex rounded-full bg-cyan-400/15 px-3 py-1 text-[10px] font-mono uppercase tracking-wide text-cyan-600 dark:text-cyan-300">
-                    Meistgewählt
+                    {t("pricing.featured")}
                   </span>
                 )}
                 <div className={`${tier.featured ? "mt-3" : ""} text-lg font-semibold`}>{tier.name}</div>
                 <div className="mt-2 flex items-baseline gap-1.5">
                   <span className="text-4xl font-semibold tabular-nums">{tier.price} €</span>
-                  <span className="text-sm text-foreground/45">/ Monat</span>
+                  <span className="text-sm text-foreground/45">{t("pricing.perMonth")}</span>
                 </div>
                 <div className="mt-1.5 text-sm text-foreground/55">
-                  {tier.minutes.toLocaleString("de-DE")} Gesprächsminuten/Monat
+                  {t("pricing.minutesPerMonth", { n: tier.minutes.toLocaleString(intlLocale) })}
                 </div>
 
                 <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
-                  {pricingFeatures.map((f) => (
+                  {t("pricing.features").map((f) => (
                     <li key={f} className="flex items-start gap-2">
                       <span
                         className={`mt-0.5 flex h-4.5 w-4.5 shrink-0 items-center justify-center rounded-full ${
@@ -1043,26 +968,24 @@ export default function App() {
                 </ul>
 
                 <div className="mt-6 rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3.5 text-xs text-foreground/55">
-                  ≈ {tier.savedHours} Std. Personalzeit gespart / Monat
+                  {t("pricing.savedPersonnel", { h: tier.savedHours })}
                   <br />
-                  <span className="text-foreground/40">≈ {tier.savedEuros.toLocaleString("de-DE")} € Wert (⌀ 21 €/Std.)</span>
+                  <span className="text-foreground/40">{t("pricing.savedValue", { e: tier.savedEuros.toLocaleString(intlLocale) })}</span>
                 </div>
 
                 <a
                   href="/kontakt.html"
                   className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
                 >
-                  Jetzt kostenlos testen <ArrowRight className="h-3.5 w-3.5" />
+                  {t("pricing.cta")} <ArrowRight className="h-3.5 w-3.5" />
                 </a>
               </GlowCard>
             ))}
           </div>
           <p className="mt-6 text-center text-[11px] text-foreground/35">
-            Alle Preise zzgl. USt. Kontingent aufgebraucht? 0,20 €/Minute zusätzlich —
-            kein Anruf wird abgebrochen, keine automatische Sperre. Individuelles Paket
-            gewünscht?{" "}
+            {t("pricing.footnote")}{" "}
             <a href="/kontakt.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
-              Sprechen Sie uns an
+              {t("pricing.footnoteCta")}
             </a>
             .
           </p>
@@ -1077,19 +1000,18 @@ export default function App() {
               <OrbBuddy size={72} />
             </div>
             <h2 className="mt-2 text-3xl md:text-4xl font-semibold">
-              Bereit für Ihren{" "}
-              <span className="text-gradient">digitalen Mitarbeiter</span>?
+              {t("ctaSection.headingPrefix")}{" "}
+              <span className="text-gradient">{t("ctaSection.headingHighlight")}</span>
             </h2>
             <p className="mt-3 text-foreground/60 max-w-xl mx-auto">
-              Starten Sie mit einem kostenlosen Piloten – Kontakt aufnehmen, gemeinsames Setup,
-              Kiwo übernimmt.
+              {t("ctaSection.subtitle")}
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <a
                 href="/kontakt.html"
                 className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
-                <Mail className="h-3.5 w-3.5" /> Demo anfragen
+                <Mail className="h-3.5 w-3.5" /> {t("ctaSection.button")}
               </a>
             </div>
           </GlowCard>

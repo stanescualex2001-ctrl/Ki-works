@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Mail, Phone, Send, Check } from "lucide-react";
 import { PageShell } from "../components/PageShell.jsx";
+import { useI18n } from "../i18n/index.jsx";
 
 function ContactForm() {
+  const { t } = useI18n();
   const [form, setForm] = useState({ name: "", business: "", email: "", phone: "", message: "" });
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
@@ -20,7 +22,7 @@ function ContactForm() {
       body: JSON.stringify(form),
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Senden fehlgeschlagen");
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || t("kontakt.form.genericError"));
         setStatus("done");
       })
       .catch((err) => {
@@ -36,8 +38,8 @@ function ContactForm() {
           <Check className="h-5 w-5" />
         </span>
         <div>
-          <div className="text-sm font-medium text-foreground/90">Danke für Ihre Nachricht!</div>
-          <div className="mt-0.5 text-sm text-foreground/60">Wir melden uns so schnell wie möglich bei Ihnen.</div>
+          <div className="text-sm font-medium text-foreground/90">{t("kontakt.form.doneTitle")}</div>
+          <div className="mt-0.5 text-sm text-foreground/60">{t("kontakt.form.doneDesc")}</div>
         </div>
       </div>
     );
@@ -48,26 +50,26 @@ function ContactForm() {
 
   return (
     <form onSubmit={submit} className="glass mt-10 rounded-2xl p-6 md:p-8">
-      <h2 className="text-lg font-semibold">Nachricht schreiben</h2>
+      <h2 className="text-lg font-semibold">{t("kontakt.form.heading")}</h2>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="text-xs text-foreground/45 sm:col-span-1">
-          Name*
+          {t("kontakt.form.name")}
           <input required className={`mt-1.5 ${inputCls}`} value={form.name} onChange={set("name")} />
         </label>
         <label className="text-xs text-foreground/45 sm:col-span-1">
-          Betrieb
+          {t("kontakt.form.business")}
           <input className={`mt-1.5 ${inputCls}`} value={form.business} onChange={set("business")} />
         </label>
         <label className="text-xs text-foreground/45 sm:col-span-1">
-          E-Mail*
+          {t("kontakt.form.email")}
           <input required type="email" className={`mt-1.5 ${inputCls}`} value={form.email} onChange={set("email")} />
         </label>
         <label className="text-xs text-foreground/45 sm:col-span-1">
-          Telefon
+          {t("kontakt.form.phone")}
           <input className={`mt-1.5 ${inputCls}`} value={form.phone} onChange={set("phone")} />
         </label>
         <label className="text-xs text-foreground/45 sm:col-span-2">
-          Nachricht*
+          {t("kontakt.form.message")}
           <textarea
             required
             rows={4}
@@ -88,11 +90,11 @@ function ContactForm() {
           onChange={(e) => setConsent(e.target.checked)}
           className="mt-0.5 h-4 w-4 shrink-0 rounded border-foreground/20 bg-foreground/[0.03] accent-cyan-400"
         />
-        Ich habe die{" "}
+        {t("kontakt.form.consentPrefix")}{" "}
         <a href="/datenschutz.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
-          Datenschutzerklärung
+          {t("kontakt.form.consentLink")}
         </a>{" "}
-        gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu.*
+        {t("kontakt.form.consentSuffix")}
       </label>
 
       <div className="mt-5 flex flex-wrap items-center gap-4">
@@ -101,7 +103,7 @@ function ContactForm() {
           disabled={status === "sending" || !consent}
           className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform disabled:opacity-60 disabled:hover:scale-100"
         >
-          {status === "sending" ? "Wird gesendet…" : "Nachricht senden"} <Send className="h-3.5 w-3.5" />
+          {status === "sending" ? t("kontakt.form.sending") : t("kontakt.form.submit")} <Send className="h-3.5 w-3.5" />
         </button>
       </div>
     </form>
@@ -109,13 +111,13 @@ function ContactForm() {
 }
 
 export default function Kontakt() {
+  const { t } = useI18n();
   return (
     <PageShell page="kontakt">
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
-        <h1 className="text-3xl md:text-4xl font-semibold">Kontakt</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold">{t("kontakt.title")}</h1>
         <p className="mt-4 max-w-xl text-sm md:text-base text-foreground/65 leading-relaxed">
-          Fragen zu Kiwo oder der KI-Works Plattform? Schreiben Sie uns eine Nachricht — wir melden uns gerne bei
-          Ihnen.
+          {t("kontakt.intro")}
         </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -124,7 +126,7 @@ export default function Kontakt() {
               <Mail className="h-5 w-5" />
             </span>
             <div>
-              <div className="text-xs text-foreground/45">E-Mail</div>
+              <div className="text-xs text-foreground/45">{t("kontakt.emailLabel")}</div>
               <div className="mt-0.5 text-sm font-medium text-foreground/90">info@ki-works.eu</div>
             </div>
           </div>
@@ -136,7 +138,7 @@ export default function Kontakt() {
               <Phone className="h-5 w-5" />
             </span>
             <div>
-              <div className="text-xs text-foreground/45">Telefon</div>
+              <div className="text-xs text-foreground/45">{t("kontakt.phoneLabel")}</div>
               <div className="mt-0.5 text-sm font-medium text-foreground/90">+43 650 9915759</div>
             </div>
           </a>

@@ -53,5 +53,234 @@
   },
   "legalNotice": {
     "germanOnly": "Această pagină este disponibilă doar în limba germană. / This page is only available in German."
+  },
+  "heroOrb": {
+    "speechBubble": "Salut, sunt Kiwo",
+    "badgeCall": "Apel preluat",
+    "badgeAppointment": "Programare făcută",
+    "badgeWhatsapp": "WhatsApp la care s-a răspuns",
+    "badgeLead": "Lead calificat"
+  },
+  "hero": {
+    "badgeStatus": "Platformă online",
+    "badgeVersion": "v1.0 · UE",
+    "titleBrand": "KI-Works",
+    "titleRest": "– Platforma pentru angajați digitali AI.",
+    "subtitlePrefix": "Faceți cunoștință cu",
+    "subtitleName": "Kiwo",
+    "subtitleSuffix": "– angajatul dvs. digital pentru telefon, WhatsApp, e-mail și gestionarea programărilor.",
+    "ctaPrimary": "Descoperiți Kiwo",
+    "ctaSecondary": "Demo platformă",
+    "statGdpr": "RGPD · Găzduire UE",
+    "statIntegrations": "12+ integrări",
+    "statRoles": "{{live}} roluri active · {{soon}} în curând"
+  },
+  "rolesSection": {
+    "eyebrow": "// ecosistem_de_roluri",
+    "headingPrefix": "Un singur Kiwo.",
+    "headingHighlight": "Multe roluri.",
+    "subtitle": "Fiecare rol este specializat – împreună acoperă activitatea zilnică a echipei dvs. Rolurile fără eticheta \"în curând\" sunt deja gata de utilizare."
+  },
+  "roleTag": {
+    "reception": "Telefon & recepție",
+    "sales": "Vânzări & lead-uri",
+    "support": "Suport · 24/7",
+    "orders": "Comenzi & rezervări",
+    "office": "E-mail & calendar",
+    "recruiting": "Preselecție candidați",
+    "collection": "Reamintiri de plată",
+    "onboarding": "Integrare clienți & angajați",
+    "finance": "Bonuri & facturi"
+  },
+  "roleDesc": {
+    "reception": "Preia apelurile, le filtrează, le redirecționează sau oferă informații – non-stop, fără muzică de așteptare.",
+    "sales": "Califică lead-urile, răspunde la întrebările inițiale și transmite echipei dvs. contactele cu potențial ridicat.",
+    "support": "Răspunde la întrebări frecvente prin WhatsApp și chat web – în tonul mărcii dvs., în mai multe limbi.",
+    "orders": "Preia comenzi și rezervări, verifică disponibilitatea și confirmă imediat.",
+    "office": "Sortează e-mailurile, coordonează întâlnirile și sincronizează calendarele – fără du-te-vino.",
+    "recruiting": "Susține interviuri inițiale cu candidații, verifică disponibilitatea și programează întâlniri în calendarul echipei dvs. de HR.",
+    "collection": "Trimite reamintiri amabile pentru facturile restante, în loc să acționeze ca o agenție de recuperare.",
+    "onboarding": "Însoțește clienții noi sau angajații noi în primele 30 de zile și răspunde la întrebările inițiale.",
+    "finance": "Citește bonuri și facturi și transmite datele către contabilitatea dvs."
+  },
+  "roleCard": {
+    "soon": "în curând",
+    "viewRole": "Vedeți rolul"
+  },
+  "liveTest": {
+    "eyebrow": "ÎN ACȚIUNE",
+    "headingPrefix": "Testați",
+    "headingHighlight": "Kiwo.",
+    "subtitle": "Alegeți o comandă – Kiwo execută sarcina live în terminal.",
+    "agentLabel": "agent",
+    "stateWorking": "lucrează…",
+    "stateDone": "finalizat",
+    "stateReady": "pregătit",
+    "workingLine": "Kiwo lucrează",
+    "placeholder": "› Alegeți o comandă mai sus pentru a testa Kiwo live.",
+    "commands": {
+      "call": {
+        "role": "Kiwo Reception",
+        "label": "Preia un apel",
+        "steps": [
+          "Apel primit de la +49 30 ...",
+          "Kiwo răspunde: \"Bună ziua, aici este Kiwo pentru ki-works.eu…\"",
+          "Solicitare recunoscută: cerere de rapel, prioritate medie.",
+          "Tichetul #A-2481 a fost creat și înregistrat în CRM.",
+          "Finalizat în 11 sec. ✓"
+        ]
+      },
+      "calendar": {
+        "role": "Kiwo Office",
+        "label": "Programează o întâlnire",
+        "steps": [
+          "E-mail \"Propunere întâlnire joi ora 14:00\" recunoscut.",
+          "Calendar verificat: interval joi 14:00–14:45 liber.",
+          "Invitație trimisă clientului și colegei.",
+          "Reamintire programată automat cu 24h înainte.",
+          "Finalizat în 6 sec. ✓"
+        ]
+      },
+      "whatsapp": {
+        "role": "Kiwo Support",
+        "label": "Răspunde la un WhatsApp",
+        "steps": [
+          "WhatsApp nou: \"Mai sunteți deschiși azi?\"",
+          "Program de funcționare încărcat din baza de cunoștințe.",
+          "Răspuns formulat în tonul mărcii dvs.",
+          "Răspuns trimis · confirmare de primire ✓",
+          "Finalizat în 3 sec. ✓"
+        ]
+      }
+    }
+  },
+  "demo": {
+    "eyebrow": "DE ASCULTAT",
+    "headingPrefix": "Conversații exemplu cu",
+    "headingHighlight": "Kiwo.",
+    "subtitle": "Dialoguri exemplu vorbite, nu apeluri reale ale clienților.",
+    "subtitleTag": "Conversație exemplu",
+    "play": "Redă",
+    "pause": "Pauză",
+    "calls": {
+      "reservierung": "Rezervare masă",
+      "bestellung": "Comandă pentru ridicare",
+      "oeffnungszeiten": "Program & rezervare"
+    }
+  },
+  "dashboardSection": {
+    "eyebrow": "DASHBOARD PENTRU CLIENȚI",
+    "headingPrefix": "Totul dintr-o",
+    "headingHighlight": "privire.",
+    "desc": "Rezervările, comenzile și apelurile se centralizează în propriul dvs. dashboard – fără bilețele, fără haos între telefon, WhatsApp și e-mail.",
+    "features": [
+      "Toate rezervările, comenzile și apelurile centralizate într-un singur loc",
+      "Notificări pentru apeluri, rezervări și comenzi noi",
+      "Calendar săptămânal și vizualizare detaliată dintr-o privire",
+      "Ascultați rezumatele apelurilor și înregistrările direct",
+      "Actualizați singuri meniul, programul și întrebările frecvente oricând"
+    ],
+    "linkText": "Vedeți dashboardul",
+    "mockLabel": "// kiwo.dashboard",
+    "newBadge": "3 noi",
+    "rowCall": "Apel nou",
+    "rowOrder": "Comandă · 2× Pizza Margherita",
+    "rowReservation": "Rezervare · 4 pers., vineri ora 19:00",
+    "metaCall": "acum 2 min.",
+    "metaOrder": "acum 12 min.",
+    "metaReservation": "acum 34 min.",
+    "savedLabel": "Preluat de Kiwo · luna aceasta",
+    "savedValue": "≈ 14 ore · 294 €",
+    "savedBasis": "Bază de calcul: ⌀ 21 €/oră cost complet (salariu, contribuții și cheltuieli generale)"
+  },
+  "platformSection": {
+    "eyebrow": "PLATFORMA KI-WORKS",
+    "headingPrefix": "Kiwo rulează pe",
+    "headingHighlight": "platforma KI-Works.",
+    "desc": "Sigur, conform RGPD și găzduit în UE. Kiwo se conectează perfect cu instrumentele dvs. existente – WhatsApp, centrale telefonice, Outlook, Google Calendar și CRM-ul dvs.",
+    "features": [
+      "Găzduire UE & transmisie criptată TLS",
+      "Separare strictă a datelor între clienți",
+      "Acces protejat prin parolă pentru admin & clienți",
+      "Backup automatizat & monitorizare a erorilor"
+    ],
+    "mockLabel": "// integrations.stream",
+    "onlineBadge": "online",
+    "statUptime": "Disponibilitate",
+    "statResponse": "Timp de răspuns",
+    "statData": "Locație date"
+  },
+  "roi": {
+    "eyebrow": "CALCULATOR ROI",
+    "headingPrefix": "Cât",
+    "headingHighlight": "economisește Kiwo",
+    "headingSuffix": "pentru dvs.?",
+    "subtitle": "Câte ore de muncă repetitivă apar pe săptămână?",
+    "unit": "ore / săptămână",
+    "min": "5h",
+    "max": "40h",
+    "savingsLabel": "Economii / lună",
+    "timeLabel": "Timp / lună",
+    "hoursUnit": "ore",
+    "basis": "Bază de calcul: ⌀ {{cost}} €/oră cost complet (salariu, contribuții și cheltuieli generale)."
+  },
+  "onboardingSection": {
+    "eyebrow": "INTEGRARE",
+    "headingPrefix": "Cum",
+    "headingHighlight": "funcționează.",
+    "subtitle": "Deveniți operațional adesea în mai puțin de o săptămână – fără proiect IT.",
+    "steps": {
+      "step1": { "title": "Luați legătura", "desc": "Ne scrieți pe scurt prin formularul de contact, vă răspundem." },
+      "step2": { "title": "Configurare comună", "desc": "Configurăm Kiwo pentru afacerea dvs. și conectăm canalele dvs. (WhatsApp, calendar, telefon)." },
+      "step3": { "title": "Kiwo preia", "desc": "Toate rolurile sunt active, dvs. urmăriți totul din dashboard." }
+    }
+  },
+  "pricing": {
+    "eyebrow": "PREȚURI",
+    "headingPrefix": "Un singur Kiwo,",
+    "headingHighlight": "toate rolurile incluse.",
+    "subtitle": "Plătiți în funcție de volumul convorbirilor, nu în funcție de câte roluri sunt active. Prima lună este gratuită.",
+    "featured": "Cel mai ales",
+    "perMonth": "/ lună",
+    "minutesPerMonth": "{{n}} minute de convorbire/lună",
+    "features": [
+      "Toate rolurile Kiwo activate incluse",
+      "Dashboard: rezervări, comenzi & apeluri",
+      "Notificări prin e-mail pentru activitate nouă",
+      "Găzduire UE & conform RGPD"
+    ],
+    "savedPersonnel": "≈ {{h}} ore de timp de personal economisite / lună",
+    "savedValue": "≈ {{e}} € valoare (⌀ 21 €/oră)",
+    "cta": "Testați gratuit acum",
+    "footnote": "Toate prețurile plus TVA. Ați depășit contingentul? 0,20 €/minut suplimentar — niciun apel nu este întrerupt, nicio blocare automată. Doriți un pachet personalizat?",
+    "footnoteCta": "Contactați-ne"
+  },
+  "ctaSection": {
+    "headingPrefix": "Sunteți pregătit pentru",
+    "headingHighlight": "angajatul dvs. digital?",
+    "subtitle": "Începeți cu un pilot gratuit – luați legătura, configurare comună, Kiwo preia.",
+    "button": "Solicitați un demo"
+  },
+  "kontakt": {
+    "title": "Contact",
+    "intro": "Aveți întrebări despre Kiwo sau platforma KI-Works? Trimiteți-ne un mesaj — vă răspundem cu plăcere.",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Telefon",
+    "form": {
+      "heading": "Scrieți un mesaj",
+      "name": "Nume*",
+      "business": "Companie",
+      "email": "E-mail*",
+      "phone": "Telefon",
+      "message": "Mesaj*",
+      "consentPrefix": "Am citit",
+      "consentLink": "politica de confidențialitate",
+      "consentSuffix": "și sunt de acord cu prelucrarea datelor mele pentru soluționarea cererii mele.*",
+      "sending": "Se trimite…",
+      "submit": "Trimite mesajul",
+      "doneTitle": "Mulțumim pentru mesajul dvs.!",
+      "doneDesc": "Vă răspundem cât mai curând posibil.",
+      "genericError": "Trimiterea a eșuat"
+    }
   }
 }

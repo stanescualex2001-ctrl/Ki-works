@@ -53,5 +53,234 @@
   },
   "legalNotice": {
     "germanOnly": "Diese Seite ist nur auf Deutsch verfügbar. / This page is only available in German."
+  },
+  "heroOrb": {
+    "speechBubble": "Hi, ich bin Kiwo",
+    "badgeCall": "Anruf angenommen",
+    "badgeAppointment": "Termin gebucht",
+    "badgeWhatsapp": "WhatsApp beantwortet",
+    "badgeLead": "Lead qualifiziert"
+  },
+  "hero": {
+    "badgeStatus": "Plattform online",
+    "badgeVersion": "v1.0 · EU",
+    "titleBrand": "KI-Works",
+    "titleRest": "– Die Plattform für digitale KI-Mitarbeiter.",
+    "subtitlePrefix": "Lernen Sie",
+    "subtitleName": "Kiwo",
+    "subtitleSuffix": "kennen – Ihren digitalen Mitarbeiter für Telefon, WhatsApp, E-Mail und Terminverwaltung.",
+    "ctaPrimary": "Kiwo kennenlernen",
+    "ctaSecondary": "Plattform-Demo",
+    "statGdpr": "DSGVO · EU-Hosting",
+    "statIntegrations": "12+ Integrationen",
+    "statRoles": "{{live}} Rollen live · {{soon}} bald"
+  },
+  "rolesSection": {
+    "eyebrow": "// rollen_ökosystem",
+    "headingPrefix": "Ein Kiwo.",
+    "headingHighlight": "Viele Rollen.",
+    "subtitle": "Jede Rolle ist spezialisiert – gemeinsam decken sie den Alltag Ihres Teams ab. Rollen ohne \"bald verfügbar\" sind schon heute einsatzbereit."
+  },
+  "roleTag": {
+    "reception": "Telefon & Empfang",
+    "sales": "Vertrieb & Leads",
+    "support": "Service · 24/7",
+    "orders": "Bestellungen & Reservierungen",
+    "office": "E-Mail & Kalender",
+    "recruiting": "Bewerber-Erstqualifizierung",
+    "collection": "Zahlungserinnerung",
+    "onboarding": "Kunden- & Mitarbeiter-Einführung",
+    "finance": "Belege & Rechnungen"
+  },
+  "roleDesc": {
+    "reception": "Nimmt Anrufe an, filtert, leitet weiter oder gibt Auskunft – rund um die Uhr, ohne Wartemusik.",
+    "sales": "Qualifiziert Leads, beantwortet Erstfragen und übergibt heiße Kontakte direkt an Ihr Team.",
+    "support": "Beantwortet FAQs über WhatsApp und Web-Chat – im Ton Ihrer Marke, mehrsprachig.",
+    "orders": "Nimmt Bestellungen und Reservierungen entgegen, prüft Verfügbarkeit und bestätigt sofort.",
+    "office": "Sortiert E-Mails, koordiniert Termine und synchronisiert Kalender – ohne Ping-Pong.",
+    "recruiting": "Führt Erstgespräche mit Bewerbern, prüft Verfügbarkeiten und bucht Termine im Kalender Ihres HR-Teams.",
+    "collection": "Erinnert freundlich an offene Rechnungen, statt wie ein Inkassobüro aufzutreten.",
+    "onboarding": "Begleitet neue Kunden oder Mitarbeitende in den ersten 30 Tagen und beantwortet Startfragen.",
+    "finance": "Liest Belege und Rechnungen aus und übergibt die Daten an Ihre Buchhaltung."
+  },
+  "roleCard": {
+    "soon": "bald verfügbar",
+    "viewRole": "Rolle ansehen"
+  },
+  "liveTest": {
+    "eyebrow": "LIVE-EINSATZ",
+    "headingPrefix": "Testen Sie",
+    "headingHighlight": "Kiwo.",
+    "subtitle": "Wählen Sie einen Befehl – Kiwo führt die Aufgabe live im Terminal aus.",
+    "agentLabel": "agent",
+    "stateWorking": "arbeitet…",
+    "stateDone": "erledigt",
+    "stateReady": "bereit",
+    "workingLine": "Kiwo arbeitet",
+    "placeholder": "› Wähle einen Befehl oben, um Kiwo live zu testen.",
+    "commands": {
+      "call": {
+        "role": "Kiwo Reception",
+        "label": "Nimm einen Anruf an",
+        "steps": [
+          "Eingehender Anruf von +49 30 ...",
+          "Kiwo antwortet: \"Guten Tag, hier ist Kiwo für ki-works.eu…\"",
+          "Anliegen erkannt: Rückrufbitte, Priorität mittel.",
+          "Ticket #A-2481 erstellt und im CRM protokolliert.",
+          "Erledigt in 11 Sek. ✓"
+        ]
+      },
+      "calendar": {
+        "role": "Kiwo Office",
+        "label": "Trage einen Termin ein",
+        "steps": [
+          "E-Mail \"Terminvorschlag Do 14:00\" erkannt.",
+          "Kalender geprüft: Slot Do 14:00–14:45 frei.",
+          "Einladung an Kunde und Kollegin gesendet.",
+          "Erinnerung 24h vorher automatisch geplant.",
+          "Erledigt in 6 Sek. ✓"
+        ]
+      },
+      "whatsapp": {
+        "role": "Kiwo Support",
+        "label": "Beantworte eine WhatsApp",
+        "steps": [
+          "Neue WhatsApp: \"Ist heute noch geöffnet?\"",
+          "Öffnungszeiten aus Knowledge Base geladen.",
+          "Antwort formuliert im Ton Ihrer Marke.",
+          "Antwort gesendet · Empfangsbestätigung ✓",
+          "Erledigt in 3 Sek. ✓"
+        ]
+      }
+    }
+  },
+  "demo": {
+    "eyebrow": "ZUM ANHÖREN",
+    "headingPrefix": "Beispiel-Gespräche mit",
+    "headingHighlight": "Kiwo.",
+    "subtitle": "Gesprochene Beispiel-Dialoge, keine echten Gästeanrufe.",
+    "subtitleTag": "Beispiel-Gespräch",
+    "play": "Abspielen",
+    "pause": "Pause",
+    "calls": {
+      "reservierung": "Tischreservierung",
+      "bestellung": "Bestellung zur Abholung",
+      "oeffnungszeiten": "Öffnungszeiten & Reservierung"
+    }
+  },
+  "dashboardSection": {
+    "eyebrow": "KUNDEN-DASHBOARD",
+    "headingPrefix": "Alles auf",
+    "headingHighlight": "einen Blick.",
+    "desc": "Reservierungen, Bestellungen und Anrufe laufen zentral in Ihrem eigenen Dashboard zusammen – kein Zettel, kein Durcheinander zwischen Telefon, WhatsApp und E-Mail.",
+    "features": [
+      "Alle Reservierungen, Bestellungen und Anrufe zentral an einem Ort",
+      "Benachrichtigung bei neuen Anrufen, Reservierungen und Bestellungen",
+      "Wochenkalender und Detailansicht auf einen Blick",
+      "Anruf-Zusammenfassungen und Aufnahmen direkt nachhören",
+      "Speisekarte, Öffnungszeiten und FAQ jederzeit selbst anpassen"
+    ],
+    "linkText": "Dashboard ansehen",
+    "mockLabel": "// kiwo.dashboard",
+    "newBadge": "3 neu",
+    "rowCall": "Neuer Anruf",
+    "rowOrder": "Bestellung · 2× Pizza Margherita",
+    "rowReservation": "Reservierung · 4 Pers., Fr 19:00",
+    "metaCall": "vor 2 Min.",
+    "metaOrder": "vor 12 Min.",
+    "metaReservation": "vor 34 Min.",
+    "savedLabel": "Von Kiwo übernommen · dieser Monat",
+    "savedValue": "≈ 14 Std. · 294 €",
+    "savedBasis": "Basis: ⌀ 21 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)"
+  },
+  "platformSection": {
+    "eyebrow": "KI-WORKS PLATTFORM",
+    "headingPrefix": "Kiwo läuft auf der",
+    "headingHighlight": "KI-Works Plattform.",
+    "desc": "Sicher, DSGVO-konform und in der EU gehostet. Kiwo verbindet sich nahtlos mit Ihren bestehenden Tools – WhatsApp, Telefonanlagen, Outlook, Google Calendar und Ihrem CRM.",
+    "features": [
+      "EU-Hosting & TLS-verschlüsselte Übertragung",
+      "Strikte Datentrennung zwischen Kunden",
+      "Passwortgeschützter Zugang für Admin & Kunden",
+      "Automatisiertes Backup & Fehler-Monitoring"
+    ],
+    "mockLabel": "// integrations.stream",
+    "onlineBadge": "online",
+    "statUptime": "Uptime",
+    "statResponse": "Antwortzeit",
+    "statData": "Datenhaltung"
+  },
+  "roi": {
+    "eyebrow": "ROI-RECHNER",
+    "headingPrefix": "Was",
+    "headingHighlight": "spart Kiwo",
+    "headingSuffix": "Ihnen?",
+    "subtitle": "Wie viele Stunden wiederkehrender Arbeit fallen pro Woche an?",
+    "unit": "Std / Woche",
+    "min": "5h",
+    "max": "40h",
+    "savingsLabel": "Ersparnis / Monat",
+    "timeLabel": "Zeit / Monat",
+    "hoursUnit": "Std",
+    "basis": "Basis: ⌀ {{cost}} €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)."
+  },
+  "onboardingSection": {
+    "eyebrow": "ONBOARDING",
+    "headingPrefix": "So",
+    "headingHighlight": "funktioniert's.",
+    "subtitle": "Oft in unter einer Woche produktiv – ohne IT-Projekt.",
+    "steps": {
+      "step1": { "title": "Kontakt aufnehmen", "desc": "Sie schreiben uns kurz über das Kontaktformular, wir melden uns." },
+      "step2": { "title": "Gemeinsames Setup", "desc": "Wir richten Kiwo für Ihren Betrieb ein und verknüpfen Ihre Kanäle (WhatsApp, Kalender, Telefon)." },
+      "step3": { "title": "Kiwo übernimmt", "desc": "Alle Rollen sind aktiv, Sie behalten alles im Dashboard im Blick." }
+    }
+  },
+  "pricing": {
+    "eyebrow": "PREISE",
+    "headingPrefix": "Ein Kiwo,",
+    "headingHighlight": "alle Rollen inklusive.",
+    "subtitle": "Sie zahlen nach Gesprächsvolumen, nicht danach, welche Rollen aktiv sind. Der erste Monat ist kostenlos.",
+    "featured": "Meistgewählt",
+    "perMonth": "/ Monat",
+    "minutesPerMonth": "{{n}} Gesprächsminuten/Monat",
+    "features": [
+      "Alle freigeschalteten Kiwo-Rollen inklusive",
+      "Dashboard: Reservierungen, Bestellungen & Anrufe",
+      "E-Mail-Benachrichtigungen bei Neuem",
+      "EU-Hosting & DSGVO-konform"
+    ],
+    "savedPersonnel": "≈ {{h}} Std. Personalzeit gespart / Monat",
+    "savedValue": "≈ {{e}} € Wert (⌀ 21 €/Std.)",
+    "cta": "Jetzt kostenlos testen",
+    "footnote": "Alle Preise zzgl. USt. Kontingent aufgebraucht? 0,20 €/Minute zusätzlich — kein Anruf wird abgebrochen, keine automatische Sperre. Individuelles Paket gewünscht?",
+    "footnoteCta": "Sprechen Sie uns an"
+  },
+  "ctaSection": {
+    "headingPrefix": "Bereit für Ihren",
+    "headingHighlight": "digitalen Mitarbeiter?",
+    "subtitle": "Starten Sie mit einem kostenlosen Piloten – Kontakt aufnehmen, gemeinsames Setup, Kiwo übernimmt.",
+    "button": "Demo anfragen"
+  },
+  "kontakt": {
+    "title": "Kontakt",
+    "intro": "Fragen zu Kiwo oder der KI-Works Plattform? Schreiben Sie uns eine Nachricht — wir melden uns gerne bei Ihnen.",
+    "emailLabel": "E-Mail",
+    "phoneLabel": "Telefon",
+    "form": {
+      "heading": "Nachricht schreiben",
+      "name": "Name*",
+      "business": "Betrieb",
+      "email": "E-Mail*",
+      "phone": "Telefon",
+      "message": "Nachricht*",
+      "consentPrefix": "Ich habe die",
+      "consentLink": "Datenschutzerklärung",
+      "consentSuffix": "gelesen und stimme der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage zu.*",
+      "sending": "Wird gesendet…",
+      "submit": "Nachricht senden",
+      "doneTitle": "Danke für Ihre Nachricht!",
+      "doneDesc": "Wir melden uns so schnell wie möglich bei Ihnen.",
+      "genericError": "Senden fehlgeschlagen"
+    }
   }
 }
