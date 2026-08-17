@@ -804,6 +804,47 @@ Version auf "Publish" klicken.
   `deploy/install.sh`: `try_files` um `$uri/` ergänzt (fehlte vorher —
   `/en/`/`/ro/` hätten sonst nicht auf die passende `index.html`
   aufgelöst). **Noch nicht auf dem Produktivserver ausgerollt.**
+- **Mehrsprachigkeit DE/EN/RO — Phase 1-3 fertig (17.08.2026):** Nutzer
+  wollte nach Sichtung von Phase 0 explizit "alles übersetzen. alles" —
+  nicht nur Menü/Header/Footer, sondern wirklich jeden sichtbaren Text.
+  **Phase 1 (`landing/` Hauptseite):** Hero, Rollen-Sektion (inkl. neuer
+  `roleTag.*`/`roleDesc.*`-Namespaces für die 9 Rollen-Kacheln), Live-Test-
+  Terminal (Befehle/Schritte als `liveTest.commands.*`), Beispiel-Gespräche,
+  Kunden-Dashboard-Vorschau, Plattform-Sektion, ROI-Rechner, Onboarding,
+  Preise und finale CTA sind jetzt über `t()` aus `de/en/ro.json` befüllt
+  (vorher nur Header/Footer/Nav). Zahlenformatierung (Minuten, Euro-Beträge)
+  läuft jetzt locale-bewusst über eine `LOCALE_INTL`-Konstante
+  (de-DE/en-US/ro-RO) statt hartcodiertem `de-DE`. Nebeneffekt: das
+  `roles`-Array in `Header.jsx` wurde von dupliziertem Text (Name/Tag/
+  Beschreibung standen vorher sowohl im Array als auch in den Wörterbüchern)
+  auf reine sprachneutrale Metadaten (Icon/Farbe/Kategorie/Status) reduziert.
+  **Phase 2:** Kontaktformular (`Kontakt.jsx`) komplett übersetzt (Labels,
+  Platzhalter, Erfolgsmeldung, Datenschutz-Zustimmungstext). **Phase 3
+  (`dashboard/`):** kompletter restlicher Inhalt übersetzt — Login,
+  Übersicht (`RoiTile`/`UsageTile`), Wochenkalender, Reservierungen,
+  Bestellungen, Anrufe inkl. Transkript-Ansicht, Einstellungen (Rollen,
+  Preistarif, Speisekarte/Öffnungszeiten/FAQ-Editor, Zugangsdaten),
+  Kunden-Verwaltung, Anfragen/Leads, System-Status und Aktivitätsprotokoll
+  — bewusst inklusive der Admin-Bereiche (Nutzer-Entscheidung: keine
+  Ausnahme für intern genutzte Tabs). Datums-/Zeitformatierung dort
+  ebenfalls auf dieselbe `LOCALE_INTL`-Konstante (de-AT/en-US/ro-RO)
+  umgestellt statt hartcodiertem `de-AT`. `de/en/ro.json` in `dashboard/`
+  wuchsen von den Phase-0-Basiskeys auf 284 Keys pro Sprache (Schlüssel-
+  Parität über alle 3 Dateien per Skript geprüft, keine fehlenden/
+  überzähligen Keys). Phase 3 wurde wegen des Umfangs (~2000 Zeilen) an
+  einen Hintergrund-Agenten delegiert, Ergebnis danach selbst gegengeprüft
+  (Build, Schlüssel-Parität, Grep nach übriggebliebenem hartcodiertem
+  Deutsch in JSX-Text — keine Treffer). Beide Phasen lokal per
+  `npm run build` (fehlerfrei) und stichprobenartig per Playwright
+  verifiziert (übersetzte Überschriften/Labels sichtbar in EN/RO-Build-
+  Output bzw. im gerenderten DOM). **Damit sind Website und
+  Kunden-Dashboard durchgängig auf Deutsch/Englisch/Rumänisch nutzbar —
+  noch NICHT auf dem Produktivserver ausgerollt** (normaler rsync/Build-
+  Ablauf für `landing/`+`dashboard/`, plus der weiterhin ausstehende
+  `deploy/nginx/ki-works.conf`-`try_files`-Fix aus Phase 0). Bewusst
+  weiterhin NICHT übersetzt: Impressum/Datenschutz (rechtlich bindender
+  Text, siehe Phase-0-Begründung), echte Datenbank-Inhalte (Kundennamen,
+  Speisekarten/FAQ-Texte, Anruftranskripte).
 - **Nutzungsmessung + Anzeige pro Kunde (17.08.2026):** Antwort auf die
   Nutzer-Frage, wie der Überschreitungspreis (0,20 €/Min., siehe
   Preise-Repricing oben) eigentlich gemessen/abgerechnet wird — bisher
@@ -1226,15 +1267,12 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Mehrsprachigkeit DE/EN/RO — nur Phase 0 (Infrastruktur + Sidebar-Nav)
-  fertig, nicht ausgerollt.** Rest (siehe „Bereits erledigt" für Details):
-  Phase 1 `landing/`-Hauptseite komplett übersetzen, Phase 2
-  Kontaktformular-Labels, Phase 3 restlicher Dashboard-Inhalt (Login,
-  Übersicht, Kalender, Reservierungen, Bestellungen, Anrufe,
-  Einstellungen — Priorität Admin-Bereiche mit Nutzer klären, da nur
-  intern genutzt). Deploy braucht zusätzlich zum üblichen rsync/Build
-  auch den geänderten `deploy/nginx/ki-works.conf` (`try_files`-Fix) —
-  `nginx -t && systemctl reload nginx` nicht vergessen.
+- **Mehrsprachigkeit DE/EN/RO — Phase 0-3 fertig (Website + kompletter
+  Kunden-Dashboard-Inhalt), noch nicht auf dem Produktivserver
+  ausgerollt.** Siehe „Bereits erledigt" für Details. Deploy braucht
+  zusätzlich zum üblichen rsync/Build auch den geänderten
+  `deploy/nginx/ki-works.conf` (`try_files`-Fix) — `nginx -t &&
+  systemctl reload nginx` nicht vergessen.
 - **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
   ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
   `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U
