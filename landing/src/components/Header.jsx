@@ -219,8 +219,8 @@ export function Header({ page = "home" }) {
           <div className="leading-tight min-w-0">
             <div className="truncate text-sm font-semibold tracking-tight">KI-Works</div>
             <div className="truncate text-[10px] font-mono text-foreground/40">
-              <span className="sm:hidden">agent kiwo</span>
-              <span className="hidden sm:inline">platform · agent kiwo</span>
+              <span className="sm:hidden">{t("nav.logoSubtitleShort")}</span>
+              <span className="hidden sm:inline">{t("nav.logoSubtitleFull")}</span>
             </div>
           </div>
         </a>

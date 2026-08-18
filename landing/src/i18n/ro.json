@@ -13,7 +13,9 @@
     "categoryInternal": "Procese interne",
     "categoryIndustries": "Industrii",
     "statusLive": "live",
-    "statusSoon": "în curând"
+    "statusSoon": "în curând",
+    "logoSubtitleShort": "agent kiwo",
+    "logoSubtitleFull": "platformă · agent kiwo"
   },
   "roles": {
     "reception": "Kiwo Reception",

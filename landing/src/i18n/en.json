@@ -13,7 +13,9 @@
     "categoryInternal": "Internal processes",
     "categoryIndustries": "Industries",
     "statusLive": "live",
-    "statusSoon": "soon"
+    "statusSoon": "soon",
+    "logoSubtitleShort": "agent kiwo",
+    "logoSubtitleFull": "platform · agent kiwo"
   },
   "roles": {
     "reception": "Kiwo Reception",
