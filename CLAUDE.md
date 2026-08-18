@@ -29,8 +29,15 @@ sudo -u kiworks bash -c "cd /opt/ki-works/business-dashboard && npm install --no
 ```
 Nur bei Backend-Änderungen zusätzlich: `sudo -u kiworks bash -c "cd
 /opt/ki-works/backend && npm install --omit=dev --no-audit --no-fund"` und
-`systemctl restart ki-works-api`. Secrets/`.env` liegen separat unter
-`/etc/ki-works/` und werden vom rsync nicht berührt.
+`systemctl restart ki-works-api`. Secrets/Env-Variablen liegen separat unter
+`/etc/ki-works/` und werden vom rsync nicht berührt. **Wichtig (18.08.2026
+per systemd-Unit verifiziert):** die vom Backend-Service tatsächlich
+gelesene Datei ist `/etc/ki-works/ki-works.env` (per `EnvironmentFile=` in
+`/etc/systemd/system/ki-works-api.service`) — **nicht**
+`/etc/ki-works/.env`. Neue Env-Variablen für das Backend immer in
+`ki-works.env` eintragen, danach `systemctl restart ki-works-api`; zur
+Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
+--value)/environ | tr '\0' '\n' | grep <NAME>`.
 
 **Test-Restaurant:** Venezia, Marktplatz 10, 4311 Schwertberg.
 
@@ -1371,7 +1378,8 @@ Version auf "Publish" klicken.
      Page-ID, IG-Business-Account-ID und einen Page-Access-Token geben
      (Anleitung wurde im Chat gegeben); zusätzlich müssen `FB_PAGE_ID`,
      `FB_PAGE_ACCESS_TOKEN`, `IG_BUSINESS_ACCOUNT_ID`, `SOCIAL_POST_SECRET`
-     in `/etc/ki-works/.env` gesetzt werden.
+     in `/etc/ki-works/ki-works.env` gesetzt werden (nicht
+     `/etc/ki-works/.env` — siehe Korrektur im „Update-Ablauf" oben).
   2. Die wiederkehrende Mo/Mi/Fr-05:00-Routine (`create_trigger`) ließ sich
      am 07.08.2026 trotz mehrfacher Versuche und Nutzer-Bestätigung
      ("freigegeben") nicht anlegen — Fehler „MCP tool call requires
@@ -1419,20 +1427,20 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) braucht vor dem Live-Gang noch:**
-  (1) "KI-Works" muss als Kunde im Dashboard angelegt werden ("+ Neuer
-  Kunde", Rolle nur `support`, kein Telefon/Vapi nötig — Kontaktdaten
-  bereits bekannt: `info@ki-works.eu`, `+43 650 9915759`); (2) danach die
-  resultierende `restaurants.id` als `KIWORKS_OWN_RESTAURANT_ID` in
-  `/etc/ki-works/.env` setzen + Backend neu starten; (3) Wissensdatenbank/
-  FAQ im Dashboard-Selbstverwaltungs-Editor befüllen (Entwurf mit Preisen/
-  Rollen/Ablauf aus der Landingpage wurde beim Bauen mitgeliefert, siehe
-  Chat-Verlauf vom 18.08.2026); (4) `migration-022-leads-source.sql` auf
-  dem Server ausführen. Ohne (1)+(2) liefert das Widget nur eine
-  kontrollierte Fehlermeldung, kein Absturz. Ein echter Testlauf mit
-  echter Claude-Konversation (inkl. `capture_lead`-Tool) steht außerdem
-  noch aus — aus derselben Anthropic-Guthaben-Einschränkung wie beim
-  Sales-/Social-Agent noch nicht möglich gewesen.
+- **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) — Einrichtung fertig, blockiert
+  nur noch am Anthropic-Guthaben (18.08.2026):** Kunde "Ki Works" (id 12,
+  Rolle `support`) wurde im Dashboard angelegt, Wissensdatenbank/FAQ
+  befüllt, `KIWORKS_OWN_RESTAURANT_ID=12` korrekt in der vom Service
+  tatsächlich gelesenen Datei `/etc/ki-works/ki-works.env` gesetzt (nicht
+  `/etc/ki-works/.env` — siehe Korrektur im „Update-Ablauf" oben) +
+  Backend neu gestartet. Live-Test von hier aus (`curl` gegen
+  `ki-works.eu/api/public/webchat`) bestätigt: Setup ist jetzt technisch
+  korrekt, der Request kommt bis zur eigentlichen Claude-Anfrage durch —
+  scheitert dort aber mit `"Your credit balance is too low to access the
+  Anthropic API"` (per `journalctl -u ki-works-api` bestätigt). **Sobald
+  Anthropic-Guthaben aufgeladen ist, sollte der Chat ohne weiteren Schritt
+  funktionieren.** `migration-022-leads-source.sql` muss noch auf dem
+  Server ausgeführt werden (noch offen, unklar ob schon gelaufen).
 - **Mehrsprachigkeit DE/EN/RO — Phase 0-3 fertig (Website + kompletter
   Kunden-Dashboard-Inhalt), plus drei Nacharbeiten aus dem ersten
   Nutzer-Test (Logo-Untertitel-Fix, Dashboard-Sprachdropdown +
