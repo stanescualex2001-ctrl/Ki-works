@@ -1,5 +1,6 @@
 import { Header } from "./Header.jsx";
 import { Footer } from "./Footer.jsx";
+import { CookieBanner } from "./CookieBanner.jsx";
 
 /* Gemeinsamer Rahmen (Hintergrund, Header, Footer) für Unterseiten wie
    Impressum/Datenschutz, damit sie im selben Design wie die Startseite
@@ -15,6 +16,7 @@ export function PageShell({ children, page = "home" }) {
       <Header page={page} />
       <main className="relative z-10">{children}</main>
       <Footer page={page} />
+      <CookieBanner />
     </div>
   );
 }

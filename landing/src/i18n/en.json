@@ -43,7 +43,14 @@
     "contact": "Contact",
     "imprint": "Imprint",
     "privacy": "Privacy",
+    "cookieSettings": "Cookie settings",
     "systemsOperational": "systems operational"
+  },
+  "cookieBanner": {
+    "text": "We only use technically necessary data (e.g. your theme/language choice) — no analytics or marketing cookies. More in our",
+    "link": "privacy policy",
+    "essentialOnly": "Essential only",
+    "acceptAll": "Accept all"
   },
   "languageToggle": {
     "ariaLabel": "Choose language"

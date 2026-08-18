@@ -169,7 +169,17 @@ export default function Datenschutz() {
 
         <h2 className="mt-10 text-lg font-semibold">8. Cookies</h2>
         <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Diese Website verwendet keine Analyse- oder Tracking-Cookies.
+          Diese Website verwendet keine Analyse- oder Tracking-Cookies. Für
+          technisch notwendige Einstellungen (z. B. Ihre Theme- oder
+          Sprachwahl, Ihren Login im Kunden-Dashboard) wird ausschließlich
+          der lokale Browser-Speicher (localStorage) verwendet — dieser
+          sendet, anders als ein Cookie, keine Daten automatisch an unseren
+          Server und benötigt daher keine Einwilligung. Über den
+          Cookie-Banner bzw. den Link "Cookie-Einstellungen" im Footer
+          können Sie dennoch schon jetzt zwischen "nur notwendige" und
+          "alle akzeptieren" wählen — vorsorglich für den Fall, dass wir
+          künftig Analyse- oder Marketing-Dienste einsetzen. Ihre Wahl
+          können Sie dort jederzeit ändern.
         </p>
       </div>
     </PageShell>

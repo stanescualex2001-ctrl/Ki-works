@@ -1,4 +1,5 @@
 import { useI18n, localizedPath } from "../i18n/index.jsx";
+import { REOPEN_COOKIE_BANNER_EVENT } from "./CookieBanner.jsx";
 
 export function Footer({ page = "home" }) {
   const { locale, t } = useI18n();
@@ -12,6 +13,13 @@ export function Footer({ page = "home" }) {
           <a href={kontaktHref} className="hover:text-foreground/70 transition">{t("footer.contact")}</a>
           <a href="/impressum.html" className="hover:text-foreground/70 transition">{t("footer.imprint")}</a>
           <a href="/datenschutz.html" className="hover:text-foreground/70 transition">{t("footer.privacy")}</a>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(REOPEN_COOKIE_BANNER_EVENT))}
+            className="hover:text-foreground/70 transition"
+          >
+            {t("footer.cookieSettings")}
+          </button>
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" />
             {t("footer.systemsOperational")}

@@ -43,7 +43,14 @@
     "contact": "Contact",
     "imprint": "Date de identificare",
     "privacy": "Confidențialitate",
+    "cookieSettings": "Setări cookie-uri",
     "systemsOperational": "sisteme funcționale"
+  },
+  "cookieBanner": {
+    "text": "Folosim doar date tehnic necesare (de ex. alegerea temei/limbii) — fără cookie-uri de analiză sau marketing. Mai multe în",
+    "link": "politica de confidențialitate",
+    "essentialOnly": "Doar cele necesare",
+    "acceptAll": "Acceptați tot"
   },
   "languageToggle": {
     "ariaLabel": "Alegeți limba"

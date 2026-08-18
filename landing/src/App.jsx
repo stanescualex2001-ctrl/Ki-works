@@ -9,6 +9,7 @@ import {
 import { Header, roles } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { LanguageSuggestionBanner } from "./components/LanguageSuggestionBanner.jsx";
+import { CookieBanner } from "./components/CookieBanner.jsx";
 import { useI18n, DEFAULT_LOCALE } from "./i18n/index.jsx";
 
 /* ============================================================
@@ -1023,6 +1024,7 @@ export default function App() {
       </section>
 
       <Footer page="home" />
+      <CookieBanner />
     </div>
   );
 }

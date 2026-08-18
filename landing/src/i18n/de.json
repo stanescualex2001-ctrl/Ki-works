@@ -43,7 +43,14 @@
     "contact": "Kontakt",
     "imprint": "Impressum",
     "privacy": "Datenschutz",
+    "cookieSettings": "Cookie-Einstellungen",
     "systemsOperational": "systems operational"
+  },
+  "cookieBanner": {
+    "text": "Wir verwenden nur technisch notwendige Daten (z. B. Ihre Theme-/Sprachwahl) — keine Analyse- oder Marketing-Cookies. Mehr dazu in unserer",
+    "link": "Datenschutzerklärung",
+    "essentialOnly": "Nur notwendige",
+    "acceptAll": "Alle akzeptieren"
   },
   "languageToggle": {
     "ariaLabel": "Sprache wählen"
