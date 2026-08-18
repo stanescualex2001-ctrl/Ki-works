@@ -375,11 +375,14 @@ function LiveTest() {
   );
 }
 
-/* ---------- Demo-Gespräche (gesprochene Beispiel-Dialoge, keine echten Anrufe) ---------- */
+/* ---------- Demo-Gespräche (gesprochene Beispiel-Dialoge, keine echten Anrufe) ----------
+   Deutsche Dateien ohne Sprach-Suffix (Original), EN/RO als eigene
+   Aufnahmen mit -en/-ro-Suffix — DemoCallCard wählt die passende Datei
+   je nach aktueller Locale. */
 const demoCalls = [
-  { id: "reservierung", src: "/demo-audio/reservierung.mp3", tone: "violet" },
-  { id: "bestellung", src: "/demo-audio/bestellung.mp3", tone: "cyan" },
-  { id: "oeffnungszeiten", src: "/demo-audio/oeffnungszeiten.mp3", tone: "violet" },
+  { id: "reservierung", tone: "violet" },
+  { id: "bestellung", tone: "cyan" },
+  { id: "oeffnungszeiten", tone: "violet" },
 ];
 
 function fmtTime(s) {
@@ -390,7 +393,8 @@ function fmtTime(s) {
 }
 
 function DemoCallCard({ call }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const src = `/demo-audio/${call.id}${locale === DEFAULT_LOCALE ? "" : `-${locale}`}.mp3`;
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -409,7 +413,7 @@ function DemoCallCard({ call }) {
     <GlowCard tone={call.tone} className="p-5">
       <audio
         ref={audioRef}
-        src={call.src}
+        src={src}
         preload="metadata"
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
