@@ -879,6 +879,59 @@ Version auf "Publish" klicken.
   begonnener Schritt** — dieser Baustein liefert nur die Diskussions-/
   Anzeige-Grundlage dafür. **Noch nicht auf dem Produktivserver
   ausgerollt.**
+- **Mehrsprachigkeit: Nacharbeiten nach dem ersten Nutzer-Test (18.08.2026):**
+  Nutzer hat die Phase-1-3-Umsetzung getestet und drei Lücken gemeldet,
+  alle noch am selben Tag behoben. (1) Logo-Untertitel "platform · agent
+  kiwo" unter dem KI-Works-Schriftzug (`landing/src/components/Header.jsx`)
+  war hartcodiert und lief nie über `t()` — auf `/ro/` blieb er dadurch
+  unübersetzt stehen, obwohl der Rest des Mega-Menüs bereits korrekt
+  Rumänisch zeigte. Neue Keys `nav.logoSubtitleShort`/`logoSubtitleFull`
+  in allen 3 Wörterbüchern. (2) Sprach-Umschalter im Kunden-Dashboard war
+  bisher ein Durchklick-Button (DE→EN→RO→DE) statt eines Dropdowns wie auf
+  der Landingpage — jetzt echtes Dropdown-Menü (`LanguageToggle` in
+  `dashboard/src/App.jsx`), zusätzlich auch auf dem Login-Screen ergänzt
+  (vorher nur in der eingeloggten Sidebar vorhanden). Dabei einen
+  CSS-Bug gefunden und behoben: die Sidebar-Buttons unten (Aktualisieren/
+  Theme/Sprache/Logout) hatten `margin-top:auto` alle über dieselbe
+  `.refresh`-Klasse — Flexbox verteilte den freien Sidebar-Raum auf alle
+  vier gleichzeitig und riss sie weit auseinander (Nutzer-Screenshot
+  zeigte große Lücken). Jetzt sitzt `margin-top:auto` nur noch auf einem
+  neuen Wrapper (`.sidebar-actions`), die Buttons darin haben einen engen,
+  einheitlichen Abstand. (3) Klick auf "Kunden-Login" öffnete das
+  Dashboard bisher unabhängig von der gerade betrachteten Sprachversion
+  der Website (z. B. DE-Startseite → RO-Login, weil das Dashboard eine
+  komplett getrennte SPA ist und selbst per Browser-Sprache/localStorage
+  entschied) — alle 4 "Kunden-Login"-Links (Header Desktop/Mobile, Footer,
+  Dashboard-Vorschau-Sektion) hängen jetzt `?lang=<locale>` an;
+  `dashboard/src/i18n/index.jsx`s `detectInitialLocale()` liest diesen
+  Parameter zuerst aus (vor localStorage/Browser-Sprache) und übernimmt
+  ihn dauerhaft. Alles lokal per Playwright verifiziert (RO-Menü zeigt
+  jetzt durchgängig Rumänisch, Dashboard-Sprachdropdown öffnet/schließt
+  korrekt, `?lang=ro`→`?lang=en` überschreibt eine zuvor gespeicherte
+  Sprache wie erwartet).
+- **Beispiel-Gespräche jetzt auch auf Englisch/Rumänisch vertont
+  (18.08.2026):** die 3 Demo-Dialoge unter "Live testen" hatten bisher nur
+  deutsche Audiospuren, spielten auf `/en/`/`/ro/` also weiterhin Deutsch
+  ab. Kein Original-Skript/Transkript der deutschen Aufnahmen war im Repo
+  hinterlegt (nur Ad-hoc in einer früheren Sitzung erzeugt, nie
+  committet) — deshalb neue, inhaltlich passende Dialoge zu denselben 3
+  Szenarien (Tischreservierung/Bestellung zur Abholung/Öffnungszeiten,
+  Restaurant Venezia) auf Englisch und Rumänisch geschrieben statt
+  Übersetzung des unbekannten Originaltexts; **Nutzer hat das akzeptiert,
+  aber noch nicht final gegen die deutschen Originale abgeglichen** (siehe
+  „Offene Punkte"). Vertonung wie beim bestehenden Muster per `edge-tts`
+  (Kiwo- und Gast-Stimme getrennt, `+5%` Tempo, `ffmpeg`-Concat mit
+  kurzen Stille-Pausen zwischen den Sprechern) — Stimmen `en-US-AvaNeural`/
+  `en-US-GuyNeural` bzw. `ro-RO-AlinaNeural`/`ro-RO-EmilNeural` (Azure hat
+  aktuell genau eine männliche und eine weibliche Neural-Stimme pro
+  Sprache im Standard-Set). Dabei der Proxy-CA-Fix aus früheren Sitzungen
+  erneut angewendet (Zertifikat hatte seit dem letzten Mal rotiert).
+  Dateien liegen als `<id>-en.mp3`/`<id>-ro.mp3` neben den bestehenden
+  deutschen `<id>.mp3` in `landing/public/demo-audio/`; `DemoCallCard`
+  (`landing/src/App.jsx`) wählt die Datei jetzt anhand der aktuellen
+  Locale statt eines fest hinterlegten Pfads. Lokal per Playwright auf
+  allen 3 Sprachversionen geprüft (richtige `audio[src]` je Locale),
+  Build fehlerfrei.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1268,11 +1321,22 @@ Version auf "Publish" klicken.
 ## Offene Punkte (Stand zuletzt bekannt)
 
 - **Mehrsprachigkeit DE/EN/RO — Phase 0-3 fertig (Website + kompletter
-  Kunden-Dashboard-Inhalt), noch nicht auf dem Produktivserver
-  ausgerollt.** Siehe „Bereits erledigt" für Details. Deploy braucht
-  zusätzlich zum üblichen rsync/Build auch den geänderten
-  `deploy/nginx/ki-works.conf` (`try_files`-Fix) — `nginx -t &&
-  systemctl reload nginx` nicht vergessen.
+  Kunden-Dashboard-Inhalt), plus drei Nacharbeiten aus dem ersten
+  Nutzer-Test (Logo-Untertitel-Fix, Dashboard-Sprachdropdown +
+  Sidebar-Abstand, Sprache von Landingpage zum Login übernehmen) und die
+  EN/RO-Vertonung der Beispiel-Gespräche — siehe „Bereits erledigt" für
+  Details. Deploy-Befehle wurden dem Nutzer für jeden Schritt gegeben,
+  Rollout-Stand auf dem Produktivserver von hier aus nicht prüfbar (kein
+  SSH-Zugriff). Deploy braucht zusätzlich zum üblichen rsync/Build auch
+  den geänderten `deploy/nginx/ki-works.conf` (`try_files`-Fix) —
+  `nginx -t && systemctl reload nginx` nicht vergessen.
+- **Demo-Gespräche EN/RO: Inhalt nicht gegen deutsche Originale
+  abgeglichen.** Da kein Transkript der deutschen Aufnahmen im Repo lag,
+  wurden für Englisch/Rumänisch neue, aber inhaltlich passende Dialoge zu
+  denselben 3 Themen geschrieben (siehe „Bereits erledigt", 18.08.2026) —
+  keine Wort-für-Wort-Übersetzung. Falls der Nutzer das genauer angeglichen
+  haben möchte, müssten die deutschen Originale zuerst angehört/transkribiert
+  werden.
 - **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
   ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
   `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U
