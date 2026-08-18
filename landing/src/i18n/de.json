@@ -232,15 +232,86 @@
     "eyebrow": "ROI-RECHNER",
     "headingPrefix": "Was",
     "headingHighlight": "spart Kiwo",
-    "headingSuffix": "Ihnen?",
-    "subtitle": "Wie viele Stunden wiederkehrender Arbeit fallen pro Woche an?",
-    "unit": "Std / Woche",
-    "min": "5h",
-    "max": "40h",
-    "savingsLabel": "Ersparnis / Monat",
-    "timeLabel": "Zeit / Monat",
-    "hoursUnit": "Std",
-    "basis": "Basis: ⌀ {{cost}} €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)."
+    "headingSuffix": "Ihnen wirklich?",
+    "subtitle": "Geben Sie Ihre Zahlen ein und sehen Sie sofort, wie viel Zeit und Geld Ihr digitaler Mitarbeiter für Telefon, WhatsApp, E-Mail und Terminverwaltung freisetzt — inklusive ROI und Amortisation.",
+    "companyCardTitle": "Ihr Unternehmen",
+    "fields": {
+      "hours": {
+        "label": "Wiederkehrende Arbeit pro Woche",
+        "unit": "Std",
+        "hint": "Telefon, WhatsApp, E-Mails, Terminvergabe & Reservierungen."
+      },
+      "rate": {
+        "label": "Stundensatz Vollkosten (€)",
+        "hint": "Gehalt, Lohnnebenkosten & Overhead pro Stunde (Branchenschnitt: 21 €)."
+      },
+      "missed": {
+        "label": "Verpasste Anrufe/Anfragen pro Woche",
+        "hint": "Außerhalb der Öffnungszeiten, besetzt oder unbeantwortet liegen geblieben. Zählt auch zum Gesprächsvolumen unten."
+      },
+      "regular": {
+        "label": "Reguläre Anrufe/Anfragen pro Woche",
+        "hint": "Anrufe & Chats, die Kiwo zusätzlich zu den verpassten übernimmt (Reception, Orders, Support …)."
+      },
+      "duration": {
+        "label": "Ø Gesprächsdauer",
+        "unit": "Min.",
+        "hint": "Bestimmt, wie viele Gesprächsminuten pro Monat gebraucht werden — und damit, welches Paket wirklich passt."
+      },
+      "value": {
+        "label": "Ø Wert pro gewonnenem Kontakt (€)",
+        "hint": "Umsatz aus Bestellung, Reservierung oder Auftrag."
+      },
+      "rescue": {
+        "label": "Rettungsquote durch Kiwo",
+        "hint": "Anteil der sonst verlorenen Anfragen, die Kiwo abfängt und abschließt."
+      },
+      "margin": {
+        "label": "Marge auf Zusatzumsatz",
+        "hint": "Nur dieser Anteil des Zusatzumsatzes bleibt als echter Gewinn."
+      }
+    },
+    "tierCard": {
+      "title": "Kiwo-Paket",
+      "minutesNeededLabel": "benötigt:",
+      "minutesUnit": "Min./Mo.",
+      "fits": "reicht ✓",
+      "overage": "+{{cost}} € Zusatzkosten",
+      "netLabel": "Netto: {{value}} /Mo.",
+      "recommended": "★ Bestes Netto",
+      "switchHint": "{{tier}} würde Ihnen {{diff}} € /Mo. mehr Netto-Ergebnis bringen — oben klicken zum Wechseln."
+    },
+    "results": {
+      "heroLabel": "Geschätzter Netto-Nutzen",
+      "heroSubPositive": "nach Abzug der Kiwo-Kosten ({{tier}})",
+      "heroSubNegative": "Kiwo-Kosten übersteigen aktuell den Nutzen",
+      "roiLabel": "ROI",
+      "paybackLabel": "Amortisation",
+      "paybackNotReached": "nicht erreicht",
+      "paybackDays": "{{n}} Tage",
+      "paybackMonths": "{{n}} Monate"
+    },
+    "breakdown": {
+      "title": "Aufschlüsselung / Monat",
+      "section1": "1. Zeitersparnis — unabhängig von der Rettungsquote",
+      "timeSavedRow": "Zeitersparnis (Std./Mo.)",
+      "timeValueRow": "Wert der Zeitersparnis",
+      "section2": "2. Zusatzumsatz — nur wenn Rettungsquote > 0 %",
+      "rescuedCountRow": "Gerettete Kontakte (Anzahl/Mo.)",
+      "extraRevenueRow": "Zusatzumsatz aus geretteten Kontakten",
+      "extraProfitRow": "Davon Gewinn (Marge)",
+      "section3": "3. Kosten & Ergebnis",
+      "planCostRow": "Paketpreis ({{plan}})",
+      "overageRow": "Zusatzminuten ({{mins}} Min. × 0,20 €)",
+      "totalCostRow": "Kiwo-Kosten gesamt",
+      "netRow": "Netto-Ergebnis (1 + 2 − 3)",
+      "yearNote": "Jährlich (12 Monate, 1. Monat kostenlos): {{amount}}.",
+      "disclaimer": "Berechnungsgrundlage: Stundensatz, Rettungsquote und Marge sind frei einstellbar. Unverbindliche Schätzung auf Basis Ihrer Eingaben — keine Garantie."
+    },
+    "cta": {
+      "choosePlan": "Paket wählen",
+      "requestDemo": "Demo anfragen"
+    }
   },
   "onboardingSection": {
     "eyebrow": "ONBOARDING",

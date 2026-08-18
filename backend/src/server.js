@@ -183,8 +183,11 @@ app.post('/api/public/webchat', async (req, res) => {
   // bleibt für einen künftigen Multi-Kunden-Einsatz (LEDTEK/pixelpress) offen.
   const { message, history } = req.body || {};
   const restaurantId = req.body?.restaurantId || process.env.KIWORKS_OWN_RESTAURANT_ID;
-  if (!restaurantId || !message || typeof message !== 'string' || !message.trim()) {
+  if (!message || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'message erforderlich' });
+  }
+  if (!restaurantId) {
+    return res.status(503).json({ error: 'Chat ist noch nicht eingerichtet (KIWORKS_OWN_RESTAURANT_ID fehlt).' });
   }
   if (message.length > 2000) {
     return res.status(400).json({ error: 'Nachricht zu lang' });
