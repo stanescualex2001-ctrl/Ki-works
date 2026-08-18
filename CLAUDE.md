@@ -995,6 +995,42 @@ Version auf "Publish" klicken.
   `ANTHROPIC_API_KEY` hinterlegt (gleiche Einschränkung wie zuvor bei
   `salesAgent.js`/`socialAgent.js`). **Noch nicht live nutzbar**, siehe
   „Offene Punkte" (KI-Works muss noch als Kunde angelegt werden).
+- **Chat-Widget-Fehlermeldung geschärft + neuer ROI-Rechner nach
+  Nutzer-Vorlage (18.08.2026):** Nutzer meldete per Screenshot vom
+  bereits live geschalteten Widget, dass jede Nachricht mit "message
+  erforderlich" abgelehnt wurde, obwohl klar Text eingegeben war. Ursache:
+  `POST /api/public/webchat` (`backend/src/server.js`) hat zwei
+  unterschiedliche Fehlerursachen (fehlende Nachricht vs. fehlende/nicht
+  gesetzte `KIWORKS_OWN_RESTAURANT_ID`, siehe Eintrag direkt oberhalb)
+  hinter derselben irreführenden Meldung versteckt — jetzt getrennt (400
+  bei fehlender Nachricht, 503 mit klarem Hinweis bei fehlender
+  Restaurant-Zuordnung). Kein Verhaltensunterschied bei echt fehlender
+  Nachricht. **Ursache dafür ist weiterhin offen** — siehe „Offene
+  Punkte", die eigentliche Einrichtung (Kunde anlegen + Env-Variable
+  setzen) steht noch aus. Zweiter Teil derselben Sitzung: der bisherige
+  einfache Ein-Regler-ROI-Rechner wurde komplett durch eine vom Nutzer
+  bereitgestellte, deutlich ausgereiftere Vorlage ersetzt (8 einstellbare
+  Eingaben — Arbeitsstunden, Stundensatz, verpasste/reguläre Anrufe,
+  Gesprächsdauer, Kontaktwert, Rettungsquote, Marge; automatische
+  Tarif-Empfehlung nach höchstem Netto-Ergebnis mit manuellem Override +
+  Wechsel-Hinweis; Aufschlüsselung nach Zeitersparnis/Zusatzumsatz/
+  Kosten; Amortisation als Tage/Monate statt einer bei einem reinen Abo
+  unpassenden klassischen Amortisationskurve). Fachlich 1:1 aus der
+  Vorlage übernommen (`landing/src/App.jsx`, `ROICalc`), technisch in
+  React/`useState`/`useMemo` + bestehende `pricingTiers` überführt,
+  optisch ans tatsächliche Cyan/Violet-Design (nicht das eigenständige
+  dunkle Grün-Design der Vorlage) angepasst, `roi.*`-i18n-Namespace in
+  de/en/ro deutlich erweitert. **Bewusst nicht übernommen** (nach
+  Rückfrage): der Footnote-Absatz "EU-AI-Act-Compliance" der Vorlage —
+  laut CLAUDE.md ist die Kennzeichnungspflicht am Telefon bisher nur
+  "vermutlich" erfüllt, eine explizite Compliance-Aussage wäre verfrüht
+  (gleiche Vorsicht wie bei der früheren Korrektur der 4 unzutreffenden
+  Sicherheitsversprechen). Lokal per Playwright verifiziert: Default-Werte
+  ergeben plausible Zahlen (kein NaN/undefined), alle Regler aktualisieren
+  live, Paket-Auto-Empfehlung wechselt korrekt bei steigendem
+  Minutenbedarf, manuelle Paketwahl zeigt Wechsel-Hinweis bei suboptimaler
+  Wahl, alle 3 Sprachen zeigen übersetzten Text, mobiles Layout stapelt
+  sauber.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
