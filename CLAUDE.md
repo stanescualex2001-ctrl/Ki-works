@@ -932,6 +932,69 @@ Version auf "Publish" klicken.
   Locale statt eines fest hinterlegten Pfads. Lokal per Playwright auf
   allen 3 Sprachversionen geprüft (richtige `audio[src]` je Locale),
   Build fehlerfrei.
+- **Google Fonts selbst gehostet + Cookie-Consent-Banner (Grundgerüst,
+  18.08.2026):** Nutzer wollte einen Cookie-Banner. Prüfung ergab: die
+  Website setzt aktuell keine Analyse-/Tracking-Cookies (Login läuft über
+  `localStorage`, kein GA/Pixel) — die Datenschutzerklärung sagte das
+  bereits korrekt. Einziger echter Befund: Google Fonts wurde von
+  `fonts.googleapis.com`/`fonts.gstatic.com` geladen (IP-Adresse jedes
+  Besuchers geht an Google ohne Einwilligung — dafür gab es 2022 ein
+  bekanntes deutsches Gerichtsurteil, LG München I, Abmahnrisiko).
+  Nutzer-Entscheidung: **beides** umsetzen. (1) Space Grotesk/Inter/
+  JetBrains Mono liegen jetzt als woff2 (latin/latin-ext-Subset) unter
+  `public/fonts/` in allen 3 Apps (`landing/`, `dashboard/`,
+  `business-dashboard/`), die Google-Fonts-`<link>`-Tags sind aus allen
+  10 HTML-Einstiegspunkten entfernt — optisch unverändert, kein externer
+  Request mehr. (2) Neues Cookie-Consent-Banner nur in `landing/`
+  (`CookieBanner.jsx`, gleiches Client-only-Muster wie
+  `LanguageSuggestionBanner.jsx`): aktuell nichts zu bestätigen, aber
+  `lib/cookieConsent.js` (`getConsent`/`setConsent`/`hasConsent()`)
+  speichert schon jetzt eine Wahl, damit künftiger Code (z. B. Analytics)
+  erst nach Zustimmung laden kann. Jederzeit änderbar über neuen
+  "Cookie-Einstellungen"-Link im Footer. `Datenschutz.jsx` Abschnitt 8
+  entsprechend ergänzt (localStorage ≠ Cookie, braucht keine Einwilligung).
+  Lokal per Playwright verifiziert: kein Request mehr an
+  `fonts.googleapis.com`/`gstatic.com`, Banner erscheint/verschwindet/
+  persistiert korrekt, Footer-Link öffnet erneut.
+- **Kiwo Web-Chat-Widget für ki-works.eu — Pilot (18.08.2026):** Nutzer
+  wollte ursprünglich Chatbots für LEDTEK/pixelpress/ki-works.eu auf den
+  jeweils eigenen Websites; nach Rückfrage auf **nur ki-works.eu jetzt**
+  eingegrenzt (LEDTEK/pixelpress liegen außerhalb dieses Repos, dort wäre
+  nur ein Einbett-Snippet lieferbar — eigener, späterer Schritt). Neuer
+  öffentlicher Endpunkt `POST /api/public/webchat`
+  (`backend/src/webchat.js`) lässt Besucher schriftlich mit Kiwo chatten,
+  gestützt ausschließlich auf `knowledge_base`/`faq` des zugehörigen
+  `restaurants`-Datensatzes (`formatFaq`/`formatOpeningHours` aus
+  `vapi.js` wiederverwendet, jetzt exportiert). Nutzt `@anthropic-ai/sdk`
+  wie `salesAgent.js`, mit einem `capture_lead`-Tool: bei unbeantwortbaren
+  Fragen (Nutzer-Entscheidung: **wie das Kontaktformular**, nicht wie der
+  telefonische Rückruf) landet ein Eintrag in der bestehenden
+  `leads`-Tabelle (neue `source`-Spalte, `migration-022`). Restaurant wird
+  über die Env-Variable `KIWORKS_OWN_RESTAURANT_ID` aufgelöst — kein
+  Hardcoding einer DB-ID im Frontend, `restaurantId` im Request bleibt für
+  einen künftigen Multi-Kunden-Einsatz optional. Erstes echtes
+  In-Memory-Rate-Limiting im Backend (20 Nachrichten/10 Min pro IP, kein
+  neues npm-Paket) — es gab bisher nirgends Rate-Limiting, obwohl das
+  Sicherheits-Audit das schon länger als Lücke nennt (gilt weiterhin nur
+  für diesen einen Endpunkt, nicht global). Frontend: neue
+  `ChatWidget.jsx` (schwebende Bubble unten rechts, Orb-Buddy-Avatar) auf
+  allen `landing/`-Seiten eingehängt, ruft same-origin auf (Pilot, kein
+  CORS nötig). `OrbBuddy` dafür aus `App.jsx` in eine eigene Komponente
+  ausgelagert. Dabei einen echten Positionskonflikt gefunden und behoben:
+  der Cookie-Banner blockierte die Chat-Bubble beim automatischen
+  Erstanzeigen (Playwright-Klick schlug fehl, "intercepts pointer
+  events") — `CookieBanner` meldet Sichtbarkeitsänderungen jetzt über ein
+  generisches Event (`COOKIE_BANNER_VISIBILITY_EVENT`) bei jeder eigenen
+  State-Änderung statt nur beim manuellen Wiederöffnen. Lokal verifiziert:
+  Backend-Validierung (fehlende Felder, unbekanntes/falsch konfiguriertes
+  Restaurant, zu lange Nachricht, Rate-Limit-Grenze) per curl gegen
+  frische Test-DB; Frontend per Playwright (Bubble öffnen/schließen,
+  Nachricht senden, kein Overlap mit Cookie-Banner, EN-Locale-Text).
+  **Der eigentliche Claude-Konversationsinhalt inkl. `capture_lead`-Tool
+  konnte NICHT live getestet werden** — in dieser Sandbox ist kein
+  `ANTHROPIC_API_KEY` hinterlegt (gleiche Einschränkung wie zuvor bei
+  `salesAgent.js`/`socialAgent.js`). **Noch nicht live nutzbar**, siehe
+  „Offene Punkte" (KI-Works muss noch als Kunde angelegt werden).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1320,6 +1383,20 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) braucht vor dem Live-Gang noch:**
+  (1) "KI-Works" muss als Kunde im Dashboard angelegt werden ("+ Neuer
+  Kunde", Rolle nur `support`, kein Telefon/Vapi nötig — Kontaktdaten
+  bereits bekannt: `info@ki-works.eu`, `+43 650 9915759`); (2) danach die
+  resultierende `restaurants.id` als `KIWORKS_OWN_RESTAURANT_ID` in
+  `/etc/ki-works/.env` setzen + Backend neu starten; (3) Wissensdatenbank/
+  FAQ im Dashboard-Selbstverwaltungs-Editor befüllen (Entwurf mit Preisen/
+  Rollen/Ablauf aus der Landingpage wurde beim Bauen mitgeliefert, siehe
+  Chat-Verlauf vom 18.08.2026); (4) `migration-022-leads-source.sql` auf
+  dem Server ausführen. Ohne (1)+(2) liefert das Widget nur eine
+  kontrollierte Fehlermeldung, kein Absturz. Ein echter Testlauf mit
+  echter Claude-Konversation (inkl. `capture_lead`-Tool) steht außerdem
+  noch aus — aus derselben Anthropic-Guthaben-Einschränkung wie beim
+  Sales-/Social-Agent noch nicht möglich gewesen.
 - **Mehrsprachigkeit DE/EN/RO — Phase 0-3 fertig (Website + kompletter
   Kunden-Dashboard-Inhalt), plus drei Nacharbeiten aus dem ersten
   Nutzer-Test (Logo-Untertitel-Fix, Dashboard-Sprachdropdown +
