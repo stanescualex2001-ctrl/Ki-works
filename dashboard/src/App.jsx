@@ -24,22 +24,44 @@ function ThemeToggle({ className = '' }) {
   );
 }
 
-/* ---------- Sprach-Umschalter (DE/EN/RO, zyklisch wie ThemeToggle) ---------- */
+/* ---------- Sprach-Auswahl (Dropdown, wie das Flaggen-Menü auf der Landingpage) ---------- */
 const LOCALE_FLAG = { de: '🇩🇪', en: '🇬🇧', ro: '🇷🇴' };
 const LOCALE_NATIVE = { de: 'Deutsch', en: 'English', ro: 'Română' };
 function LanguageToggle({ className = '' }) {
   const { locale, setLocale, t } = useI18n();
-  const nextLocale = SUPPORTED_LOCALES[(SUPPORTED_LOCALES.indexOf(locale) + 1) % SUPPORTED_LOCALES.length];
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
   return (
-    <button
-      type="button"
-      className={`refresh ${className}`}
-      onClick={() => setLocale(nextLocale)}
-      aria-label={t('languageToggle.ariaLabel')}
-      title={t('languageToggle.ariaLabel')}
-    >
-      {LOCALE_FLAG[nextLocale]} {LOCALE_NATIVE[nextLocale]}
-    </button>
+    <div className="lang-select" ref={ref}>
+      <button
+        type="button"
+        className={`refresh ${className}`}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-label={t('languageToggle.ariaLabel')}
+        title={t('languageToggle.ariaLabel')}
+      >
+        {LOCALE_FLAG[locale]} {LOCALE_NATIVE[locale]}
+      </button>
+      {open && (
+        <div className="lang-select-list">
+          {SUPPORTED_LOCALES.filter((l) => l !== locale).map((l) => (
+            <button key={l} type="button" onClick={() => { setLocale(l); setOpen(false); }}>
+              {LOCALE_FLAG[l]} {LOCALE_NATIVE[l]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -258,7 +280,10 @@ function Login({ onLogin }) {
           {loading ? t('login.submitting') : t('login.submit')}
         </button>
         <a className="site-link login-site-link" href="/">← {t('sidebar.backToWebsite')}</a>
-        <ThemeToggle className="login-theme-toggle" />
+        <div className="login-toggles">
+          <ThemeToggle className="login-theme-toggle" />
+          <LanguageToggle className="login-theme-toggle" />
+        </div>
       </form>
     </div>
   );
@@ -1977,11 +2002,13 @@ export default function App() {
           ))}
         </nav>
 
-        <button className="refresh" onClick={refresh}>⟳ {t('sidebar.refresh')}</button>
-        <ThemeToggle />
-        <LanguageToggle />
-        <button className="refresh" onClick={logout}>{t('sidebar.logout')} ({isAdmin ? t('sidebar.operator') : auth.name})</button>
-        <a className="site-link" href="/">← {t('sidebar.backToWebsite')}</a>
+        <div className="sidebar-actions">
+          <button className="refresh" onClick={refresh}>⟳ {t('sidebar.refresh')}</button>
+          <ThemeToggle />
+          <LanguageToggle />
+          <button className="refresh" onClick={logout}>{t('sidebar.logout')} ({isAdmin ? t('sidebar.operator') : auth.name})</button>
+          <a className="site-link" href="/">← {t('sidebar.backToWebsite')}</a>
+        </div>
       </aside>
 
       <main>

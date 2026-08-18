@@ -32,6 +32,19 @@ export function createTranslator(locale) {
 }
 
 export function detectInitialLocale() {
+  // ?lang= kommt vom "Kunden-Login"-Link auf der Landingpage (dashboard/
+  // ist eine separate SPA ohne gemeinsamen State mit landing/) — hat
+  // Vorrang vor einer älteren gespeicherten Wahl, weil der Klick aus einer
+  // bestimmten Sprachversion der Website die klare aktuelle Absicht ist.
+  try {
+    const fromUrl = new URLSearchParams(window.location.search).get("lang");
+    if (SUPPORTED_LOCALES.includes(fromUrl)) {
+      persistLocale(fromUrl);
+      return fromUrl;
+    }
+  } catch {
+    /* ignorieren */
+  }
   try {
     const stored = localStorage.getItem(KEY);
     if (SUPPORTED_LOCALES.includes(stored)) return stored;

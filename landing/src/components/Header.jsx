@@ -259,7 +259,7 @@ export function Header({ page = "home" }) {
           <LanguageToggle page={page} />
           <ThemeToggle />
           <a
-            href="/dashboard/"
+            href={`/dashboard/?lang=${locale}`}
             className="hidden rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-3 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap sm:inline-flex"
           >
             {t("nav.customerLogin")}
@@ -357,7 +357,7 @@ export function Header({ page = "home" }) {
                 {t("nav.contact")}
               </a>
               <a
-                href="/dashboard/"
+                href={`/dashboard/?lang=${locale}`}
                 onClick={() => setMobileOpen(false)}
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >

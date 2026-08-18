@@ -748,7 +748,7 @@ export default function App() {
                 ))}
               </ul>
               <a
-                href="/dashboard/"
+                href={`/dashboard/?lang=${locale}`}
                 className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
               >
                 {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
