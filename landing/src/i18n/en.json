@@ -52,6 +52,15 @@
     "essentialOnly": "Essential only",
     "acceptAll": "Accept all"
   },
+  "chatWidget": {
+    "openLabel": "Open chat with Kiwo",
+    "closeLabel": "Close chat",
+    "sendLabel": "Send",
+    "title": "Kiwo",
+    "subtitle": "Ask me anything about KI-Works",
+    "greeting": "Hi, I'm Kiwo! Ask me about roles, pricing, or how Kiwo could work for you.",
+    "placeholder": "Type a message…"
+  },
   "languageToggle": {
     "ariaLabel": "Choose language"
   },

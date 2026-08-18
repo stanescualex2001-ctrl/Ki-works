@@ -52,6 +52,15 @@
     "essentialOnly": "Nur notwendige",
     "acceptAll": "Alle akzeptieren"
   },
+  "chatWidget": {
+    "openLabel": "Chat mit Kiwo öffnen",
+    "closeLabel": "Chat schließen",
+    "sendLabel": "Senden",
+    "title": "Kiwo",
+    "subtitle": "Fragen Sie mich alles über KI-Works",
+    "greeting": "Hi, ich bin Kiwo! Fragen Sie mich zu Rollen, Preisen oder wie Kiwo für Sie arbeiten kann.",
+    "placeholder": "Nachricht schreiben…"
+  },
   "languageToggle": {
     "ariaLabel": "Sprache wählen"
   },

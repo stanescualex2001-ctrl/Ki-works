@@ -8,6 +8,10 @@ import { getConsent, setConsent } from "../lib/cookieConsent.js";
 // PageShell), ein globales Event ist hier einfacher als Context/Prop-Drilling
 // durch beide Einhänge-Pfade.
 export const REOPEN_COOKIE_BANNER_EVENT = "kiworks-open-cookie-banner";
+// Gefeuert bei JEDER Sichtbarkeits-Änderung (nicht nur beim manuellen
+// Wiederöffnen) — z. B. ChatWidget hört mit, um seiner unten rechts
+// sitzenden Bubble beim automatischen Erstanzeigen des Banners auszuweichen.
+export const COOKIE_BANNER_VISIBILITY_EVENT = "kiworks-cookie-banner-visibility";
 
 // Rein client-seitig (useEffect, läuft nie im SSR-Prerender-Output) —
 // gleiches Muster wie LanguageSuggestionBanner. Zeigt sich, solange noch
@@ -25,6 +29,10 @@ export function CookieBanner() {
     window.addEventListener(REOPEN_COOKIE_BANNER_EVENT, reopen);
     return () => window.removeEventListener(REOPEN_COOKIE_BANNER_EVENT, reopen);
   }, []);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent(COOKIE_BANNER_VISIBILITY_EVENT, { detail: { visible } }));
+  }, [visible]);
 
   if (!visible) return null;
 

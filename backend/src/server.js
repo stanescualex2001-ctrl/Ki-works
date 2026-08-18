@@ -10,6 +10,7 @@ import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent } from './socialAgent.js';
+import { runWebchatTurn } from './webchat.js';
 import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
 import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
@@ -152,6 +153,71 @@ app.post('/api/public/interest', async (req, res) => {
 app.get('/api/leads', adminOnly, async (_req, res) => {
   const { rows } = await query('SELECT * FROM leads ORDER BY created_at DESC LIMIT 200');
   res.json(rows);
+});
+
+// --- Kiwo Web-Chat-Widget (öffentlich) ------------------------------------
+// Einfaches In-Memory-Rate-Limiting pro IP — kein Redis nötig bei aktueller
+// Größenordnung (ein Prozess). Schützt einen öffentlichen, unauthentifizierten
+// LLM-Endpunkt vor Kosten-/Missbrauchsrisiko (siehe Sicherheits-Audit in
+// CLAUDE.md: es gibt sonst nirgends Rate-Limiting im Backend).
+const webchatRateLimit = new Map();
+const WEBCHAT_RATE_LIMIT = 20; // Nachrichten
+const WEBCHAT_RATE_WINDOW_MS = 10 * 60 * 1000; // pro 10 Minuten
+
+function checkWebchatRateLimit(ip) {
+  const now = Date.now();
+  const entry = webchatRateLimit.get(ip);
+  if (!entry || now > entry.resetAt) {
+    webchatRateLimit.set(ip, { count: 1, resetAt: now + WEBCHAT_RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= WEBCHAT_RATE_LIMIT) return false;
+  entry.count += 1;
+  return true;
+}
+
+app.post('/api/public/webchat', async (req, res) => {
+  // restaurantId ist optional — das Widget auf ki-works.eu selbst kennt/
+  // braucht keine interne DB-ID, sondern nutzt den auf dem Server hinterlegten
+  // Standard-Betrieb (KIWORKS_OWN_RESTAURANT_ID). Explizite restaurantId
+  // bleibt für einen künftigen Multi-Kunden-Einsatz (LEDTEK/pixelpress) offen.
+  const { message, history } = req.body || {};
+  const restaurantId = req.body?.restaurantId || process.env.KIWORKS_OWN_RESTAURANT_ID;
+  if (!restaurantId || !message || typeof message !== 'string' || !message.trim()) {
+    return res.status(400).json({ error: 'message erforderlich' });
+  }
+  if (message.length > 2000) {
+    return res.status(400).json({ error: 'Nachricht zu lang' });
+  }
+  if (!checkWebchatRateLimit(req.ip)) {
+    return res.status(429).json({ error: 'Zu viele Nachrichten — bitte kurz warten.' });
+  }
+
+  const { rows } = await query(
+    'SELECT id, name, knowledge_base, faq, opening_hours, enabled_roles FROM restaurants WHERE id = $1',
+    [restaurantId],
+  );
+  const restaurant = rows[0];
+  if (!restaurant || !Array.isArray(restaurant.enabled_roles) || !restaurant.enabled_roles.includes('support')) {
+    return res.status(404).json({ error: 'Chat für diesen Betrieb nicht verfügbar' });
+  }
+
+  const safeHistory = Array.isArray(history) ? history.slice(-20) : [];
+
+  try {
+    const { reply } = await runWebchatTurn({ restaurant, history: safeHistory, message: message.trim() });
+    logAction({
+      restaurantId: restaurant.id,
+      source: 'webchat',
+      action: 'message',
+      summary: `Web-Chat-Nachricht beantwortet`,
+      details: { message: message.trim().slice(0, 500), reply: reply.slice(0, 500) },
+    });
+    res.json({ reply });
+  } catch (err) {
+    await logError('webchat', err);
+    res.status(502).json({ error: 'Kiwo ist gerade nicht erreichbar. Bitte versuchen Sie es später erneut.' });
+  }
 });
 
 app.patch('/api/leads/:id', adminOnly, async (req, res) => {

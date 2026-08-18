@@ -52,6 +52,15 @@
     "essentialOnly": "Doar cele necesare",
     "acceptAll": "Acceptați tot"
   },
+  "chatWidget": {
+    "openLabel": "Deschide chatul cu Kiwo",
+    "closeLabel": "Închide chatul",
+    "sendLabel": "Trimite",
+    "title": "Kiwo",
+    "subtitle": "Întrebați-mă orice despre KI-Works",
+    "greeting": "Salut, sunt Kiwo! Întrebați-mă despre roluri, prețuri sau cum poate lucra Kiwo pentru dvs.",
+    "placeholder": "Scrieți un mesaj…"
+  },
   "languageToggle": {
     "ariaLabel": "Alegeți limba"
   },

@@ -313,7 +313,7 @@ const WEEKDAY_LABELS = [
 // Wandelt {"mon":"11:00-22:00", "wed":"closed", ...} in einen lesbaren Satz
 // für den Vapi-Systemprompt um, damit Kiwo die echten Öffnungszeiten pro
 // Betrieb kennt (statt fest im Prompt eincodierter Ruhetage).
-function formatOpeningHours(hours) {
+export function formatOpeningHours(hours) {
   if (!hours || typeof hours !== 'object') return 'Keine Öffnungszeiten hinterlegt.';
   return WEEKDAY_LABELS.map(([key, label]) => {
     const val = hours[key];
@@ -323,7 +323,7 @@ function formatOpeningHours(hours) {
 
 // Wandelt die im Dashboard gepflegten FAQ-Einträge [{question, answer}, ...]
 // in lesbaren Text für den Vapi-Systemprompt um.
-function formatFaq(faq) {
+export function formatFaq(faq) {
   if (!Array.isArray(faq) || !faq.length) return 'Keine zusätzlichen FAQ hinterlegt.';
   return faq
     .filter((item) => item?.question && item?.answer)
