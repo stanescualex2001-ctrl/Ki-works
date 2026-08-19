@@ -1140,6 +1140,72 @@ Version auf "Publish" klicken.
   (Desktop/Mobile-Screenshot, keine JS-Fehler, `noindex`-Tag vorhanden).
   **Auf dem Produktivserver noch nicht ausgerollt**, normaler
   rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
+- **Agentur-White-Label Phase 1 — echte Domain-Trennung + Branding
+  (19.08.2026):** Nutzer-Klarstellung nach den Pitch-Materialien: "White-
+  Label" bedeutet hart, dass KI-Works für die Agentur und deren Endkunden
+  **nirgends sichtbar** sein darf — jede Agentur bringt **immer eine
+  eigene Domain** mit, Backend/DB bleiben zentral bei KI-Works, nur das
+  sichtbare Branding wechselt. Vapi-Assistentenname wird pro Agentur
+  eigen. Umgesetzt (technischer Plan vorher mit Nutzer abgestimmt und
+  freigegeben): neue Tabelle `agencies` (`backend/sql/migration-023-
+  agencies.sql`: `name`, `domain` UNIQUE, `branding` JSONB, `login_email`/
+  `password_hash` schon vorbereitet für Phase 2) + `restaurants.agency_id`
+  (FK, nullable). Neuer öffentlicher Endpunkt `GET /api/public/branding`
+  (`backend/src/server.js`) löst das Branding rein über den HTTP-
+  `Host`-Header auf (kein Login nötig, funktioniert schon auf dem
+  Login-Screen) — unbekannte Domain/`ki-works.eu` liefert
+  `{isAgency:false}`, bestehende Direktkunden bleiben dadurch unverändert.
+  Admin-CRUD `GET/POST/PATCH /api/agencies` (`adminOnly`). `dashboard/`:
+  neuer `branding.jsx`-Context, `main.jsx` lädt das Branding vor dem
+  ersten Render und überschreibt bei aktiver Agentur `document.title` +
+  die zentralen CSS-Variablen (`--accent` usw.); alle 4 Logo-Stellen
+  (Login/DSGVO-Consent/Setup-Passwort/Sidebar) laufen jetzt über eine
+  gemeinsame `<BrandLogo/>`-Komponente (zeigt Agentur-Logo+-Name statt
+  OrbitK+„KI-Works", wenn gesetzt); das Kiwo-/OrbBuddy-Maskottchen in der
+  Sidebar wird bei aktivem Agentur-Branding ausgeblendet (sonst bliebe der
+  Name "Kiwo" sichtbar). `backend/src/vapiAdmin.js`: `BASE_PROMPT`/
+  `firstMessage` sind jetzt Template-Funktionen mit `assistantName`-
+  Parameter (Default weiterhin "Kiwo"), `syncVapiAssistant()` joint
+  `agencies.branding->>'assistantName'` und reicht ihn durch — kein
+  "Kiwo" mehr im Prompt/in der Begrüßung, sobald eine Agentur einen
+  eigenen Namen hinterlegt hat. **nginx/TLS bewusst NICHT** in die
+  hand-gepflegte `deploy/nginx/ki-works.conf` gemischt (Wiederholung des
+  13.08.2026-Ausfalls wäre das Risiko) — stattdessen neues Skript
+  `deploy/add-agency-domain.sh <domain>`, das einen eigenen, komplett
+  Certbot-verwalteten server-Block pro Agentur-Domain anlegt (DNS-Check
+  per `dig`, HTTP-Bootstrap → `certbot --nginx`). Admin-Verwaltung: neue
+  Sektion "Agenturen" im `business-dashboard/` (Anlegen + Branding-Felder
+  bearbeiten, analog `RolesForm`/`PricingTierForm`-Mustern) + neuer
+  "Agentur ändern"-Button im Kunden-Dashboard bei „Kunden (Betreiber)"
+  (`AgencyAssignForm`, setzt `restaurants.agency_id`). **Bewusst Phase 2
+  (später, nicht Teil dieses Schritts):** eigener Agentur-Login (dritte
+  JWT-Rolle, damit eine Agentur mehrere Kunden auf einmal sieht) — nicht
+  nötig für die reine Sichtbarkeits-Anforderung, da Endkunden weiterhin
+  ganz normal über die bestehende `customer`-Rolle einloggen, nur das
+  Branding wechselt. Ebenfalls bewusst offen: E-Mail-Absender
+  (n8n-Mails laufen weiterhin von info@ki-works.eu — verrät den Betreiber),
+  Impressum/Haftungsfrage bei White-Label-Instanzen (rechtliche Klärung
+  nötig, keine Code-Frage). Lokal komplett gegen frische Test-DB
+  end-to-end verifiziert: Migration sauber, `GET /api/public/branding`
+  per `curl` mit verschiedenen `Host`-Headern (bekannte Agentur-Domain →
+  Branding-JSON inkl. `assistantName`, `ki-works.eu`/unbekannt →
+  `{isAgency:false}`), `syncVapiAssistant()`-Templating enthält nach Test
+  kein "Kiwo" mehr bei gesetztem Agentur-Namen, `deploy/add-agency-
+  domain.sh` per `bash -n` auf Syntaxfehler geprüft. Beide neuen
+  Admin-UIs zusätzlich per echtem Playwright-Klicktest gegen den echten
+  lokalen Backend-Prozess verifiziert (nicht nur Mocks): Agentur im
+  Business-Dashboard anlegen + Branding-Formular zeigt gespeicherte Werte
+  korrekt vorausgefüllt; im Kunden-Dashboard "Agentur ändern" bei einem
+  Test-Kunden ausgewählt → `restaurants.agency_id` in der DB tatsächlich
+  gesetzt. `dashboard/`/`business-dashboard/`-Builds beide fehlerfrei,
+  i18n-Schlüsselparität (288 Keys) über alle 3 Sprachen weiterhin
+  bestätigt. **Noch nicht auf dem Produktivserver ausgerollt** und noch
+  keine echte Agentur angelegt — Rollout braucht zusätzlich zum üblichen
+  rsync/Build-Ablauf für `dashboard/`+`business-dashboard/` die Migration
+  `migration-023-agencies.sql` und einen Backend-Neustart; sobald eine
+  echte Agentur zusagt, zusätzlich `deploy/add-agency-domain.sh <domain>`
+  auf dem Server ausführen (braucht vorher gesetztes DNS der Agentur auf
+  die Server-IP).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1298,18 +1364,19 @@ Version auf "Publish" klicken.
   - **Stimm-/Dialekt-Anpassung** je Region (AT/CH) für höhere Akzeptanz bei
     Anrufern
   - **White-Label/Agentur-Partner-Programm**: Plattform an Agenturen/
-    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten.
-    Detaillierter durchdacht: braucht (1) neue Agentur-Ebene über den
-    Betrieben (jeder Betrieb gehört einer Agentur, Rechte-Modell über
-    `customerScope` hinaus erweitern), (2) austauschbares Branding
-    (Logo/Farben/Name) pro Agentur im Dashboard statt hartcodiertem
-    "KI-Works"-Design, (3) zweistufige Abrechnung (Großhandel an Agentur,
-    Agentur an Endkunde) — hängt am selben fehlenden Preismodell wie beim
-    Admin-Dashboard-Punkt, (4) Support-Trennung (Agentur = Erstsupport).
-    Größter Aufwand ist Branding-Flexibilität + Billing, nicht die
-    Multi-Tenant-Grundarchitektur (die trägt schon). Nutzer-Priorität:
-    **explizit für später** — zuerst sollen alle Kiwo-Rollen, Branchen und
-    das neue Design fertig werden.
+    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten. **Update
+    19.08.2026:** Phase 1 (eigene Domain pro Agentur + unsichtbares
+    KI-Works-Branding + eigener Vapi-Assistentenname) ist umgesetzt, siehe
+    „Bereits erledigt" — Punkte (1) und (2) unten sind damit erledigt,
+    offen bleiben (3) zweistufige Abrechnung (Großhandel an Agentur,
+    Agentur an Endkunde — hängt am selben fehlenden Preismodell wie beim
+    Admin-Dashboard-Punkt) und (4) Support-Trennung (Agentur =
+    Erstsupport), sowie der eigene Agentur-Login (Phase 2, mehrere Kunden
+    auf einmal sehen). Ursprüngliche Einschätzung: braucht (1) neue
+    Agentur-Ebene über den Betrieben (jeder Betrieb gehört einer Agentur,
+    Rechte-Modell über `customerScope` hinaus erweitern), (2)
+    austauschbares Branding (Logo/Farben/Name) pro Agentur im Dashboard
+    statt hartcodiertem "KI-Works"-Design.
   - **Branchen-Templates im Marktplatz**: vorgefertigte Prompts/Workflows/
     Wissenstöpfe je Nische (z. B. "Template für Autohäuser"), mit einem
     Klick aktivierbar. Nutzer-Präzisierung: Templates sollen der
