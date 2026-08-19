@@ -53,8 +53,59 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
+// Löst White-Label-Branding anhand der aufgerufenen Domain auf — öffentlich,
+// weil schon der Login-Screen selbst (vor jeder Authentifizierung) das
+// richtige Branding zeigen muss. Unbekannte/eigene Domain (ki-works.eu)
+// liefert {isAgency:false}, Dashboard zeigt dann normales KI-Works-Branding.
+app.get('/api/public/branding', async (req, res) => {
+  const host = (req.headers.host || '').split(':')[0].toLowerCase();
+  const { rows } = await query('SELECT id, branding FROM agencies WHERE domain = $1', [host]);
+  const agency = rows[0];
+  res.json(agency ? { isAgency: true, agencyId: agency.id, ...agency.branding } : { isAgency: false });
+});
+
 app.get('/api/admin/system-status', adminOnly, async (_req, res) => {
   res.json(await getSystemStatus());
+});
+
+// --- Agenturen (White-Label) --------------------------------------------------
+app.get('/api/agencies', adminOnly, async (_req, res) => {
+  const { rows } = await query('SELECT id, name, domain, branding, login_email, created_at FROM agencies ORDER BY id');
+  res.json(rows);
+});
+
+app.post('/api/agencies', adminOnly, async (req, res) => {
+  const { name, domain, branding } = req.body || {};
+  if (!name || !domain) return res.status(400).json({ error: 'name und domain erforderlich' });
+  const { rows } = await query(
+    'INSERT INTO agencies (name, domain, branding) VALUES ($1, $2, $3) RETURNING id, name, domain, branding, created_at',
+    [name, domain.toLowerCase(), JSON.stringify(branding || {})],
+  );
+  res.json(rows[0]);
+});
+
+app.patch('/api/agencies/:id', adminOnly, async (req, res) => {
+  const allowed = ['name', 'domain'];
+  const sets = [];
+  const vals = [];
+  for (const key of allowed) {
+    if (key in req.body) {
+      vals.push(key === 'domain' ? String(req.body[key]).toLowerCase() : req.body[key]);
+      sets.push(`${key} = $${vals.length}`);
+    }
+  }
+  if ('branding' in req.body) {
+    vals.push(JSON.stringify(req.body.branding || {}));
+    sets.push(`branding = $${vals.length}`);
+  }
+  if (!sets.length) return res.status(400).json({ error: 'no fields' });
+  vals.push(req.params.id);
+  const { rows } = await query(
+    `UPDATE agencies SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING id, name, domain, branding, created_at`,
+    vals,
+  );
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json(rows[0]);
 });
 
 app.get('/api/admin/errors', adminOnly, async (req, res) => {
@@ -327,7 +378,7 @@ app.post('/api/restaurants', adminOnly, async (req, res) => {
 
 app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
   const allowed = ['name', 'address', 'contact_email', 'contact_phone',
-    'vapi_phone_number', 'vapi_assistant_id', 'login_email', 'vapi_published', 'pricing_tier'];
+    'vapi_phone_number', 'vapi_assistant_id', 'login_email', 'vapi_published', 'pricing_tier', 'agency_id'];
   const sets = [];
   const vals = [];
   for (const key of allowed) {
@@ -354,7 +405,7 @@ app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
   // Änderung gleich mit-synchronisieren, statt manuell setup-vapi.sh
   // nachzuziehen.
   let vapi;
-  if (['name', 'address', 'vapi_phone_number', 'enabled_roles'].some((key) => key in req.body)) {
+  if (['name', 'address', 'vapi_phone_number', 'enabled_roles', 'agency_id'].some((key) => key in req.body)) {
     vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
     const { rows: updated } = await query('SELECT * FROM restaurants WHERE id = $1', [rows[0].id]);
     return res.json({ ...publicRestaurant(updated[0]), vapi });

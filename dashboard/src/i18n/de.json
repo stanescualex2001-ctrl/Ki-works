@@ -204,6 +204,11 @@
     "title": "Preistarif für „{{name}}\"",
     "tierLabel": "Tarif"
   },
+  "agencyAssignForm": {
+    "title": "Agentur für „{{name}}\"",
+    "agencyLabel": "Agentur",
+    "none": "– keine Agentur (Direktkunde) –"
+  },
   "accessForm": {
     "title": "Login für „{{name}}\"",
     "emailLabel": "Login-E-Mail",
@@ -255,7 +260,8 @@
     "createAccess": "Zugang anlegen",
     "sendInvite": "Einladung senden",
     "changeRoles": "Rollen ändern",
-    "changeTier": "Tarif ändern"
+    "changeTier": "Tarif ändern",
+    "changeAgency": "Agentur ändern"
   },
   "orderStatus": {
     "new": "🆕 Neu",

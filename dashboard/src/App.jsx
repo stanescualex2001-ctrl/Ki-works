@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useId, useRef } from 'react';
 import { getStoredTheme, applyTheme } from './theme.js';
 import { useI18n, SUPPORTED_LOCALES } from './i18n/index.jsx';
+import { useBranding } from './branding.jsx';
 
 /* ---------- Light/Dark-Umschalter ---------- */
 function ThemeToggle({ className = '' }) {
@@ -98,6 +99,29 @@ function OrbitKLogo({ size = 34 }) {
         </g>
       ))}
     </svg>
+  );
+}
+
+/* ---------- Marken-Logo: zeigt bei aktivem Agentur-Branding deren eigenes
+   Logo/Namen statt Orbit-K/"KI-Works" — siehe branding.jsx. ---------- */
+function BrandLogo({ size = 34, className = '' }) {
+  const branding = useBranding();
+  const cls = `logo-area ${className}`.trim();
+  if (branding?.isAgency && branding.logoUrl) {
+    return (
+      <div className={cls}>
+        <span className="logo-badge" aria-hidden="true">
+          <img src={branding.logoUrl} alt="" style={{ width: size, height: size, objectFit: 'contain' }} />
+        </span>
+        <span className="logo-word">{branding.productName ?? ''}</span>
+      </div>
+    );
+  }
+  return (
+    <div className={cls}>
+      <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={size} /></span>
+      <span className="logo-word">{branding?.isAgency ? (branding.productName ?? 'KI-Works') : 'KI-Works'}</span>
+    </div>
   );
 }
 
@@ -264,10 +288,7 @@ function Login({ onLogin }) {
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={submit}>
-        <div className="logo-area login-logo">
-          <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
-          <span className="logo-word">KI-Works</span>
-        </div>
+        <BrandLogo size={34} className="login-logo" />
         <p className="login-sub">{t('login.subtitle')}</p>
         <label htmlFor="login-email">{t('login.email')}</label>
         <input id="login-email" type="email" required autoComplete="username"
@@ -310,10 +331,7 @@ function ConsentGate({ restaurantName, onAccepted, onLogout }) {
   return (
     <div className="login-page">
       <div className="login-card consent-card">
-        <div className="logo-area login-logo">
-          <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
-          <span className="logo-word">KI-Works</span>
-        </div>
+        <BrandLogo size={34} className="login-logo" />
         <p className="login-sub">{t('consent.subtitle', { name: restaurantName })}</p>
         <p>
           {t('consent.introBefore')}{' '}
@@ -368,10 +386,7 @@ function SetupPassword({ token, onDone }) {
   return (
     <div className="login-page">
       <div className="login-card">
-        <div className="logo-area login-logo">
-          <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
-          <span className="logo-word">KI-Works</span>
-        </div>
+        <BrandLogo size={34} className="login-logo" />
         <p className="login-sub">{t('setupPassword.subtitle')}</p>
         {state.success ? (
           <>
@@ -1084,6 +1099,46 @@ function PricingTierForm({ restaurant, onDone, onCancel }) {
   );
 }
 
+function AgencyAssignForm({ restaurant, onDone, onCancel }) {
+  const { t } = useI18n();
+  const { data: agencies } = useFetch('/api/agencies');
+  const [agencyId, setAgencyId] = useState(restaurant.agency_id || '');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch(`/api/restaurants/${restaurant.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ agency_id: agencyId || null }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onDone();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>{t('agencyAssignForm.title', { name: restaurant.name })}</strong>
+      <label>{t('agencyAssignForm.agencyLabel')}
+        <select value={agencyId} onChange={(e) => setAgencyId(e.target.value)}>
+          <option value="">{t('agencyAssignForm.none')}</option>
+          {(agencies || []).map((a) => <option key={a.id} value={a.id}>{a.name} ({a.domain})</option>)}
+        </select>
+      </label>
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>{t('common.save')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
+      </div>
+    </form>
+  );
+}
+
 function AccessForm({ restaurant, onDone, onCancel }) {
   const { t } = useI18n();
   const [email, setEmail] = useState(restaurant.login_email || restaurant.contact_email || '');
@@ -1200,6 +1255,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
   const [editing, setEditing] = useState(null);
   const [editingRoles, setEditingRoles] = useState(null);
   const [editingTier, setEditingTier] = useState(null);
+  const [editingAgency, setEditingAgency] = useState(null);
   const [adding, setAdding] = useState(false);
   const [inviteMsg, setInviteMsg] = useState(null);
 
@@ -1293,6 +1349,13 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
           onDone={() => { setEditingTier(null); onChanged(); }}
         />
       )}
+      {editingAgency && (
+        <AgencyAssignForm
+          restaurant={info(editingAgency)}
+          onCancel={() => setEditingAgency(null)}
+          onDone={() => { setEditingAgency(null); onChanged(); }}
+        />
+      )}
       <div className="table-wrap">
         <table>
           <thead>
@@ -1348,6 +1411,9 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                     </button>
                     <button className="link" onClick={() => setEditingTier(d.restaurant_id)}>
                       {t('customers.changeTier')}
+                    </button>
+                    <button className="link" onClick={() => setEditingAgency(d.restaurant_id)}>
+                      {t('customers.changeAgency')}
                     </button>
                   </td>
                 </tr>
@@ -1866,6 +1932,7 @@ const NAV = [
 
 export default function App() {
   const { t } = useI18n();
+  const brandingCtx = useBranding();
   const [auth, setAuth] = useState(loadAuth);
   const [view, setView] = useState('overview');
   const [refreshKey, setRefreshKey] = useState(0);
@@ -1972,18 +2039,17 @@ export default function App() {
   return (
     <div className="layout">
       <aside className="sidebar">
-        <div className="logo-area">
-          <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
-          <span className="logo-word">KI-Works</span>
-        </div>
+        <BrandLogo size={34} />
 
-        <div className="kiwo-presence">
-          <OrbBuddy size={40} />
-          <div className="kiwo-presence-text">
-            <div className="kiwo-presence-name">Kiwo</div>
-            <div className="kiwo-presence-status">{t('sidebar.kiwoStatus')}</div>
+        {!brandingCtx?.isAgency && (
+          <div className="kiwo-presence">
+            <OrbBuddy size={40} />
+            <div className="kiwo-presence-text">
+              <div className="kiwo-presence-name">Kiwo</div>
+              <div className="kiwo-presence-status">{t('sidebar.kiwoStatus')}</div>
+            </div>
           </div>
-        </div>
+        )}
 
         {!isAdmin && <div className="customer-name-box">{auth.name}</div>}
 
