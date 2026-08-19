@@ -1038,6 +1038,29 @@ Version auf "Publish" klicken.
   Minutenbedarf, manuelle Paketwahl zeigt Wechsel-Hinweis bei suboptimaler
   Wahl, alle 3 Sprachen zeigen übersetzten Text, mobiles Layout stapelt
   sauber.
+- **Erste Social-Media-Inhalte für LEDTEK und pixelpress (18.08.2026):**
+  bisher gab es Social-Media-Posts nur für ki-works.eu. Auf Nutzer-Wunsch
+  je ein Bild-Post + Reel für alle drei eigenen Unternehmen erstellt und
+  direkt als Dateien übergeben (kein Automatik-Versand, siehe unten).
+  Design für LEDTEK/pixelpress **mangels eigener Vorgaben von den
+  Live-Websites abgeleitet** (`ledtek.at`/`pixelpress.at` per WebFetch
+  analysiert): LEDTEK schwarz/weiß mit grünem Akzent, nüchtern-technischer
+  B2B-Ton ("LED-Ware in 48h. Ohne Rätselraten."); pixelpress übernimmt den
+  echten Slogan "Struktur schlägt Design" von der Seite, exakte
+  Markenfarbe war dort aber nicht als Code hinterlegt — daher eigene Wahl
+  (dunkles Blau + hellblauer Akzent), **noch nicht vom Nutzer bestätigt**.
+  KI-Works bekam ein neues Thema ("24/7 erreichbar. Auch um 3 Uhr
+  nachts.") mit dem bestehenden Design/Orb Buddy. Technisch: Bilder
+  1080×1080 per SVG+sharp (gleicher Ansatz wie `socialGraphic.js`, aber
+  als Wegwerf-Skript außerhalb des Repos ausgeführt, nicht committet — LED
+  TEK/pixelpress haben keine Datenbank-/Backend-Anbindung in diesem
+  Projekt); Reels 1080×1920 im bekannten Muster (edge-tts
+  `de-AT-IngridNeural` +5%, ffmpeg-Zusammenbau aus Szenenbildern). Kein
+  Feature-Code geändert, keine Commits nötig. **Wichtig:** LEDTEK und
+  pixelpress haben in diesem Projekt weiterhin keinerlei technische
+  Anbindung (keine `restaurants`-Zeile, kein Social-Media-API-Zugang) —
+  Veröffentlichung bei allen drei Unternehmen aktuell nur manuell durch
+  den Nutzer möglich.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
