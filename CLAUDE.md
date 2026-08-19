@@ -1061,6 +1061,48 @@ Version auf "Publish" klicken.
   Anbindung (keine `restaurants`-Zeile, kein Social-Media-API-Zugang) —
   Veröffentlichung bei allen drei Unternehmen aktuell nur manuell durch
   den Nutzer möglich.
+  **Nachbesserung (19.08.2026) nach Nutzer-Feedback — Ergebnis vom Nutzer
+  bestätigt ("passt"), gilt ab jetzt als Standard-Rezept für jeden
+  künftigen Social-Media-Post/Reel für alle Businesses:**
+  1. **Echte Logos verwenden, nicht nur Text.** Vor dem Rendern kurz per
+     `curl`/WebFetch auf der Live-Website nach Logo-Dateien suchen (Header-
+     `<img>` mit "logo" im Namen/Klasse, `apple-touch-icon`/Favicon als
+     Fallback). Für LEDTEK/pixelpress hat das echte, direkt verwendbare
+     Assets geliefert: LEDTEK-Favicon = "LT"-Monogramm (schwarz auf weiß),
+     pixelpress hat ein fertiges transparentes `</PixelPress>`-Logo-PNG
+     (weiße Version, nur auf dunklem Hintergrund sichtbar — vor Verwendung
+     mit `sharp .stats()` prüfen, ob ein PNG tatsächlich Alpha-Transparenz
+     hat und welche Farbe, bevor man es für "leer/kaputt" hält). KI-Works
+     nutzt das bestehende Orbit-K-Logo (`landing/public/favicon.svg` als
+     Quelle für die exakten Farbverläufe/Pfade). Logo + Eyebrow-Text NICHT
+     nebeneinander plazieren (Breite variiert je Logo, überlappt schnell)
+     — stattdessen Logo oben links, Eyebrow-Zeile direkt darunter.
+  2. **Jedes Business braucht ein eigenes visuelles Design-Element**, nicht
+     nur Text auf Verlaufshintergrund: LEDTEK = Glühbirnen-Icon mit Glow +
+     kleine "LED-Strip"-Punktreihe (grüner Akzent); pixelpress = Browser-
+     Fenster-Wireframe-Mockup mit angedeuteten Content-Blöcken (passt zu
+     "Struktur schlägt Design"); KI-Works = Orb Buddy. Alle als reines
+     Inline-SVG gebaut (Pfade/Formen direkt im SVG-String), kein Bedarf an
+     zusätzlichen Bild-Assets außer den echten Logos.
+  3. **Orb Buddy gehört bei KI-Works in JEDE Reel-Szene, nicht nur ins
+     Bild.** Erster Versuch hatte ihn nur im Bild-Post — Nutzer-Feedback:
+     muss auch im Reel durchgehend zu sehen sein. Die statische Marke
+     (`orbBuddyMark()`-Funktion, identisch zu der in `socialGraphic.js`)
+     lässt sich einfach in jede Szene mit reinkopieren.
+  4. **KI-Works: Chat-Conversation-Mockup als eigenes Format.** Auf
+     Nutzer-Wunsch zusätzlich zum Standard-Post ein Bild (und eine
+     Reel-Szene) gebaut, das eine kurze Beispiel-Unterhaltung mit Kiwo als
+     Chat-Bubbles zeigt (Layout wie im echten `ChatWidget.jsx` — Kiwo
+     links/dunkel, Gast rechts/Verlaufsfarbe) statt nur Headline+Subline.
+     Gute Ergänzung, wenn das Thema des Posts der Web-Chat selbst ist.
+  5. **Jeder Post/jedes Reel braucht eine separate Caption** (Text zum
+     Copy-Pasten beim manuellen Hochladen) — nicht nur der Text, der im
+     Bild/Video steht. Emoji + 3-5 Bullet-Vorteile + Link + 4-5 Hashtags,
+     als eigene `.txt`-Datei mit allen Captions gesammelt übergeben.
+  Technisch weiterhin: Wegwerf-Skript in `backend/` (Zugriff auf
+  `assets/fonts/`, `sharp`, dieselben Font-Dateien), nach Gebrauch wieder
+  gelöscht (`rm`), keine Commits — nur `git status --short` danach
+  prüfen, dass nichts hängen geblieben ist.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
