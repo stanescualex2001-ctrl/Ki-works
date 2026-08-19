@@ -19,6 +19,7 @@ export default defineConfig({
         kontakt: resolve(__dirname, "kontakt.html"),
         kontaktEn: resolve(__dirname, "en/kontakt.html"),
         kontaktRo: resolve(__dirname, "ro/kontakt.html"),
+        partner: resolve(__dirname, "partner.html"),
       },
     },
   },
