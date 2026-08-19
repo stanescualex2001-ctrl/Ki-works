@@ -168,11 +168,6 @@ function RoleCard({ role, featured = false }) {
         {t(`roleDesc.${role.id}`)}
       </p>
       {role.id === "reception" && featured && <CallWave />}
-      {!soon && (
-        <div className="mt-5 inline-flex items-center gap-1.5 text-xs font-medium text-foreground/70 group-hover:text-foreground transition">
-          {t("roleCard.viewRole")} <ArrowRight className="h-3.5 w-3.5" />
-        </div>
-      )}
     </GlowCard>
   );
 }
@@ -408,18 +403,11 @@ function DemoCallCard({ call }) {
 /* ---------- Integrations carousel ---------- */
 
 const integrations = [
-  "WhatsApp Business",
-  "Microsoft Teams",
-  "Slack",
-  "Outlook",
-  "Google Calendar",
-  "HubSpot",
-  "Salesforce",
-  "SAP",
-  "Sipgate",
-  "3CX",
-  "Zapier",
-  "DATEV",
+  "Vapi",
+  "Anthropic Claude",
+  "Twilio",
+  "n8n",
+  "PostgreSQL",
 ];
 
 function IntegrationsMarquee() {
@@ -1036,8 +1024,8 @@ export default function App() {
               </div>
               <div className="mt-6 grid grid-cols-3 gap-3 text-center">
                 {[
-                  { k: "99.98%", v: t("platformSection.statUptime") },
-                  { k: "< 400ms", v: t("platformSection.statResponse") },
+                  { k: "TLS", v: t("platformSection.statEncryption") },
+                  { k: "DSGVO", v: t("platformSection.statCompliance") },
                   { k: "EU", v: t("platformSection.statData") },
                 ].map((s) => (
                   <div

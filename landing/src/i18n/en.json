@@ -122,8 +122,7 @@
     "finance": "Reads receipts and invoices and hands the data to your accounting."
   },
   "roleCard": {
-    "soon": "coming soon",
-    "viewRole": "View role"
+    "soon": "coming soon"
   },
   "liveTest": {
     "eyebrow": "LIVE IN ACTION",
@@ -215,17 +214,17 @@
     "eyebrow": "KI-WORKS PLATFORM",
     "headingPrefix": "Kiwo runs on the",
     "headingHighlight": "KI-Works platform.",
-    "desc": "Secure, GDPR-compliant and hosted in the EU. Kiwo connects seamlessly with your existing tools – WhatsApp, phone systems, Outlook, Google Calendar and your CRM.",
+    "desc": "Secure, GDPR-compliant and hosted in the EU. Kiwo runs on proven infrastructure — voice AI from Anthropic, telephony via Vapi, automated notifications via n8n.",
     "features": [
       "EU hosting & TLS-encrypted transmission",
       "Strict data separation between customers",
       "Password-protected access for admin & customers",
       "Automated backups & error monitoring"
     ],
-    "mockLabel": "// integrations.stream",
+    "mockLabel": "// platform.stack",
     "onlineBadge": "online",
-    "statUptime": "Uptime",
-    "statResponse": "Response time",
+    "statEncryption": "Encryption",
+    "statCompliance": "Compliance",
     "statData": "Data residency"
   },
   "roi": {
