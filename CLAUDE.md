@@ -1142,8 +1142,23 @@ Version auf "Publish" klicken.
   rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
 - **Zweite Runde Social-Media-Inhalte für alle 3 Businesses (19.08.2026):**
   je 1 Bild-Post + 1 Reel für ki-works.eu, LEDTEK, pixelpress mit neuen
-  Themen (keine Wiederholung der Themen vom 18./19.08.2026). Themen:
-  ki-works.eu = Mehrsprachigkeit DE/EN/RO (Chat-Bubble-Mockup je Sprache);
+  Themen (keine Wiederholung der Themen vom 18./19.08.2026). **Wichtige
+  Korrektur unterwegs:** der erste ki-works-Entwurf behauptete fälschlich
+  "Kiwo spricht Deutsch, Englisch & Rumänisch" mit einem Telefon-Chat-
+  Mockup — Nutzer-Fund: am Telefon ist NICHTS mehrsprachig (Deepgram
+  `language: 'de'` + Azure-Stimme `de-AT-IngridNeural` weiterhin fest
+  hartcodiert in `backend/src/vapiAdmin.js`, keine Sprachauswahl pro
+  Kunde), das war reine Fehlinformation. Tatsächlich fertig ist nur die
+  Mehrsprachigkeit von Website + Kunden-Dashboard (17./18.08.2026, siehe
+  oben) — Post/Reel-Thema entsprechend korrigiert auf "Ihr Dashboard. Auf
+  Deutsch, Englisch & Rumänisch." mit Dashboard-Nav-Mockup (echte Strings
+  aus `dashboard/src/i18n/{de,en,ro}.json`, z. B. "Übersicht"/"Overview"/
+  "Prezentare generală") statt Gäste-Telefon-Dialog. Telefon-Mehrsprachig-
+  keit bleibt unverändert offene Zukunftsidee (siehe „Ideen &
+  Zukunftsplanung" unten) — für künftige Marketing-Inhalte zu ki-works
+  wichtig: Sprachfähigkeit nur für Website/Dashboard behaupten, nicht für
+  Kiwo-Telefonate. Endgültige Themen:
+  ki-works.eu = Mehrsprachiges Kunden-Dashboard (Nav-Mockup je Sprache);
   LEDTEK = Stromkosten-Ersparnis durch LED-Umstieg ("−70% Energieverbrauch,
   Richtwert ggü. konventioneller Beleuchtung"); pixelpress = reiner
   Leistungs-/Prozess-Fokus + "Kostenloses Erstgespräch"-CTA, **bewusst
