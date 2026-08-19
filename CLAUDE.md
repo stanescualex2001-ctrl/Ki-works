@@ -1103,6 +1103,43 @@ Version auf "Publish" klicken.
   `assets/fonts/`, `sharp`, dieselben Font-Dateien), nach Gebrauch wieder
   gelöscht (`rm`), keine Commits — nur `git status --short` danach
   prüfen, dass nichts hängen geblieben ist.
+- **White-Label/Agentur-Modell: erste Pitch-Materialien für Kaltakquise
+  (19.08.2026):** Nutzer hat eine eigene Strategie-Zusammenfassung
+  geteilt (Kiwo zusätzlich über Agenturen statt nur direkt verkaufen, um
+  den Sales-Bottleneck als Einzelunternehmer neben ledtek.at/pixelpress.at
+  zu lösen). Meine Einschätzung dazu: Grundidee stimmig, Architektur
+  trägt es größtenteils (`restaurants`-Tabelle ist längst generisch),
+  aber drei Punkte vor jeder Code-Umsetzung zu klären: (1) Marge — die
+  aktuellen Endkundenpreise haben ~40-49% Bruttomarge, ein weiterer
+  Wholesale-Rabatt könnte das dünn werden lassen, noch nicht
+  durchgerechnet; (2) `customerScope` kennt bisher nur zwei Stufen
+  (Admin = alles, Kunde = eine `restaurant_id`) — eine dritte
+  Agentur-Stufe (mehrere `restaurant_id`s) ist der eigentliche technische
+  Umbau, nicht Branding/Billing; (3) White-Label ist mehr als ein Logo-
+  Tausch (n8n-Mailtexte, Vapi-Assistentenname, Haftungsfrage
+  Agentur/KI-Works). **Nutzer-Entscheidung: keine Backend-Umsetzung
+  jetzt** — erster Schritt sind Pitch-Materialien für **kalte**
+  E-Mail-Akquise an unbekannte Agenturen, bewusst **ohne** konkrete
+  Wholesale-Zahlen (nur Prinzip, Preise im Gespräch). Umgesetzt:
+  (1) **PDF-Ein-Seiter** (`Kiwo-White-Label-Partner.pdf`, per Playwright
+  aus eigenständigem HTML mit eingebetteten Fonts als A4-PDF gerendert,
+  Kiwo-Design/Orbit-K-Logo, kein Repo-Code, dem Nutzer als Datei
+  übergeben); (2) **neue Landingpage `landing/partner.html`**
+  (`src/pages/Partner.jsx`) — erreichbar nur über direkten Link aus der
+  Kalt-E-Mail, bewusst **nicht** im Mega-Menü verlinkt, **nicht** in
+  `sitemap.xml`, mit `<meta name="robots" content="noindex,nofollow">`,
+  nur Deutsch (kein i18n, gleiche "schmaler Pilot"-Logik wie bei anderen
+  neuen Features). Nutzt bewusst die volle `PageShell`/`Header`/`Footer`
+  (nicht ein eigener schlanker Header wie ursprünglich geplant) — der
+  ChatWidget ist dort ein echtes Live-Beweisstück für skeptische
+  Agentur-Kontakte, `page="legal"` verhindert dabei automatisch kaputte
+  Sprachumschalter-Links (gleiches Muster wie Impressum/Datenschutz).
+  Enthält eine fiktive Beispiel-Dashboard-Vorschau ("Gasthaus
+  Sonnenblick", klar als "fiktiv" markiert) statt echter Kundendaten.
+  Lokal per `npm run build` + SSR-Prerender + Playwright verifiziert
+  (Desktop/Mobile-Screenshot, keine JS-Fehler, `noindex`-Tag vorhanden).
+  **Auf dem Produktivserver noch nicht ausgerollt**, normaler
+  rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
