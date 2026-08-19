@@ -1140,6 +1140,41 @@ Version auf "Publish" klicken.
   (Desktop/Mobile-Screenshot, keine JS-Fehler, `noindex`-Tag vorhanden).
   **Auf dem Produktivserver noch nicht ausgerollt**, normaler
   rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
+- **Zweite Runde Social-Media-Inhalte für alle 3 Businesses (19.08.2026):**
+  je 1 Bild-Post + 1 Reel für ki-works.eu, LEDTEK, pixelpress mit neuen
+  Themen (keine Wiederholung der Themen vom 18./19.08.2026). Themen:
+  ki-works.eu = Mehrsprachigkeit DE/EN/RO (Chat-Bubble-Mockup je Sprache);
+  LEDTEK = Stromkosten-Ersparnis durch LED-Umstieg ("−70% Energieverbrauch,
+  Richtwert ggü. konventioneller Beleuchtung"); pixelpress = reiner
+  Leistungs-/Prozess-Fokus + "Kostenloses Erstgespräch"-CTA, **bewusst
+  ohne Erfolgs-/Analyse-Versprechen** (Nutzer-Korrektur nach zwei
+  Rückfragen: pixelpress kann keine Verkaufs-/Analyseergebnisse
+  garantieren). Logos diesmal echt von den Live-Websites bezogen: LEDTEK
+  = "LT"-Favicon-Monogramm (schwarz/weiß), pixelpress = echtes
+  transparentes Wordmark-PNG in der tatsächlichen Markenfarbe
+  `#083AFD` (per Pixel-Sampling aus dem Favicon ermittelt — damit ist die
+  bisher nur geschätzte pixelpress-Akzentfarbe jetzt belegt, künftige
+  Posts sollten `#083AFD` statt der früheren Näherung verwenden).
+  Technisch: Rendering-Pipeline diesmal komplett über HTML/CSS +
+  Headless-Chromium (Playwright) statt SVG+sharp, auch für die
+  Bild-Posts — robuster für Text-Layout/Emoji-Flaggen; Fonts/Logos
+  mussten dafür als Data-URIs eingebettet werden (Playwright blockiert
+  `file://`-Ressourcen bei `page.setContent`, reine `file://`-Pfade
+  liefen ins Leere, siehe „Not allowed to load local resource"). edge-tts
+  + ffmpeg waren in dieser Sitzung nicht vorinstalliert (neue
+  Sandbox-Umgebung) und wurden neu eingerichtet (`pip install edge-tts`,
+  `apt-get install ffmpeg`); Proxy-CA-Fix aus früheren Sitzungen erneut
+  angewendet. Reel-Zusammenbau nutzt ffmpeg concat-Demuxer mit
+  variabler Bildhaltedauer passend zur jeweiligen edge-tts-Audiolänge
+  (+0,4s Szenenpause) statt fixer Sekunden pro Szene — automatisch
+  synchron, unabhängig vom tatsächlich gesprochenen Text. Alles in
+  `/tmp`-Scratchpad erzeugt (kein Commit nötig, `git status --short` nach
+  Aufräumen leer). Alle 6 Dateien + gesammelte Caption-Datei per
+  `SendUserFile` an den Nutzer übergeben — **ob der Download diesmal vom
+  Handy aus zuverlässig funktioniert, ist offen** (bekanntes, bisher
+  ungelöstes Darstellungsproblem, siehe „Social-Media-Automatisierung"
+  weiter unten), beim nächsten Gespräch nachfragen, falls nicht von
+  selbst erwähnt.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
