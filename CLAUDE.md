@@ -1140,6 +1140,28 @@ Version auf "Publish" klicken.
   (Desktop/Mobile-Screenshot, keine JS-Fehler, `noindex`-Tag vorhanden).
   **Auf dem Produktivserver noch nicht ausgerollt**, normaler
   rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
+- **Landingpage: erfundene Integrationen-Liste + toten "Rolle
+  ansehen"-Text entfernt (19.08.2026):** Nutzer-Screenshot der
+  "// integrations.stream"-Sektion ("schaut gut aus. aber zurzeit was
+  läuft?") deckte auf, dass die "Integrationen"-Liste Marken zeigte, die
+  technisch nie angebunden waren (WhatsApp Business, Microsoft Teams,
+  Slack, Outlook, Google Calendar, HubSpot, Salesforce, SAP, Sipgate, 3CX,
+  Zapier, DATEV), dazu ein Beschreibungstext, der eine nahtlose
+  CRM/WhatsApp/Telefonanlagen-Anbindung behauptete, sowie frei erfundene
+  Kennzahlen (99,98% Uptime, <400ms Antwortzeit) — gleiche Fehlerklasse
+  wie die frühere Korrektur der 4 unzutreffenden Sicherheitsversprechen.
+  Auf Nutzer-Entscheidung ("Nur echte Tools zeigen") ersetzt durch die
+  tatsächlich genutzten Bausteine (Vapi, Anthropic Claude, Twilio, n8n,
+  PostgreSQL) und einen ehrlichen Beschreibungstext; die erfundenen
+  Kennzahlen durch drei zutreffende, bereits an anderer Stelle belegte
+  Fakten ersetzt (TLS-Verschlüsselung, DSGVO-Konformität,
+  EU-Datenhaltung). Zusätzlich (separate Nutzer-Nachfrage im selben
+  Gespräch): das reine Deko-"Rolle ansehen"-Text mit Pfeil-Icon auf den
+  Rollen-Karten der Startseite entfernt — suggerierte einen Klick, der
+  nichts tat (kein echter Link); eine eigene Unterseite pro Rolle bleibt
+  eine "vielleicht später"-Idee, siehe „Ideen & Zukunftsplanung".
+  `landing/` gebaut, per Grep (`SAP`/`99.98`/`Rolle ansehen` nicht mehr
+  im gerenderten HTML) und Playwright-Screenshot verifiziert.
 - **Agentur-White-Label Phase 1 — echte Domain-Trennung + Branding
   (19.08.2026):** Nutzer-Klarstellung nach den Pitch-Materialien: "White-
   Label" bedeutet hart, dass KI-Works für die Agentur und deren Endkunden
@@ -1268,13 +1290,31 @@ Version auf "Publish" klicken.
   wäre `create_order` (Bestellung) durch ein generisches `create_appointment`
   (Termin) zu ergänzen/ersetzen — Rest der Architektur ist schon
   branchenneutral. Nur Brainstorming, nichts entschieden.
-- **Mehrsprachigkeit (Englisch zusätzlich zu Deutsch):** Nutzer-Frage, ob
-  Kiwo auch Englisch können soll. Technisch möglich, aber Transkription
-  (Deepgram, aktuell fest `"language": "de"`) UND Stimme (Azure
-  `de-AT-IngridNeural`, reine Deutsch-Stimme) müssten beide auf mehrsprachig
-  umgestellt werden, sonst klingt/versteht Kiwo Englisch schlecht. Zwei
-  Varianten besprochen: automatische Spracherkennung vs. nur auf
-  Gast-Wunsch umschalten. Noch nicht entschieden, nichts gebaut.
+- **Mehrsprachigkeit am Telefon (Kiwo selbst, nicht nur Website/Dashboard,
+  19.08.2026 aktualisiert):** Nutzer-Frage "spricht kiwo de en und ro
+  schon? Vielleicht in gleiche Gespräch?" — Recherche ergab einen harten
+  technischen Blocker gegen Live-Sprachwechsel *innerhalb* eines Anrufs:
+  Deepgram Nova-3 (aktuell für die Transkription genutzt, fest
+  `"language": "de"`) unterstützt Echtzeit-Sprach-Auto-Erkennung/-Wechsel
+  ("Code-Switching") nur für 10 Sprachen (Englisch, Spanisch, Französisch,
+  Deutsch, Hindi, Russisch, Portugiesisch, Japanisch, Italienisch,
+  Niederländisch) — **Rumänisch ist NICHT darunter**. Vapi bietet für die
+  Stimme (Azure) einen "multilingual-auto"-Modus, konkrete Stimmen-IDs für
+  Deutsch/Rumänisch dafür wurden aber nicht verifiziert. Nutzer hat daraufhin
+  selbst vorgeschlagen, statt Live-Umschaltung im selben Gespräch lieber
+  **eine feste, pro Kunde wählbare Sprache** (analog zu Website/Dashboard:
+  DE/EN/RO, je ein Wert statt Live-Erkennung) zu nutzen, und explizit nach
+  meiner Einschätzung dazu gefragt — **diese Frage wurde in der Sitzung vom
+  19.08.2026 noch nicht beantwortet** (Sitzung wurde vom parallel laufenden
+  Agentur-White-Label-Plan unterbrochen, siehe „Bereits erledigt"). Fester
+  Vorschlag für die Antwort beim nächsten Gespräch: dem Nutzer zustimmen
+  (ein fester Wert pro Kunde vermeidet den Rumänisch-Blocker vollständig und
+  ist technisch deutlich einfacher als Live-Wechsel) — **noch nicht mit dem
+  Nutzer bestätigt.** Falls umgesetzt: größter Aufwand ist nicht die
+  Sprach-/Stimmwahl selbst (z. B. `restaurants.settings.language`,
+  bestehende JSONB-Spalte, keine Migration nötig), sondern die Übersetzung
+  des kompletten Vapi-System-Prompts (`vapiAdmin.js`) in EN/RO — bisher nur
+  grob abgeschätzt, nicht im Detail geplant.
 - **Admin-Dashboard überarbeiten:** Nutzer-Brainstorming — soll künftig zeigen:
   Anzahl aktiver Kunden, Umsatz/Kosten/Gewinn, unternehmensweite KI-Empfehlungen
   (nicht nur pro Betrieb), sowie die Ersparnis-Kachel aggregiert über alle
@@ -1643,6 +1683,14 @@ Version auf "Publish" klicken.
   Business-Dashboard-Sektion (`business-dashboard/`) sind normale
   Frontend-Änderungen, laufen über den üblichen rsync/Build-Schritt — nur
   die beiden Migrationen sind ein zusätzlicher, manueller Schritt.
+- **Agentur-White-Label Phase 1 noch nicht auf dem Produktivserver
+  ausgerollt** (Details siehe „Bereits erledigt", 19.08.2026) — braucht
+  zusätzlich zum üblichen rsync/Build für `dashboard/` +
+  `business-dashboard/` die neue Migration `migration-023-agencies.sql`
+  und einen Backend-Neustart (`server.js`/`vapiAdmin.js` haben sich
+  geändert). Noch keine echte Agentur angelegt; sobald eine zusagt,
+  zusätzlich `deploy/add-agency-domain.sh <domain>` auf dem Server
+  ausführen (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
 - Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
   aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
   bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer
