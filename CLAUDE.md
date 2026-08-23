@@ -1711,15 +1711,64 @@ Version auf "Publish" klicken.
   Anthropics AVV (mit SCCs) ist automatisch Teil ihrer Commercial Terms of
   Service, sobald man den kommerziellen API-Zugang nutzt (kein separater
   Unterschriftsprozess) — Text zum Nachweis unter
-  anthropic.com/legal/data-processing-addendum. Für Vapi/Twilio muss das
-  gleiche noch einzeln geprüft werden. Zusätzlich vermutlich eine formelle
+  anthropic.com/legal/data-processing-addendum. **Twilio ebenfalls
+  bestätigt (23.08.2026):** Twilios DPA inkl. EU-SCCs ist automatisch
+  Bestandteil der Nutzungsbedingungen (Section 11/Exhibit B), kein
+  manuelles Unterschreiben nötig, Nachweis unter
+  twilio.com/en-us/legal/data-protection-addendum — Aufnahme in die
+  Datenschutzerklärung (Abschnitt „Empfänger und Auftragsverarbeiter")
+  noch offen. Zusätzlich vermutlich eine formelle
   **Datenschutz-Folgenabschätzung (DPIA)** nötig, da bei KI-Systemen oft
   "hohes Risiko" vermutet wird — bei der geplanten Rechtsprüfung mit
-  einplanen. Ein Wechsel auf EU-KI-Anbieter (Aleph Alpha/Mistral etc.)
-  wurde geprüft und **nicht empfohlen** — mit AVV+SCCs ist Anthropic aus
-  den USA rechtlich nutzbar, ein Anbieterwechsel wäre unnötiger Aufwand.
-  Der EU AI Act (Transparenzpflicht "das ist eine KI") ist über die
-  bestehende Kiwo-Begrüßung vermutlich schon erfüllt.
+  einplanen. Ein Wechsel auf EU-KI-Anbieter (Aleph Alpha/Mistral etc.) für
+  die **Anthropic**-Anbindung wurde geprüft und **nicht empfohlen** — mit
+  AVV+SCCs ist Anthropic aus den USA rechtlich nutzbar, ein
+  Anbieterwechsel wäre unnötiger Aufwand. Der EU AI Act
+  (Transparenzpflicht "das ist eine KI") ist über die bestehende
+  Kiwo-Begrüßung vermutlich schon erfüllt.
+- **Vapi: DPA/AVV-Lücke + möglicherweise problematische
+  Modelltraining-Nutzung von Anrufdaten (23.08.2026, muss noch behandelt
+  werden) — deutlich größeres Thema als reine Formulierungsfrage.**
+  Recherchiert (Vapi-ToS/Docs + Drittquellen, keine Rechtsberatung):
+  (1) **DPA/SCCs** sind bei Vapi anders als bei Anthropic/Twilio **nicht**
+  automatisch Teil der Standard-ToS — die ToS verlinken nur auf ein
+  separates DPA-Dokument, SCCs werden dort gar nicht erwähnt; laut
+  Drittquellen ist ein unterschriebenes DPA bei Vapi standardmäßig nur
+  für Enterprise-Kunden verfügbar, nicht für normale Pay-as-you-go-Konten
+  wie unseres. (2) **Gravierender:** laut Recherche dürfen Anruf-
+  Transkripte/Aufnahmen bei Vapi standardmäßig **zum Training ihrer
+  KI-Modelle verwendet werden**, sofern nicht das kostenpflichtige
+  "Zero Data Retention"-Add-on gebucht ist (**1.000 $/Monat** — bei
+  aktuellen Tarifen mit 99 €/Monat Solo-Umsatz unrealistisch). Das ist
+  unabhängig von unserer eigenen 7-Tage-Löschung (die betrifft nur unsere
+  DB, nicht was Vapi selbst mit den Rohdaten macht) und vermutlich nicht
+  von dem, was der telefonische Aufzeichnungshinweis für Gäste aktuell
+  kommuniziert (nur "wird aufgezeichnet", nicht "kann zum
+  KI-Modelltraining verwendet werden") — potenzieller
+  Zweckbindungskonflikt (Art. 5 DSGVO), keine Rechtsberatung, nur
+  Verdacht. Kein kostenloser Zwischenweg (Trainings-Opt-out ohne volles
+  ZDR) in Vapis Doku gefunden. **Nächster Schritt, noch nicht
+  durchgeführt:** direkt bei Vapi (`security.vapi.ai`/Support) klären, ob
+  (a) es einen günstigeren Trainings-Opt-out ohne 1.000-$-ZDR gibt, (b)
+  als Pay-as-you-go-Kunde trotzdem ein unterschriebenes DPA erhältlich
+  ist. Bis geklärt: in der Datenschutzerklärung bei Vapi **nicht**
+  pauschal "SCC-basiertes DPA" behaupten (anders als bei Anthropic/
+  Twilio), sondern neutral halten ("wir prüfen aktuell die
+  Vertragsgrundlagen").
+  **Recherchierte Alternativen (nur Idee, keine Entscheidung, kein
+  Wechsel geplant):** Retell AI (USA, aber **Self-Service-DPA inkl.
+  SCCs kostenlos** per Click-Agreement unter click-agreements.retellai.com,
+  granulare Retention pro Agent 1 Tag–2 Jahre einstellbar — deutlich
+  kundenfreundlicher als Vapi bei ansonsten ähnlicher
+  US-Hosting-Situation); Synthflow (EU-Firma, AgentFlow AI GmbH Berlin,
+  EU-Hosting für personenbezogene Daten, eigenes AI-Transparency-Statement
+  zu EU-AI-Act Art. 50-54 — "sauberste" Option, aber Funktionsumfang/
+  Sprachqualität DE/AT nicht geprüft); Bland AI (ähnlich schwach wie Vapi,
+  DPA nur Enterprise). Ein Wechsel wäre **kein kleiner Schritt** —
+  `backend/src/vapiAdmin.js`, der komplette Webhook-Handler
+  (`backend/src/vapi.js`) und alle Tool-Calling-Flows (Reservierung/
+  Bestellung/Rückruf/Stornierung) müssten komplett neu gegen eine andere
+  API gebaut werden, kein reiner Konfigurationswechsel.
 - **`audit_log` ist kein compliance-taugliches Audit-Log (16.08.2026,
   Nutzer-Nachfrage nach dem neu gebauten Aktivitätsprotokoll) —
   konkrete Lücken:** (1) **Wer:** bei Telefon-Aktionen wird die
