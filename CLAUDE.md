@@ -1243,13 +1243,28 @@ Version auf "Publish" klicken.
   bewusst **keine** eigene Recherche mehr (das übernimmt jetzt komplett
   der Server-Cron). Lokal verifiziert: `node --check` fehlerfrei, Modul
   lädt sauber (bricht korrekt erst am fehlenden `ANTHROPIC_API_KEY` in
-  dieser Sandbox ab). **Noch nicht auf dem Produktivserver ausgerollt**
-  — braucht nach dem normalen rsync-Deploy zusätzlich: `npm install
-  --omit=dev` in `backend/` (neue `imapflow`-Abhängigkeit),
-  `/etc/ki-works/kaltakquise.env` einmalig anlegen, und einen
-  Cron-Eintrag (`0 6 * * *`, beide Env-Dateien vorher sourcen) — kein
-  `systemctl restart ki-works-api` nötig, da unabhängig vom
-  Backend-Service.
+  dieser Sandbox ab).
+  **Auf dem Produktivserver ausgerollt (23.08.2026):** Nutzer hat rsync-
+  Deploy, `npm install --omit=dev` (imapflow), `/etc/ki-works/
+  kaltakquise.env` (IMAP-Zugangsdaten) und den Cron-Eintrag (`0 6 * * *`)
+  selbst durchgeführt. Beim Setzen der Crontab per `crontab -e`
+  sprang die eingefügte Zeile am `nano`-Editor vorbei direkt in die
+  Shell (Paste-Timing-Problem, `command not found`) — als robuster
+  Workaround stattdessen non-interaktiv gesetzt:
+  `(crontab -l 2>/dev/null; echo "<zeile>") | crontab -`. Gleiches
+  Editor-Problem beim Anlegen von `kaltakquise.env` — dort ebenfalls per
+  Heredoc (`cat > datei <<EOF ... EOF`) statt `nano` gelöst. **Für
+  künftige Server-Anleitungen: `nano`/`crontab -e`-Schritte nach
+  Möglichkeit direkt als Heredoc-/Pipe-Einzeiler geben statt als
+  interaktive Editor-Anweisung, um dieses Paste-Timing-Problem von
+  vornherein zu vermeiden.** Erster echter Testlauf (`node
+  scripts/kaltakquise-agent.js` manuell ausgeführt) bestätigt: komplettes
+  Setup (Cron, IMAP-Env, Node/imapflow) korrekt — scheitert aktuell nur
+  am bekannten, bereits an anderer Stelle dokumentierten
+  Anthropic-Guthaben-Mangel (`"Your credit balance is too low"`,
+  gleiches Problem wie bei Sales-/Social-Media-Agent und Web-Chat-
+  Widget). Sobald Guthaben aufgeladen ist, sollte der tägliche Cron-Lauf
+  ohne weiteres Zutun funktionieren.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1822,6 +1837,14 @@ Version auf "Publish" klicken.
   dadurch vermutlich nie ausgelöst. Sobald wieder Guthaben vorhanden ist,
   sollte sich das von selbst korrigieren; ein Anthropic-unabhängiger
   Fallback wurde noch nicht gebaut (nicht angefragt).
+  **Ergänzung (23.08.2026):** der neue Kaltakquise-Agent
+  (`backend/scripts/kaltakquise-agent.js`, siehe „Bereits erledigt")
+  ist jetzt vollständig deployed (Cron/IMAP/Env korrekt eingerichtet,
+  per manuellem Testlauf bestätigt) und scheitert ebenfalls nur an
+  diesem Guthaben-Mangel — reiht sich also in dieselbe Liste betroffener
+  Features ein (Sales-Agent, Social-Media-Agent, Web-Chat-Widget,
+  Anruf-Klassifizierung). Sobald aufgeladen: einfach abwarten, der
+  tägliche 6-Uhr-Cron-Lauf sollte dann von selbst funktionieren.
 
 ## Pflege dieser Datei
 
