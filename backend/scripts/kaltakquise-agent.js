@@ -108,6 +108,10 @@ Wichtige Stilregeln:
 - Satz zum ersten Monat kostenlos + unverbindlich kündbar.
 - Kurze, konkrete Frage nach einem 15-minütigen Gespräch als Call-to-Action.
 - Unterschrift: "Beste Grüße", "${SENDER_NAME}", "ki-works.eu" (drei Zeilen).
+- WICHTIG: Setze immer den echten, recherchierten Firmennamen ein
+  ("Hotel B3" im Vorbild ist nur ein Beispielname). Verwende NIEMALS ein
+  Platzhalter-Token wie "[Firmenname]", "{{name}}", "<Name des Betriebs>"
+  o. ä. im fertigen Mailtext — der Text muss versandfertig sein.
 - Insgesamt trotz der Bullet-Points kompakt bleiben (wie im Vorbild) — keine
   Marketing-Floskeln, keine übertriebenen Versprechen.
 
