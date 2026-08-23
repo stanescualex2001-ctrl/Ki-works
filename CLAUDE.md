@@ -1756,15 +1756,35 @@ Version auf "Publish" klicken.
   Twilio), sondern neutral halten ("wir prüfen aktuell die
   Vertragsgrundlagen").
   **Recherchierte Alternativen (nur Idee, keine Entscheidung, kein
-  Wechsel geplant):** Retell AI (USA, aber **Self-Service-DPA inkl.
-  SCCs kostenlos** per Click-Agreement unter click-agreements.retellai.com,
-  granulare Retention pro Agent 1 Tag–2 Jahre einstellbar — deutlich
-  kundenfreundlicher als Vapi bei ansonsten ähnlicher
-  US-Hosting-Situation); Synthflow (EU-Firma, AgentFlow AI GmbH Berlin,
-  EU-Hosting für personenbezogene Daten, eigenes AI-Transparency-Statement
-  zu EU-AI-Act Art. 50-54 — "sauberste" Option, aber Funktionsumfang/
-  Sprachqualität DE/AT nicht geprüft); Bland AI (ähnlich schwach wie Vapi,
-  DPA nur Enterprise). Ein Wechsel wäre **kein kleiner Schritt** —
+  Wechsel geplant) — zweifach korrigiert nach Nutzer-Hinweisen
+  (23.08.2026):** ursprünglich Synthflow UND Retell AI als reine
+  "Vapi-Ersatz"-Infrastruktur gelistet — beide Einordnungen waren zu
+  unkritisch, per Nachfrage-Recherche korrigiert:
+  - **Synthflow** ("Synthflow macht deselbe wie kiwo"): ist **kein**
+    Entwickler-Infrastruktur-Layer, sondern eine fertige No-Code-
+    Endkunden-Plattform ("end-to-end Voice AI platform" mit eigener
+    Telefoninfrastruktur, No-Code-Flow-Designer, 200+ CRM-Integrationen)
+    — Unternehmen bauen damit direkt ihre eigenen KI-Telefonassistenten.
+    **Das ist derselbe Markt wie Kiwo/KI-Works selbst**, kein Baustein
+    darunter — als Vapi-Ersatz ungeeignet, eher ein weiterer Konkurrent
+    (ähnlich `kiwerk.one`, siehe frühere Konkurrenzanalyse in dieser
+    Sitzung, auf Nutzer-Wunsch nicht dokumentiert).
+  - **Retell AI** ("Retell auch so"): hat zwar (anders als Synthflow)
+    eine echte Entwickler-API und wäre technisch als Infrastruktur-Layer
+    nutzbar (Self-Service-DPA inkl. SCCs kostenlos per Click-Agreement
+    unter click-agreements.retellai.com, granulare Retention pro Agent 1
+    Tag–2 Jahre einstellbar) — **positioniert sich aber selbst als
+    Hybrid**: vorgefertigte Anwendungsfälle (Rezeption, Terminvergabe,
+    Lead-Qualifikation) direkt an Endunternehmen, inklusive eigenem
+    White-Label-Angebot. Damit ebenfalls potenziell ein Konkurrent zu
+    Kiwo, nicht nur ein sauberer Infrastruktur-Ersatz darunter — Risiko,
+    dass ein Anbieter, auf dem wir aufbauen, gleichzeitig direkt um
+    dieselben Endkunden wirbt.
+  - **Fazit:** bisher **keine** überzeugende "reine Infrastruktur ohne
+    Produkt-Konkurrenz"-Alternative zu Vapi gefunden — Bland AI (DPA nur
+    Enterprise) bleibt als dritte Option ähnlich schwach wie Vapi selbst.
+    Weitere Recherche nötig, falls ein Wechsel je ernsthaft verfolgt
+    wird. Ein Wechsel wäre ohnehin **kein kleiner Schritt** —
   `backend/src/vapiAdmin.js`, der komplette Webhook-Handler
   (`backend/src/vapi.js`) und alle Tool-Calling-Flows (Reservierung/
   Bestellung/Rückruf/Stornierung) müssten komplett neu gegen eine andere
