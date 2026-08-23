@@ -1140,94 +1140,180 @@ Version auf "Publish" klicken.
   (Desktop/Mobile-Screenshot, keine JS-Fehler, `noindex`-Tag vorhanden).
   **Auf dem Produktivserver noch nicht ausgerollt**, normaler
   rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
-- **Landingpage: erfundene Integrationen-Liste + toten "Rolle
-  ansehen"-Text entfernt (19.08.2026):** Nutzer-Screenshot der
-  "// integrations.stream"-Sektion ("schaut gut aus. aber zurzeit was
-  läuft?") deckte auf, dass die "Integrationen"-Liste Marken zeigte, die
-  technisch nie angebunden waren (WhatsApp Business, Microsoft Teams,
-  Slack, Outlook, Google Calendar, HubSpot, Salesforce, SAP, Sipgate, 3CX,
-  Zapier, DATEV), dazu ein Beschreibungstext, der eine nahtlose
-  CRM/WhatsApp/Telefonanlagen-Anbindung behauptete, sowie frei erfundene
-  Kennzahlen (99,98% Uptime, <400ms Antwortzeit) — gleiche Fehlerklasse
-  wie die frühere Korrektur der 4 unzutreffenden Sicherheitsversprechen.
-  Auf Nutzer-Entscheidung ("Nur echte Tools zeigen") ersetzt durch die
-  tatsächlich genutzten Bausteine (Vapi, Anthropic Claude, Twilio, n8n,
-  PostgreSQL) und einen ehrlichen Beschreibungstext; die erfundenen
-  Kennzahlen durch drei zutreffende, bereits an anderer Stelle belegte
-  Fakten ersetzt (TLS-Verschlüsselung, DSGVO-Konformität,
-  EU-Datenhaltung). Zusätzlich (separate Nutzer-Nachfrage im selben
-  Gespräch): das reine Deko-"Rolle ansehen"-Text mit Pfeil-Icon auf den
-  Rollen-Karten der Startseite entfernt — suggerierte einen Klick, der
-  nichts tat (kein echter Link); eine eigene Unterseite pro Rolle bleibt
-  eine "vielleicht später"-Idee, siehe „Ideen & Zukunftsplanung".
-  `landing/` gebaut, per Grep (`SAP`/`99.98`/`Rolle ansehen` nicht mehr
-  im gerenderten HTML) und Playwright-Screenshot verifiziert.
-- **Agentur-White-Label Phase 1 — echte Domain-Trennung + Branding
-  (19.08.2026):** Nutzer-Klarstellung nach den Pitch-Materialien: "White-
-  Label" bedeutet hart, dass KI-Works für die Agentur und deren Endkunden
-  **nirgends sichtbar** sein darf — jede Agentur bringt **immer eine
-  eigene Domain** mit, Backend/DB bleiben zentral bei KI-Works, nur das
-  sichtbare Branding wechselt. Vapi-Assistentenname wird pro Agentur
-  eigen. Umgesetzt (technischer Plan vorher mit Nutzer abgestimmt und
-  freigegeben): neue Tabelle `agencies` (`backend/sql/migration-023-
-  agencies.sql`: `name`, `domain` UNIQUE, `branding` JSONB, `login_email`/
-  `password_hash` schon vorbereitet für Phase 2) + `restaurants.agency_id`
-  (FK, nullable). Neuer öffentlicher Endpunkt `GET /api/public/branding`
-  (`backend/src/server.js`) löst das Branding rein über den HTTP-
-  `Host`-Header auf (kein Login nötig, funktioniert schon auf dem
-  Login-Screen) — unbekannte Domain/`ki-works.eu` liefert
-  `{isAgency:false}`, bestehende Direktkunden bleiben dadurch unverändert.
-  Admin-CRUD `GET/POST/PATCH /api/agencies` (`adminOnly`). `dashboard/`:
-  neuer `branding.jsx`-Context, `main.jsx` lädt das Branding vor dem
-  ersten Render und überschreibt bei aktiver Agentur `document.title` +
-  die zentralen CSS-Variablen (`--accent` usw.); alle 4 Logo-Stellen
-  (Login/DSGVO-Consent/Setup-Passwort/Sidebar) laufen jetzt über eine
-  gemeinsame `<BrandLogo/>`-Komponente (zeigt Agentur-Logo+-Name statt
-  OrbitK+„KI-Works", wenn gesetzt); das Kiwo-/OrbBuddy-Maskottchen in der
-  Sidebar wird bei aktivem Agentur-Branding ausgeblendet (sonst bliebe der
-  Name "Kiwo" sichtbar). `backend/src/vapiAdmin.js`: `BASE_PROMPT`/
-  `firstMessage` sind jetzt Template-Funktionen mit `assistantName`-
-  Parameter (Default weiterhin "Kiwo"), `syncVapiAssistant()` joint
-  `agencies.branding->>'assistantName'` und reicht ihn durch — kein
-  "Kiwo" mehr im Prompt/in der Begrüßung, sobald eine Agentur einen
-  eigenen Namen hinterlegt hat. **nginx/TLS bewusst NICHT** in die
-  hand-gepflegte `deploy/nginx/ki-works.conf` gemischt (Wiederholung des
-  13.08.2026-Ausfalls wäre das Risiko) — stattdessen neues Skript
-  `deploy/add-agency-domain.sh <domain>`, das einen eigenen, komplett
-  Certbot-verwalteten server-Block pro Agentur-Domain anlegt (DNS-Check
-  per `dig`, HTTP-Bootstrap → `certbot --nginx`). Admin-Verwaltung: neue
-  Sektion "Agenturen" im `business-dashboard/` (Anlegen + Branding-Felder
-  bearbeiten, analog `RolesForm`/`PricingTierForm`-Mustern) + neuer
-  "Agentur ändern"-Button im Kunden-Dashboard bei „Kunden (Betreiber)"
-  (`AgencyAssignForm`, setzt `restaurants.agency_id`). **Bewusst Phase 2
-  (später, nicht Teil dieses Schritts):** eigener Agentur-Login (dritte
-  JWT-Rolle, damit eine Agentur mehrere Kunden auf einmal sieht) — nicht
-  nötig für die reine Sichtbarkeits-Anforderung, da Endkunden weiterhin
-  ganz normal über die bestehende `customer`-Rolle einloggen, nur das
-  Branding wechselt. Ebenfalls bewusst offen: E-Mail-Absender
-  (n8n-Mails laufen weiterhin von info@ki-works.eu — verrät den Betreiber),
-  Impressum/Haftungsfrage bei White-Label-Instanzen (rechtliche Klärung
-  nötig, keine Code-Frage). Lokal komplett gegen frische Test-DB
-  end-to-end verifiziert: Migration sauber, `GET /api/public/branding`
-  per `curl` mit verschiedenen `Host`-Headern (bekannte Agentur-Domain →
-  Branding-JSON inkl. `assistantName`, `ki-works.eu`/unbekannt →
-  `{isAgency:false}`), `syncVapiAssistant()`-Templating enthält nach Test
-  kein "Kiwo" mehr bei gesetztem Agentur-Namen, `deploy/add-agency-
-  domain.sh` per `bash -n` auf Syntaxfehler geprüft. Beide neuen
-  Admin-UIs zusätzlich per echtem Playwright-Klicktest gegen den echten
-  lokalen Backend-Prozess verifiziert (nicht nur Mocks): Agentur im
-  Business-Dashboard anlegen + Branding-Formular zeigt gespeicherte Werte
-  korrekt vorausgefüllt; im Kunden-Dashboard "Agentur ändern" bei einem
-  Test-Kunden ausgewählt → `restaurants.agency_id` in der DB tatsächlich
-  gesetzt. `dashboard/`/`business-dashboard/`-Builds beide fehlerfrei,
-  i18n-Schlüsselparität (288 Keys) über alle 3 Sprachen weiterhin
-  bestätigt. **Noch nicht auf dem Produktivserver ausgerollt** und noch
-  keine echte Agentur angelegt — Rollout braucht zusätzlich zum üblichen
-  rsync/Build-Ablauf für `dashboard/`+`business-dashboard/` die Migration
-  `migration-023-agencies.sql` und einen Backend-Neustart; sobald eine
-  echte Agentur zusagt, zusätzlich `deploy/add-agency-domain.sh <domain>`
-  auf dem Server ausführen (braucht vorher gesetztes DNS der Agentur auf
-  die Server-IP).
+- **Zweite Runde Social-Media-Inhalte für alle 3 Businesses (19.08.2026):**
+  je 1 Bild-Post + 1 Reel für ki-works.eu, LEDTEK, pixelpress mit neuen
+  Themen (keine Wiederholung der Themen vom 18./19.08.2026). **Wichtige
+  Korrektur unterwegs:** der erste ki-works-Entwurf behauptete fälschlich
+  "Kiwo spricht Deutsch, Englisch & Rumänisch" mit einem Telefon-Chat-
+  Mockup — Nutzer-Fund: am Telefon ist NICHTS mehrsprachig (Deepgram
+  `language: 'de'` + Azure-Stimme `de-AT-IngridNeural` weiterhin fest
+  hartcodiert in `backend/src/vapiAdmin.js`, keine Sprachauswahl pro
+  Kunde), das war reine Fehlinformation. Tatsächlich fertig ist nur die
+  Mehrsprachigkeit von Website + Kunden-Dashboard (17./18.08.2026, siehe
+  oben) — Post/Reel-Thema entsprechend korrigiert auf "Ihr Dashboard. Auf
+  Deutsch, Englisch & Rumänisch." mit Dashboard-Nav-Mockup (echte Strings
+  aus `dashboard/src/i18n/{de,en,ro}.json`, z. B. "Übersicht"/"Overview"/
+  "Prezentare generală") statt Gäste-Telefon-Dialog. Telefon-Mehrsprachig-
+  keit bleibt unverändert offene Zukunftsidee (siehe „Ideen &
+  Zukunftsplanung" unten) — für künftige Marketing-Inhalte zu ki-works
+  wichtig: Sprachfähigkeit nur für Website/Dashboard behaupten, nicht für
+  Kiwo-Telefonate. Endgültige Themen:
+  ki-works.eu = Mehrsprachiges Kunden-Dashboard (Nav-Mockup je Sprache);
+  LEDTEK = Stromkosten-Ersparnis durch LED-Umstieg ("−70% Energieverbrauch,
+  Richtwert ggü. konventioneller Beleuchtung"); pixelpress = reiner
+  Leistungs-/Prozess-Fokus + "Kostenloses Erstgespräch"-CTA, **bewusst
+  ohne Erfolgs-/Analyse-Versprechen** (Nutzer-Korrektur nach zwei
+  Rückfragen: pixelpress kann keine Verkaufs-/Analyseergebnisse
+  garantieren). Logos diesmal echt von den Live-Websites bezogen: LEDTEK
+  = "LT"-Favicon-Monogramm (schwarz/weiß), pixelpress = echtes
+  transparentes Wordmark-PNG in der tatsächlichen Markenfarbe
+  `#083AFD` (per Pixel-Sampling aus dem Favicon ermittelt — damit ist die
+  bisher nur geschätzte pixelpress-Akzentfarbe jetzt belegt, künftige
+  Posts sollten `#083AFD` statt der früheren Näherung verwenden).
+  Technisch: Rendering-Pipeline diesmal komplett über HTML/CSS +
+  Headless-Chromium (Playwright) statt SVG+sharp, auch für die
+  Bild-Posts — robuster für Text-Layout/Emoji-Flaggen; Fonts/Logos
+  mussten dafür als Data-URIs eingebettet werden (Playwright blockiert
+  `file://`-Ressourcen bei `page.setContent`, reine `file://`-Pfade
+  liefen ins Leere, siehe „Not allowed to load local resource"). edge-tts
+  + ffmpeg waren in dieser Sitzung nicht vorinstalliert (neue
+  Sandbox-Umgebung) und wurden neu eingerichtet (`pip install edge-tts`,
+  `apt-get install ffmpeg`); Proxy-CA-Fix aus früheren Sitzungen erneut
+  angewendet. Reel-Zusammenbau nutzt ffmpeg concat-Demuxer mit
+  variabler Bildhaltedauer passend zur jeweiligen edge-tts-Audiolänge
+  (+0,4s Szenenpause) statt fixer Sekunden pro Szene — automatisch
+  synchron, unabhängig vom tatsächlich gesprochenen Text. Alles in
+  `/tmp`-Scratchpad erzeugt (kein Commit nötig, `git status --short` nach
+  Aufräumen leer). Alle 6 Dateien + gesammelte Caption-Datei per
+  `SendUserFile` an den Nutzer übergeben — **ob der Download diesmal vom
+  Handy aus zuverlässig funktioniert, ist offen** (bekanntes, bisher
+  ungelöstes Darstellungsproblem, siehe „Social-Media-Automatisierung"
+  weiter unten), beim nächsten Gespräch nachfragen, falls nicht von
+  selbst erwähnt.
+  **Nachtrag (19.08.2026, Download-Befund):** Nutzer-Rückmeldung war "mp4
+  ja, Bilder nein" — MP4-Dateien lassen sich vom Handy zuverlässig laden,
+  einzelne PNGs nicht (vermutlich werden Bilder vom Client als "inline
+  renderbar" behandelt und bekommen dadurch keine zuverlässige
+  Download-Möglichkeit, während MP4 immer eine Downloadkarte bekommt).
+  **Funktionierender Workaround:** die PNG-Bild-Posts zusätzlich als
+  **ZIP-Archiv** bündeln (`zip`-Befehl) und das Archiv statt der
+  Einzelbilder verschicken — ein Archiv ist eindeutig nicht "renderbar"
+  und bekommt wie MP4 zuverlässig eine Downloadkarte. **Neuer Standard
+  für künftige Bild-Posts:** immer zusätzlich als ZIP verschicken, nicht
+  nur als Einzeldateien. Dabei außerdem einen Inhaltsfehler im
+  ki-works-Post korrigiert: der erste Entwurf behauptete fälschlich
+  telefonische Mehrsprachigkeit ("Kiwo spricht Deutsch, Englisch &
+  Rumänisch") — tatsächlich ist nur Website+Dashboard mehrsprachig,
+  Kiwo am Telefon bleibt fest Deutsch (`vapiAdmin.js`). Nutzer-Fund,
+  Post auf das tatsächliche Feature ("Ihr Dashboard. Auf Deutsch,
+  Englisch & Rumänisch.", Dashboard-Nav-Mockup statt Telefon-Chat-Bubble)
+  korrigiert.
+- **Kaltakquise-Agent v1 + tägliche Erinnerung (20.08.2026):** Antwort auf
+  "bereite 10 Unternehmen für Kaltakquise vor + zwing mich täglich
+  mindestens 5 Mails zu senden". Erste Runde: 10 real recherchierte und
+  verifizierte Kandidaten (Restaurants/Hotels/Handwerk/Friseur, Bezirk
+  Perg + Linz) samt individuellem Mail-Entwurf als `.md`-Datei übergeben.
+  Danach zwei Nutzer-Korrekturen umgesetzt: (1) Entwurf-Erstellung soll
+  nicht vom eingeschalteten Laptop des Nutzers abhängen, sondern
+  serverseitig automatisch laufen; (2) der Kandidaten-Nachschub soll
+  vollautomatisch passieren (nicht durch Chat-Nachfrage) und **alle
+  passenden Branchen** abdecken, nicht nur Gastro/Hotels. Umgesetzt:
+  neuer **`backend/scripts/kaltakquise-agent.js`** (Node, analog zu
+  `salesAgent.js` — nutzt `@anthropic-ai/sdk` + Claudes
+  `web_search`/`web_fetch`-Server-Tools, gleicher `ANTHROPIC_API_KEY`),
+  läuft unabhängig vom Backend-Service per Cron: hält einen
+  persistenten Kandidaten-Puffer (Ziel ~15) in
+  `/var/lib/ki-works/kaltakquise-state.json` — **bewusst außerhalb von
+  `/opt/ki-works`**, da der Update-Ablauf dort bei jedem Deploy ein
+  `rsync --delete` macht, das den Fortschritt sonst löschen würde.
+  Recherchiert automatisch neue, branchenoffene Kandidaten (Gastro,
+  Handwerk/KFZ, Friseur/Kosmetik, Physio, Kanzleien, Immobilienmakler
+  usw.) sobald der Puffer unter 5 fällt, legt täglich 5 individuelle
+  Akquise-Mails per IMAP (`imapflow`, neue Abhängigkeit in
+  `backend/package.json`) direkt als Entwürfe in `info@ki-works.eu` ab —
+  **nur Entwürfe, kein automatischer Versand**, Nutzer prüft/verschickt
+  selbst. Zugangsdaten (`IMAP_HOST/PORT/USER/PASS`, `DRAFTS_FOLDER`)
+  bewusst in einer eigenen `/etc/ki-works/kaltakquise.env` (getrennt von
+  `ki-works.env`, da das Skript nichts mit dem Node-Backend-Service zu
+  tun hat) — Passwort wurde dem Nutzer bewusst nicht im Chat abgefragt
+  (Sicherheitsrisiko), stattdessen soll er es direkt auf dem Server
+  eintragen. Zusätzlich eine tägliche Chat-Routine eingerichtet
+  (`trig_01NK2qYo63jaGcprNbPJEsGN`, 6 Uhr Wien-Zeit) — fragt nach, ob
+  die Tages-Entwürfe verschickt wurden, hakt bei "nein" nach; enthält
+  bewusst **keine** eigene Recherche mehr (das übernimmt jetzt komplett
+  der Server-Cron). Lokal verifiziert: `node --check` fehlerfrei, Modul
+  lädt sauber (bricht korrekt erst am fehlenden `ANTHROPIC_API_KEY` in
+  dieser Sandbox ab).
+  **Auf dem Produktivserver ausgerollt (23.08.2026):** Nutzer hat rsync-
+  Deploy, `npm install --omit=dev` (imapflow), `/etc/ki-works/
+  kaltakquise.env` (IMAP-Zugangsdaten) und den Cron-Eintrag (`0 6 * * *`)
+  selbst durchgeführt. Beim Setzen der Crontab per `crontab -e`
+  sprang die eingefügte Zeile am `nano`-Editor vorbei direkt in die
+  Shell (Paste-Timing-Problem, `command not found`) — als robuster
+  Workaround stattdessen non-interaktiv gesetzt:
+  `(crontab -l 2>/dev/null; echo "<zeile>") | crontab -`. Gleiches
+  Editor-Problem beim Anlegen von `kaltakquise.env` — dort ebenfalls per
+  Heredoc (`cat > datei <<EOF ... EOF`) statt `nano` gelöst. **Für
+  künftige Server-Anleitungen: `nano`/`crontab -e`-Schritte nach
+  Möglichkeit direkt als Heredoc-/Pipe-Einzeiler geben statt als
+  interaktive Editor-Anweisung, um dieses Paste-Timing-Problem von
+  vornherein zu vermeiden.** Beim ersten `kaltakquise.env`-Anlegen mit
+  Platzhalterwerten (`DEIN_ECHTER_SERVER`/`DEIN_ECHTES_PASSWORT`) hat der
+  Nutzer den Befehl zunächst unverändert ausgeführt statt die Platzhalter
+  zu ersetzen — Lehre: bei künftigen Copy-Paste-Befehlen mit
+  Platzhaltern lieber gleich so weit wie möglich vorausfüllen (z. B. den
+  Hostnamen, sobald bekannt) und die Ersetzung explizit Schritt für
+  Schritt anleiten, statt auf "durch echten Wert ersetzen" zu vertrauen.
+  Danach `AUTHENTICATIONFAILED` trotz (nach Nutzerangabe) korrektem
+  Passwort — Ursache war der falsche `IMAP_HOST` (`mail.ki-works.eu`
+  war nur ein Rate-Platzhalter, kein echter Wert). Echten Host über einen
+  Blick in Thunderbirds Server-Einstellungen (Konto-Einstellungen →
+  Server-Einstellungen) ermittelt: **`cloud10.helloly.hosting`**, Port
+  993, SSL/TLS — dieser Wert ist kontospezifisch (helloly vergibt pro
+  Kunde einen eigenen `cloudNN.helloly.hosting`-Host) und lässt sich
+  nicht erraten, nur aus einem bereits funktionierenden Mail-Client
+  auslesen. Selbst danach noch ein zweites `AUTHENTICATIONFAILED`, weil
+  wieder ein Platzhalter-Passwort unverändert übernommen wurde — erst
+  mit dem echten, aus Thunderbirds Passwort-Manager im Klartext
+  kopierten Passwort (enthält ein `!`) hat die Anmeldung funktioniert.
+  **Bewährter Workaround für Passwörter mit Sonderzeichen:** Heredoc mit
+  `<<'EOF'` (in Anführungszeichen!) statt `<<EOF` verwenden — verhindert
+  Shell-Interpretation von `$`, `` ` ``, `"` etc. im Passwort. Zusätzlich
+  war `DRAFTS_FOLDER` falsch: dieses Postfach nennt den Entwürfe-Ordner
+  **`INBOX.Drafts`**, nicht `Drafts` — per `client.list()` (imapflow)
+  ermittelt. **Für künftige IMAP-Einrichtungen bei anderen Kunden/
+  Postfächern generell:** Host und Ordnernamen sind pro Anbieter/Konto
+  unterschiedlich, nie einen Standardwert annehmen — entweder aus einem
+  bereits laufenden Mail-Client ablesen lassen oder per `client.list()`
+  gegenprüfen, bevor man sich auf einen Namen festlegt.
+  **Danach erster echter Testlauf** (`node scripts/kaltakquise-agent.js`
+  manuell ausgeführt) bestätigt: komplettes Setup (Cron, IMAP-Login,
+  richtiger Drafts-Ordner, Node/imapflow) jetzt korrekt — scheitert
+  ausschließlich am bekannten, bereits an anderer Stelle dokumentierten
+  Anthropic-Guthaben-Mangel (`"Your credit balance is too low"`,
+  gleiches Problem wie bei Sales-/Social-Media-Agent und Web-Chat-
+  Widget). Sobald Guthaben aufgeladen ist, sollte der tägliche Cron-Lauf
+  ohne weiteres Zutun funktionieren.
+  **Danach mit Sales-Agent verschmolzen (23.08.2026, Nutzer-Wunsch "kann
+  das mit Sales Agent gebunden werden?"):** `backend/src/salesAgent.js`
+  ist jetzt der gemeinsame Kern für beide Auslöser (Dashboard-Button
+  "Sales-Agent starten" UND täglicher Cron) — gleiches Zielprofil
+  (Bezirk Perg + Linz, branchenoffen, vorher war der Dashboard-Sales-Agent
+  noch auf Restaurants/Schwertberg-Raum begrenzt), gleicher E-Mail-Stil,
+  gleiche Dopplungsvermeidung über die `pending_actions`-Tabelle (ersetzt
+  die vormals separate `/var/lib/ki-works/kaltakquise-state.json` — Datei
+  kann auf dem Server ignoriert/gelöscht werden, wird nicht mehr
+  gelesen). Zusätzlich legt `salesAgent.js` jetzt best-effort auch einen
+  echten IMAP-Entwurf an (nicht nur den `pending_actions`-Dashboard-
+  Eintrag), sofern `IMAP_HOST`/`IMAP_USER`/`IMAP_PASS` in der Umgebung
+  gesetzt sind — für den Cron-Lauf automatisch der Fall (beide Env-Dateien
+  werden dort geladen), für den Dashboard-Button nur, falls `kaltakquise.env`
+  künftig auch in die `ki-works-api`-systemd-Unit aufgenommen wird (bisher
+  nicht nötig, da der Button seltener/manuell genutzt wird).
+  `backend/scripts/kaltakquise-agent.js` ist dadurch auf einen 20-Zeilen-
+  Wrapper um `runSalesAgent()` geschrumpft. Lokal verifiziert: `node
+  --check` für beide Dateien + `server.js` fehlerfrei, Modul-Import lädt
+  sauber (inkl. `imapflow`/`db.js`-Import ohne Laufzeitfehler).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1827,6 +1913,14 @@ Version auf "Publish" klicken.
   dadurch vermutlich nie ausgelöst. Sobald wieder Guthaben vorhanden ist,
   sollte sich das von selbst korrigieren; ein Anthropic-unabhängiger
   Fallback wurde noch nicht gebaut (nicht angefragt).
+  **Ergänzung (23.08.2026):** der neue Kaltakquise-Agent
+  (`backend/scripts/kaltakquise-agent.js`, siehe „Bereits erledigt")
+  ist jetzt vollständig deployed (Cron/IMAP/Env korrekt eingerichtet,
+  per manuellem Testlauf bestätigt) und scheitert ebenfalls nur an
+  diesem Guthaben-Mangel — reiht sich also in dieselbe Liste betroffener
+  Features ein (Sales-Agent, Social-Media-Agent, Web-Chat-Widget,
+  Anruf-Klassifizierung). Sobald aufgeladen: einfach abwarten, der
+  tägliche 6-Uhr-Cron-Lauf sollte dann von selbst funktionieren.
 
 ## Pflege dieser Datei
 
