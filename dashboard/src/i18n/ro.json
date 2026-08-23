@@ -204,6 +204,11 @@
     "title": "Plan tarifar pentru „{{name}}”",
     "tierLabel": "Plan"
   },
+  "agencyAssignForm": {
+    "title": "Agenție pentru „{{name}}”",
+    "agencyLabel": "Agenție",
+    "none": "– fără agenție (client direct) –"
+  },
   "accessForm": {
     "title": "Autentificare pentru „{{name}}”",
     "emailLabel": "E-mail de autentificare",
@@ -255,7 +260,8 @@
     "createAccess": "Creează acces",
     "sendInvite": "Trimite invitație",
     "changeRoles": "Schimbă rolurile",
-    "changeTier": "Schimbă planul"
+    "changeTier": "Schimbă planul",
+    "changeAgency": "Schimbă agenția"
   },
   "orderStatus": {
     "new": "🆕 Nouă",

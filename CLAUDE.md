@@ -1376,13 +1376,31 @@ Version auf "Publish" klicken.
   wäre `create_order` (Bestellung) durch ein generisches `create_appointment`
   (Termin) zu ergänzen/ersetzen — Rest der Architektur ist schon
   branchenneutral. Nur Brainstorming, nichts entschieden.
-- **Mehrsprachigkeit (Englisch zusätzlich zu Deutsch):** Nutzer-Frage, ob
-  Kiwo auch Englisch können soll. Technisch möglich, aber Transkription
-  (Deepgram, aktuell fest `"language": "de"`) UND Stimme (Azure
-  `de-AT-IngridNeural`, reine Deutsch-Stimme) müssten beide auf mehrsprachig
-  umgestellt werden, sonst klingt/versteht Kiwo Englisch schlecht. Zwei
-  Varianten besprochen: automatische Spracherkennung vs. nur auf
-  Gast-Wunsch umschalten. Noch nicht entschieden, nichts gebaut.
+- **Mehrsprachigkeit am Telefon (Kiwo selbst, nicht nur Website/Dashboard,
+  19.08.2026 aktualisiert):** Nutzer-Frage "spricht kiwo de en und ro
+  schon? Vielleicht in gleiche Gespräch?" — Recherche ergab einen harten
+  technischen Blocker gegen Live-Sprachwechsel *innerhalb* eines Anrufs:
+  Deepgram Nova-3 (aktuell für die Transkription genutzt, fest
+  `"language": "de"`) unterstützt Echtzeit-Sprach-Auto-Erkennung/-Wechsel
+  ("Code-Switching") nur für 10 Sprachen (Englisch, Spanisch, Französisch,
+  Deutsch, Hindi, Russisch, Portugiesisch, Japanisch, Italienisch,
+  Niederländisch) — **Rumänisch ist NICHT darunter**. Vapi bietet für die
+  Stimme (Azure) einen "multilingual-auto"-Modus, konkrete Stimmen-IDs für
+  Deutsch/Rumänisch dafür wurden aber nicht verifiziert. Nutzer hat daraufhin
+  selbst vorgeschlagen, statt Live-Umschaltung im selben Gespräch lieber
+  **eine feste, pro Kunde wählbare Sprache** (analog zu Website/Dashboard:
+  DE/EN/RO, je ein Wert statt Live-Erkennung) zu nutzen, und explizit nach
+  meiner Einschätzung dazu gefragt — **diese Frage wurde in der Sitzung vom
+  19.08.2026 noch nicht beantwortet** (Sitzung wurde vom parallel laufenden
+  Agentur-White-Label-Plan unterbrochen, siehe „Bereits erledigt"). Fester
+  Vorschlag für die Antwort beim nächsten Gespräch: dem Nutzer zustimmen
+  (ein fester Wert pro Kunde vermeidet den Rumänisch-Blocker vollständig und
+  ist technisch deutlich einfacher als Live-Wechsel) — **noch nicht mit dem
+  Nutzer bestätigt.** Falls umgesetzt: größter Aufwand ist nicht die
+  Sprach-/Stimmwahl selbst (z. B. `restaurants.settings.language`,
+  bestehende JSONB-Spalte, keine Migration nötig), sondern die Übersetzung
+  des kompletten Vapi-System-Prompts (`vapiAdmin.js`) in EN/RO — bisher nur
+  grob abgeschätzt, nicht im Detail geplant.
 - **Admin-Dashboard überarbeiten:** Nutzer-Brainstorming — soll künftig zeigen:
   Anzahl aktiver Kunden, Umsatz/Kosten/Gewinn, unternehmensweite KI-Empfehlungen
   (nicht nur pro Betrieb), sowie die Ersparnis-Kachel aggregiert über alle
@@ -1472,18 +1490,19 @@ Version auf "Publish" klicken.
   - **Stimm-/Dialekt-Anpassung** je Region (AT/CH) für höhere Akzeptanz bei
     Anrufern
   - **White-Label/Agentur-Partner-Programm**: Plattform an Agenturen/
-    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten.
-    Detaillierter durchdacht: braucht (1) neue Agentur-Ebene über den
-    Betrieben (jeder Betrieb gehört einer Agentur, Rechte-Modell über
-    `customerScope` hinaus erweitern), (2) austauschbares Branding
-    (Logo/Farben/Name) pro Agentur im Dashboard statt hartcodiertem
-    "KI-Works"-Design, (3) zweistufige Abrechnung (Großhandel an Agentur,
-    Agentur an Endkunde) — hängt am selben fehlenden Preismodell wie beim
-    Admin-Dashboard-Punkt, (4) Support-Trennung (Agentur = Erstsupport).
-    Größter Aufwand ist Branding-Flexibilität + Billing, nicht die
-    Multi-Tenant-Grundarchitektur (die trägt schon). Nutzer-Priorität:
-    **explizit für später** — zuerst sollen alle Kiwo-Rollen, Branchen und
-    das neue Design fertig werden.
+    Systemhäuser zum Weiterverkauf unter eigener Marke anbieten. **Update
+    19.08.2026:** Phase 1 (eigene Domain pro Agentur + unsichtbares
+    KI-Works-Branding + eigener Vapi-Assistentenname) ist umgesetzt, siehe
+    „Bereits erledigt" — Punkte (1) und (2) unten sind damit erledigt,
+    offen bleiben (3) zweistufige Abrechnung (Großhandel an Agentur,
+    Agentur an Endkunde — hängt am selben fehlenden Preismodell wie beim
+    Admin-Dashboard-Punkt) und (4) Support-Trennung (Agentur =
+    Erstsupport), sowie der eigene Agentur-Login (Phase 2, mehrere Kunden
+    auf einmal sehen). Ursprüngliche Einschätzung: braucht (1) neue
+    Agentur-Ebene über den Betrieben (jeder Betrieb gehört einer Agentur,
+    Rechte-Modell über `customerScope` hinaus erweitern), (2)
+    austauschbares Branding (Logo/Farben/Name) pro Agentur im Dashboard
+    statt hartcodiertem "KI-Works"-Design.
   - **Branchen-Templates im Marktplatz**: vorgefertigte Prompts/Workflows/
     Wissenstöpfe je Nische (z. B. "Template für Autohäuser"), mit einem
     Klick aktivierbar. Nutzer-Präzisierung: Templates sollen der
@@ -1750,6 +1769,14 @@ Version auf "Publish" klicken.
   Business-Dashboard-Sektion (`business-dashboard/`) sind normale
   Frontend-Änderungen, laufen über den üblichen rsync/Build-Schritt — nur
   die beiden Migrationen sind ein zusätzlicher, manueller Schritt.
+- **Agentur-White-Label Phase 1 noch nicht auf dem Produktivserver
+  ausgerollt** (Details siehe „Bereits erledigt", 19.08.2026) — braucht
+  zusätzlich zum üblichen rsync/Build für `dashboard/` +
+  `business-dashboard/` die neue Migration `migration-023-agencies.sql`
+  und einen Backend-Neustart (`server.js`/`vapiAdmin.js` haben sich
+  geändert). Noch keine echte Agentur angelegt; sobald eine zusagt,
+  zusätzlich `deploy/add-agency-domain.sh <domain>` auf dem Server
+  ausführen (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
 - Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
   aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
   bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer

@@ -122,8 +122,7 @@
     "finance": "Liest Belege und Rechnungen aus und übergibt die Daten an Ihre Buchhaltung."
   },
   "roleCard": {
-    "soon": "bald verfügbar",
-    "viewRole": "Rolle ansehen"
+    "soon": "bald verfügbar"
   },
   "liveTest": {
     "eyebrow": "LIVE-EINSATZ",
@@ -215,17 +214,17 @@
     "eyebrow": "KI-WORKS PLATTFORM",
     "headingPrefix": "Kiwo läuft auf der",
     "headingHighlight": "KI-Works Plattform.",
-    "desc": "Sicher, DSGVO-konform und in der EU gehostet. Kiwo verbindet sich nahtlos mit Ihren bestehenden Tools – WhatsApp, Telefonanlagen, Outlook, Google Calendar und Ihrem CRM.",
+    "desc": "Sicher, DSGVO-konform und in der EU gehostet. Kiwo läuft auf bewährter Infrastruktur — Sprach-KI von Anthropic, Telefonie über Vapi, automatisierte Benachrichtigungen über n8n.",
     "features": [
       "EU-Hosting & TLS-verschlüsselte Übertragung",
       "Strikte Datentrennung zwischen Kunden",
       "Passwortgeschützter Zugang für Admin & Kunden",
       "Automatisiertes Backup & Fehler-Monitoring"
     ],
-    "mockLabel": "// integrations.stream",
+    "mockLabel": "// platform.stack",
     "onlineBadge": "online",
-    "statUptime": "Uptime",
-    "statResponse": "Antwortzeit",
+    "statEncryption": "Verschlüsselung",
+    "statCompliance": "Konformität",
     "statData": "Datenhaltung"
   },
   "roi": {

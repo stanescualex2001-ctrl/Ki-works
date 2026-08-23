@@ -551,6 +551,119 @@ function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
 }
 
 // ---------------------------------------------------------------- App
+// ---------------------------------------------------------------- Agenturen (White-Label)
+function AgencyForm({ onCreated }) {
+  const [name, setName] = useState('');
+  const [domain, setDomain] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    apiFetch('/api/agencies', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name, domain }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setName('');
+        setDomain('');
+        onCreated();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <form className="agency-form" onSubmit={submit}>
+      <input placeholder="Name (intern)" value={name} onChange={(e) => setName(e.target.value)} required />
+      <input placeholder="Domain, z.B. kunden.agentur.at" value={domain} onChange={(e) => setDomain(e.target.value)} required />
+      <button className="primary" type="submit" disabled={loading}>{loading ? 'Anlegen…' : '+ Agentur anlegen'}</button>
+      {error && <p className="error">Fehler: {error}</p>}
+    </form>
+  );
+}
+
+function AgencyBrandingForm({ agency, onSaved }) {
+  const [branding, setBranding] = useState(agency.branding || {});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [saved, setSaved] = useState(false);
+
+  const set = (key) => (e) => { setBranding((b) => ({ ...b, [key]: e.target.value })); setSaved(false); };
+
+  const save = () => {
+    setLoading(true);
+    setError(null);
+    apiFetch(`/api/agencies/${agency.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ branding }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setSaved(true);
+        onSaved();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div className="agency-branding">
+      <label>
+        Produktname (statt "KI-Works")
+        <input value={branding.productName || ''} onChange={set('productName')} placeholder="z.B. Aria" />
+      </label>
+      <label>
+        Assistentenname am Telefon (statt "Kiwo")
+        <input value={branding.assistantName || ''} onChange={set('assistantName')} placeholder="z.B. Aria" />
+      </label>
+      <label>
+        Logo-URL
+        <input value={branding.logoUrl || ''} onChange={set('logoUrl')} placeholder="https://…" />
+      </label>
+      <label>
+        Akzentfarbe
+        <input type="color" value={branding.accent || '#0E7490'} onChange={set('accent')} />
+      </label>
+      <div className="agency-branding-actions">
+        <button className="primary" disabled={loading} onClick={save}>{loading ? 'Speichere…' : 'Branding speichern'}</button>
+        {saved && <span className="hint">Gespeichert.</span>}
+      </div>
+      {error && <p className="error">Fehler: {error}</p>}
+    </div>
+  );
+}
+
+function AgenciesSection({ refreshKey, onChanged }) {
+  const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
+  const [expanded, setExpanded] = useState(null);
+
+  if (error) return <p className="error">Fehler: {error}</p>;
+  if (!agencies) return <p className="hint">Lädt…</p>;
+
+  return (
+    <div className="agencies-section">
+      <AgencyForm onCreated={onChanged} />
+      {!agencies.length && <p className="hint">Noch keine Agenturen angelegt.</p>}
+      {agencies.map((a) => (
+        <div key={a.id} className="agency-row">
+          <button type="button" className="agency-row-head" onClick={() => setExpanded(expanded === a.id ? null : a.id)}>
+            <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
+          </button>
+          {expanded === a.id && <AgencyBrandingForm agency={a} onSaved={onChanged} />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function App() {
   const [auth, setAuth] = useState(loadAuth);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -607,6 +720,9 @@ export default function App() {
 
             <h2 style={{ marginTop: '2rem' }}>Businesses</h2>
             <BusinessGrid onOpen={setOpenBusiness} />
+
+            <h2 style={{ marginTop: '2rem' }}>Agenturen</h2>
+            <AgenciesSection refreshKey={refreshKey} onChanged={refresh} />
           </>
         )}
       </main>
