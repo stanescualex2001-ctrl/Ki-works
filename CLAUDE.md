@@ -1294,6 +1294,26 @@ Version auf "Publish" klicken.
   gleiches Problem wie bei Sales-/Social-Media-Agent und Web-Chat-
   Widget). Sobald Guthaben aufgeladen ist, sollte der tägliche Cron-Lauf
   ohne weiteres Zutun funktionieren.
+  **Danach mit Sales-Agent verschmolzen (23.08.2026, Nutzer-Wunsch "kann
+  das mit Sales Agent gebunden werden?"):** `backend/src/salesAgent.js`
+  ist jetzt der gemeinsame Kern für beide Auslöser (Dashboard-Button
+  "Sales-Agent starten" UND täglicher Cron) — gleiches Zielprofil
+  (Bezirk Perg + Linz, branchenoffen, vorher war der Dashboard-Sales-Agent
+  noch auf Restaurants/Schwertberg-Raum begrenzt), gleicher E-Mail-Stil,
+  gleiche Dopplungsvermeidung über die `pending_actions`-Tabelle (ersetzt
+  die vormals separate `/var/lib/ki-works/kaltakquise-state.json` — Datei
+  kann auf dem Server ignoriert/gelöscht werden, wird nicht mehr
+  gelesen). Zusätzlich legt `salesAgent.js` jetzt best-effort auch einen
+  echten IMAP-Entwurf an (nicht nur den `pending_actions`-Dashboard-
+  Eintrag), sofern `IMAP_HOST`/`IMAP_USER`/`IMAP_PASS` in der Umgebung
+  gesetzt sind — für den Cron-Lauf automatisch der Fall (beide Env-Dateien
+  werden dort geladen), für den Dashboard-Button nur, falls `kaltakquise.env`
+  künftig auch in die `ki-works-api`-systemd-Unit aufgenommen wird (bisher
+  nicht nötig, da der Button seltener/manuell genutzt wird).
+  `backend/scripts/kaltakquise-agent.js` ist dadurch auf einen 20-Zeilen-
+  Wrapper um `runSalesAgent()` geschrumpft. Lokal verifiziert: `node
+  --check` für beide Dateien + `server.js` fehlerfrei, Modul-Import lädt
+  sauber (inkl. `imapflow`/`db.js`-Import ohne Laufzeitfehler).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
