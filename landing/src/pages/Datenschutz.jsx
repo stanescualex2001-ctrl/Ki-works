@@ -60,14 +60,15 @@ export default function Datenschutz() {
         <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-800/90 dark:text-amber-100/90">
           <strong className="text-amber-600 dark:text-amber-300">Hinweis (intern):</strong> Diese Erklärung ist ein
           technischer Ausgangstext und ersetzt keine Rechtsberatung. Bitte vor Veröffentlichung von
-          einem Anwalt bzw. Datenschutzberater prüfen lassen — insbesondere die Angaben zu
-          Verantwortlichem, Rechtsgrundlagen und Drittland-Übermittlungen (USA).
+          einem Anwalt bzw. Datenschutzberater prüfen lassen — insbesondere den Platzhalter beim
+          Verantwortlichen (Abschnitt 1) sowie die noch offene Vertragsgrundlage mit Vapi
+          (Abschnitt 5).
         </div>
 
         <h2 className="mt-10 text-lg font-semibold">1. Verantwortlicher</h2>
         <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          [Name / Firmenname], [Anschrift], E-Mail: <A href="mailto:info@ki-works.eu">info@ki-works.eu</A>{" "}
-          (im Folgenden „ki-works", „wir").
+          [ALEX: HIER NAME/FIRMENNAME + STRASSE HAUSNR + PLZ ORT, ÖSTERREICH EINTRAGEN], E-Mail:{" "}
+          <A href="mailto:info@ki-works.eu">info@ki-works.eu</A> (im Folgenden „ki-works", „wir").
         </p>
 
         <h2 className="mt-10 text-lg font-semibold">2. Wer ist wofür verantwortlich?</h2>
@@ -135,9 +136,13 @@ export default function Datenschutz() {
           ))}
         </ul>
         <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Bei Übermittlung in die USA stützen wir uns auf geeignete Garantien (z. B.
-          EU-Standardvertragsklauseln bzw. Data Privacy Framework der jeweiligen Anbieter). [Von
-          Anwalt/Datenschutzberater bestätigen lassen.]
+          Bei der Übermittlung an Anthropic und Twilio in die USA stützen wir uns auf die{" "}
+          <A href="https://www.twilio.com/en-us/legal/data-protection-addendum" external>
+            EU-Standardvertragsklauseln
+          </A>{" "}
+          (Art. 46 Abs. 2 lit. c DSGVO), die automatisch Bestandteil der jeweiligen
+          Nutzungsbedingungen bzw. Auftragsverarbeitungsverträge sind. Für Vapi prüfen wir aktuell
+          die entsprechenden Vertragsgrundlagen.
         </p>
 
         <h2 className="mt-10 text-lg font-semibold">6. Speicherdauer</h2>
@@ -180,6 +185,15 @@ export default function Datenschutz() {
           "alle akzeptieren" wählen — vorsorglich für den Fall, dass wir
           künftig Analyse- oder Marketing-Dienste einsetzen. Ihre Wahl
           können Sie dort jederzeit ändern.
+        </p>
+
+        <h2 className="mt-10 text-lg font-semibold">9. KI-Transparenz</h2>
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
+          Gespräche mit unseren KI-Rollen (z. B. telefonische
+          Reservierungsannahme) werden Gästen zu Beginn des Gesprächs klar
+          als automatisierte, KI-gestützte Kommunikation kenntlich gemacht
+          (Art. 50 EU-KI-Verordnung). Den entsprechenden Hinweistext
+          stellt ki-works dem jeweiligen Betrieb zur Verfügung.
         </p>
       </div>
     </PageShell>
