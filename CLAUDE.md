@@ -1190,6 +1190,66 @@ Version auf "Publish" klicken.
   ungelöstes Darstellungsproblem, siehe „Social-Media-Automatisierung"
   weiter unten), beim nächsten Gespräch nachfragen, falls nicht von
   selbst erwähnt.
+  **Nachtrag (19.08.2026, Download-Befund):** Nutzer-Rückmeldung war "mp4
+  ja, Bilder nein" — MP4-Dateien lassen sich vom Handy zuverlässig laden,
+  einzelne PNGs nicht (vermutlich werden Bilder vom Client als "inline
+  renderbar" behandelt und bekommen dadurch keine zuverlässige
+  Download-Möglichkeit, während MP4 immer eine Downloadkarte bekommt).
+  **Funktionierender Workaround:** die PNG-Bild-Posts zusätzlich als
+  **ZIP-Archiv** bündeln (`zip`-Befehl) und das Archiv statt der
+  Einzelbilder verschicken — ein Archiv ist eindeutig nicht "renderbar"
+  und bekommt wie MP4 zuverlässig eine Downloadkarte. **Neuer Standard
+  für künftige Bild-Posts:** immer zusätzlich als ZIP verschicken, nicht
+  nur als Einzeldateien. Dabei außerdem einen Inhaltsfehler im
+  ki-works-Post korrigiert: der erste Entwurf behauptete fälschlich
+  telefonische Mehrsprachigkeit ("Kiwo spricht Deutsch, Englisch &
+  Rumänisch") — tatsächlich ist nur Website+Dashboard mehrsprachig,
+  Kiwo am Telefon bleibt fest Deutsch (`vapiAdmin.js`). Nutzer-Fund,
+  Post auf das tatsächliche Feature ("Ihr Dashboard. Auf Deutsch,
+  Englisch & Rumänisch.", Dashboard-Nav-Mockup statt Telefon-Chat-Bubble)
+  korrigiert.
+- **Kaltakquise-Agent v1 + tägliche Erinnerung (20.08.2026):** Antwort auf
+  "bereite 10 Unternehmen für Kaltakquise vor + zwing mich täglich
+  mindestens 5 Mails zu senden". Erste Runde: 10 real recherchierte und
+  verifizierte Kandidaten (Restaurants/Hotels/Handwerk/Friseur, Bezirk
+  Perg + Linz) samt individuellem Mail-Entwurf als `.md`-Datei übergeben.
+  Danach zwei Nutzer-Korrekturen umgesetzt: (1) Entwurf-Erstellung soll
+  nicht vom eingeschalteten Laptop des Nutzers abhängen, sondern
+  serverseitig automatisch laufen; (2) der Kandidaten-Nachschub soll
+  vollautomatisch passieren (nicht durch Chat-Nachfrage) und **alle
+  passenden Branchen** abdecken, nicht nur Gastro/Hotels. Umgesetzt:
+  neuer **`backend/scripts/kaltakquise-agent.js`** (Node, analog zu
+  `salesAgent.js` — nutzt `@anthropic-ai/sdk` + Claudes
+  `web_search`/`web_fetch`-Server-Tools, gleicher `ANTHROPIC_API_KEY`),
+  läuft unabhängig vom Backend-Service per Cron: hält einen
+  persistenten Kandidaten-Puffer (Ziel ~15) in
+  `/var/lib/ki-works/kaltakquise-state.json` — **bewusst außerhalb von
+  `/opt/ki-works`**, da der Update-Ablauf dort bei jedem Deploy ein
+  `rsync --delete` macht, das den Fortschritt sonst löschen würde.
+  Recherchiert automatisch neue, branchenoffene Kandidaten (Gastro,
+  Handwerk/KFZ, Friseur/Kosmetik, Physio, Kanzleien, Immobilienmakler
+  usw.) sobald der Puffer unter 5 fällt, legt täglich 5 individuelle
+  Akquise-Mails per IMAP (`imapflow`, neue Abhängigkeit in
+  `backend/package.json`) direkt als Entwürfe in `info@ki-works.eu` ab —
+  **nur Entwürfe, kein automatischer Versand**, Nutzer prüft/verschickt
+  selbst. Zugangsdaten (`IMAP_HOST/PORT/USER/PASS`, `DRAFTS_FOLDER`)
+  bewusst in einer eigenen `/etc/ki-works/kaltakquise.env` (getrennt von
+  `ki-works.env`, da das Skript nichts mit dem Node-Backend-Service zu
+  tun hat) — Passwort wurde dem Nutzer bewusst nicht im Chat abgefragt
+  (Sicherheitsrisiko), stattdessen soll er es direkt auf dem Server
+  eintragen. Zusätzlich eine tägliche Chat-Routine eingerichtet
+  (`trig_01NK2qYo63jaGcprNbPJEsGN`, 6 Uhr Wien-Zeit) — fragt nach, ob
+  die Tages-Entwürfe verschickt wurden, hakt bei "nein" nach; enthält
+  bewusst **keine** eigene Recherche mehr (das übernimmt jetzt komplett
+  der Server-Cron). Lokal verifiziert: `node --check` fehlerfrei, Modul
+  lädt sauber (bricht korrekt erst am fehlenden `ANTHROPIC_API_KEY` in
+  dieser Sandbox ab). **Noch nicht auf dem Produktivserver ausgerollt**
+  — braucht nach dem normalen rsync-Deploy zusätzlich: `npm install
+  --omit=dev` in `backend/` (neue `imapflow`-Abhängigkeit),
+  `/etc/ki-works/kaltakquise.env` einmalig anlegen, und einen
+  Cron-Eintrag (`0 6 * * *`, beide Env-Dateien vorher sourcen) — kein
+  `systemctl restart ki-works-api` nötig, da unabhängig vom
+  Backend-Service.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
