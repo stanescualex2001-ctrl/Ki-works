@@ -1257,10 +1257,39 @@ Version auf "Publish" klicken.
   künftige Server-Anleitungen: `nano`/`crontab -e`-Schritte nach
   Möglichkeit direkt als Heredoc-/Pipe-Einzeiler geben statt als
   interaktive Editor-Anweisung, um dieses Paste-Timing-Problem von
-  vornherein zu vermeiden.** Erster echter Testlauf (`node
-  scripts/kaltakquise-agent.js` manuell ausgeführt) bestätigt: komplettes
-  Setup (Cron, IMAP-Env, Node/imapflow) korrekt — scheitert aktuell nur
-  am bekannten, bereits an anderer Stelle dokumentierten
+  vornherein zu vermeiden.** Beim ersten `kaltakquise.env`-Anlegen mit
+  Platzhalterwerten (`DEIN_ECHTER_SERVER`/`DEIN_ECHTES_PASSWORT`) hat der
+  Nutzer den Befehl zunächst unverändert ausgeführt statt die Platzhalter
+  zu ersetzen — Lehre: bei künftigen Copy-Paste-Befehlen mit
+  Platzhaltern lieber gleich so weit wie möglich vorausfüllen (z. B. den
+  Hostnamen, sobald bekannt) und die Ersetzung explizit Schritt für
+  Schritt anleiten, statt auf "durch echten Wert ersetzen" zu vertrauen.
+  Danach `AUTHENTICATIONFAILED` trotz (nach Nutzerangabe) korrektem
+  Passwort — Ursache war der falsche `IMAP_HOST` (`mail.ki-works.eu`
+  war nur ein Rate-Platzhalter, kein echter Wert). Echten Host über einen
+  Blick in Thunderbirds Server-Einstellungen (Konto-Einstellungen →
+  Server-Einstellungen) ermittelt: **`cloud10.helloly.hosting`**, Port
+  993, SSL/TLS — dieser Wert ist kontospezifisch (helloly vergibt pro
+  Kunde einen eigenen `cloudNN.helloly.hosting`-Host) und lässt sich
+  nicht erraten, nur aus einem bereits funktionierenden Mail-Client
+  auslesen. Selbst danach noch ein zweites `AUTHENTICATIONFAILED`, weil
+  wieder ein Platzhalter-Passwort unverändert übernommen wurde — erst
+  mit dem echten, aus Thunderbirds Passwort-Manager im Klartext
+  kopierten Passwort (enthält ein `!`) hat die Anmeldung funktioniert.
+  **Bewährter Workaround für Passwörter mit Sonderzeichen:** Heredoc mit
+  `<<'EOF'` (in Anführungszeichen!) statt `<<EOF` verwenden — verhindert
+  Shell-Interpretation von `$`, `` ` ``, `"` etc. im Passwort. Zusätzlich
+  war `DRAFTS_FOLDER` falsch: dieses Postfach nennt den Entwürfe-Ordner
+  **`INBOX.Drafts`**, nicht `Drafts` — per `client.list()` (imapflow)
+  ermittelt. **Für künftige IMAP-Einrichtungen bei anderen Kunden/
+  Postfächern generell:** Host und Ordnernamen sind pro Anbieter/Konto
+  unterschiedlich, nie einen Standardwert annehmen — entweder aus einem
+  bereits laufenden Mail-Client ablesen lassen oder per `client.list()`
+  gegenprüfen, bevor man sich auf einen Namen festlegt.
+  **Danach erster echter Testlauf** (`node scripts/kaltakquise-agent.js`
+  manuell ausgeführt) bestätigt: komplettes Setup (Cron, IMAP-Login,
+  richtiger Drafts-Ordner, Node/imapflow) jetzt korrekt — scheitert
+  ausschließlich am bekannten, bereits an anderer Stelle dokumentierten
   Anthropic-Guthaben-Mangel (`"Your credit balance is too low"`,
   gleiches Problem wie bei Sales-/Social-Media-Agent und Web-Chat-
   Widget). Sobald Guthaben aufgeladen ist, sollte der tägliche Cron-Lauf
