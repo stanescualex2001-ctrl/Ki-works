@@ -1228,6 +1228,27 @@ Version auf "Publish" klicken.
   echte Agentur zusagt, zusätzlich `deploy/add-agency-domain.sh <domain>`
   auf dem Server ausführen (braucht vorher gesetztes DNS der Agentur auf
   die Server-IP).
+- **Datenschutzerklärung aktualisiert (23.08.2026):** Nutzer brachte einen
+  fertigen Änderungsauftrag mit (Verantwortlicher-Platzhalter, Drittland-
+  Übermittlung, KI-Transparenz-Abschnitt) — vor Umsetzung gegengeprüft
+  statt blind übernommen. Dabei zwei Punkte am Auftragstext korrigiert:
+  (1) der vorgeschlagene Satz hätte pauschal für Anthropic, Vapi UND
+  Twilio ein "SCC-basiertes DPA" behauptet — Recherche ergab, dass das
+  nur für Anthropic und Twilio stimmt (siehe Vapi-DPA-Lücke oben), daher
+  Vapi bewusst ausgeklammert; (2) der interne "bitte rechtlich
+  prüfen"-Hinweis sollte laut Auftrag komplett gelöscht werden, wurde
+  stattdessen nur verengt (bleibt sichtbar, bis Verantwortlicher-
+  Platzhalter ausgefüllt UND Vapi-Frage geklärt ist) — sonst hätte die
+  Seite eine unbelegte Aussage ohne jede Einschränkung mehr enthalten,
+  dieselbe Fehlerklasse wie die früheren Überkorrekturen
+  (Sicherheitsversprechen, Integrationsliste). Umgesetzt in
+  `landing/src/pages/Datenschutz.jsx`: Verantwortlicher-Platzhalter
+  jetzt explizit als Alex-Todo markiert; Abschnitt 5 nennt Anthropic und
+  Twilio konkret mit Link zum Twilio-DPA; neuer Abschnitt 9
+  "KI-Transparenz" (Art. 50 EU-KI-Verordnung) ergänzt. Lokal per
+  `npm run build` + Grep im Prerender-Output verifiziert. Committet und
+  gepusht, normaler rsync/Build-Ablauf für `landing/` reicht (kein
+  Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -1857,6 +1878,28 @@ Version auf "Publish" klicken.
   fertig eingerichtet und dem Server zugewiesen wurde, ist von hier aus
   nicht prüfbar (kein SSH-Zugriff) — beim nächsten Gespräch nachfragen,
   falls nicht von selbst erwähnt.
+- **Preise-Fußnote "zzgl. USt." — Rechtsform/USt.-Status ungeklärt
+  (23.08.2026, Nutzer-Frage noch offen):** Nutzer wies darauf hin, dass
+  die Preise-Fußnote "Alle Preise zzgl. USt." voraussetzt, dass ki-works
+  umsatzsteuerpflichtig ist — das ist unklar, solange auch der
+  Verantwortlicher-Platzhalter in der Datenschutzerklärung noch nicht
+  ausgefüllt ist (siehe oben). Falls Alex als **Kleinunternehmer**
+  (§ 6 Abs. 1 Z 27 UStG) firmiert, darf **keine** USt. ausgewiesen
+  werden — "zzgl. USt." wäre dann falsch (suggeriert einen Aufschlag,
+  der nicht kommt), richtig wäre z. B. "umsatzsteuerbefreit gemäß § 6
+  Abs. 1 Z 27 UStG". Frage an Nutzer gestellt (Kleinunternehmer/
+  reguläres Einzelunternehmen mit USt-ID/GmbH?), noch nicht beantwortet
+  — Fußnote (`landing/src/i18n/*.json`, Key `pricing.footnote`) erst
+  danach korrigieren.
+- **Nutzungsmessung berechnet nur, bucht nicht ab (23.08.2026, Nutzer-
+  Nachfrage "kann das Platform das rechnen für Kunden?")** — Antwort:
+  `GET /api/usage` (`backend/src/server.js`) berechnet `overageCost`
+  korrekt und zeigt es in der `UsageTile` im Kunden-Dashboard an, aber
+  im gesamten Backend gibt es keine Stripe/PayPal/Rechnungs-Integration
+  (per Grep bestätigt) — eine Überschreitung muss Alex weiterhin manuell
+  in Rechnung stellen. Deckt sich mit dem bereits dokumentierten Stand
+  bei „Nutzungsmessung + Anzeige pro Kunde" (17.08.2026): „Automatische
+  Abrechnung ist explizit ein späterer, noch nicht begonnener Schritt".
 - **Preise-Sektion: Nutzen-Formulierung schärfen (13.08.2026, für nächste
   Sitzung bestätigt — "mach!")** — Nutzer-Feedback: die aktuellen
   Feature-Punkte pro Tarif ("Dashboard", "E-Mail-Benachrichtigungen bei
@@ -1896,6 +1939,25 @@ Version auf "Publish" klicken.
   dadurch vermutlich nie ausgelöst. Sobald wieder Guthaben vorhanden ist,
   sollte sich das von selbst korrigieren; ein Anthropic-unabhängiger
   Fallback wurde noch nicht gebaut (nicht angefragt).
+  **Vollständige Bestandsaufnahme (23.08.2026, auf Nutzer-Nachfrage
+  "wo ist Claude-API-Guthaben notwendig"):** verbraucht unser eigenes
+  Anthropic-Guthaben (`ANTHROPIC_API_KEY`) an sieben Stellen: (1)
+  Anruf-Ergebnis-Klassifizierung (jeder Anruf, siehe oben), (2)
+  Anruf-Zusammenfassung als Fallback (`summarizeCall`, nur falls Vapi
+  keine eigene liefert — selten), (3) KI-Empfehlungen
+  (`/api/recommendations`, on-demand), (4) Sales-Agent (`salesAgent.js`,
+  inkl. Web-Search/-Fetch-Zusatzkosten), (5) Social-Media-Agent
+  (`socialAgent.js`), (6) Web-Chat-Widget "Kiwo" auf ki-works.eu
+  (`webchat.js`, `/api/public/webchat` — bei jeder Besucher-Nachricht),
+  (7) das einmalige Übersetzungs-Backfill-Skript. **Neu verifiziert:
+  das eigentliche Telefongespräch mit Kiwo selbst (Vapi-Assistent,
+  `model: {provider: 'anthropic', ...}` in `vapiAdmin.js`) hängt NICHT
+  an unserem eigenen Anthropic-Guthaben** — im Vapi-Setup ist kein
+  eigener API-Key/`credentialId` hinterlegt, Vapi rechnet das laut deren
+  Doku dann über die eigene Anthropic-Anbindung ab und verrechnet es im
+  Vapi-Minutenpreis. Erklärt, warum Kiwo am Telefon durchgehend
+  funktionierte, obwohl unser Anthropic-Guthaben mehrfach bei 0 war —
+  betroffen sind wirklich nur die 7 Punkte oben.
 
 ## Pflege dieser Datei
 
