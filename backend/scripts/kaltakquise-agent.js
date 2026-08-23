@@ -38,26 +38,29 @@ const QUALIFICATION_CRITERIA = `Ein guter Kandidat:
 
 const SENDER_NAME = process.env.KALTAKQUISE_SENDER_NAME || 'Alex';
 
-// Stil-Vorlage vom Nutzer bestätigt (23.08.2026) — locker/"du", kurz, konkreter
-// Zeitfresser-Bezug statt allgemeiner Nutzenfloskel, DSGVO-Erwähnung, knapper
-// 15-Minuten-CTA. Beispiel, das der Nutzer selbst als Vorbild geschickt hat:
-//
-// "Hallo, bei Betrieben wie Hotel B3 geht oft viel Zeit für Telefon, WhatsApp
-// und Reservierungs-/Anfragenmanagement drauf – neben dem eigentlichen
-// Betrieb. Mit Kiwo (ki-works.eu) übernimmt ein KI-Mitarbeiter genau das:
-// Anfragen, Terminorganisation und Kommunikation rund um die Uhr,
-// DSGVO-konform. Der erste Monat ist kostenlos. Hättest du Lust auf ein
-// kurzes Gespräch (15 Min), um zu schauen, ob das für euch passt?
-// Beste Grüße, Alex, ki-works.eu"
+// Stil-Vorlage (23.08.2026, zweite Iteration nach Nutzer-Feedback) — locker/
+// "du" wie im ersten Vorbild beibehalten, aber diesmal MIT konkret
+// aufgezählten Vorteilen (inkl. Kunden-Dashboard) statt nur einem
+// pauschalen Satz — Nutzer-Feedback: "brauche eine bessere Email
+// Vorlage...mit Vorteile...Dashboard usw." zur ersten (zu knappen) Version.
 const STYLE_EXAMPLE = `Hallo,
 
-bei Betrieben wie Hotel B3 geht oft viel Zeit für Telefon, WhatsApp und
+bei einem Betrieb wie Hotel B3 geht oft viel Zeit für Telefon, WhatsApp und
 Reservierungs-/Anfragenmanagement drauf – neben dem eigentlichen Betrieb.
+Genau da setzt Kiwo (ki-works.eu) an: ein KI-Mitarbeiter, der diese Arbeit
+für euch übernimmt.
 
-Mit Kiwo (ki-works.eu) übernimmt ein KI-Mitarbeiter genau das: Anfragen,
-Terminorganisation und Kommunikation rund um die Uhr, DSGVO-konform.
+Konkret heißt das:
+- Anrufe und WhatsApp-Anfragen werden rund um die Uhr entgegengenommen,
+  auch abends und am Wochenende
+- Reservierungen und Terminanfragen landen automatisch organisiert bei euch
+  – keine verpassten Anfragen mehr
+- Ein eigenes Kunden-Dashboard zeigt euch jederzeit alle Anrufe,
+  Reservierungen und Anfragen auf einen Blick, inklusive Aufzeichnungen
+  zum Nachhören
+- Alles DSGVO-konform gehostet in der EU
 
-Der erste Monat ist kostenlos.
+Der erste Monat ist kostenlos, danach unverbindlich kündbar.
 
 Hättest du Lust auf ein kurzes Gespräch (15 Min), um zu schauen, ob das für
 euch passt?
@@ -81,9 +84,9 @@ ${excludeList}
 
 Finde bis zu ${maxCandidates} passende, noch nicht vorgeschlagene Betriebe
 per Websuche, verteilt über mehrere Branchen (nicht nur eine). Entwirf für
-jeden Kandidaten eine kurze, individuelle Akquise-Mail auf Deutsch (Betreff +
-Text) in genau diesem Stil (vom Nutzer bestätigtes Vorbild, Ton und Länge
-beibehalten, Inhalt pro Kandidat individuell anpassen):
+jeden Kandidaten eine individuelle Akquise-Mail auf Deutsch (Betreff + Text)
+in genau diesem Stil (vom Nutzer bestätigtes Vorbild, Aufbau/Ton beibehalten,
+Inhalt pro Kandidat individuell anpassen):
 
 ---
 ${STYLE_EXAMPLE}
@@ -94,14 +97,19 @@ Wichtige Stilregeln:
 - Erster Absatz: konkreter, auf den Betrieb zugeschnittener Zeitfresser
   (z. B. "bei einem Betrieb wie [Name] geht oft viel Zeit für Telefon,
   WhatsApp und Reservierungs-/Anfragenmanagement drauf" — an die tatsächliche
-  Situation des Betriebs anpassen, nicht wortgleich kopieren).
-- Zweiter Absatz: was Kiwo konkret übernimmt (Anfragen, Terminorganisation,
-  Kommunikation rund um die Uhr) + "DSGVO-konform" erwähnen.
-- Kurzer Satz: erster Monat kostenlos.
+  Situation des Betriebs anpassen, nicht wortgleich kopieren) + kurze
+  Überleitung zu Kiwo.
+- Danach 3-4 Bullet-Points mit KONKRETEN Vorteilen, angepasst an den
+  Betriebstyp (z. B. bei einem Hotel: Zimmeranfragen; bei einer Werkstatt:
+  Terminvereinbarung für Service). Mindestens einer der Punkte muss das
+  **Kunden-Dashboard** erwähnen (Überblick über Anrufe/Anfragen/Termine,
+  Aufzeichnungen zum Nachhören), einer die **24/7-Erreichbarkeit**, einer
+  **DSGVO-Konformität/EU-Hosting**.
+- Satz zum ersten Monat kostenlos + unverbindlich kündbar.
 - Kurze, konkrete Frage nach einem 15-minütigen Gespräch als Call-to-Action.
 - Unterschrift: "Beste Grüße", "${SENDER_NAME}", "ki-works.eu" (drei Zeilen).
-- Insgesamt kurz halten (nicht länger als das Vorbild) — kein zusätzliches
-  Feature-Aufzählen, keine Marketing-Floskeln.
+- Insgesamt trotz der Bullet-Points kompakt bleiben (wie im Vorbild) — keine
+  Marketing-Floskeln, keine übertriebenen Versprechen.
 
 Antworte NUR mit einem JSON-Codeblock (\`\`\`json ... \`\`\`), keinem weiteren
 Text davor oder danach. Format: ein JSON-Array von Objekten mit genau diesen
