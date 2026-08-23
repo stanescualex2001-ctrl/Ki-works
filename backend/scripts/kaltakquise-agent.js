@@ -36,6 +36,36 @@ const QUALIFICATION_CRITERIA = `Ein guter Kandidat:
 - hat eine öffentlich auffindbare Kontakt-E-Mail-Adresse (kein Kandidat
   ohne E-Mail — sonst kann keine Kaltakquise-Mail vorbereitet werden)`;
 
+const SENDER_NAME = process.env.KALTAKQUISE_SENDER_NAME || 'Alex';
+
+// Stil-Vorlage vom Nutzer bestätigt (23.08.2026) — locker/"du", kurz, konkreter
+// Zeitfresser-Bezug statt allgemeiner Nutzenfloskel, DSGVO-Erwähnung, knapper
+// 15-Minuten-CTA. Beispiel, das der Nutzer selbst als Vorbild geschickt hat:
+//
+// "Hallo, bei Betrieben wie Hotel B3 geht oft viel Zeit für Telefon, WhatsApp
+// und Reservierungs-/Anfragenmanagement drauf – neben dem eigentlichen
+// Betrieb. Mit Kiwo (ki-works.eu) übernimmt ein KI-Mitarbeiter genau das:
+// Anfragen, Terminorganisation und Kommunikation rund um die Uhr,
+// DSGVO-konform. Der erste Monat ist kostenlos. Hättest du Lust auf ein
+// kurzes Gespräch (15 Min), um zu schauen, ob das für euch passt?
+// Beste Grüße, Alex, ki-works.eu"
+const STYLE_EXAMPLE = `Hallo,
+
+bei Betrieben wie Hotel B3 geht oft viel Zeit für Telefon, WhatsApp und
+Reservierungs-/Anfragenmanagement drauf – neben dem eigentlichen Betrieb.
+
+Mit Kiwo (ki-works.eu) übernimmt ein KI-Mitarbeiter genau das: Anfragen,
+Terminorganisation und Kommunikation rund um die Uhr, DSGVO-konform.
+
+Der erste Monat ist kostenlos.
+
+Hättest du Lust auf ein kurzes Gespräch (15 Min), um zu schauen, ob das für
+euch passt?
+
+Beste Grüße
+${SENDER_NAME}
+ki-works.eu`;
+
 function buildPrompt(maxCandidates, excludeList) {
   return `Du recherchierst potenzielle Neukunden für ki-works.eu, eine
 Plattform für KI-Telefonassistenten (Produktname "Kiwo").
@@ -52,11 +82,26 @@ ${excludeList}
 Finde bis zu ${maxCandidates} passende, noch nicht vorgeschlagene Betriebe
 per Websuche, verteilt über mehrere Branchen (nicht nur eine). Entwirf für
 jeden Kandidaten eine kurze, individuelle Akquise-Mail auf Deutsch (Betreff +
-Text), die konkret auf etwas von der Website/dem Online-Auftritt des
-Betriebs Bezug nimmt (z. B. fehlende Online-Terminbuchung, Öffnungszeiten,
-eine echte Bewertung) — kein Massenmail-Ton, keine generische Anrede.
-Erwähne kurz den Nutzen (Telefon rund um die Uhr, Anfragen automatisch
-entgegennehmen) und den ersten Monat kostenlos.
+Text) in genau diesem Stil (vom Nutzer bestätigtes Vorbild, Ton und Länge
+beibehalten, Inhalt pro Kandidat individuell anpassen):
+
+---
+${STYLE_EXAMPLE}
+---
+
+Wichtige Stilregeln:
+- Lockere, persönliche Anrede mit "du" (NICHT "Sie") — kein Massenmail-Ton.
+- Erster Absatz: konkreter, auf den Betrieb zugeschnittener Zeitfresser
+  (z. B. "bei einem Betrieb wie [Name] geht oft viel Zeit für Telefon,
+  WhatsApp und Reservierungs-/Anfragenmanagement drauf" — an die tatsächliche
+  Situation des Betriebs anpassen, nicht wortgleich kopieren).
+- Zweiter Absatz: was Kiwo konkret übernimmt (Anfragen, Terminorganisation,
+  Kommunikation rund um die Uhr) + "DSGVO-konform" erwähnen.
+- Kurzer Satz: erster Monat kostenlos.
+- Kurze, konkrete Frage nach einem 15-minütigen Gespräch als Call-to-Action.
+- Unterschrift: "Beste Grüße", "${SENDER_NAME}", "ki-works.eu" (drei Zeilen).
+- Insgesamt kurz halten (nicht länger als das Vorbild) — kein zusätzliches
+  Feature-Aufzählen, keine Marketing-Floskeln.
 
 Antworte NUR mit einem JSON-Codeblock (\`\`\`json ... \`\`\`), keinem weiteren
 Text davor oder danach. Format: ein JSON-Array von Objekten mit genau diesen
