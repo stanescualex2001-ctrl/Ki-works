@@ -1133,7 +1133,7 @@ export default function App() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {pricingTiers.map((tier) => (
               <GlowCard
                 key={tier.name}
@@ -1183,6 +1183,20 @@ export default function App() {
                 </a>
               </GlowCard>
             ))}
+
+            <GlowCard tone="violet" className="p-6 md:p-8 flex flex-col">
+              <div className="text-lg font-semibold">{t("pricing.customName")}</div>
+              <div className="mt-2 text-2xl font-semibold">{t("pricing.customPrice")}</div>
+              <p className="mt-4 flex-1 text-sm text-foreground/60 leading-relaxed">
+                {t("pricing.customDesc")}
+              </p>
+              <a
+                href="/kontakt.html"
+                className="mt-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
+              >
+                {t("pricing.customCta")} <ArrowRight className="h-3.5 w-3.5" />
+              </a>
+            </GlowCard>
           </div>
           <p className="mt-6 text-center text-[11px] text-foreground/35">
             {t("pricing.footnote")}{" "}

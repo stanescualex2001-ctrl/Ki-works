@@ -312,7 +312,11 @@
     "savedValue": "≈ €{{e}} in value (avg. €21/hr)",
     "cta": "Try it free now",
     "footnote": "All prices plus VAT. Used up your quota? An extra €0.20/minute — no call gets cut off, no automatic block. Want a custom package?",
-    "footnoteCta": "Get in touch"
+    "footnoteCta": "Get in touch",
+    "customName": "Custom",
+    "customPrice": "Custom pricing",
+    "customDesc": "Need more volume, multiple locations, or something specific? We'll put together a plan that fits.",
+    "customCta": "Get in touch"
   },
   "ctaSection": {
     "headingPrefix": "Ready for your",

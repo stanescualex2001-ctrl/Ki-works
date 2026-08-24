@@ -312,7 +312,11 @@
     "savedValue": "≈ {{e}} € valoare (⌀ 21 €/oră)",
     "cta": "Testați gratuit acum",
     "footnote": "Toate prețurile plus TVA. Ați depășit contingentul? 0,20 €/minut suplimentar — niciun apel nu este întrerupt, nicio blocare automată. Doriți un pachet personalizat?",
-    "footnoteCta": "Contactați-ne"
+    "footnoteCta": "Contactați-ne",
+    "customName": "Custom",
+    "customPrice": "Preț individual",
+    "customDesc": "Aveți nevoie de mai multe minute, mai multe locații sau cerințe speciale? Vă pregătim o ofertă potrivită.",
+    "customCta": "Contactați-ne"
   },
   "ctaSection": {
     "headingPrefix": "Sunteți pregătit pentru",

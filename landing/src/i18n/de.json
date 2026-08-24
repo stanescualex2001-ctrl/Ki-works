@@ -341,7 +341,11 @@
     "savedValue": "≈ {{e}} € Wert (⌀ 21 €/Std.)",
     "cta": "Jetzt kostenlos testen",
     "footnote": "Alle Preise zzgl. USt. Kontingent aufgebraucht? 0,20 €/Minute zusätzlich — kein Anruf wird abgebrochen, keine automatische Sperre. Individuelles Paket gewünscht?",
-    "footnoteCta": "Sprechen Sie uns an"
+    "footnoteCta": "Sprechen Sie uns an",
+    "customName": "Custom",
+    "customPrice": "Individuell",
+    "customDesc": "Mehr Volumen, mehrere Standorte oder besondere Anforderungen? Wir erstellen Ihnen ein passendes Angebot.",
+    "customCta": "Sprechen Sie uns an"
   },
   "ctaSection": {
     "headingPrefix": "Bereit für Ihren",
