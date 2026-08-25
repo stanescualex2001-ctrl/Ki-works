@@ -1546,10 +1546,16 @@ function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
 }
 
 // ---------------------------------------------------------------- Agenturen (White-Label)
+// Admin legt Agenturen nur an und lädt sie ein — exakt wie bei Kunden
+// (siehe inviteRestaurant im Backend). Passwort/Branding sind reine
+// Selbstverwaltung der Agentur, Admin sieht/setzt sie nie (der
+// "Notfallzugriff" kommt aus der Admin-Rolle selbst, nicht aus Kenntnis
+// des Agentur-Passworts).
 function AgencyForm({ onCreated }) {
   const { t } = useI18n();
   const [name, setName] = useState('');
   const [domain, setDomain] = useState('');
+  const [loginEmail, setLoginEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -1560,13 +1566,14 @@ function AgencyForm({ onCreated }) {
     apiFetch('/api/agencies', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name, domain }),
+      body: JSON.stringify({ name, domain, login_email: loginEmail || null }),
     })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         setName('');
         setDomain('');
+        setLoginEmail('');
         onCreated();
       })
       .catch((err) => setError(err.message))
@@ -1577,6 +1584,10 @@ function AgencyForm({ onCreated }) {
     <form className="agency-form" onSubmit={submit}>
       <input placeholder={t('agencies.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} required />
       <input placeholder={t('agencies.domainPlaceholder')} value={domain} onChange={(e) => setDomain(e.target.value)} required />
+      <input
+        type="email" placeholder={t('agencies.loginEmailLabel')}
+        value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)}
+      />
       <button className="primary" type="submit" disabled={loading}>
         {loading ? t('agencies.creating') : t('agencies.createButton')}
       </button>
@@ -1585,6 +1596,54 @@ function AgencyForm({ onCreated }) {
   );
 }
 
+function Agencies({ refreshKey, onChanged }) {
+  const { t } = useI18n();
+  const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
+  const [inviteMsg, setInviteMsg] = useState(null);
+
+  const sendInvite = (id) => {
+    setInviteMsg(t('customers.inviteSending'));
+    apiFetch(`/api/agencies/${id}/invite`, { method: 'POST' })
+      .then((r) => (r.ok ? setInviteMsg(t('customers.inviteSent')) : setInviteMsg(t('customers.inviteError'))))
+      .then(onChanged)
+      .catch(() => setInviteMsg(t('customers.inviteError')));
+  };
+
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!agencies) return <p>{t('common.loading')}</p>;
+
+  return (
+    <div className="agencies-section">
+      <p>{t('agencies.intro')}</p>
+      <AgencyForm onCreated={onChanged} />
+      {inviteMsg && <p className="hint">{inviteMsg}</p>}
+      {!agencies.length && <p className="hint">{t('agencies.empty')}</p>}
+      {agencies.map((a) => (
+        <div key={a.id} className="agency-row">
+          <div className="agency-row-head">
+            <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
+            {!a.login_email && <span className="warn-text"> · {t('agencies.noEmail')}</span>}
+            {a.login_email && !a.has_access && a.invite_pending && (
+              <span className="warn-text"> · {t('agencies.invitePending')}</span>
+            )}
+            {a.login_email && !a.has_access && !a.invite_pending && (
+              <span className="warn-text"> · {t('agencies.noAccess')}</span>
+            )}
+            {a.has_access && <span className="ok-text"> · {t('agencies.active')}</span>}
+          </div>
+          {a.login_email && (
+            <button type="button" className="link" style={{ margin: '0 1rem 0.75rem' }} onClick={() => sendInvite(a.id)}>
+              {a.has_access ? t('agencies.resendInvite') : t('agencies.sendInvite')}
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Selbstverwaltung: Branding + eigene Zugangsdaten der eingeloggten Agentur
+// (nur für role: 'agency' sichtbar, siehe NAV-Eintrag "branding").
 function AgencyBrandingForm({ agency, onSaved }) {
   const { t } = useI18n();
   const [branding, setBranding] = useState(agency.branding || {});
@@ -1641,12 +1700,11 @@ function AgencyBrandingForm({ agency, onSaved }) {
   );
 }
 
-// Selbstverwaltungs-Zugang der Agentur (Login unter der eigenen Domain,
-// gleiche dashboard/-App wie Endkunden — nur role: 'agency' statt 'customer').
-function AgencyAccessForm({ agency, onSaved }) {
+function AgencyCredentialsForm({ agency, onSaved }) {
   const { t } = useI18n();
   const [loginEmail, setLoginEmail] = useState(agency.login_email || '');
-  const [password, setPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
@@ -1655,9 +1713,10 @@ function AgencyAccessForm({ agency, onSaved }) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const body = { login_email: loginEmail || null };
-    if (password) body.password = password;
-    apiFetch(`/api/agencies/${agency.id}`, {
+    const body = { current_password: currentPassword };
+    if (loginEmail) body.login_email = loginEmail;
+    if (newPassword) body.new_password = newPassword;
+    apiFetch(`/api/agencies/${agency.id}/credentials`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
@@ -1665,7 +1724,8 @@ function AgencyAccessForm({ agency, onSaved }) {
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        setPassword('');
+        setCurrentPassword('');
+        setNewPassword('');
         setSaved(true);
         onSaved();
       })
@@ -1674,59 +1734,43 @@ function AgencyAccessForm({ agency, onSaved }) {
   };
 
   return (
-    <form className="agency-branding" onSubmit={save}>
-      <label>
-        {t('agencies.loginEmailLabel')}
-        <input type="email" value={loginEmail} onChange={(e) => { setLoginEmail(e.target.value); setSaved(false); }} />
+    <form className="access-form settings-section" onSubmit={save}>
+      <strong>{t('settings.credentialsTitle')}</strong>
+      <label>{t('settings.loginEmailLabel')}
+        <input type="email" required value={loginEmail} onChange={(e) => { setLoginEmail(e.target.value); setSaved(false); }} />
       </label>
-      <label>
-        {agency.login_email ? t('agencies.newPasswordLabel') : t('agencies.initialPasswordLabel')}
+      <label>{t('settings.currentPasswordLabel')}
         <input
-          type="password" value={password} minLength={password ? 8 : undefined}
-          onChange={(e) => { setPassword(e.target.value); setSaved(false); }}
+          type="password" value={currentPassword} placeholder={t('settings.currentPasswordPlaceholder')}
+          onChange={(e) => { setCurrentPassword(e.target.value); setSaved(false); }}
         />
       </label>
-      <div className="agency-branding-actions">
-        <button className="primary" type="submit" disabled={loading}>
-          {loading ? t('agencies.saving') : t('agencies.saveAccess')}
-        </button>
-        {saved && <span className="hint">{t('agencies.saved')}</span>}
-      </div>
+      <label>{t('settings.newPasswordLabel')}
+        <input type="text" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setSaved(false); }} />
+      </label>
       {error && <p className="error">{t('common.error', { message: error })}</p>}
+      {saved && <p className="hint">{t('agencies.saved')}</p>}
+      <button className="primary" type="submit" disabled={loading}>{t('settings.saveCredentials')}</button>
     </form>
   );
 }
 
-function Agencies({ refreshKey, onChanged }) {
+function AgencyProfile({ refreshKey, onChanged, agencyId }) {
   const { t } = useI18n();
   const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
-  const [expanded, setExpanded] = useState(null);
+  const agency = agencies?.find((a) => a.id === agencyId) || agencies?.[0];
 
   if (error) return <p className="error">{t('common.error', { message: error })}</p>;
-  if (!agencies) return <p>{t('common.loading')}</p>;
+  if (!agency) return <p>{t('common.loading')}</p>;
 
   return (
-    <div className="agencies-section">
-      <p>{t('agencies.intro')}</p>
-      <AgencyForm onCreated={onChanged} />
-      {!agencies.length && <p className="hint">{t('agencies.empty')}</p>}
-      {agencies.map((a) => (
-        <div key={a.id} className="agency-row">
-          <button type="button" className="agency-row-head" onClick={() => setExpanded(expanded === a.id ? null : a.id)}>
-            <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
-            {!a.login_email && <span className="warn-text"> · {t('agencies.noAccess')}</span>}
-          </button>
-          {expanded === a.id && (
-            <>
-              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>{t('agencies.accessHeading')}</h4>
-              <AgencyAccessForm agency={a} onSaved={onChanged} />
-              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>{t('agencies.brandingHeading')}</h4>
-              <AgencyBrandingForm agency={a} onSaved={onChanged} />
-            </>
-          )}
-        </div>
-      ))}
-    </div>
+    <>
+      <p>{t('agencies.myProfileIntro')}</p>
+      <h3>{t('agencies.brandingHeading')}</h3>
+      <AgencyBrandingForm agency={agency} onSaved={onChanged} />
+      <h3 style={{ marginTop: '1.5rem' }}>{t('agencies.accessHeading')}</h3>
+      <AgencyCredentialsForm agency={agency} onSaved={onChanged} />
+    </>
   );
 }
 
@@ -2173,6 +2217,7 @@ const NAV = [
   { id: 'reco', icon: '💡' },
   { id: 'settings', icon: '⚙️' },
   { id: 'customers', icon: '🏢', divider: true, adminOnly: true, agencyOk: true },
+  { id: 'branding', icon: '🎨', agencyOnly: true },
   { id: 'agencies', icon: '🤝', adminOnly: true },
   { id: 'leads', icon: '📥', adminOnly: true },
   { id: 'system', icon: '🛠️', adminOnly: true },
@@ -2282,12 +2327,13 @@ export default function App() {
   // bewusst weiter anzeigen, damit sich bestehende Kunden nicht ändern.
   const ordersRoleActive = !current?.enabled_roles || current.enabled_roles.includes('orders');
   const nav = NAV.filter((item) => {
+    if (item.agencyOnly) return isAgencyUser;
     if (item.adminOnly && !isAdmin && !(item.agencyOk && isAgencyUser)) return false;
     if (isAgencyUser && !item.agencyOk) return false;
     if (['calendar', 'reservations', 'orders'].includes(item.id) && !ordersRoleActive) return false;
     return true;
   });
-  const noPicker = ['customers', 'agencies', 'leads', 'system'].includes(view);
+  const noPicker = ['customers', 'branding', 'agencies', 'leads', 'system'].includes(view);
 
   const openDetail = (type, data) => setDetail({ type, data });
   const closeDetail = () => setDetail(null);
@@ -2388,6 +2434,9 @@ export default function App() {
                 onOpenRestaurant={isAgencyUser ? null : openRestaurant}
                 isAgencyUser={isAgencyUser}
               />
+            )}
+            {view === 'branding' && isAgencyUser && (
+              <AgencyProfile refreshKey={refreshKey} onChanged={refresh} agencyId={auth.agency_id} />
             )}
             {view === 'agencies' && isAdmin && (
               <Agencies refreshKey={refreshKey} onChanged={refresh} />

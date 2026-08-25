@@ -1,0 +1,44 @@
+{
+  "id": "KiWorksAgencyInvite16v1",
+  "name": "16 Agentur eingeladen → Setup-Mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agentur-eingeladen",
+        "options": {}
+      },
+      "id": "wf16-webhook",
+      "name": "Webhook: Agentur eingeladen",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "agentur-eingeladen"
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.agency.login_email }}",
+        "subject": "=Ihr ki-works Agentur-Zugang für {{ $json.body.agency.name }}",
+        "emailFormat": "text",
+        "text": "=Willkommen als ki-works White-Label-Partner!\n\nFür {{ $json.body.agency.name }} wurde ein Dashboard-Zugang eingerichtet.\nBitte legen Sie über diesen Link Ihr persönliches Passwort fest (7 Tage gültig):\n\n{{ $json.body.setup_link }}\n\nDanach können Sie sich jederzeit unter https://ki-works.eu/dashboard/ anmelden und Ihre eigenen Kunden anlegen und verwalten.\n\nIhr ki-works Team",
+        "options": {}
+      },
+      "id": "wf16-email",
+      "name": "Setup-Mail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Agentur eingeladen": {
+      "main": [[{ "node": "Setup-Mail senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
