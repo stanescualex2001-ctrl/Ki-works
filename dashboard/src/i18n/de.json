@@ -9,6 +9,7 @@
     "reco": "KI-Empfehlungen",
     "settings": "Einstellungen",
     "customers": "Kunden (Betreiber)",
+    "agencies": "Agenturen",
     "leads": "Anfragen",
     "system": "System"
   },
@@ -22,6 +23,7 @@
     "reco": "KI-Empfehlungen",
     "settings": "Einstellungen",
     "customers": "Kundenübersicht",
+    "agencies": "Agenturen",
     "leads": "Anfragen",
     "system": "System-Status"
   },
@@ -55,7 +57,12 @@
     "email": "E-Mail",
     "password": "Passwort",
     "submit": "Anmelden",
-    "submitting": "Anmelden…"
+    "submitting": "Anmelden…",
+    "forgotLink": "Passwort vergessen?",
+    "forgotSubtitle": "Passwort vergessen",
+    "forgotSubmit": "Link anfordern",
+    "forgotSent": "Falls diese E-Mail einen Zugang hat, wurde eine Nachricht mit weiteren Schritten verschickt.",
+    "backToLogin": "Zurück zum Login"
   },
   "consent": {
     "subtitle": "Bevor es losgeht, {{name}}",
@@ -262,6 +269,28 @@
     "changeRoles": "Rollen ändern",
     "changeTier": "Tarif ändern",
     "changeAgency": "Agentur ändern"
+  },
+  "agencies": {
+    "intro": "White-Label-Partner: legen eigene Kunden an und verwalten diese selbst.",
+    "namePlaceholder": "Name (intern)",
+    "domainPlaceholder": "Domain, z.B. kunden.agentur.at",
+    "createButton": "+ Agentur anlegen",
+    "creating": "Anlegen…",
+    "empty": "Noch keine Agenturen angelegt.",
+    "noAccess": "kein Zugang eingerichtet",
+    "accessHeading": "Zugangsdaten (Self-Service-Login)",
+    "brandingHeading": "Branding",
+    "loginEmailLabel": "Login-E-Mail (für die Agentur selbst)",
+    "newPasswordLabel": "Neues Passwort (leer = unverändert)",
+    "initialPasswordLabel": "Passwort (min. 8 Zeichen)",
+    "saveAccess": "Zugang speichern",
+    "brandingProductName": "Produktname (statt \"KI-Works\")",
+    "brandingAssistantName": "Assistentenname am Telefon (statt \"Kiwo\")",
+    "brandingLogoUrl": "Logo-URL",
+    "brandingAccent": "Akzentfarbe",
+    "saveBranding": "Branding speichern",
+    "saving": "Speichere…",
+    "saved": "Gespeichert."
   },
   "orderStatus": {
     "new": "🆕 Neu",

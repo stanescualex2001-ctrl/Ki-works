@@ -9,6 +9,7 @@
     "reco": "Recomandări AI",
     "settings": "Setări",
     "customers": "Clienți (operatori)",
+    "agencies": "Agenții",
     "leads": "Solicitări",
     "system": "Sistem"
   },
@@ -22,6 +23,7 @@
     "reco": "Recomandări AI",
     "settings": "Setări",
     "customers": "Prezentare clienți",
+    "agencies": "Agenții",
     "leads": "Solicitări",
     "system": "Stare sistem"
   },
@@ -55,7 +57,12 @@
     "email": "E-mail",
     "password": "Parolă",
     "submit": "Autentificare",
-    "submitting": "Se conectează…"
+    "submitting": "Se conectează…",
+    "forgotLink": "Ați uitat parola?",
+    "forgotSubtitle": "Resetare parolă",
+    "forgotSubmit": "Solicită link",
+    "forgotSent": "Dacă acest e-mail are un cont, a fost trimis un mesaj cu pașii următori.",
+    "backToLogin": "Înapoi la autentificare"
   },
   "consent": {
     "subtitle": "Înainte de a începe, {{name}}",
@@ -262,6 +269,28 @@
     "changeRoles": "Schimbă rolurile",
     "changeTier": "Schimbă planul",
     "changeAgency": "Schimbă agenția"
+  },
+  "agencies": {
+    "intro": "Parteneri white-label: creează și își gestionează singuri proprii clienți.",
+    "namePlaceholder": "Nume (intern)",
+    "domainPlaceholder": "Domeniu, ex. clienti.agentie.ro",
+    "createButton": "+ Creează agenție",
+    "creating": "Se creează…",
+    "empty": "Nu există încă agenții create.",
+    "noAccess": "acces neconfigurat",
+    "accessHeading": "Date de acces (self-service)",
+    "brandingHeading": "Branding",
+    "loginEmailLabel": "E-mail de autentificare (pentru agenție)",
+    "newPasswordLabel": "Parolă nouă (gol = neschimbată)",
+    "initialPasswordLabel": "Parolă (min. 8 caractere)",
+    "saveAccess": "Salvează accesul",
+    "brandingProductName": "Nume produs (în loc de „KI-Works”)",
+    "brandingAssistantName": "Nume asistent la telefon (în loc de „Kiwo”)",
+    "brandingLogoUrl": "URL logo",
+    "brandingAccent": "Culoare accent",
+    "saveBranding": "Salvează branding-ul",
+    "saving": "Se salvează…",
+    "saved": "Salvat."
   },
   "orderStatus": {
     "new": "🆕 Nouă",

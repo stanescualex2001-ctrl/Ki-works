@@ -260,12 +260,61 @@ function useFetch(url, refreshKey) {
 }
 
 // ---------------------------------------------------------------- Login
+function ForgotPassword({ onBack }) {
+  const { t } = useI18n();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    fetch('/api/public/forgot-password', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+      // Immer dieselbe Erfolgsmeldung — das Backend antwortet absichtlich
+      // identisch, egal ob die E-Mail existiert (kein Rückschluss möglich).
+      .finally(() => { setLoading(false); setSent(true); });
+  };
+
+  if (sent) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+          <BrandLogo size={34} className="login-logo" />
+          <p className="login-sub">{t('login.forgotSent')}</p>
+          <button type="button" className="link" onClick={onBack}>{t('login.backToLogin')}</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="login-page">
+      <form className="login-card" onSubmit={submit}>
+        <BrandLogo size={34} className="login-logo" />
+        <p className="login-sub">{t('login.forgotSubtitle')}</p>
+        <label htmlFor="forgot-email">{t('login.email')}</label>
+        <input id="forgot-email" type="email" required autoComplete="username"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
+        <button className="primary" type="submit" disabled={loading}>
+          {loading ? t('login.submitting') : t('login.forgotSubmit')}
+        </button>
+        <button type="button" className="link" onClick={onBack}>{t('login.backToLogin')}</button>
+      </form>
+    </div>
+  );
+}
+
 function Login({ onLogin }) {
   const { t } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [forgot, setForgot] = useState(false);
 
   const submit = (e) => {
     e.preventDefault();
@@ -285,6 +334,8 @@ function Login({ onLogin }) {
       .catch((err) => { setError(err.message); setLoading(false); });
   };
 
+  if (forgot) return <ForgotPassword onBack={() => setForgot(false)} />;
+
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={submit}>
@@ -299,6 +350,9 @@ function Login({ onLogin }) {
         {error && <p className="error">{error}</p>}
         <button className="primary" type="submit" disabled={loading}>
           {loading ? t('login.submitting') : t('login.submit')}
+        </button>
+        <button type="button" className="link login-forgot-link" onClick={() => setForgot(true)}>
+          {t('login.forgotLink')}
         </button>
         <a className="site-link login-site-link" href="/">← {t('sidebar.backToWebsite')}</a>
         <div className="login-toggles">
@@ -1491,6 +1545,191 @@ function Orders({ restaurantId, refreshKey, onChanged, onOpenDetail }) {
   );
 }
 
+// ---------------------------------------------------------------- Agenturen (White-Label)
+function AgencyForm({ onCreated }) {
+  const { t } = useI18n();
+  const [name, setName] = useState('');
+  const [domain, setDomain] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    apiFetch('/api/agencies', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name, domain }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setName('');
+        setDomain('');
+        onCreated();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <form className="agency-form" onSubmit={submit}>
+      <input placeholder={t('agencies.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} required />
+      <input placeholder={t('agencies.domainPlaceholder')} value={domain} onChange={(e) => setDomain(e.target.value)} required />
+      <button className="primary" type="submit" disabled={loading}>
+        {loading ? t('agencies.creating') : t('agencies.createButton')}
+      </button>
+      {error && <p className="error">{t('common.error', { message: error })}</p>}
+    </form>
+  );
+}
+
+function AgencyBrandingForm({ agency, onSaved }) {
+  const { t } = useI18n();
+  const [branding, setBranding] = useState(agency.branding || {});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [saved, setSaved] = useState(false);
+
+  const set = (key) => (e) => { setBranding((b) => ({ ...b, [key]: e.target.value })); setSaved(false); };
+
+  const save = () => {
+    setLoading(true);
+    setError(null);
+    apiFetch(`/api/agencies/${agency.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ branding }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setSaved(true);
+        onSaved();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <div className="agency-branding">
+      <label>
+        {t('agencies.brandingProductName')}
+        <input value={branding.productName || ''} onChange={set('productName')} placeholder="z.B. Aria" />
+      </label>
+      <label>
+        {t('agencies.brandingAssistantName')}
+        <input value={branding.assistantName || ''} onChange={set('assistantName')} placeholder="z.B. Aria" />
+      </label>
+      <label>
+        {t('agencies.brandingLogoUrl')}
+        <input value={branding.logoUrl || ''} onChange={set('logoUrl')} placeholder="https://…" />
+      </label>
+      <label>
+        {t('agencies.brandingAccent')}
+        <input type="color" value={branding.accent || '#0E7490'} onChange={set('accent')} />
+      </label>
+      <div className="agency-branding-actions">
+        <button className="primary" disabled={loading} onClick={save}>
+          {loading ? t('agencies.saving') : t('agencies.saveBranding')}
+        </button>
+        {saved && <span className="hint">{t('agencies.saved')}</span>}
+      </div>
+      {error && <p className="error">{t('common.error', { message: error })}</p>}
+    </div>
+  );
+}
+
+// Selbstverwaltungs-Zugang der Agentur (Login unter der eigenen Domain,
+// gleiche dashboard/-App wie Endkunden — nur role: 'agency' statt 'customer').
+function AgencyAccessForm({ agency, onSaved }) {
+  const { t } = useI18n();
+  const [loginEmail, setLoginEmail] = useState(agency.login_email || '');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [saved, setSaved] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const body = { login_email: loginEmail || null };
+    if (password) body.password = password;
+    apiFetch(`/api/agencies/${agency.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setPassword('');
+        setSaved(true);
+        onSaved();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <form className="agency-branding" onSubmit={save}>
+      <label>
+        {t('agencies.loginEmailLabel')}
+        <input type="email" value={loginEmail} onChange={(e) => { setLoginEmail(e.target.value); setSaved(false); }} />
+      </label>
+      <label>
+        {agency.login_email ? t('agencies.newPasswordLabel') : t('agencies.initialPasswordLabel')}
+        <input
+          type="password" value={password} minLength={password ? 8 : undefined}
+          onChange={(e) => { setPassword(e.target.value); setSaved(false); }}
+        />
+      </label>
+      <div className="agency-branding-actions">
+        <button className="primary" type="submit" disabled={loading}>
+          {loading ? t('agencies.saving') : t('agencies.saveAccess')}
+        </button>
+        {saved && <span className="hint">{t('agencies.saved')}</span>}
+      </div>
+      {error && <p className="error">{t('common.error', { message: error })}</p>}
+    </form>
+  );
+}
+
+function Agencies({ refreshKey, onChanged }) {
+  const { t } = useI18n();
+  const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
+  const [expanded, setExpanded] = useState(null);
+
+  if (error) return <p className="error">{t('common.error', { message: error })}</p>;
+  if (!agencies) return <p>{t('common.loading')}</p>;
+
+  return (
+    <div className="agencies-section">
+      <p>{t('agencies.intro')}</p>
+      <AgencyForm onCreated={onChanged} />
+      {!agencies.length && <p className="hint">{t('agencies.empty')}</p>}
+      {agencies.map((a) => (
+        <div key={a.id} className="agency-row">
+          <button type="button" className="agency-row-head" onClick={() => setExpanded(expanded === a.id ? null : a.id)}>
+            <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
+            {!a.login_email && <span className="warn-text"> · {t('agencies.noAccess')}</span>}
+          </button>
+          {expanded === a.id && (
+            <>
+              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>{t('agencies.accessHeading')}</h4>
+              <AgencyAccessForm agency={a} onSaved={onChanged} />
+              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>{t('agencies.brandingHeading')}</h4>
+              <AgencyBrandingForm agency={a} onSaved={onChanged} />
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 const LEAD_STATUS_KEYS = ['new', 'contacted', 'won', 'lost'];
 
 function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
@@ -1934,6 +2173,7 @@ const NAV = [
   { id: 'reco', icon: '💡' },
   { id: 'settings', icon: '⚙️' },
   { id: 'customers', icon: '🏢', divider: true, adminOnly: true, agencyOk: true },
+  { id: 'agencies', icon: '🤝', adminOnly: true },
   { id: 'leads', icon: '📥', adminOnly: true },
   { id: 'system', icon: '🛠️', adminOnly: true },
 ];
@@ -2047,7 +2287,7 @@ export default function App() {
     if (['calendar', 'reservations', 'orders'].includes(item.id) && !ordersRoleActive) return false;
     return true;
   });
-  const noPicker = ['customers', 'leads', 'system'].includes(view);
+  const noPicker = ['customers', 'agencies', 'leads', 'system'].includes(view);
 
   const openDetail = (type, data) => setDetail({ type, data });
   const closeDetail = () => setDetail(null);
@@ -2148,6 +2388,9 @@ export default function App() {
                 onOpenRestaurant={isAgencyUser ? null : openRestaurant}
                 isAgencyUser={isAgencyUser}
               />
+            )}
+            {view === 'agencies' && isAdmin && (
+              <Agencies refreshKey={refreshKey} onChanged={refresh} />
             )}
             {view === 'leads' && isAdmin && (
               <Leads refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />

@@ -9,6 +9,7 @@
     "reco": "AI Recommendations",
     "settings": "Settings",
     "customers": "Customers (Operators)",
+    "agencies": "Agencies",
     "leads": "Inquiries",
     "system": "System"
   },
@@ -22,6 +23,7 @@
     "reco": "AI Recommendations",
     "settings": "Settings",
     "customers": "Customer Overview",
+    "agencies": "Agencies",
     "leads": "Inquiries",
     "system": "System Status"
   },
@@ -55,7 +57,12 @@
     "email": "Email",
     "password": "Password",
     "submit": "Sign in",
-    "submitting": "Signing in…"
+    "submitting": "Signing in…",
+    "forgotLink": "Forgot password?",
+    "forgotSubtitle": "Reset password",
+    "forgotSubmit": "Request link",
+    "forgotSent": "If this email has an account, a message with next steps has been sent.",
+    "backToLogin": "Back to login"
   },
   "consent": {
     "subtitle": "Before we get started, {{name}}",
@@ -262,6 +269,28 @@
     "changeRoles": "Change roles",
     "changeTier": "Change plan",
     "changeAgency": "Change agency"
+  },
+  "agencies": {
+    "intro": "White-label partners: create and manage their own customers.",
+    "namePlaceholder": "Name (internal)",
+    "domainPlaceholder": "Domain, e.g. clients.agency.com",
+    "createButton": "+ Create agency",
+    "creating": "Creating…",
+    "empty": "No agencies created yet.",
+    "noAccess": "no access set up",
+    "accessHeading": "Login credentials (self-service)",
+    "brandingHeading": "Branding",
+    "loginEmailLabel": "Login email (for the agency itself)",
+    "newPasswordLabel": "New password (leave empty = unchanged)",
+    "initialPasswordLabel": "Password (min. 8 characters)",
+    "saveAccess": "Save access",
+    "brandingProductName": "Product name (instead of \"KI-Works\")",
+    "brandingAssistantName": "Assistant name on the phone (instead of \"Kiwo\")",
+    "brandingLogoUrl": "Logo URL",
+    "brandingAccent": "Accent color",
+    "saveBranding": "Save branding",
+    "saving": "Saving…",
+    "saved": "Saved."
   },
   "orderStatus": {
     "new": "🆕 New",

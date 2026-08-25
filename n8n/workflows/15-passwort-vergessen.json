@@ -1,0 +1,44 @@
+{
+  "id": "KiWorksForgotPw15v1",
+  "name": "15 Passwort vergessen → Mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "passwort-vergessen",
+        "options": {}
+      },
+      "id": "wf15-webhook",
+      "name": "Webhook: Passwort vergessen",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "passwort-vergessen"
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "={{ $json.body.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body.text }}",
+        "options": {}
+      },
+      "id": "wf15-email",
+      "name": "Mail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Passwort vergessen": {
+      "main": [[{ "node": "Mail senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

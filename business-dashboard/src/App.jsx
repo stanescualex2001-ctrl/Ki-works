@@ -145,11 +145,64 @@ function useFetch(url, refreshKey) {
 }
 
 // ---------------------------------------------------------------- Login (nur Admin)
+function ForgotPassword({ onBack }) {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const submit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    fetch('/api/public/forgot-password', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+      // Immer dieselbe Erfolgsmeldung, egal ob die E-Mail existiert.
+      .finally(() => { setLoading(false); setSent(true); });
+  };
+
+  if (sent) {
+    return (
+      <div className="login-page">
+        <div className="login-card">
+          <div className="logo-area login-logo">
+            <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
+            <span className="logo-word">KI-Works</span>
+          </div>
+          <p className="login-sub">Falls diese E-Mail einen Zugang hat, wurde eine Nachricht mit weiteren Schritten verschickt.</p>
+          <button type="button" className="link" onClick={onBack}>Zurück zum Login</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="login-page">
+      <form className="login-card" onSubmit={submit}>
+        <div className="logo-area login-logo">
+          <span className="logo-badge" aria-hidden="true"><OrbitKLogo size={34} /></span>
+          <span className="logo-word">KI-Works</span>
+        </div>
+        <p className="login-sub">Passwort vergessen</p>
+        <label htmlFor="forgot-email">E-Mail</label>
+        <input id="forgot-email" type="email" required autoComplete="username"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
+        <button className="primary" type="submit" disabled={loading}>
+          {loading ? 'Sende…' : 'Link anfordern'}
+        </button>
+        <button type="button" className="link" onClick={onBack}>Zurück zum Login</button>
+      </form>
+    </div>
+  );
+}
+
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [forgot, setForgot] = useState(false);
 
   const submit = (e) => {
     e.preventDefault();
@@ -170,6 +223,8 @@ function Login({ onLogin }) {
       .catch((err) => { setError(err.message); setLoading(false); });
   };
 
+  if (forgot) return <ForgotPassword onBack={() => setForgot(false)} />;
+
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={submit}>
@@ -187,6 +242,9 @@ function Login({ onLogin }) {
         {error && <p className="error">{error}</p>}
         <button className="primary" type="submit" disabled={loading}>
           {loading ? 'Anmelden…' : 'Anmelden'}
+        </button>
+        <button type="button" className="link login-forgot-link" onClick={() => setForgot(true)}>
+          Passwort vergessen?
         </button>
         <a className="site-link login-site-link" href="/">← Zur Website</a>
         <ThemeToggle />
@@ -551,179 +609,10 @@ function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
 }
 
 // ---------------------------------------------------------------- App
-// ---------------------------------------------------------------- Agenturen (White-Label)
-function AgencyForm({ onCreated }) {
-  const [name, setName] = useState('');
-  const [domain, setDomain] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const submit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    apiFetch('/api/agencies', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name, domain }),
-    })
-      .then(async (r) => {
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        setName('');
-        setDomain('');
-        onCreated();
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  };
-
-  return (
-    <form className="agency-form" onSubmit={submit}>
-      <input placeholder="Name (intern)" value={name} onChange={(e) => setName(e.target.value)} required />
-      <input placeholder="Domain, z.B. kunden.agentur.at" value={domain} onChange={(e) => setDomain(e.target.value)} required />
-      <button className="primary" type="submit" disabled={loading}>{loading ? 'Anlegen…' : '+ Agentur anlegen'}</button>
-      {error && <p className="error">Fehler: {error}</p>}
-    </form>
-  );
-}
-
-function AgencyBrandingForm({ agency, onSaved }) {
-  const [branding, setBranding] = useState(agency.branding || {});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [saved, setSaved] = useState(false);
-
-  const set = (key) => (e) => { setBranding((b) => ({ ...b, [key]: e.target.value })); setSaved(false); };
-
-  const save = () => {
-    setLoading(true);
-    setError(null);
-    apiFetch(`/api/agencies/${agency.id}`, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ branding }),
-    })
-      .then(async (r) => {
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        setSaved(true);
-        onSaved();
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  };
-
-  return (
-    <div className="agency-branding">
-      <label>
-        Produktname (statt "KI-Works")
-        <input value={branding.productName || ''} onChange={set('productName')} placeholder="z.B. Aria" />
-      </label>
-      <label>
-        Assistentenname am Telefon (statt "Kiwo")
-        <input value={branding.assistantName || ''} onChange={set('assistantName')} placeholder="z.B. Aria" />
-      </label>
-      <label>
-        Logo-URL
-        <input value={branding.logoUrl || ''} onChange={set('logoUrl')} placeholder="https://…" />
-      </label>
-      <label>
-        Akzentfarbe
-        <input type="color" value={branding.accent || '#0E7490'} onChange={set('accent')} />
-      </label>
-      <div className="agency-branding-actions">
-        <button className="primary" disabled={loading} onClick={save}>{loading ? 'Speichere…' : 'Branding speichern'}</button>
-        {saved && <span className="hint">Gespeichert.</span>}
-      </div>
-      {error && <p className="error">Fehler: {error}</p>}
-    </div>
-  );
-}
-
-// Selbstverwaltungs-Zugang der Agentur (Login unter der eigenen Domain,
-// gleiche dashboard/-App wie Endkunden — nur role: 'agency' statt 'customer').
-function AgencyAccessForm({ agency, onSaved }) {
-  const [loginEmail, setLoginEmail] = useState(agency.login_email || '');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [saved, setSaved] = useState(false);
-
-  const save = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    const body = { login_email: loginEmail || null };
-    if (password) body.password = password;
-    apiFetch(`/api/agencies/${agency.id}`, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then(async (r) => {
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        setPassword('');
-        setSaved(true);
-        onSaved();
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  };
-
-  return (
-    <form className="agency-branding" onSubmit={save}>
-      <label>
-        Login-E-Mail (für die Agentur selbst)
-        <input type="email" value={loginEmail} onChange={(e) => { setLoginEmail(e.target.value); setSaved(false); }} />
-      </label>
-      <label>
-        {agency.login_email ? 'Neues Passwort (leer = unverändert)' : 'Passwort (min. 8 Zeichen)'}
-        <input
-          type="password" value={password} minLength={password ? 8 : undefined}
-          onChange={(e) => { setPassword(e.target.value); setSaved(false); }}
-        />
-      </label>
-      <div className="agency-branding-actions">
-        <button className="primary" type="submit" disabled={loading}>{loading ? 'Speichere…' : 'Zugang speichern'}</button>
-        {saved && <span className="hint">Gespeichert.</span>}
-      </div>
-      {error && <p className="error">Fehler: {error}</p>}
-    </form>
-  );
-}
-
-function AgenciesSection({ refreshKey, onChanged }) {
-  const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
-  const [expanded, setExpanded] = useState(null);
-
-  if (error) return <p className="error">Fehler: {error}</p>;
-  if (!agencies) return <p className="hint">Lädt…</p>;
-
-  return (
-    <div className="agencies-section">
-      <AgencyForm onCreated={onChanged} />
-      {!agencies.length && <p className="hint">Noch keine Agenturen angelegt.</p>}
-      {agencies.map((a) => (
-        <div key={a.id} className="agency-row">
-          <button type="button" className="agency-row-head" onClick={() => setExpanded(expanded === a.id ? null : a.id)}>
-            <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
-            {!a.login_email && <span className="warn-text"> · kein Zugang eingerichtet</span>}
-          </button>
-          {expanded === a.id && (
-            <>
-              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>Zugangsdaten (Self-Service-Login)</h4>
-              <AgencyAccessForm agency={a} onSaved={onChanged} />
-              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>Branding</h4>
-              <AgencyBrandingForm agency={a} onSaved={onChanged} />
-            </>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
+// Agenturen (White-Label) werden im Kunden-Dashboard verwaltet (Menüpunkt
+// "Agenturen", neben "Kunden (Betreiber)") — /intern ist nur für die 4
+// eigenen Businesses (ledtek/pixelpress/Memcore/ki-works), Agenturen sind
+// aber Kiwo-Partner wie Restaurant-Kunden, keine eigenen Businesses.
 
 export default function App() {
   const [auth, setAuth] = useState(loadAuth);
@@ -781,9 +670,6 @@ export default function App() {
 
             <h2 style={{ marginTop: '2rem' }}>Businesses</h2>
             <BusinessGrid onOpen={setOpenBusiness} />
-
-            <h2 style={{ marginTop: '2rem' }}>Agenturen</h2>
-            <AgenciesSection refreshKey={refreshKey} onChanged={refresh} />
           </>
         )}
       </main>

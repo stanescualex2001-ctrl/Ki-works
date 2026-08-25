@@ -356,24 +356,132 @@ app.post('/api/leads/:id/convert', adminOnly, async (req, res) => {
   res.status(201).json({ ok: true, restaurant: publicRestaurant(restaurant), setup_link });
 });
 
-// Öffentlich: Kunde setzt über den Einladungslink sein eigenes Passwort.
+// Öffentlich: Kunde/Agentur setzt über den Einladungs- bzw. "Passwort
+// vergessen"-Link das eigene Passwort. Derselbe Token-Mechanismus dient
+// beiden Fällen (Erstzugang und Reset) — der Token weiß selbst nicht, wofür
+// er ausgestellt wurde, daher wird einfach in beiden Tabellen nachgeschaut.
 app.post('/api/public/setup-password', async (req, res) => {
   const { token, password } = req.body || {};
   if (!token || !password || password.length < 8) {
     return res.status(400).json({ error: 'Token und Passwort (min. 8 Zeichen) erforderlich' });
   }
-  const { rows } = await query(
-    `SELECT id FROM restaurants
-     WHERE setup_token = $1 AND setup_token_expires > now()`,
+  const { rows: restaurantRows } = await query(
+    `SELECT id FROM restaurants WHERE setup_token = $1 AND setup_token_expires > now()`,
     [token],
   );
-  if (!rows[0]) return res.status(400).json({ error: 'Link ungültig oder abgelaufen' });
-  await query(
-    `UPDATE restaurants SET password_hash = $1, setup_token = NULL, setup_token_expires = NULL
-     WHERE id = $2`,
-    [hashPassword(password), rows[0].id],
+  if (restaurantRows[0]) {
+    await query(
+      `UPDATE restaurants SET password_hash = $1, setup_token = NULL, setup_token_expires = NULL
+       WHERE id = $2`,
+      [hashPassword(password), restaurantRows[0].id],
+    );
+    return res.json({ ok: true });
+  }
+  const { rows: agencyRows } = await query(
+    `SELECT id FROM agencies WHERE setup_token = $1 AND setup_token_expires > now()`,
+    [token],
   );
-  res.json({ ok: true });
+  if (agencyRows[0]) {
+    await query(
+      `UPDATE agencies SET password_hash = $1, setup_token = NULL, setup_token_expires = NULL
+       WHERE id = $2`,
+      [hashPassword(password), agencyRows[0].id],
+    );
+    return res.json({ ok: true });
+  }
+  return res.status(400).json({ error: 'Link ungültig oder abgelaufen' });
+});
+
+// Öffentlich: "Passwort vergessen" für alle drei Login-Typen. Antwortet
+// IMMER gleich (kein Hinweis, ob die E-Mail existiert — verhindert, dass
+// sich damit gültige Logins erraten lassen). Kunde/Agentur bekommen einen
+// echten Reset-Link (gleicher Mechanismus wie die Erstenladung); der
+// Admin-Zugang ist ein einzelnes, in der Server-Konfiguration hinterlegtes
+// Konto ohne eigene Datenbank-Zeile — hier bekommt er eine Anleitung statt
+// eines Links, ein automatischer Reset würde das mächtigste Konto der
+// Plattform unnötig angreifbar machen.
+const forgotPasswordRateLimit = new Map();
+function checkForgotPasswordRateLimit(ip) {
+  const now = Date.now();
+  const entry = forgotPasswordRateLimit.get(ip);
+  if (!entry || now > entry.resetAt) {
+    forgotPasswordRateLimit.set(ip, { count: 1, resetAt: now + 10 * 60 * 1000 });
+    return true;
+  }
+  if (entry.count >= 5) return false;
+  entry.count += 1;
+  return true;
+}
+
+app.post('/api/public/forgot-password', async (req, res) => {
+  const { email } = req.body || {};
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ error: 'email erforderlich' });
+  }
+  if (!checkForgotPasswordRateLimit(req.ip)) {
+    return res.status(429).json({ error: 'Zu viele Anfragen — bitte kurz warten.' });
+  }
+  const generic = () => res.json({ ok: true });
+  const base = process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu';
+
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail && email.toLowerCase() === adminEmail.toLowerCase()) {
+    notifyN8n('passwort-vergessen', {
+      email: adminEmail,
+      subject: 'ki-works Admin-Zugang — Passwort ändern',
+      text: 'Für den Admin-Zugang gibt es keinen automatischen Passwort-Reset '
+        + '(dieses Konto steuert die gesamte Plattform, daher bewusst kein '
+        + 'Link per E-Mail).\n\nSo ändern Sie das Passwort selbst auf dem Server:\n\n'
+        + '1. Per SSH auf den Server verbinden\n'
+        + '2. ADMIN_PASSWORD in /etc/ki-works/ki-works.env anpassen\n'
+        + '3. systemctl restart ki-works-api\n\nIhr ki-works Team',
+    });
+    return generic();
+  }
+
+  const { rows: restaurantRows } = await query(
+    'SELECT id, name FROM restaurants WHERE lower(login_email) = lower($1)', [email],
+  );
+  if (restaurantRows[0]) {
+    const token = generateSetupToken();
+    await query(
+      `UPDATE restaurants SET setup_token = $1, setup_token_expires = now() + interval '1 hour'
+       WHERE id = $2`,
+      [token, restaurantRows[0].id],
+    );
+    notifyN8n('passwort-vergessen', {
+      email,
+      subject: 'ki-works — Passwort zurücksetzen',
+      text: `Für Ihren Zugang (${restaurantRows[0].name}) wurde ein Passwort-Reset angefordert.\n\n`
+        + `Falls Sie das waren, legen Sie über diesen Link ein neues Passwort fest `
+        + `(1 Stunde gültig):\n\n${base}/dashboard/?setup=${token}\n\n`
+        + 'Falls nicht, ignorieren Sie diese E-Mail einfach.\n\nIhr ki-works Team',
+    });
+    return generic();
+  }
+
+  const { rows: agencyRows } = await query(
+    'SELECT id, name FROM agencies WHERE lower(login_email) = lower($1)', [email],
+  );
+  if (agencyRows[0]) {
+    const token = generateSetupToken();
+    await query(
+      `UPDATE agencies SET setup_token = $1, setup_token_expires = now() + interval '1 hour'
+       WHERE id = $2`,
+      [token, agencyRows[0].id],
+    );
+    notifyN8n('passwort-vergessen', {
+      email,
+      subject: 'ki-works — Passwort zurücksetzen',
+      text: `Für Ihren Agentur-Zugang (${agencyRows[0].name}) wurde ein Passwort-Reset angefordert.\n\n`
+        + `Falls Sie das waren, legen Sie über diesen Link ein neues Passwort fest `
+        + `(1 Stunde gültig):\n\n${base}/dashboard/?setup=${token}\n\n`
+        + 'Falls nicht, ignorieren Sie diese E-Mail einfach.\n\nIhr ki-works Team',
+    });
+    return generic();
+  }
+
+  return generic();
 });
 
 // --- Restaurants --------------------------------------------------------------
