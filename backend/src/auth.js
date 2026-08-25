@@ -63,6 +63,9 @@ export function authMiddleware(req, res, next) {
 export const customerScope = (req) =>
   (req.user?.role === 'customer' ? req.user.restaurant_id : null);
 
+export const agencyScope = (req) =>
+  (req.user?.role === 'agency' ? req.user.agency_id : null);
+
 export function adminOnly(req, res, next) {
   if (req.user?.role !== 'admin') return res.status(403).json({ error: 'admin only' });
   return next();

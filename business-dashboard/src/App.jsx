@@ -641,6 +641,59 @@ function AgencyBrandingForm({ agency, onSaved }) {
   );
 }
 
+// Selbstverwaltungs-Zugang der Agentur (Login unter der eigenen Domain,
+// gleiche dashboard/-App wie Endkunden — nur role: 'agency' statt 'customer').
+function AgencyAccessForm({ agency, onSaved }) {
+  const [loginEmail, setLoginEmail] = useState(agency.login_email || '');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [saved, setSaved] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const body = { login_email: loginEmail || null };
+    if (password) body.password = password;
+    apiFetch(`/api/agencies/${agency.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        setPassword('');
+        setSaved(true);
+        onSaved();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <form className="agency-branding" onSubmit={save}>
+      <label>
+        Login-E-Mail (für die Agentur selbst)
+        <input type="email" value={loginEmail} onChange={(e) => { setLoginEmail(e.target.value); setSaved(false); }} />
+      </label>
+      <label>
+        {agency.login_email ? 'Neues Passwort (leer = unverändert)' : 'Passwort (min. 8 Zeichen)'}
+        <input
+          type="password" value={password} minLength={password ? 8 : undefined}
+          onChange={(e) => { setPassword(e.target.value); setSaved(false); }}
+        />
+      </label>
+      <div className="agency-branding-actions">
+        <button className="primary" type="submit" disabled={loading}>{loading ? 'Speichere…' : 'Zugang speichern'}</button>
+        {saved && <span className="hint">Gespeichert.</span>}
+      </div>
+      {error && <p className="error">Fehler: {error}</p>}
+    </form>
+  );
+}
+
 function AgenciesSection({ refreshKey, onChanged }) {
   const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
   const [expanded, setExpanded] = useState(null);
@@ -656,8 +709,16 @@ function AgenciesSection({ refreshKey, onChanged }) {
         <div key={a.id} className="agency-row">
           <button type="button" className="agency-row-head" onClick={() => setExpanded(expanded === a.id ? null : a.id)}>
             <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
+            {!a.login_email && <span className="warn-text"> · kein Zugang eingerichtet</span>}
           </button>
-          {expanded === a.id && <AgencyBrandingForm agency={a} onSaved={onChanged} />}
+          {expanded === a.id && (
+            <>
+              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>Zugangsdaten (Self-Service-Login)</h4>
+              <AgencyAccessForm agency={a} onSaved={onChanged} />
+              <h4 style={{ margin: '0.75rem 0 0.25rem' }}>Branding</h4>
+              <AgencyBrandingForm agency={a} onSaved={onChanged} />
+            </>
+          )}
         </div>
       ))}
     </div>

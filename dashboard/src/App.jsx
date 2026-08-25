@@ -1244,7 +1244,7 @@ function NewCustomerForm({ onDone, onCancel }) {
   );
 }
 
-function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
+function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
   const { t, locale } = useI18n();
   const tierOptions = usePricingTierOptions();
   const { data: daily } = useFetch('/api/stats/daily/by-restaurant', refreshKey);
@@ -1373,9 +1373,11 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
               return (
                 <tr key={d.restaurant_id}>
                   <td>
-                    <button className="link-strong" onClick={() => onOpenRestaurant(d.restaurant_id)}>
-                      {d.name}
-                    </button>
+                    {onOpenRestaurant ? (
+                      <button className="link-strong" onClick={() => onOpenRestaurant(d.restaurant_id)}>
+                        {d.name}
+                      </button>
+                    ) : d.name}
                   </td>
                   <td>{r.login_email || <span className="warn-text">{t('customers.noAccess')}</span>}</td>
                   <td>{r.vapi_phone_number || '–'}</td>
@@ -1387,9 +1389,11 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                     ) : (
                       <>
                         <span className="warn-text">{t('customers.publishNeeded')}</span>
-                        <button type="button" className="link" onClick={() => markPublished(d.restaurant_id)}>
-                          {t('customers.markPublished')}
-                        </button>
+                        {!isAgencyUser && (
+                          <button type="button" className="link" onClick={() => markPublished(d.restaurant_id)}>
+                            {t('customers.markPublished')}
+                          </button>
+                        )}
                       </>
                     )}
                   </td>
@@ -1406,15 +1410,19 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant }) {
                     <button className="link" onClick={() => sendInvite(d.restaurant_id)}>
                       {t('customers.sendInvite')}
                     </button>
-                    <button className="link" onClick={() => setEditingRoles(d.restaurant_id)}>
-                      {t('customers.changeRoles')}
-                    </button>
-                    <button className="link" onClick={() => setEditingTier(d.restaurant_id)}>
-                      {t('customers.changeTier')}
-                    </button>
-                    <button className="link" onClick={() => setEditingAgency(d.restaurant_id)}>
-                      {t('customers.changeAgency')}
-                    </button>
+                    {!isAgencyUser && (
+                      <>
+                        <button className="link" onClick={() => setEditingRoles(d.restaurant_id)}>
+                          {t('customers.changeRoles')}
+                        </button>
+                        <button className="link" onClick={() => setEditingTier(d.restaurant_id)}>
+                          {t('customers.changeTier')}
+                        </button>
+                        <button className="link" onClick={() => setEditingAgency(d.restaurant_id)}>
+                          {t('customers.changeAgency')}
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               );
@@ -1925,7 +1933,7 @@ const NAV = [
   { id: 'audit', icon: '📋' },
   { id: 'reco', icon: '💡' },
   { id: 'settings', icon: '⚙️' },
-  { id: 'customers', icon: '🏢', divider: true, adminOnly: true },
+  { id: 'customers', icon: '🏢', divider: true, adminOnly: true, agencyOk: true },
   { id: 'leads', icon: '📥', adminOnly: true },
   { id: 'system', icon: '🛠️', adminOnly: true },
 ];
@@ -1934,10 +1942,14 @@ export default function App() {
   const { t } = useI18n();
   const brandingCtx = useBranding();
   const [auth, setAuth] = useState(loadAuth);
-  const [view, setView] = useState('overview');
+  // Agenturen (role: 'agency') verwalten nur ihre eigenen Kunden — landen
+  // deshalb direkt auf der Kundenliste statt auf einer leeren Übersicht ohne
+  // ausgewähltes Restaurant.
+  const [view, setView] = useState(() => (loadAuth()?.role === 'agency' ? 'customers' : 'overview'));
   const [refreshKey, setRefreshKey] = useState(0);
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), []);
   const isAdmin = auth?.role === 'admin';
+  const isAgencyUser = auth?.role === 'agency';
   const [detail, setDetail] = useState(null);
 
   const setupToken = useMemo(() => new URLSearchParams(window.location.search).get('setup'), []);
@@ -1984,8 +1996,20 @@ export default function App() {
   useEffect(() => {
     if (!auth) return;
     if (auth.role === 'customer') setRestaurantId(auth.restaurant_id);
-    else if (restaurants?.length && restaurantId == null) setRestaurantId(restaurants[0].id);
+    // Agenturen haben keinen "eigenen" Betrieb — sie verwalten mehrere
+    // Kunden über die Kundenliste, kein Auto-Select nötig/sinnvoll.
+    else if (auth.role === 'admin' && restaurants?.length && restaurantId == null) {
+      setRestaurantId(restaurants[0].id);
+    }
   }, [auth, restaurants, restaurantId]);
+
+  // Der initiale view-State wird einmal beim allerersten Mount gesetzt (vor
+  // einem frischen Login noch ohne bekannte Rolle) — nach dem Login hier
+  // nachträglich auf die Kundenliste springen, statt auf einer leeren
+  // Übersicht ohne ausgewähltes Restaurant hängen zu bleiben.
+  useEffect(() => {
+    if (auth?.role === 'agency' && view === 'overview') setView('customers');
+  }, [auth, view]);
 
   useEffect(() => {
     if (!auth) return undefined;
@@ -2018,7 +2042,8 @@ export default function App() {
   // bewusst weiter anzeigen, damit sich bestehende Kunden nicht ändern.
   const ordersRoleActive = !current?.enabled_roles || current.enabled_roles.includes('orders');
   const nav = NAV.filter((item) => {
-    if (item.adminOnly && !isAdmin) return false;
+    if (item.adminOnly && !isAdmin && !(item.agencyOk && isAgencyUser)) return false;
+    if (isAgencyUser && !item.agencyOk) return false;
     if (['calendar', 'reservations', 'orders'].includes(item.id) && !ordersRoleActive) return false;
     return true;
   });
@@ -2117,8 +2142,12 @@ export default function App() {
             {view === 'settings' && (
               <Settings restaurantId={restaurantId} isAdmin={isAdmin} />
             )}
-            {view === 'customers' && isAdmin && (
-              <Customers refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />
+            {view === 'customers' && (isAdmin || isAgencyUser) && (
+              <Customers
+                refreshKey={refreshKey} onChanged={refresh}
+                onOpenRestaurant={isAgencyUser ? null : openRestaurant}
+                isAgencyUser={isAgencyUser}
+              />
             )}
             {view === 'leads' && isAdmin && (
               <Leads refreshKey={refreshKey} onChanged={refresh} onOpenRestaurant={openRestaurant} />

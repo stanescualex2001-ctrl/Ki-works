@@ -15,7 +15,7 @@ import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
 import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
 import {
-  authMiddleware, adminOnly, customerScope,
+  authMiddleware, adminOnly, customerScope, agencyScope,
   hashPassword, verifyPassword, signToken, generateSetupToken,
 } from './auth.js';
 
@@ -85,12 +85,14 @@ app.post('/api/agencies', adminOnly, async (req, res) => {
 });
 
 app.patch('/api/agencies/:id', adminOnly, async (req, res) => {
-  const allowed = ['name', 'domain'];
+  const allowed = ['name', 'domain', 'login_email'];
   const sets = [];
   const vals = [];
   for (const key of allowed) {
     if (key in req.body) {
-      vals.push(key === 'domain' ? String(req.body[key]).toLowerCase() : req.body[key]);
+      vals.push(key === 'domain' || key === 'login_email'
+        ? (req.body[key] ? String(req.body[key]).toLowerCase() : null)
+        : req.body[key]);
       sets.push(`${key} = $${vals.length}`);
     }
   }
@@ -98,10 +100,16 @@ app.patch('/api/agencies/:id', adminOnly, async (req, res) => {
     vals.push(JSON.stringify(req.body.branding || {}));
     sets.push(`branding = $${vals.length}`);
   }
+  // Selbstverwaltungs-Zugang der Agentur: Admin vergibt/ändert das Passwort
+  // hier einmalig (analog zum "Change access"-Formular bei Kunden).
+  if (req.body.password) {
+    vals.push(hashPassword(req.body.password));
+    sets.push(`password_hash = $${vals.length}`);
+  }
   if (!sets.length) return res.status(400).json({ error: 'no fields' });
   vals.push(req.params.id);
   const { rows } = await query(
-    `UPDATE agencies SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING id, name, domain, branding, created_at`,
+    `UPDATE agencies SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING id, name, domain, branding, login_email, created_at`,
     vals,
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
@@ -143,15 +151,30 @@ app.post('/api/login', async (req, res) => {
     [email],
   );
   const r = rows[0];
-  if (!r || !verifyPassword(password, r.password_hash)) {
-    return res.status(401).json({ error: 'E-Mail oder Passwort falsch' });
+  if (r && verifyPassword(password, r.password_hash)) {
+    return res.json({
+      token: signToken({ role: 'customer', restaurant_id: r.id, name: r.name }),
+      role: 'customer',
+      restaurant_id: r.id,
+      name: r.name,
+    });
   }
-  return res.json({
-    token: signToken({ role: 'customer', restaurant_id: r.id, name: r.name }),
-    role: 'customer',
-    restaurant_id: r.id,
-    name: r.name,
-  });
+
+  const { rows: agencyRows } = await query(
+    'SELECT id, name, password_hash FROM agencies WHERE lower(login_email) = lower($1)',
+    [email],
+  );
+  const a = agencyRows[0];
+  if (a && verifyPassword(password, a.password_hash)) {
+    return res.json({
+      token: signToken({ role: 'agency', agency_id: a.id, name: a.name }),
+      role: 'agency',
+      agency_id: a.id,
+      name: a.name,
+    });
+  }
+
+  return res.status(401).json({ error: 'E-Mail oder Passwort falsch' });
 });
 
 // --- Vapi webhook (called by Vapi servers) ------------------------------------
@@ -303,7 +326,8 @@ async function inviteRestaurant(restaurant) {
   return { restaurant: updated, setup_link };
 }
 
-app.post('/api/restaurants/:id/invite', adminOnly, async (req, res) => {
+app.post('/api/restaurants/:id/invite', async (req, res) => {
+  if (!(await restaurantOwnedByAgency(req, res, req.params.id))) return;
   const { rows } = await query('SELECT * FROM restaurants WHERE id = $1', [req.params.id]);
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
   if (!rows[0].login_email && !rows[0].contact_email) {
@@ -353,21 +377,52 @@ app.post('/api/public/setup-password', async (req, res) => {
 });
 
 // --- Restaurants --------------------------------------------------------------
+// Agenturen verwalten ihre eigenen Kunden selbst (siehe CLAUDE.md
+// Agentur-White-Label): sie sehen/erstellen/bearbeiten nur Restaurants mit
+// ihrer eigenen agency_id. Admin bleibt uneingeschränkt (Notfallzugriff,
+// falls eine Agentur sich aussperrt).
+async function restaurantOwnedByAgency(req, res, id) {
+  if (req.user?.role === 'admin') return true;
+  const agency = agencyScope(req);
+  if (!agency) {
+    res.status(403).json({ error: 'admin only' });
+    return false;
+  }
+  const { rows } = await query('SELECT agency_id FROM restaurants WHERE id = $1', [id]);
+  if (!rows[0] || rows[0].agency_id !== agency) {
+    res.status(403).json({ error: 'nicht Ihre Agentur' });
+    return false;
+  }
+  return true;
+}
+
 app.get('/api/restaurants', async (req, res) => {
   const scope = customerScope(req);
-  const { rows } = scope
-    ? await query('SELECT * FROM restaurants WHERE id = $1', [scope])
-    : await query('SELECT * FROM restaurants ORDER BY id');
+  const agency = agencyScope(req);
+  let rows;
+  if (scope) {
+    ({ rows } = await query('SELECT * FROM restaurants WHERE id = $1', [scope]));
+  } else if (agency) {
+    ({ rows } = await query('SELECT * FROM restaurants WHERE agency_id = $1 ORDER BY id', [agency]));
+  } else {
+    ({ rows } = await query('SELECT * FROM restaurants ORDER BY id'));
+  }
   res.json(rows.map(publicRestaurant));
 });
 
-app.post('/api/restaurants', adminOnly, async (req, res) => {
+app.post('/api/restaurants', async (req, res) => {
+  const agency = agencyScope(req);
+  if (req.user?.role !== 'admin' && !agency) return res.status(403).json({ error: 'admin only' });
   const { name, address, contact_email, contact_phone, vapi_phone_number, enabled_roles } = req.body;
   if (!name) return res.status(400).json({ error: 'name required' });
+  // Agentur-erstellte Kunden werden fest an die eigene Agentur gebunden —
+  // agency_id kommt nie aus dem Request-Body, sonst könnte sich eine
+  // Agentur selbst fremde Kunden zuordnen.
+  const agencyId = agency || null;
   const { rows } = await query(
-    `INSERT INTO restaurants (name, address, contact_email, contact_phone, vapi_phone_number${enabled_roles ? ', enabled_roles' : ''})
-     VALUES ($1, $2, $3, $4, $5${enabled_roles ? ', $6' : ''}) RETURNING *`,
-    [name, address || null, contact_email || null, contact_phone || null, vapi_phone_number || null,
+    `INSERT INTO restaurants (name, address, contact_email, contact_phone, vapi_phone_number, agency_id${enabled_roles ? ', enabled_roles' : ''})
+     VALUES ($1, $2, $3, $4, $5, $6${enabled_roles ? ', $7' : ''}) RETURNING *`,
+    [name, address || null, contact_email || null, contact_phone || null, vapi_phone_number || null, agencyId,
       ...(enabled_roles ? [JSON.stringify(enabled_roles)] : [])],
   );
   notifyN8n('restaurant-onboarding', { restaurant: publicRestaurant(rows[0]) });
@@ -376,9 +431,16 @@ app.post('/api/restaurants', adminOnly, async (req, res) => {
   res.status(201).json({ ...publicRestaurant(updated[0]), vapi });
 });
 
-app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
-  const allowed = ['name', 'address', 'contact_email', 'contact_phone',
-    'vapi_phone_number', 'vapi_assistant_id', 'login_email', 'vapi_published', 'pricing_tier', 'agency_id'];
+app.patch('/api/restaurants/:id', async (req, res) => {
+  if (!(await restaurantOwnedByAgency(req, res, req.params.id))) return;
+  const isAdmin = req.user?.role === 'admin';
+  // Agentur darf nur die Kundenkontakt-Basisdaten ändern — Vertrags-/
+  // Interna (agency_id, pricing_tier, vapi_published, vapi_assistant_id)
+  // bleiben Admin-only.
+  const allowed = isAdmin
+    ? ['name', 'address', 'contact_email', 'contact_phone', 'vapi_phone_number',
+      'vapi_assistant_id', 'login_email', 'vapi_published', 'pricing_tier', 'agency_id']
+    : ['name', 'address', 'contact_email', 'contact_phone', 'vapi_phone_number', 'login_email'];
   const sets = [];
   const vals = [];
   for (const key of allowed) {
@@ -387,7 +449,7 @@ app.patch('/api/restaurants/:id', adminOnly, async (req, res) => {
       sets.push(`${key} = $${vals.length}`);
     }
   }
-  if ('enabled_roles' in req.body) {
+  if ('enabled_roles' in req.body && isAdmin) {
     vals.push(JSON.stringify(req.body.enabled_roles || []));
     sets.push(`enabled_roles = $${vals.length}`);
   }
@@ -824,7 +886,7 @@ app.get('/api/stats/weekly', adminOnly, async (_req, res) => res.json(await stat
 // so n8n can send each customer their own report.
 async function statsByRestaurant(interval) {
   const { rows } = await query(
-    `SELECT r.id AS restaurant_id, r.name, r.contact_email,
+    `SELECT r.id AS restaurant_id, r.name, r.contact_email, r.agency_id,
        (SELECT count(*) FROM calls c
          WHERE c.restaurant_id = r.id AND c.created_at > now() - $1::interval)          AS calls,
        (SELECT count(*) FROM reservations x
@@ -848,8 +910,11 @@ async function statsByRestaurant(interval) {
 
 const scopedStats = async (req, interval) => {
   const scope = customerScope(req);
+  const agency = agencyScope(req);
   const rows = await statsByRestaurant(interval);
-  return scope ? rows.filter((r) => r.restaurant_id === scope) : rows;
+  if (scope) return rows.filter((r) => r.restaurant_id === scope);
+  if (agency) return rows.filter((r) => r.agency_id === agency);
+  return rows;
 };
 
 app.get('/api/stats/daily/by-restaurant', async (req, res) =>
