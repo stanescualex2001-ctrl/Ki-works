@@ -1249,6 +1249,26 @@ Version auf "Publish" klicken.
   `npm run build` + Grep im Prerender-Output verifiziert. Committet und
   gepusht, normaler rsync/Build-Ablauf für `landing/` reicht (kein
   Backend-Neustart nötig).
+- **Preise-Sektion: vierte "Custom"-Karte ergänzt (24.08.2026):**
+  Nutzer-Nachfrage, ob eine zusätzliche Preiskarte ohne Preis ("Custom",
+  nur "Kontaktieren Sie uns") sinnvoll wäre — bejaht, da die bestehende
+  Preise-Fußnote ("Individuelles Paket gewünscht? Sprechen Sie uns an")
+  leicht übersehen wird, wenn jemand nur die 3 Karten überfliegt.
+  Umgesetzt in `landing/src/App.jsx`: neue vierte Karte nach Solo/Team/
+  Scale, bewusst schlicht gehalten (kein Preis, keine Feature-Liste, kein
+  SLA-Versprechen — dafür gibt es aktuell keine Substanz, nur ein
+  Gesprächsangebot), Raster von `md:grid-cols-3` auf
+  `md:grid-cols-2 lg:grid-cols-4` erweitert. Das bestehende
+  `pricingTiers`-Array bewusst unangetastet gelassen (die Custom-Karte
+  ist eine eigenständige JSX-Karte daneben) — der ROI-Rechner nutzt
+  dasselbe Array für seine Berechnungen und hätte bei einem Preis-/
+  Minuten-losen Eintrag NaN-Ergebnisse geliefert. Neue i18n-Keys
+  (`pricing.customName/customPrice/customDesc/customCta`) in allen 3
+  Sprachen ergänzt. Lokal per `npm run build` + Playwright-Screenshots
+  (Light/Dark/Mobile) verifiziert — Layout bleibt sauber, Custom-Karte
+  richtet sich unten am CTA-Button aus wie die anderen Karten. Committet
+  und gepusht, normaler rsync/Build-Ablauf für `landing/` reicht (kein
+  Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
