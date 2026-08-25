@@ -1187,12 +1187,12 @@ export default function App() {
             <GlowCard tone="violet" className="p-6 md:p-8 flex flex-col">
               <div className="text-lg font-semibold">{t("pricing.customName")}</div>
               <div className="mt-2 text-2xl font-semibold">{t("pricing.customPrice")}</div>
-              <p className="mt-4 flex-1 text-sm text-foreground/60 leading-relaxed">
+              <p className="mt-4 text-sm text-foreground/60 leading-relaxed">
                 {t("pricing.customDesc")}
               </p>
               <a
                 href="/kontakt.html"
-                className="mt-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
+                className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
                 {t("pricing.customCta")} <ArrowRight className="h-3.5 w-3.5" />
               </a>
