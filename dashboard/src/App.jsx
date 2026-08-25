@@ -1555,6 +1555,9 @@ function AgencyForm({ onCreated }) {
   const { t } = useI18n();
   const [name, setName] = useState('');
   const [domain, setDomain] = useState('');
+  const [address, setAddress] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -1566,13 +1569,22 @@ function AgencyForm({ onCreated }) {
     apiFetch('/api/agencies', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ name, domain, login_email: loginEmail || null }),
+      body: JSON.stringify({
+        name, domain,
+        address: address || null,
+        contact_email: contactEmail || null,
+        contact_phone: contactPhone || null,
+        login_email: loginEmail || null,
+      }),
     })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         setName('');
         setDomain('');
+        setAddress('');
+        setContactEmail('');
+        setContactPhone('');
         setLoginEmail('');
         onCreated();
       })
@@ -1584,6 +1596,15 @@ function AgencyForm({ onCreated }) {
     <form className="agency-form" onSubmit={submit}>
       <input placeholder={t('agencies.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} required />
       <input placeholder={t('agencies.domainPlaceholder')} value={domain} onChange={(e) => setDomain(e.target.value)} required />
+      <input placeholder={t('agencies.addressPlaceholder')} value={address} onChange={(e) => setAddress(e.target.value)} />
+      <input
+        type="email" placeholder={t('agencies.contactEmailPlaceholder')}
+        value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
+      />
+      <input
+        type="tel" placeholder={t('agencies.contactPhonePlaceholder')}
+        value={contactPhone} onChange={(e) => setContactPhone(e.target.value)}
+      />
       <input
         type="email" placeholder={t('agencies.loginEmailLabel')}
         value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)}
@@ -1596,10 +1617,72 @@ function AgencyForm({ onCreated }) {
   );
 }
 
+// Admin bearbeitet nachträglich Stammdaten einer bestehenden Agentur — z. B.
+// wenn beim Anlegen noch keine Login-E-Mail bekannt war. Nie Branding/Passwort.
+function AgencyEditForm({ agency, onCancel, onSaved }) {
+  const { t } = useI18n();
+  const [name, setName] = useState(agency.name || '');
+  const [domain, setDomain] = useState(agency.domain || '');
+  const [address, setAddress] = useState(agency.address || '');
+  const [contactEmail, setContactEmail] = useState(agency.contact_email || '');
+  const [contactPhone, setContactPhone] = useState(agency.contact_phone || '');
+  const [loginEmail, setLoginEmail] = useState(agency.login_email || '');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const save = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    apiFetch(`/api/agencies/${agency.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name, domain,
+        address: address || null,
+        contact_email: contactEmail || null,
+        contact_phone: contactPhone || null,
+        login_email: loginEmail || null,
+      }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        onSaved();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  return (
+    <form className="agency-form" onSubmit={save} style={{ margin: '0 1rem 0.75rem' }}>
+      <input placeholder={t('agencies.namePlaceholder')} value={name} onChange={(e) => setName(e.target.value)} required />
+      <input placeholder={t('agencies.domainPlaceholder')} value={domain} onChange={(e) => setDomain(e.target.value)} required />
+      <input placeholder={t('agencies.addressPlaceholder')} value={address} onChange={(e) => setAddress(e.target.value)} />
+      <input
+        type="email" placeholder={t('agencies.contactEmailPlaceholder')}
+        value={contactEmail} onChange={(e) => setContactEmail(e.target.value)}
+      />
+      <input
+        type="tel" placeholder={t('agencies.contactPhonePlaceholder')}
+        value={contactPhone} onChange={(e) => setContactPhone(e.target.value)}
+      />
+      <input
+        type="email" placeholder={t('agencies.loginEmailLabel')}
+        value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)}
+      />
+      <button className="primary" type="submit" disabled={loading}>{t('common.save')}</button>
+      <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
+      {error && <p className="error">{t('common.error', { message: error })}</p>}
+    </form>
+  );
+}
+
 function Agencies({ refreshKey, onChanged }) {
   const { t } = useI18n();
   const { data: agencies, error } = useFetch('/api/agencies', refreshKey);
   const [inviteMsg, setInviteMsg] = useState(null);
+  const [editing, setEditing] = useState(null);
 
   const sendInvite = (id) => {
     setInviteMsg(t('customers.inviteSending'));
@@ -1622,19 +1705,30 @@ function Agencies({ refreshKey, onChanged }) {
         <div key={a.id} className="agency-row">
           <div className="agency-row-head">
             <strong>{a.name}</strong> <span className="hint">{a.domain}</span>
-            {!a.login_email && <span className="warn-text"> · {t('agencies.noEmail')}</span>}
-            {a.login_email && !a.has_access && a.invite_pending && (
+            {!a.login_email && !a.contact_email && <span className="warn-text"> · {t('agencies.noEmail')}</span>}
+            {(a.login_email || a.contact_email) && !a.has_access && a.invite_pending && (
               <span className="warn-text"> · {t('agencies.invitePending')}</span>
             )}
-            {a.login_email && !a.has_access && !a.invite_pending && (
+            {(a.login_email || a.contact_email) && !a.has_access && !a.invite_pending && (
               <span className="warn-text"> · {t('agencies.noAccess')}</span>
             )}
             {a.has_access && <span className="ok-text"> · {t('agencies.active')}</span>}
           </div>
-          {a.login_email && (
-            <button type="button" className="link" style={{ margin: '0 1rem 0.75rem' }} onClick={() => sendInvite(a.id)}>
-              {a.has_access ? t('agencies.resendInvite') : t('agencies.sendInvite')}
+          <div style={{ margin: '0 1rem 0.75rem', display: 'flex', gap: '0.9rem' }}>
+            <button type="button" className="link" onClick={() => setEditing(editing === a.id ? null : a.id)}>
+              {t('common.edit')}
             </button>
+            {(a.login_email || a.contact_email) && (
+              <button type="button" className="link" onClick={() => sendInvite(a.id)}>
+                {a.has_access ? t('agencies.resendInvite') : t('agencies.sendInvite')}
+              </button>
+            )}
+          </div>
+          {editing === a.id && (
+            <AgencyEditForm
+              agency={a} onCancel={() => setEditing(null)}
+              onSaved={() => { setEditing(null); onChanged(); }}
+            />
           )}
         </div>
       ))}

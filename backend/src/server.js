@@ -78,12 +78,11 @@ app.get('/api/admin/system-status', adminOnly, async (_req, res) => {
 app.get('/api/agencies', async (req, res) => {
   const scope = agencyScope(req);
   if (req.user?.role !== 'admin' && !scope) return res.status(403).json({ error: 'admin only' });
+  const fields = 'id, name, domain, address, contact_email, contact_phone, branding, login_email';
   const { rows } = scope
-    ? await query(
-      'SELECT id, name, domain, branding, login_email, created_at FROM agencies WHERE id = $1', [scope],
-    )
+    ? await query(`SELECT ${fields}, created_at FROM agencies WHERE id = $1`, [scope])
     : await query(
-      `SELECT id, name, domain, branding, login_email,
+      `SELECT ${fields},
               setup_token IS NOT NULL AS invite_pending,
               password_hash IS NOT NULL AS has_access,
               created_at
@@ -93,11 +92,14 @@ app.get('/api/agencies', async (req, res) => {
 });
 
 app.post('/api/agencies', adminOnly, async (req, res) => {
-  const { name, domain, login_email } = req.body || {};
+  const { name, domain, address, contact_email, contact_phone, login_email } = req.body || {};
   if (!name || !domain) return res.status(400).json({ error: 'name und domain erforderlich' });
   const { rows } = await query(
-    'INSERT INTO agencies (name, domain, login_email) VALUES ($1, $2, $3) RETURNING id, name, domain, branding, login_email, created_at',
-    [name, domain.toLowerCase(), login_email ? login_email.toLowerCase() : null],
+    `INSERT INTO agencies (name, domain, address, contact_email, contact_phone, login_email)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, name, domain, address, contact_email, contact_phone, branding, login_email, created_at`,
+    [name, domain.toLowerCase(), address || null, contact_email || null, contact_phone || null,
+      login_email ? login_email.toLowerCase() : null],
   );
   res.json(rows[0]);
 });
@@ -111,13 +113,13 @@ app.patch('/api/agencies/:id', async (req, res) => {
   const sets = [];
   const vals = [];
   if (isAdmin) {
-    // Admin pflegt nur Stammdaten (Name/Domain/Kontakt-E-Mail für die
+    // Admin pflegt nur Stammdaten (Name/Domain/Kontakt/Login-E-Mail für die
     // Einladung) — nie Branding, nie Passwort.
-    for (const key of ['name', 'domain', 'login_email']) {
+    for (const key of ['name', 'domain', 'address', 'contact_email', 'contact_phone', 'login_email']) {
       if (key in req.body) {
-        vals.push(key === 'domain' || key === 'login_email'
+        vals.push(['domain', 'login_email'].includes(key)
           ? (req.body[key] ? String(req.body[key]).toLowerCase() : null)
-          : req.body[key]);
+          : (req.body[key] || null));
         sets.push(`${key} = $${vals.length}`);
       }
     }
@@ -129,7 +131,8 @@ app.patch('/api/agencies/:id', async (req, res) => {
   if (!sets.length) return res.status(400).json({ error: 'no fields' });
   vals.push(req.params.id);
   const { rows } = await query(
-    `UPDATE agencies SET ${sets.join(', ')} WHERE id = $${vals.length} RETURNING id, name, domain, branding, login_email, created_at`,
+    `UPDATE agencies SET ${sets.join(', ')} WHERE id = $${vals.length}
+     RETURNING id, name, domain, address, contact_email, contact_phone, branding, login_email, created_at`,
     vals,
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
@@ -170,12 +173,13 @@ app.patch('/api/agencies/:id/credentials', async (req, res) => {
 app.post('/api/agencies/:id/invite', adminOnly, async (req, res) => {
   const { rows } = await query('SELECT * FROM agencies WHERE id = $1', [req.params.id]);
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
-  if (!rows[0].login_email) {
-    return res.status(400).json({ error: 'Keine Login-E-Mail hinterlegt' });
+  if (!rows[0].login_email && !rows[0].contact_email) {
+    return res.status(400).json({ error: 'Keine E-Mail-Adresse hinterlegt (weder Login- noch Kontakt-E-Mail)' });
   }
   const token = generateSetupToken();
   const { rows: updated } = await query(
-    `UPDATE agencies SET setup_token = $1, setup_token_expires = now() + interval '7 days'
+    `UPDATE agencies SET setup_token = $1, setup_token_expires = now() + interval '7 days',
+            login_email = COALESCE(login_email, contact_email)
      WHERE id = $2 RETURNING id, name, domain, login_email`,
     [token, req.params.id],
   );

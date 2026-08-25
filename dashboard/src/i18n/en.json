@@ -48,7 +48,8 @@
     "error": "Error: {{message}}",
     "close": "Close",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "edit": "Edit"
   },
   "recording": {
     "notAvailable": "Recording not available.",
@@ -276,6 +277,9 @@
     "intro": "White-label partners: create and invite — the agency then manages access and branding itself.",
     "namePlaceholder": "Name (internal)",
     "domainPlaceholder": "Domain, e.g. clients.agency.com",
+    "addressPlaceholder": "Address",
+    "contactEmailPlaceholder": "Contact email",
+    "contactPhonePlaceholder": "Contact phone",
     "loginEmailLabel": "Login email (for the agency itself)",
     "createButton": "+ Create agency",
     "creating": "Creating…",

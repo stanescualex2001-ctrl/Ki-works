@@ -48,7 +48,8 @@
     "error": "Eroare: {{message}}",
     "close": "Închide",
     "save": "Salvează",
-    "cancel": "Anulează"
+    "cancel": "Anulează",
+    "edit": "Editează"
   },
   "recording": {
     "notAvailable": "Înregistrarea nu este disponibilă.",
@@ -276,6 +277,9 @@
     "intro": "Parteneri white-label: creează și invită — accesul și branding-ul le gestionează apoi agenția singură.",
     "namePlaceholder": "Nume (intern)",
     "domainPlaceholder": "Domeniu, ex. clienti.agentie.ro",
+    "addressPlaceholder": "Adresă",
+    "contactEmailPlaceholder": "E-mail de contact",
+    "contactPhonePlaceholder": "Telefon de contact",
     "loginEmailLabel": "E-mail de autentificare (pentru agenție)",
     "createButton": "+ Creează agenție",
     "creating": "Se creează…",

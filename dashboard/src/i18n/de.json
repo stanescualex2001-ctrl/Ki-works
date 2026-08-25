@@ -48,7 +48,8 @@
     "error": "Fehler: {{message}}",
     "close": "Schließen",
     "save": "Speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten"
   },
   "recording": {
     "notAvailable": "Aufnahme nicht verfügbar.",
@@ -276,6 +277,9 @@
     "intro": "White-Label-Partner: anlegen und einladen — Zugang und Branding verwaltet die Agentur danach selbst.",
     "namePlaceholder": "Name (intern)",
     "domainPlaceholder": "Domain, z.B. kunden.agentur.at",
+    "addressPlaceholder": "Adresse",
+    "contactEmailPlaceholder": "Kontakt-E-Mail",
+    "contactPhonePlaceholder": "Kontakt-Telefon",
     "loginEmailLabel": "Login-E-Mail (für die Agentur selbst)",
     "createButton": "+ Agentur anlegen",
     "creating": "Anlegen…",
