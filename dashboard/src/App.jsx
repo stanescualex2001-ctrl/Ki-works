@@ -1692,6 +1692,19 @@ function Agencies({ refreshKey, onChanged }) {
       .catch(() => setInviteMsg(t('customers.inviteError')));
   };
 
+  // Deaktivieren statt Löschen: sperrt nur den Login der Agentur, Daten/
+  // Kunden/Historie (für Rechnungen) bleiben erhalten und lassen sich
+  // jederzeit wieder aktivieren.
+  const toggleActive = (agency) => {
+    const next = !agency.active;
+    if (!next && !window.confirm(t('agencies.deactivateConfirm', { name: agency.name }))) return;
+    apiFetch(`/api/agencies/${agency.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ active: next }),
+    }).then((r) => r.ok && onChanged());
+  };
+
   if (error) return <p className="error">{t('common.error', { message: error })}</p>;
   if (!agencies) return <p>{t('common.loading')}</p>;
 
@@ -1712,7 +1725,8 @@ function Agencies({ refreshKey, onChanged }) {
             {(a.login_email || a.contact_email) && !a.has_access && !a.invite_pending && (
               <span className="warn-text"> · {t('agencies.noAccess')}</span>
             )}
-            {a.has_access && <span className="ok-text"> · {t('agencies.active')}</span>}
+            {a.has_access && <span className="ok-text"> · {t('agencies.accessReady')}</span>}
+            {!a.active && <span className="warn-text"> · {t('agencies.statusInactive')}</span>}
           </div>
           <div style={{ margin: '0 1rem 0.75rem', display: 'flex', gap: '0.9rem' }}>
             <button type="button" className="link" onClick={() => setEditing(editing === a.id ? null : a.id)}>
@@ -1723,6 +1737,9 @@ function Agencies({ refreshKey, onChanged }) {
                 {a.has_access ? t('agencies.resendInvite') : t('agencies.sendInvite')}
               </button>
             )}
+            <button type="button" className="link" onClick={() => toggleActive(a)}>
+              {a.active ? t('agencies.deactivate') : t('agencies.activate')}
+            </button>
           </div>
           {editing === a.id && (
             <AgencyEditForm

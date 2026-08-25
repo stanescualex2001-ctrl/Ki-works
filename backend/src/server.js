@@ -78,7 +78,7 @@ app.get('/api/admin/system-status', adminOnly, async (_req, res) => {
 app.get('/api/agencies', async (req, res) => {
   const scope = agencyScope(req);
   if (req.user?.role !== 'admin' && !scope) return res.status(403).json({ error: 'admin only' });
-  const fields = 'id, name, domain, address, contact_email, contact_phone, branding, login_email';
+  const fields = 'id, name, domain, address, contact_email, contact_phone, branding, login_email, active';
   const { rows } = scope
     ? await query(`SELECT ${fields}, created_at FROM agencies WHERE id = $1`, [scope])
     : await query(
@@ -97,7 +97,7 @@ app.post('/api/agencies', adminOnly, async (req, res) => {
   const { rows } = await query(
     `INSERT INTO agencies (name, domain, address, contact_email, contact_phone, login_email)
      VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING id, name, domain, address, contact_email, contact_phone, branding, login_email, created_at`,
+     RETURNING id, name, domain, address, contact_email, contact_phone, branding, login_email, active, created_at`,
     [name, domain.toLowerCase(), address || null, contact_email || null, contact_phone || null,
       login_email ? login_email.toLowerCase() : null],
   );
@@ -114,7 +114,9 @@ app.patch('/api/agencies/:id', async (req, res) => {
   const vals = [];
   if (isAdmin) {
     // Admin pflegt nur Stammdaten (Name/Domain/Kontakt/Login-E-Mail für die
-    // Einladung) — nie Branding, nie Passwort.
+    // Einladung) + Aktiv-Status — nie Branding, nie Passwort. Deaktivieren
+    // statt Löschen: sperrt nur den Login, Daten/Historie bleiben für
+    // Rechnungen erhalten.
     for (const key of ['name', 'domain', 'address', 'contact_email', 'contact_phone', 'login_email']) {
       if (key in req.body) {
         vals.push(['domain', 'login_email'].includes(key)
@@ -122,6 +124,10 @@ app.patch('/api/agencies/:id', async (req, res) => {
           : (req.body[key] || null));
         sets.push(`${key} = $${vals.length}`);
       }
+    }
+    if ('active' in req.body) {
+      vals.push(Boolean(req.body.active));
+      sets.push(`active = $${vals.length}`);
     }
   } else if ('branding' in req.body) {
     // Agentur pflegt nur ihr eigenes Branding.
@@ -132,7 +138,7 @@ app.patch('/api/agencies/:id', async (req, res) => {
   vals.push(req.params.id);
   const { rows } = await query(
     `UPDATE agencies SET ${sets.join(', ')} WHERE id = $${vals.length}
-     RETURNING id, name, domain, address, contact_email, contact_phone, branding, login_email, created_at`,
+     RETURNING id, name, domain, address, contact_email, contact_phone, branding, login_email, active, created_at`,
     vals,
   );
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
@@ -234,11 +240,14 @@ app.post('/api/login', async (req, res) => {
   }
 
   const { rows: agencyRows } = await query(
-    'SELECT id, name, password_hash FROM agencies WHERE lower(login_email) = lower($1)',
+    'SELECT id, name, password_hash, active FROM agencies WHERE lower(login_email) = lower($1)',
     [email],
   );
   const a = agencyRows[0];
   if (a && verifyPassword(password, a.password_hash)) {
+    if (!a.active) {
+      return res.status(403).json({ error: 'Dieser Zugang wurde deaktiviert. Bitte kontaktieren Sie ki-works.' });
+    }
     return res.json({
       token: signToken({ role: 'agency', agency_id: a.id, name: a.name }),
       role: 'agency',
