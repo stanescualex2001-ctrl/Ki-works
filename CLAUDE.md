@@ -1406,11 +1406,42 @@ Version auf "Publish" klicken.
   Playwright bestätigt: Admin-Ansicht enthält keine Farb-/Passwort-Felder
   mehr, Agentur-Nav zeigt nur „Kunden" + „Branding" (kein „Agenturen"-Tab
   sichtbar). `dashboard/`-Build fehlerfrei, i18n-Schlüsselparität (320
-  Keys) über alle 3 Sprachen bestätigt. **Committet+gepusht, noch NICHT
-  auf dem Produktivserver ausgerollt** — normaler rsync/Build-Ablauf für
-  `dashboard/` plus Backend-Neustart (`server.js` geändert), zusätzlich
-  den neuen n8n-Workflow 16 einmalig manuell in der n8n-Oberfläche
-  importieren (gleiche Einschränkung wie bei Workflow 15).
+  Keys) über alle 3 Sprachen bestätigt. **Committet+gepusht, laut Nutzer
+  am 25.08.2026 auf dem Produktivserver ausgerollt.**
+- **Venezia-Demo-Daten: automatischer wöchentlicher Refresh (25.08.2026):**
+  Nutzer-Wunsch nach dem Deploy-Rückstand-Überblick: Demo-Daten (noch)
+  nicht löschen, stattdessen soll das Test-Restaurant Venezia für
+  Vorführungen/Verkaufsgespräche immer "frisch" aussehen — alte Einträge
+  raus, neue für die jeweils aktuelle Woche rein, automatisch jede Woche.
+  Neues Skript `backend/scripts/refresh-venezia-demo-data.js`: löscht
+  zuvor selbst erzeugte Einträge (erkennbar am `[AUTO-DEMO]`-Marker in
+  `notes`/`summary` — nur diese, damit echte/manuelle Testeinträge nicht
+  versehentlich mitgelöscht werden) und legt frische Reservierungen
+  (18, Mittag/Abend gemischt, Status je nach Zeitpunkt vergangen/
+  zukünftig), Bestellungen (8, echte Pizzanamen aus der Venezia-
+  Speisekarte) und Anrufe (bis zu 14, nur in der Vergangenheit, realistische
+  deutsche Zusammenfassungen) für die aktuelle Kalenderwoche
+  (Montag-Sonntag, `mondayOf()` — dieselbe Logik wie im bestehenden
+  `WeekCalendar`) an. Läuft wöchentlich per neuem systemd-Timer
+  `ki-works-demo-refresh.timer` (Montag 04:00 Uhr, analog zum
+  bestehenden `ki-works-backup.timer`) — bewusst **nicht** in
+  `deploy/install.sh` eingebunden, da das eine rein temporäre
+  Vorführungs-Maßnahme ist und nicht Teil eines dauerhaften
+  Server-Setups sein soll. Lokal gegen Test-DB verifiziert: erster Lauf
+  legt 18/8/5 Einträge an, zweiter Lauf löscht diese sauber wieder und
+  erzeugt eine neue Runde (idempotent, kein Datenmüll). **Wichtig, in
+  „Offene Punkte" vermerkt:** vor dem echten Live-Gang muss der Timer
+  deaktiviert und alle `[AUTO-DEMO]`-Einträge final gelöscht werden.
+  **Committet+gepusht, noch NICHT auf dem Produktivserver eingerichtet**
+  — braucht normalen rsync/Build-Schritt plus einmalig:
+  ```
+  install -m 644 /opt/ki-works/deploy/systemd/ki-works-demo-refresh.service /etc/systemd/system/
+  install -m 644 /opt/ki-works/deploy/systemd/ki-works-demo-refresh.timer /etc/systemd/system/
+  systemctl daemon-reload
+  systemctl enable --now ki-works-demo-refresh.timer
+  ```
+  Einmaliger sofortiger Testlauf (optional): `systemctl start
+  ki-works-demo-refresh.service`.
 - **Datenschutzerklärung aktualisiert (23.08.2026):** Nutzer brachte einen
   fertigen Änderungsauftrag mit (Verantwortlicher-Platzhalter, Drittland-
   Übermittlung, KI-Transparenz-Abschnitt) — vor Umsetzung gegengeprüft
@@ -1871,17 +1902,15 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Agentur-Self-Service (Phase 2) + „Passwort vergessen" +
-  Agentur-Einladungs-Flow (alle 25.08.2026) noch nicht auf dem
-  Produktivserver ausgerollt** — siehe „Bereits erledigt" für Details.
-  Braucht normalen rsync/Build-Ablauf für `dashboard/`+
-  `business-dashboard/` plus Backend-Neustart (`server.js` geändert);
-  Migrationen `migration-023-agencies.sql` und
-  `migration-024-agency-reset-token.sql` müssen vorher gelaufen sein
-  (in dieser Reihenfolge), zusätzlich die neuen n8n-Workflows
-  `15-passwort-vergessen.json` und `16-agentur-eingeladen.json` einmalig
-  manuell in der n8n-Oberfläche importieren. Noch keine echte Agentur
-  eingeladen/aktiviert.
+- **Deploy-Rückstand komplett aufgeholt (Nutzer-Bestätigung 25.08.2026:
+  "alle Befehle... sind auf Server gelöst. Alle. Heute inklusiv."):**
+  sämtliche zuvor hier gelisteten "noch nicht ausgerollt"-Punkte sind laut
+  Nutzer jetzt live — inkl. der komplette Agentur-Self-Service/Passwort-
+  vergessen/Einladungs-Flow-Serie vom 25.08.2026 (Migrationen 023-026,
+  n8n-Workflows 15+16), Mehrsprachigkeit DE/EN/RO (Nutzer bestätigt: sieht
+  die Sprachen live auf der Website), Migration 016 (Kiwo-Rollen pro
+  Kunde) und Migrationen 019+020 (Audit-Log). Von hier aus nicht per SSH
+  nachprüfbar — falls doch noch etwas fehlt, bitte konkret melden.
 - **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) — Einrichtung fertig, blockiert
   nur noch am Anthropic-Guthaben (18.08.2026):** Kunde "Ki Works" (id 12,
   Rolle `support`) wurde im Dashboard angelegt, Wissensdatenbank/FAQ
@@ -1896,16 +1925,6 @@ Version auf "Publish" klicken.
   Anthropic-Guthaben aufgeladen ist, sollte der Chat ohne weiteren Schritt
   funktionieren.** `migration-022-leads-source.sql` muss noch auf dem
   Server ausgeführt werden (noch offen, unklar ob schon gelaufen).
-- **Mehrsprachigkeit DE/EN/RO — Phase 0-3 fertig (Website + kompletter
-  Kunden-Dashboard-Inhalt), plus drei Nacharbeiten aus dem ersten
-  Nutzer-Test (Logo-Untertitel-Fix, Dashboard-Sprachdropdown +
-  Sidebar-Abstand, Sprache von Landingpage zum Login übernehmen) und die
-  EN/RO-Vertonung der Beispiel-Gespräche — siehe „Bereits erledigt" für
-  Details. Deploy-Befehle wurden dem Nutzer für jeden Schritt gegeben,
-  Rollout-Stand auf dem Produktivserver von hier aus nicht prüfbar (kein
-  SSH-Zugriff). Deploy braucht zusätzlich zum üblichen rsync/Build auch
-  den geänderten `deploy/nginx/ki-works.conf` (`try_files`-Fix) —
-  `nginx -t && systemctl reload nginx` nicht vergessen.
 - **Demo-Gespräche EN/RO: Inhalt nicht gegen deutsche Originale
   abgeglichen.** Da kein Transkript der deutschen Aufnahmen im Repo lag,
   wurden für Englisch/Rumänisch neue, aber inhaltlich passende Dialoge zu
@@ -1913,30 +1932,11 @@ Version auf "Publish" klicken.
   keine Wort-für-Wort-Übersetzung. Falls der Nutzer das genauer angeglichen
   haben möchte, müssten die deutschen Originale zuerst angehört/transkribiert
   werden.
-- **Migration `migration-016-enabled-roles.sql` noch nicht auf dem Server
-  ausgeführt** (Kiwo-Rollen pro Kunde) — muss einmalig nachgeholt werden:
-  `export PGPASSWORD=$(cat /etc/ki-works/.dbpass) && psql -h 127.0.0.1 -U
-  kiworks -d kiworks -f /opt/ki-works/backend/sql/migration-016-enabled-roles.sql
-  && unset PGPASSWORD` (nach dem üblichen rsync-Update-Schritt, vor dem
-  nächsten Backend-Neustart)
-- **Migrationen `migration-019-audit-log.sql` und
-  `migration-020-audit-log-business.sql` noch nicht auf dem Server
-  ausgeführt** (Audit-Log-Tabelle + `business`-Spalte fürs
-  Business-Dashboard) — gleicher Ablauf wie oben, beide nacheinander
-  laufen lassen (`-019-...` vor `-020-...`, da letztere die Spalte auf
-  der Tabelle aus `-019-...` ergänzt). Landingpage-Copy-Fix (`landing/`),
-  Kunden-Dashboard-Tab "Aktivitätsprotokoll" (`dashboard/`) und die neue
-  Business-Dashboard-Sektion (`business-dashboard/`) sind normale
-  Frontend-Änderungen, laufen über den üblichen rsync/Build-Schritt — nur
-  die beiden Migrationen sind ein zusätzlicher, manueller Schritt.
-- **Agentur-White-Label Phase 1 noch nicht auf dem Produktivserver
-  ausgerollt** (Details siehe „Bereits erledigt", 19.08.2026) — braucht
-  zusätzlich zum üblichen rsync/Build für `dashboard/` +
-  `business-dashboard/` die neue Migration `migration-023-agencies.sql`
-  und einen Backend-Neustart (`server.js`/`vapiAdmin.js` haben sich
-  geändert). Noch keine echte Agentur angelegt; sobald eine zusagt,
-  zusätzlich `deploy/add-agency-domain.sh <domain>` auf dem Server
-  ausführen (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
+- **Noch keine echte Agentur eingeladen/aktiviert** (die technische
+  Grundlage — Self-Service-Login, Einladungs-Flow, Aktiv/Inaktiv — ist
+  live) und noch keine Agentur-Domain per `deploy/add-agency-domain.sh
+  <domain>` eingerichtet; beides erst nötig, sobald eine echte Agentur
+  zusagt (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
 - Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
   aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
   bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer
@@ -2145,7 +2145,13 @@ Version auf "Publish" klicken.
   Horizontal-/Vertikal-Anteilen (±18°/±12°). Explizit auf die nächste
   Sitzung vertagt ("Aber alles Morgen") — noch nicht gebaut.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
-  Server laufen (entfernt `[DEMO]`-Testdaten)
+  Server laufen (entfernt `[DEMO]`-Testdaten). **Zusätzlich seit 25.08.2026:**
+  vor Go-Live auch den neuen `ki-works-demo-refresh.timer` deaktivieren
+  (`systemctl disable --now ki-works-demo-refresh.timer`) und alle
+  `[AUTO-DEMO]`-markierten Venezia-Einträge einmalig per Hand löschen
+  (`DELETE FROM reservations/orders WHERE notes LIKE '%[AUTO-DEMO]%'`,
+  `DELETE FROM calls WHERE summary LIKE '[AUTO-DEMO]%'`) — siehe „Bereits
+  erledigt" für den Auto-Refresh selbst.
 - **Vapi "Publish"-Problem** (Details siehe „Bereits erledigt"): jeder neue/
   geänderte Kunde braucht aktuell einen manuellen "Publish"-Klick im
   Vapi-Dashboard, sonst nimmt der Assistent keine Anrufe an — noch kein
