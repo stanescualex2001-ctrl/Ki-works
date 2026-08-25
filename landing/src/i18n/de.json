@@ -332,10 +332,10 @@
     "perMonth": "/ Monat",
     "minutesPerMonth": "{{n}} Gesprächsminuten/Monat",
     "features": [
-      "Alle freigeschalteten Kiwo-Rollen inklusive",
-      "Dashboard: Reservierungen, Bestellungen & Anrufe",
-      "E-Mail-Benachrichtigungen bei Neuem",
-      "EU-Hosting & DSGVO-konform"
+      "Jede freigeschaltete Rolle im Preis inbegriffen — keine Zusatzkosten pro Rolle",
+      "Nie wieder eine Reservierung oder Bestellung verpassen — alles live im Dashboard",
+      "Sofort per E-Mail informiert, sobald ein Gast anruft, reserviert oder bestellt",
+      "Ihre Gästedaten bleiben in der EU — DSGVO-konform gespeichert"
     ],
     "savedPersonnel": "≈ {{h}} Std. Personalzeit gespart / Monat",
     "savedValue": "≈ {{e}} € Wert (⌀ 21 €/Std.)",

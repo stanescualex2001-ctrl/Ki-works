@@ -303,10 +303,10 @@
     "perMonth": "/ month",
     "minutesPerMonth": "{{n}} call minutes/month",
     "features": [
-      "All enabled Kiwo roles included",
-      "Dashboard: reservations, orders & calls",
-      "Email notifications for new activity",
-      "EU hosting & GDPR-compliant"
+      "Every unlocked role included in the price — no extra cost per role",
+      "Never miss a reservation or order again — everything live in your dashboard",
+      "Instant email alert the moment a guest calls, books, or orders",
+      "Your guest data stays in the EU — stored in full GDPR compliance"
     ],
     "savedPersonnel": "≈ {{h}} hrs of staff time saved / month",
     "savedValue": "≈ €{{e}} in value (avg. €21/hr)",

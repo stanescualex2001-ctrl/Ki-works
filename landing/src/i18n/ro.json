@@ -303,10 +303,10 @@
     "perMonth": "/ lună",
     "minutesPerMonth": "{{n}} minute de convorbire/lună",
     "features": [
-      "Toate rolurile Kiwo activate incluse",
-      "Dashboard: rezervări, comenzi & apeluri",
-      "Notificări prin e-mail pentru activitate nouă",
-      "Găzduire UE & conform RGPD"
+      "Fiecare rol activat este inclus în preț — fără costuri suplimentare per rol",
+      "Nu mai pierzi nicio rezervare sau comandă — totul vizibil live în dashboard",
+      "Notificare instant prin e-mail de fiecare dată când un client sună, rezervă sau comandă",
+      "Datele oaspeților rămân în UE — stocate în conformitate deplină cu GDPR"
     ],
     "savedPersonnel": "≈ {{h}} ore de timp de personal economisite / lună",
     "savedValue": "≈ {{e}} € valoare (⌀ 21 €/oră)",
