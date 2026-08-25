@@ -1228,6 +1228,77 @@ Version auf "Publish" klicken.
   echte Agentur zusagt, zusätzlich `deploy/add-agency-domain.sh <domain>`
   auf dem Server ausführen (braucht vorher gesetztes DNS der Agentur auf
   die Server-IP).
+- **Agentur-Self-Service — Phase 2, ersetzt den admin-verwalteten Ansatz
+  aus Phase 1 (25.08.2026):** Nutzer-Klarstellung nach Durchsprache der
+  Phase-1-UI ("Agentur ändern"-Button im Kunden-Dashboard): Agenturen
+  sollen ihre Kunden **selbst** anlegen/verwalten, nicht Alex — Alex
+  braucht nur genug Evidenz für Rechnungen, keinen manuellen
+  Zuordnungs-Schritt pro Kunde. Damit wird aus dem in Phase 1 als "später"
+  vertagten Punkt jetzt der Kernmechanismus. Neue Login-Rolle `agency`
+  (dritter Wert neben `admin`/`customer`): `backend/src/auth.js` bekommt
+  `agencyScope(req)` analog `customerScope`; `POST /api/login` prüft nach
+  Kunden-Login zusätzlich die `agencies`-Tabelle per `login_email` (Spalten
+  waren seit Phase 1 schon vorbereitet, keine neue Migration nötig).
+  Agentur nutzt dasselbe Kunden-Dashboard wie Restaurant-Kunden/Admin (kein
+  neues Frontend) — sieht dort aber nur den Menüpunkt "Kunden" und landet
+  direkt dort. `GET/POST/PATCH /api/restaurants` in `backend/src/server.js`
+  um Agentur-Scoping erweitert: Agentur sieht/erstellt/bearbeitet nur
+  Restaurants mit eigener `agency_id` (neu erstellte Kunden werden fest
+  serverseitig auf die eigene Agentur gebunden, nie aus dem Request-Body
+  übernehmen — sonst könnte sich eine Agentur fremde Kunden zuordnen).
+  Vertragsinterna bleiben admin-only: `agency_id`, `pricing_tier`,
+  `vapi_published`, `vapi_assistant_id`, `enabled_roles` sind für Agentur-
+  PATCHes aus der erlaubten Feldliste entfernt (nur Name/Adresse/Kontakt/
+  Vapi-Nummer/Login-E-Mail/Passwort bleiben änderbar). Einladungs-Versand
+  (`POST /api/restaurants/:id/invite`) ebenfalls auf Eigentümer-Check
+  umgestellt. `GET /api/stats/*/by-restaurant` (`scopedStats`) filtert
+  jetzt zusätzlich nach `agency_id`. `dashboard/src/App.jsx`: neue
+  `isAgencyUser`-Flag, Nav zeigt für Agentur nur "Kunden" (neues
+  `agencyOk`-Feld am NAV-Eintrag), Sprung direkt auf die Kundenliste nach
+  Login (nicht erst beim allerersten Mount, sondern per `useEffect` nach
+  dem Login-Response — sonst bleibt die Agentur auf einer leeren Übersicht
+  ohne ausgewähltes Restaurant hängen), kein Auto-Select eines "eigenen"
+  Restaurants (Agentur hat keins). `Customers`-Komponente blendet für
+  Agentur die admin-only Aktionen aus ("Rollen/Tarif/Agentur ändern",
+  Vapi-"Publish"-Bestätigen) und macht den Kundennamen nicht mehr
+  klickbar (Sprung in die volle Betriebsansicht — Reservierungen/
+  Bestellungen/Anrufe/Einstellungen — bleibt bewusst ein späterer Schritt,
+  da die ~15 bestehenden `customerScope`-Endpunkte dafür einzeln auf
+  Agentur-Sicherheit geprüft werden müssten). Admin bleibt wie gefordert
+  uneingeschränkt (Notfallzugriff, falls sich eine Agentur aussperrt) —
+  über die bestehende Rollenprüfung ohnehin schon der Fall, per Test extra
+  bestätigt. **Wichtige Ergänzung, ohne die Phase 2 nicht nutzbar wäre:**
+  bisher gab es gar keine Möglichkeit, einer Agentur Login-Zugangsdaten zu
+  geben (`PATCH /api/agencies/:id` kannte nur `name`/`domain`/`branding`)
+  — jetzt zusätzlich `login_email`/`password` erlaubt, neues Formular
+  "Zugangsdaten" in `business-dashboard/` unter "Agenturen" (neben dem
+  bestehenden Branding-Formular). Lokal komplett gegen frische Test-DB
+  end-to-end verifiziert (curl mit `x-real-ip`-Header, um den lokalen
+  127.0.0.1-Admin-Bypass zu umgehen und echtes Agentur-Scoping zu prüfen):
+  Agentur-Login, Kundenliste nur eigene 2-3 Restaurants, neuer Kunde
+  automatisch mit eigener `agency_id`, PATCH/Invite auf fremdes Restaurant
+  → 403 "nicht Ihre Agentur", Versuch `agency_id`/`pricing_tier` beim
+  eigenen Restaurant zu ändern → wird still ignoriert (Feld bleibt
+  unverändert), Admin sieht weiterhin alle Restaurants und kann
+  `agency_id` jederzeit überschreiben. UI zusätzlich per Playwright
+  geprüft (Nav zeigt nur "Kunden", Aktions-Buttons korrekt aus-/eingeblendet
+  für Agentur vs. Admin, Kundenname nur bei Admin klickbar). Ein Bug beim
+  ersten Testlauf gefunden und behoben: der initiale `view`-State wurde
+  einmalig beim allerersten Mount gesetzt (vor dem Login, als die Rolle
+  noch unbekannt war) — ein frischer Login als Agentur landete dadurch
+  trotzdem auf der leeren Übersicht statt der Kundenliste; jetzt per
+  zusätzlichem `useEffect` nach dem Login korrigiert. `dashboard/` und
+  `business-dashboard/` Builds beide fehlerfrei. **Committet+gepusht,
+  noch NICHT auf dem Produktivserver ausgerollt** — normaler rsync/Build-
+  Ablauf für `dashboard/`+`business-dashboard/`, kein Backend-Neustart
+  zwingend nötig (reine Zusatz-Logik, keine Breaking Changes an
+  bestehenden Endpunkten), aber empfohlen, da `backend/src/server.js`
+  sich geändert hat. Migration `migration-023-agencies.sql` (falls auf
+  dem Server noch nicht gelaufen, siehe „Offene Punkte") ist weiterhin
+  Voraussetzung. **Bewusst noch offen:** „Passwort vergessen" für alle
+  drei Login-Typen (vom Nutzer selbst als Lücke benannt, noch nicht
+  entschieden ob/wann gebaut) sowie voller Betriebs-Drilldown für
+  Agenturen (Reservierungen/Bestellungen/Anrufe/Einstellungen).
 - **Datenschutzerklärung aktualisiert (23.08.2026):** Nutzer brachte einen
   fertigen Änderungsauftrag mit (Verantwortlicher-Platzhalter, Drittland-
   Übermittlung, KI-Transparenz-Abschnitt) — vor Umsetzung gegengeprüft
@@ -1457,16 +1528,17 @@ Version auf "Publish" klicken.
     Systemhäuser zum Weiterverkauf unter eigener Marke anbieten. **Update
     19.08.2026:** Phase 1 (eigene Domain pro Agentur + unsichtbares
     KI-Works-Branding + eigener Vapi-Assistentenname) ist umgesetzt, siehe
-    „Bereits erledigt" — Punkte (1) und (2) unten sind damit erledigt,
-    offen bleiben (3) zweistufige Abrechnung (Großhandel an Agentur,
-    Agentur an Endkunde — hängt am selben fehlenden Preismodell wie beim
-    Admin-Dashboard-Punkt) und (4) Support-Trennung (Agentur =
-    Erstsupport), sowie der eigene Agentur-Login (Phase 2, mehrere Kunden
-    auf einmal sehen). Ursprüngliche Einschätzung: braucht (1) neue
-    Agentur-Ebene über den Betrieben (jeder Betrieb gehört einer Agentur,
-    Rechte-Modell über `customerScope` hinaus erweitern), (2)
-    austauschbares Branding (Logo/Farben/Name) pro Agentur im Dashboard
-    statt hartcodiertem "KI-Works"-Design.
+    „Bereits erledigt". **Update 25.08.2026:** Phase 2 (eigener
+    Agentur-Login, Agentur verwaltet ihre Kunden komplett selbst statt
+    Alex) ist ebenfalls umgesetzt, siehe „Bereits erledigt" — Agentur
+    legt eigene Kunden an, sieht nur diese, Admin bleibt uneingeschränkt.
+    Offen bleiben weiterhin (1) zweistufige Abrechnung (Großhandel an
+    Agentur, Agentur an Endkunde — hängt am selben fehlenden Preismodell
+    wie beim Admin-Dashboard-Punkt), (2) Support-Trennung (Agentur =
+    Erstsupport), (3) voller Betriebs-Drilldown für Agenturen
+    (Reservierungen/Bestellungen/Anrufe/Einstellungen der eigenen Kunden
+    einsehen), (4) „Passwort vergessen" für den neuen Agentur-Login (wie
+    für alle anderen Logins auch, siehe „Offene Punkte").
   - **Branchen-Templates im Marktplatz**: vorgefertigte Prompts/Workflows/
     Wissenstöpfe je Nische (z. B. "Template für Autohäuser"), mit einem
     Klick aktivierbar. Nutzer-Präzisierung: Templates sollen der
@@ -1686,6 +1758,18 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **Agentur-Self-Service (Phase 2, 25.08.2026) noch nicht auf dem
+  Produktivserver ausgerollt** — siehe „Bereits erledigt" für Details.
+  Braucht normalen rsync/Build-Ablauf für `dashboard/`+
+  `business-dashboard/` plus Backend-Neustart (`server.js` geändert);
+  `migration-023-agencies.sql` muss vorher gelaufen sein (falls noch
+  nicht, siehe Agentur-White-Label-Phase-1-Punkt weiter unten). Noch
+  keine echte Agentur mit Login-Zugangsdaten angelegt.
+- **„Passwort vergessen" fehlt komplett — für alle drei Login-Typen**
+  (Kunde, Admin, jetzt auch der neue Agentur-Login). Vom Nutzer selbst als
+  Lücke benannt (25.08.2026: "Wir haben überall vergessen..passwort
+  vergessen bei einloggen"), noch nicht entschieden ob/wann gebaut —
+  beim nächsten Gespräch nachfragen, falls nicht von selbst angesprochen.
 - **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) — Einrichtung fertig, blockiert
   nur noch am Anthropic-Guthaben (18.08.2026):** Kunde "Ki Works" (id 12,
   Rolle `support`) wurde im Dashboard angelegt, Wissensdatenbank/FAQ
