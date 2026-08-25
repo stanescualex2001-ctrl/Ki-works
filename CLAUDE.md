@@ -1492,6 +1492,17 @@ Version auf "Publish" klicken.
   Abstand `mt-6` wie bei den anderen drei Karten statt `mt-auto` +
   `flex-1`. Per Playwright erneut auf Mobile UND Desktop verifiziert,
   committet und gepusht.
+- **Preise-Sektion: Feature-Texte konkreter formuliert (25.08.2026):**
+  löst den seit 13.08.2026 offenen Copy-Pass ein. Die generischen
+  Feature-Punkte pro Tarif ("Dashboard: Reservierungen, Bestellungen &
+  Anrufe", "E-Mail-Benachrichtigungen bei Neuem", "EU-Hosting & DSGVO-
+  konform") durch konkrete Nutzenformulierungen ersetzt (z. B. "Nie
+  wieder eine Reservierung oder Bestellung verpassen — alles live im
+  Dashboard", "Sofort per E-Mail informiert, sobald ein Gast anruft,
+  reserviert oder bestellt"). Nur Textänderung in `landing/src/i18n/
+  de/en/ro.json` (`pricing.tiers.*.features`), keine Struktur-/Preis-
+  Änderung. Committet und gepusht, normaler rsync/Build-Ablauf für
+  `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2125,25 +2136,56 @@ Version auf "Publish" klicken.
   in Rechnung stellen. Deckt sich mit dem bereits dokumentierten Stand
   bei „Nutzungsmessung + Anzeige pro Kunde" (17.08.2026): „Automatische
   Abrechnung ist explizit ein späterer, noch nicht begonnener Schritt".
-- **Preise-Sektion: Nutzen-Formulierung schärfen (13.08.2026, für nächste
-  Sitzung bestätigt — "mach!")** — Nutzer-Feedback: die aktuellen
-  Feature-Punkte pro Tarif ("Dashboard", "E-Mail-Benachrichtigungen bei
-  Neuem", "EU-Hosting & DSGVO-konform") sind zu generisch, kommunizieren
-  den konkreten Nutzen nicht. Copy-Pass: Formulierungen konkreter machen
-  (z. B. "nie wieder verpasste Reservierung" statt "Dashboard"). War
-  ursprünglich als "Beträge bleiben unverändert, nur Wording" vertagt —
-  die Beträge selbst haben sich seither aber durchs Preise-Repricing
-  (17.08.2026, siehe „Bereits erledigt") bereits geändert; der eigentliche
-  Copy-Pass zu den Feature-Punkten steht weiterhin aus.
-- **Orb Buddy: Mausverfolgung noch mal gewünscht — mit klarer Spezifikation
-  (13.08.2026)** — war in dieser Sitzung gebaut (siehe „Bereits erledigt"),
-  nach Nutzer-Feedback "mag ich nicht" komplett entfernt, dann hat der
-  Nutzer sich umentschieden: soll doch wieder rein, aber diesmal
-  **gleichmäßig in alle Richtungen** — Maus oben/unten/links/rechts soll
-  die Figur überall um bis zu **±20°** rotieren lassen, nicht wie beim
-  letzten (entfernten) Versuch mit unterschiedlich gewichteten
-  Horizontal-/Vertikal-Anteilen (±18°/±12°). Explizit auf die nächste
-  Sitzung vertagt ("Aber alles Morgen") — noch nicht gebaut.
+- **Orb Buddy: Mausverfolgung — Konzept per Test-Artifact durchgespielt
+  (25.08.2026), Umsetzung im echten Code weiterhin auf "morgen" vertagt.**
+  Ursprünglich (13.08.2026) im echten Code gebaut, nach Nutzer-Feedback
+  "mag ich nicht" entfernt, dann erneut gewünscht — statt direkt im
+  Produktivcode zu experimentieren, wurde diesmal eine eigenständige
+  Test-Vorschau als Artifact gebaut (interaktiver Regler-Prototyp, kein
+  Repo-Code), über mehrere Nutzer-Feedback-Runden verfeinert. **Wichtiger
+  Befund, der den ursprünglichen ±20°-Rotations-Ansatz verwirft:** ein
+  echtes 3D-`rotateX/rotateY` auf der flachen SVG-Kreisfläche lässt den
+  Kreis unter der Perspektive zur Ellipse werden — wirkt wie eine
+  kippende flache Scheibe, nicht wie eine Kugel (Nutzer-Feedback: "Orb
+  ist nicht wie ein Ball...sondern Flach"). **Neuer, funktionierender
+  Ansatz:** der Kreis-Umriss bleibt immer unverzerrt rund (kein 3D-Kippen
+  des Körpers mehr); stattdessen wandern Lichtquelle (Body-Gradient-
+  Zentrum) und Glanzpunkt über die Oberfläche, der Schatten driftet leicht
+  gegenläufig — das simuliert eine sich drehende Kugel rein über
+  Schattierung. Zusätzlich bewegen sich Augen (als Gruppe), Pupillen und
+  Mund in Cursor-Richtung (Nutzer-Wunsch: "Augen und Mund soll auch in
+  Maus Zeiger richtung mit die Orb bewegen"), plus ein leichter
+  Parallax-Versatz der ganzen Figur für mehr spürbare Bewegung
+  (Nutzer-Wunsch: "mehr Bewegung in alle Richtungen. Flüssiger."). Alle
+  Bewegungsradien sind im Test-Artifact über 3 Regler einstellbar
+  (Glanz-/Blickreichweite, Glätte/Trägheit, Parallax-Versatz) — konkrete
+  Zahlenwerte noch nicht vom Nutzer final bestätigt, das Testen wurde mit
+  "bleibt offen für Morgen" unterbrochen. **Nächster Schritt:** Regler-
+  Werte mit dem Nutzer finalisieren, danach 1:1 in den echten `OrbBuddy`
+  (`landing/src/components/OrbBuddy.jsx`, aktuell ohne jede
+  Mausverfolgung) übertragen — inkl. Entscheidung, ob es nur am
+  Hero-/CTA-Orb Buddy läuft oder auch am kleineren Sidebar-Pendant in
+  `dashboard/`/`business-dashboard/` (dort bisher komplett unangetastet).
+- **Kunden-Dashboard-Sektion auf der Landingpage wird kaum wahrgenommen
+  (25.08.2026, Nutzer-Beobachtung: "Auf Homepage ist nichts über Kunden
+  Dashboard. Sollte sein.")** — Prüfung ergab: die Sektion existiert
+  technisch bereits (`landing/src/App.jsx`, `id="dashboard"`,
+  i18n-Namespace `dashboardSection`, Feature-Liste + Mock-Karte mit
+  Anrufen/Bestellungen/Ersparnis, siehe „Bereits erledigt" — "Alles auf
+  einen Blick"), hat aber zwei konkrete Schwachstellen: (1) **kein
+  Nav-Eintrag** — weder Desktop- noch Mobile-Menü in `Header.jsx`
+  verlinken auf `#dashboard` (Nav zeigt nur Live-Test/Plattform/Preise/
+  Onboarding/Kontakt), die Sektion ist dadurch eine Sackgasse, die nur
+  per Zufallsscroll gefunden wird; (2) die "Vorschau" ist eine abstrakte
+  Icon-Mock-Karte statt eines echten Produkt-Screenshots — wirkt eher wie
+  eine Behauptung als ein Beweis. Meine Empfehlung (noch nicht vom
+  Nutzer freigegeben, nichts umgesetzt): echten Dashboard-Screenshot
+  (Venezia/Demo-Daten) statt Icon-Mock, Nav-Eintrag "Dashboard" ergänzen,
+  zusätzlich Anruf-Transkript+Aufnahme sowie Speisekarte/Öffnungszeiten/
+  FAQ-Selbstverwaltung als Vertrauens-Argumente hervorheben (Kunde ist
+  keiner Blackbox ausgeliefert, kann alles selbst kontrollieren/ändern).
+  Nutzer hat das für eine der nächsten Sitzungen vorgemerkt, noch keine
+  konkrete Priorisierung/Freigabe.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten). **Zusätzlich seit 25.08.2026:**
   vor Go-Live auch den neuen `ki-works-demo-refresh.timer` deaktivieren
