@@ -1297,8 +1297,69 @@ Version auf "Publish" klicken.
   dem Server noch nicht gelaufen, siehe „Offene Punkte") ist weiterhin
   Voraussetzung. **Bewusst noch offen:** „Passwort vergessen" für alle
   drei Login-Typen (vom Nutzer selbst als Lücke benannt, noch nicht
-  entschieden ob/wann gebaut) sowie voller Betriebs-Drilldown für
-  Agenturen (Reservierungen/Bestellungen/Anrufe/Einstellungen).
+  entschieden ob/wann gebaut — inzwischen umgesetzt, siehe direkt
+  darunter) sowie voller Betriebs-Drilldown für Agenturen
+  (Reservierungen/Bestellungen/Anrufe/Einstellungen).
+- **„Passwort vergessen" für alle drei Login-Typen gebaut (25.08.2026):**
+  Nutzer-Auftrag direkt im Anschluss an die obige Phase 2. Neuer Endpunkt
+  `POST /api/public/forgot-password` (`backend/src/server.js`) — antwortet
+  **immer identisch** (`{ok:true}`), egal ob die E-Mail existiert (kein
+  Rückschluss auf gültige Logins möglich), eigenes In-Memory-Rate-Limiting
+  (5 Anfragen/10 Min. pro IP, gleiches Muster wie beim Web-Chat-Widget).
+  Drei Fälle: (1) **Kunde/Agentur** — echter Reset-Link über denselben
+  Token-Mechanismus wie die Erstenladung (`setup_token`/
+  `setup_token_expires`, hier 1 Std. statt 7 Tage gültig); `agencies`
+  bekam dafür dieselben zwei Spalten (`migration-024-agency-reset-
+  token.sql`, keine neue Funktionalität, nur Schema-Angleichung an
+  `restaurants`). `POST /api/public/setup-password` (bisher nur
+  `restaurants`) prüft jetzt beide Tabellen und aktualisiert die passende.
+  (2) **Admin** — bewusst **kein** automatischer Reset-Link: der
+  Admin-Zugang ist ein einzelnes, in der Server-Konfiguration
+  hinterlegtes Konto ohne eigene Datenbank-Zeile (`ADMIN_EMAIL`/
+  `ADMIN_PASSWORD` in `/etc/ki-works/ki-works.env`) — ein automatischer
+  Reset würde das mächtigste Konto der Plattform unnötig angreifbar
+  machen. Stattdessen bekommt die hinterlegte Admin-E-Mail eine Anleitung
+  (SSH, `ADMIN_PASSWORD` in der env-Datei ändern, Backend neu starten).
+  (3) **Unbekannte E-Mail** — keine Mail, aber dieselbe generische
+  Antwort. Neuer n8n-Workflow `15-passwort-vergessen.json` (analog
+  Workflow 10) — Backend liefert Betreff/Text bereits fertig formuliert,
+  der Workflow verschickt nur noch (kein Conditional-Node in n8n nötig).
+  Frontend: „Passwort vergessen?"-Link + kleines E-Mail-Formular in
+  beiden Login-Screens (Kunden-Dashboard mit i18n DE/EN/RO, Business-
+  Dashboard Deutsch wie der Rest dort) — zeigt nach Absenden immer
+  dieselbe Erfolgsmeldung, nutzt denselben `?setup=`-Link/`SetupPassword`-
+  Bildschirm wie die bestehende Erstenladung (kein zusätzlicher UI-Screen
+  nötig, Setzen eines neuen Passworts ist technisch identisch zum
+  Erstzugang). **Nebenbei korrigiert, per Nutzer-Nachfrage entdeckt:** die
+  bei der Phase-2-Umsetzung neu gebaute „Zugangsdaten"-Verwaltung für
+  Agenturen war versehentlich im Business-Dashboard (`/intern`) gelandet
+  — Nutzer wies zurecht darauf hin, dass `/intern` nur für die eigenen 4
+  Businesses (ledtek/pixelpress/Memcore/ki-works) gedacht ist, Agenturen
+  aber Kiwo-Partner wie Restaurant-Kunden sind. Komplette Agenturen-
+  Verwaltung (Anlegen, Zugangsdaten, Branding) daraufhin vom
+  Business-Dashboard ins Kunden-Dashboard verschoben — neuer Menüpunkt
+  „Agenturen" (nur Admin, i18n-Namespace `agencies.*`) direkt neben
+  „Kunden (Betreiber)", `business-dashboard/` verliert die entsprechenden
+  Komponenten/CSS-Regeln ersatzlos. Lokal komplett gegen frische Test-DB
+  end-to-end verifiziert: `forgot-password` für Admin/Kunde/Agentur/
+  unbekannte E-Mail liefert überall identische Antwort, Token korrekt in
+  der jeweils richtigen Tabelle gesetzt (1 Std. Gültigkeit), Rate-Limit
+  greift exakt nach 5 Anfragen, `setup-password` funktioniert für Kunde
+  UND Agentur (danach Login mit neuem Passwort erfolgreich, alter Token
+  wird ungültig), Custom-Agentur komplett per Playwright-UI-Test angelegt
+  (Formular ausfüllen → Zugangsdaten vergeben → Login mit den neuen
+  Zugangsdaten funktioniert), Admin-Nav zeigt „Agenturen" korrekt,
+  Business-Dashboard enthält keine Agentur-Reste mehr (per Grep
+  bestätigt). Alle 3 Builds (`backend` Syntax-Check, `dashboard/`,
+  `business-dashboard/`) fehlerfrei, i18n-Schlüsselparität (315 Keys)
+  über alle 3 Sprachen bestätigt. **Committet+gepusht, noch NICHT auf dem
+  Produktivserver ausgerollt** — normaler rsync/Build-Ablauf für
+  `dashboard/`+`business-dashboard/` plus Backend-Neustart
+  (`server.js` geändert), zusätzlich `migration-024-agency-reset-
+  token.sql` ausführen (nach `migration-023-agencies.sql`, falls die noch
+  nicht gelaufen ist) und den neuen n8n-Workflow 15 einmalig manuell in
+  der n8n-Oberfläche importieren (gleiche Einschränkung wie bei früheren
+  neuen Workflows — keine stabile Workflow-ID für sicheren CLI-Reimport).
 - **Datenschutzerklärung aktualisiert (23.08.2026):** Nutzer brachte einen
   fertigen Änderungsauftrag mit (Verantwortlicher-Platzhalter, Drittland-
   Übermittlung, KI-Transparenz-Abschnitt) — vor Umsetzung gegengeprüft
@@ -1532,13 +1593,14 @@ Version auf "Publish" klicken.
     Agentur-Login, Agentur verwaltet ihre Kunden komplett selbst statt
     Alex) ist ebenfalls umgesetzt, siehe „Bereits erledigt" — Agentur
     legt eigene Kunden an, sieht nur diese, Admin bleibt uneingeschränkt.
-    Offen bleiben weiterhin (1) zweistufige Abrechnung (Großhandel an
-    Agentur, Agentur an Endkunde — hängt am selben fehlenden Preismodell
-    wie beim Admin-Dashboard-Punkt), (2) Support-Trennung (Agentur =
-    Erstsupport), (3) voller Betriebs-Drilldown für Agenturen
-    (Reservierungen/Bestellungen/Anrufe/Einstellungen der eigenen Kunden
-    einsehen), (4) „Passwort vergessen" für den neuen Agentur-Login (wie
-    für alle anderen Logins auch, siehe „Offene Punkte").
+    **Update 25.08.2026:** „Passwort vergessen" für den Agentur-Login
+    (und die anderen beiden Login-Typen) ist ebenfalls umgesetzt, siehe
+    „Bereits erledigt". Offen bleiben weiterhin (1) zweistufige
+    Abrechnung (Großhandel an Agentur, Agentur an Endkunde — hängt am
+    selben fehlenden Preismodell wie beim Admin-Dashboard-Punkt), (2)
+    Support-Trennung (Agentur = Erstsupport), (3) voller
+    Betriebs-Drilldown für Agenturen (Reservierungen/Bestellungen/
+    Anrufe/Einstellungen der eigenen Kunden einsehen).
   - **Branchen-Templates im Marktplatz**: vorgefertigte Prompts/Workflows/
     Wissenstöpfe je Nische (z. B. "Template für Autohäuser"), mit einem
     Klick aktivierbar. Nutzer-Präzisierung: Templates sollen der
@@ -1758,18 +1820,15 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Agentur-Self-Service (Phase 2, 25.08.2026) noch nicht auf dem
-  Produktivserver ausgerollt** — siehe „Bereits erledigt" für Details.
-  Braucht normalen rsync/Build-Ablauf für `dashboard/`+
-  `business-dashboard/` plus Backend-Neustart (`server.js` geändert);
-  `migration-023-agencies.sql` muss vorher gelaufen sein (falls noch
-  nicht, siehe Agentur-White-Label-Phase-1-Punkt weiter unten). Noch
-  keine echte Agentur mit Login-Zugangsdaten angelegt.
-- **„Passwort vergessen" fehlt komplett — für alle drei Login-Typen**
-  (Kunde, Admin, jetzt auch der neue Agentur-Login). Vom Nutzer selbst als
-  Lücke benannt (25.08.2026: "Wir haben überall vergessen..passwort
-  vergessen bei einloggen"), noch nicht entschieden ob/wann gebaut —
-  beim nächsten Gespräch nachfragen, falls nicht von selbst angesprochen.
+- **Agentur-Self-Service (Phase 2) + „Passwort vergessen" (beide
+  25.08.2026) noch nicht auf dem Produktivserver ausgerollt** — siehe
+  „Bereits erledigt" für Details. Braucht normalen rsync/Build-Ablauf für
+  `dashboard/`+`business-dashboard/` plus Backend-Neustart (`server.js`
+  geändert); Migrationen `migration-023-agencies.sql` und
+  `migration-024-agency-reset-token.sql` müssen vorher gelaufen sein
+  (in dieser Reihenfolge), zusätzlich neuen n8n-Workflow
+  `15-passwort-vergessen.json` einmalig manuell in der n8n-Oberfläche
+  importieren. Noch keine echte Agentur mit Login-Zugangsdaten angelegt.
 - **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) — Einrichtung fertig, blockiert
   nur noch am Anthropic-Guthaben (18.08.2026):** Kunde "Ki Works" (id 12,
   Rolle `support`) wurde im Dashboard angelegt, Wissensdatenbank/FAQ
