@@ -1360,6 +1360,57 @@ Version auf "Publish" klicken.
   nicht gelaufen ist) und den neuen n8n-Workflow 15 einmalig manuell in
   der n8n-Oberfläche importieren (gleiche Einschränkung wie bei früheren
   neuen Workflows — keine stabile Workflow-ID für sicheren CLI-Reimport).
+- **Agentur-Onboarding auf Einladungs-Flow umgestellt (25.08.2026):**
+  Nutzer-Korrektur direkt nach dem obigen Umzug ins Kunden-Dashboard: im
+  Admin-Formular für „Agenturen" fiel auf, dass Admin dort Branding UND
+  das Passwort der Agentur selbst setzen konnte — Nutzer-Einwand: Admin
+  soll eine Agentur **nur anlegen und einladen**, sonst nichts; Branding
+  und Zugangsdaten sind Sache der Agentur selbst. Nachfrage, ob das
+  Passwort-Setzen mit dem Admin-Notfallzugriff zusammenhängt — Antwort:
+  nein, der Notfallzugriff kommt bereits vollständig aus der
+  Admin-Rolle selbst (sieht/verwaltet ohnehin alles), unabhängig davon,
+  ob Admin das Agentur-Passwort kennt. Umgesetzt: neuer Endpunkt
+  `POST /api/agencies/:id/invite` (`backend/src/server.js`) — 1:1
+  derselbe Mechanismus wie `inviteRestaurant()` bei Kunden (7 Tage
+  gültiger `setup_token`, E-Mail mit Link, Agentur setzt ihr Passwort
+  selbst über den bestehenden `/api/public/setup-password`-Endpunkt).
+  `PATCH /api/agencies/:id` kann jetzt **kein Passwort mehr setzen** —
+  Admin darf dort nur noch Name/Domain/Login-E-Mail ändern (Kontaktdaten
+  für die Einladung), Branding ist exklusiv für die Agentur selbst
+  (per `agencyScope`-Check). Neuer Endpunkt
+  `PATCH /api/agencies/:id/credentials` (Agentur ändert eigene
+  Login-E-Mail/Passwort, Pflicht-Bestätigung des aktuellen Passworts —
+  exakt dasselbe Muster wie `PATCH /api/restaurants/:id/credentials` bei
+  Kunden). Admin hat auf diesen Endpunkt bewusst **keinen** Zugriff (403),
+  damit Admin nie ein Agentur-Passwort setzt oder kennt — falls eine
+  Agentur wirklich ausgesperrt ist, löst Admin stattdessen einfach eine
+  neue Einladung aus (regeneriert den Token, alter Link wird ungültig).
+  Frontend: Admin-Ansicht „Agenturen" zeigt jetzt nur noch Anlegen-
+  Formular (Name/Domain/Login-E-Mail) + Liste mit Status
+  („keine Login-E-Mail" / „Einladung ausstehend" / „✅ aktiv") +
+  „Einladung senden"/„Neue Einladung senden"-Button — keine Branding-
+  oder Passwort-Felder mehr sichtbar. Neuer Menüpunkt „Branding" im
+  Kunden-Dashboard, sichtbar **nur** für `role: 'agency'` (neues
+  `agencyOnly`-NAV-Flag) — zeigt der eingeloggten Agentur ihr eigenes
+  Branding-Formular (Produktname/Assistentenname/Logo/Akzentfarbe) und
+  ein Zugangsdaten-Formular (Login-E-Mail/Passwort ändern, mit
+  aktuellem-Passwort-Bestätigung). Neuer n8n-Workflow
+  `16-agentur-eingeladen.json` (analog Workflow 10) verschickt die
+  Einladungsmail. Lokal komplett gegen frische Test-DB end-to-end
+  verifiziert: Agentur anlegen → Einladung senden → Status wechselt auf
+  „ausstehend" → Passwort per Link setzen → Status wechselt auf „aktiv"
+  → Login funktioniert; Agentur kann eigenes Branding ändern, aber nicht
+  Name/Domain; Admin kann Branding **nicht** mehr setzen (400 „no
+  fields"); Agentur kann eigene Zugangsdaten nur MIT korrektem aktuellem
+  Passwort ändern, Admin bekommt auf den Credentials-Endpunkt 403. Per
+  Playwright bestätigt: Admin-Ansicht enthält keine Farb-/Passwort-Felder
+  mehr, Agentur-Nav zeigt nur „Kunden" + „Branding" (kein „Agenturen"-Tab
+  sichtbar). `dashboard/`-Build fehlerfrei, i18n-Schlüsselparität (320
+  Keys) über alle 3 Sprachen bestätigt. **Committet+gepusht, noch NICHT
+  auf dem Produktivserver ausgerollt** — normaler rsync/Build-Ablauf für
+  `dashboard/` plus Backend-Neustart (`server.js` geändert), zusätzlich
+  den neuen n8n-Workflow 16 einmalig manuell in der n8n-Oberfläche
+  importieren (gleiche Einschränkung wie bei Workflow 15).
 - **Datenschutzerklärung aktualisiert (23.08.2026):** Nutzer brachte einen
   fertigen Änderungsauftrag mit (Verantwortlicher-Platzhalter, Drittland-
   Übermittlung, KI-Transparenz-Abschnitt) — vor Umsetzung gegengeprüft
@@ -1820,15 +1871,17 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Agentur-Self-Service (Phase 2) + „Passwort vergessen" (beide
-  25.08.2026) noch nicht auf dem Produktivserver ausgerollt** — siehe
-  „Bereits erledigt" für Details. Braucht normalen rsync/Build-Ablauf für
-  `dashboard/`+`business-dashboard/` plus Backend-Neustart (`server.js`
-  geändert); Migrationen `migration-023-agencies.sql` und
+- **Agentur-Self-Service (Phase 2) + „Passwort vergessen" +
+  Agentur-Einladungs-Flow (alle 25.08.2026) noch nicht auf dem
+  Produktivserver ausgerollt** — siehe „Bereits erledigt" für Details.
+  Braucht normalen rsync/Build-Ablauf für `dashboard/`+
+  `business-dashboard/` plus Backend-Neustart (`server.js` geändert);
+  Migrationen `migration-023-agencies.sql` und
   `migration-024-agency-reset-token.sql` müssen vorher gelaufen sein
-  (in dieser Reihenfolge), zusätzlich neuen n8n-Workflow
-  `15-passwort-vergessen.json` einmalig manuell in der n8n-Oberfläche
-  importieren. Noch keine echte Agentur mit Login-Zugangsdaten angelegt.
+  (in dieser Reihenfolge), zusätzlich die neuen n8n-Workflows
+  `15-passwort-vergessen.json` und `16-agentur-eingeladen.json` einmalig
+  manuell in der n8n-Oberfläche importieren. Noch keine echte Agentur
+  eingeladen/aktiviert.
 - **Kiwo Web-Chat-Widget (ki-works.eu-Pilot) — Einrichtung fertig, blockiert
   nur noch am Anthropic-Guthaben (18.08.2026):** Kunde "Ki Works" (id 12,
   Rolle `support`) wurde im Dashboard angelegt, Wissensdatenbank/FAQ
