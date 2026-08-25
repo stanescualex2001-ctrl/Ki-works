@@ -1269,6 +1269,15 @@ Version auf "Publish" klicken.
   richtet sich unten am CTA-Button aus wie die anderen Karten. Committet
   und gepusht, normaler rsync/Build-Ablauf für `landing/` reicht (kein
   Backend-Neustart nötig).
+  **Nachbesserung (24.08.2026), von Nutzer live auf ki-works.eu per
+  Screenshot gemeldet:** Button klebte auf Mobile direkt am
+  Beschreibungstext, kaum Abstand — der lokale Screenshot-Test
+  hatte das nicht aufgedeckt, weil `mt-auto` (für die Button-Ausrichtung
+  am Desktop-Grid, wo GlowCards durch die Zeilendehnung echte Zusatzhöhe
+  haben) auf Mobile ohne Zeilendehnung zu 0 Margin auflöst. Fix: fester
+  Abstand `mt-6` wie bei den anderen drei Karten statt `mt-auto` +
+  `flex-1`. Per Playwright erneut auf Mobile UND Desktop verifiziert,
+  committet und gepusht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
