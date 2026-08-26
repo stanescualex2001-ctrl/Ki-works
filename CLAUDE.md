@@ -1568,13 +1568,15 @@ Version auf "Publish" klicken.
   Kunden-Login) auch EN- und RO-Versionen erzeugt — Dashboard über
   `?lang=en`/`?lang=ro` aufgerufen (dashboard-eigener
   Mehrsprachigkeits-Support, siehe Mehrsprachigkeit-Eintrag), macht
-  daraus je Light/Dark einen Screenshot. **Bewusst NICHT übersetzt:**
-  der eigentliche Anruf-Zusammenfassungs-/Transkript-**Inhalt** bleibt in
-  allen 3 Bildvarianten Deutsch — das ist echtes Verhalten, keine Lücke:
-  Kiwo telefoniert aktuell ausschließlich Deutsch (siehe „Mehrsprachigkeit
-  am Telefon" unter Ideen), nur die Dashboard-**Oberfläche** (Labels wie
-  „Apel"/„Call", „TRANSKRIPT"/„TRANSCRIERE") ist mehrsprachig. `App.jsx`
-  wählt die Bilddatei jetzt dynamisch über die aktuelle `locale`
+  daraus je Light/Dark einen Screenshot. **Korrektur (26.08.2026):** der
+  Anruf-Zusammenfassungs-/Transkript-Inhalt im Screenshot blieb zunächst
+  Deutsch (Begründung: Kiwo telefoniert aktuell nur Deutsch) — Nutzer wies
+  zu Recht darauf hin, dass das kein echter Anruf ist, sondern von mir
+  erfundener Demo-Inhalt für den Screenshot (genau wie die ohnehin schon
+  dreisprachigen Beispiel-Gespräche im "Live testen"-Abschnitt) und daher
+  genauso übersetzt werden sollte. Zusammenfassung+Transkript für EN/RO
+  nachträglich übersetzt, Screenshots neu erzeugt. `App.jsx` wählt die
+  Bilddatei dynamisch über die aktuelle `locale`
   (`/screenshots/overview-${locale}-{light,dark}.webp`) statt fixer
   Dateinamen. Lokal per Playwright auf allen 3 Sprachversionen verifiziert
   (korrekte `img[src]` pro Locale, keine fehlgeschlagenen Bild-Requests).
