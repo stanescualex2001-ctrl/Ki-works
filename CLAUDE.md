@@ -1503,6 +1503,41 @@ Version auf "Publish" klicken.
   de/en/ro.json` (`pricing.tiers.*.features`), keine Struktur-/Preis-
   Änderung. Committet und gepusht, normaler rsync/Build-Ablauf für
   `landing/` reicht (kein Backend-Neustart nötig).
+- **Kunden-Dashboard-Sektion überarbeitet: Nav-Link, echte Screenshots,
+  Vertrauensargumente (25.08.2026):** Antwort auf die Nutzer-Beobachtung
+  "Auf Homepage ist nichts über Kunden Dashboard" — die Sektion existierte
+  zwar (`id="dashboard"`), war aber eine Sackgasse ohne Nav-Zugang und
+  zeigte nur einen generischen Icon-Mock statt eines echten Beweises.
+  Vor der Umsetzung als Vorschau-Artifact durchgespielt und über mehrere
+  Nutzer-Feedback-Runden verfeinert (Screenshots statt Mockup, Transkript-
+  Karte-Positionierung, `overflow-hidden`-Clipping-Bug behoben), danach
+  1:1 in den echten Code übernommen. Umgesetzt: (1) Nav-Eintrag
+  "Dashboard" in `Header.jsx` (Desktop + Mobile, zwischen "Live testen"
+  und "Plattform" — passend zur tatsächlichen Sektionsreihenfolge auf der
+  Seite). (2) **Echte Screenshots statt Mock**: lokal Postgres+Backend+
+  `dashboard/`-Dev-Server mit den Venezia-Demodaten hochgefahren, per
+  echtem Kunden-Login (nicht Admin-Bypass, damit die Sidebar exakt das
+  zeigt, was ein Restaurant-Kunde sieht — keine admin-only Menüpunkte)
+  zwei Screenshots erzeugt (Übersicht mit Ersparnis-Kachel, ein
+  Anruf-Detail mit echtem Transkript), als WebP komprimiert (~1,1 MB PNG
+  → ~50-85 KB) und in `landing/public/dashboard-preview/` (je Light/Dark)
+  abgelegt — themenabhängig eingeblendet über `dark:hidden`/`dark:block`.
+  (3) Vier konkrete Vertrauensargumente (nachhören/nachlesen mit
+  Transkript, Speisekarte/Öffnungszeiten/FAQ selbst ändern, sofort
+  benachrichtigt, Ersparnis schwarz auf weiß) ersetzen die vorherigen
+  generischen Feature-Punkte — neuer i18n-Aufbau `dashboardSection.
+  trustPoints` (Array aus `{title, desc}` statt reiner String-Liste) in
+  allen 3 Sprachen. Der ursprünglich von mir vorgeschlagene Satz "Sie
+  sind keiner Blackbox ausgeliefert" wurde auf Nutzer-Wunsch gestrichen
+  (zu abstrakt/technisch) — die Screenshots transportieren das jetzt
+  visuell. Die schwebende Transkript-Karte ist responsiv: ab `md:`
+  überlappt sie den unteren Rand der Übersicht (wie im Entwurf), auf
+  Mobile stapelt sie sich stattdessen vollbreit darunter (sonst hätte sie
+  auf schmalen Screens einen Großteil der Übersicht verdeckt). Lokal per
+  Playwright verifiziert: Build fehlerfrei, Light/Dark auf Desktop UND
+  Mobile korrekt, Nav-Link scrollt zur Sektion, mobiles Menü zeigt den
+  neuen Eintrag. Committet und gepusht, normaler rsync/Build-Ablauf für
+  `landing/` reicht (kein Backend-Neustart nötig, keine Migration).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2166,26 +2201,6 @@ Version auf "Publish" klicken.
   Mausverfolgung) übertragen — inkl. Entscheidung, ob es nur am
   Hero-/CTA-Orb Buddy läuft oder auch am kleineren Sidebar-Pendant in
   `dashboard/`/`business-dashboard/` (dort bisher komplett unangetastet).
-- **Kunden-Dashboard-Sektion auf der Landingpage wird kaum wahrgenommen
-  (25.08.2026, Nutzer-Beobachtung: "Auf Homepage ist nichts über Kunden
-  Dashboard. Sollte sein.")** — Prüfung ergab: die Sektion existiert
-  technisch bereits (`landing/src/App.jsx`, `id="dashboard"`,
-  i18n-Namespace `dashboardSection`, Feature-Liste + Mock-Karte mit
-  Anrufen/Bestellungen/Ersparnis, siehe „Bereits erledigt" — "Alles auf
-  einen Blick"), hat aber zwei konkrete Schwachstellen: (1) **kein
-  Nav-Eintrag** — weder Desktop- noch Mobile-Menü in `Header.jsx`
-  verlinken auf `#dashboard` (Nav zeigt nur Live-Test/Plattform/Preise/
-  Onboarding/Kontakt), die Sektion ist dadurch eine Sackgasse, die nur
-  per Zufallsscroll gefunden wird; (2) die "Vorschau" ist eine abstrakte
-  Icon-Mock-Karte statt eines echten Produkt-Screenshots — wirkt eher wie
-  eine Behauptung als ein Beweis. Meine Empfehlung (noch nicht vom
-  Nutzer freigegeben, nichts umgesetzt): echten Dashboard-Screenshot
-  (Venezia/Demo-Daten) statt Icon-Mock, Nav-Eintrag "Dashboard" ergänzen,
-  zusätzlich Anruf-Transkript+Aufnahme sowie Speisekarte/Öffnungszeiten/
-  FAQ-Selbstverwaltung als Vertrauens-Argumente hervorheben (Kunde ist
-  keiner Blackbox ausgeliefert, kann alles selbst kontrollieren/ändern).
-  Nutzer hat das für eine der nächsten Sitzungen vorgemerkt, noch keine
-  konkrete Priorisierung/Freigabe.
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten). **Zusätzlich seit 25.08.2026:**
   vor Go-Live auch den neuen `ki-works-demo-refresh.timer` deaktivieren
