@@ -1559,6 +1559,26 @@ Version auf "Publish" klicken.
   Ordnername existiert nicht mehr), aber die zugrunde liegende
   Config-Falle bleibt bestehen, falls je wieder ein Pfad wie
   `/dashboard-irgendwas` oder `/intern-irgendwas` entsteht.
+  **Screenshots jetzt pro Sprache (26.08.2026):** Nutzer-Fund per
+  RO-Ansicht — die eingebrannten Dashboard-Screenshots blieben bisher
+  immer Deutsch, unabhängig von der gewählten Website-Sprache (nur der
+  Text drumherum wechselte). Zusätzlich zu den bestehenden DE-Bildern
+  (umbenannt auf `overview-de-*`/`call-de-*`) per selbem lokalen
+  Testaufbau (Postgres+Backend+`dashboard/`-Dev-Server, echter
+  Kunden-Login) auch EN- und RO-Versionen erzeugt — Dashboard über
+  `?lang=en`/`?lang=ro` aufgerufen (dashboard-eigener
+  Mehrsprachigkeits-Support, siehe Mehrsprachigkeit-Eintrag), macht
+  daraus je Light/Dark einen Screenshot. **Bewusst NICHT übersetzt:**
+  der eigentliche Anruf-Zusammenfassungs-/Transkript-**Inhalt** bleibt in
+  allen 3 Bildvarianten Deutsch — das ist echtes Verhalten, keine Lücke:
+  Kiwo telefoniert aktuell ausschließlich Deutsch (siehe „Mehrsprachigkeit
+  am Telefon" unter Ideen), nur die Dashboard-**Oberfläche** (Labels wie
+  „Apel"/„Call", „TRANSKRIPT"/„TRANSCRIERE") ist mehrsprachig. `App.jsx`
+  wählt die Bilddatei jetzt dynamisch über die aktuelle `locale`
+  (`/screenshots/overview-${locale}-{light,dark}.webp`) statt fixer
+  Dateinamen. Lokal per Playwright auf allen 3 Sprachversionen verifiziert
+  (korrekte `img[src]` pro Locale, keine fehlgeschlagenen Bild-Requests).
+  Committet und gepusht, normaler rsync/Build-Ablauf für `landing/`.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
