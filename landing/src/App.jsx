@@ -964,12 +964,12 @@ export default function App() {
                   </span>
                 </div>
                 <img
-                  src="/dashboard-preview/overview-light.webp"
+                  src="/screenshots/overview-light.webp"
                   alt={t("dashboardSection.overviewAlt")}
                   className="block w-full h-auto dark:hidden"
                 />
                 <img
-                  src="/dashboard-preview/overview-dark.webp"
+                  src="/screenshots/overview-dark.webp"
                   alt={t("dashboardSection.overviewAlt")}
                   className="hidden w-full h-auto dark:block"
                 />
@@ -981,12 +981,12 @@ export default function App() {
                 </span>
                 <div className="overflow-hidden rounded-xl border border-foreground/10 bg-background shadow-2xl">
                   <img
-                    src="/dashboard-preview/call-light.webp"
+                    src="/screenshots/call-light.webp"
                     alt={t("dashboardSection.callAlt")}
                     className="block w-full h-auto dark:hidden"
                   />
                   <img
-                    src="/dashboard-preview/call-dark.webp"
+                    src="/screenshots/call-dark.webp"
                     alt={t("dashboardSection.callAlt")}
                     className="hidden w-full h-auto dark:block"
                   />

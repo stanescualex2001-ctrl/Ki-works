@@ -1520,7 +1520,7 @@ Version auf "Publish" klicken.
   zeigt, was ein Restaurant-Kunde sieht — keine admin-only Menüpunkte)
   zwei Screenshots erzeugt (Übersicht mit Ersparnis-Kachel, ein
   Anruf-Detail mit echtem Transkript), als WebP komprimiert (~1,1 MB PNG
-  → ~50-85 KB) und in `landing/public/dashboard-preview/` (je Light/Dark)
+  → ~50-85 KB) und in `landing/public/screenshots/` (je Light/Dark)
   abgelegt — themenabhängig eingeblendet über `dark:hidden`/`dark:block`.
   (3) Vier konkrete Vertrauensargumente (nachhören/nachlesen mit
   Transkript, Speisekarte/Öffnungszeiten/FAQ selbst ändern, sofort
@@ -1538,6 +1538,27 @@ Version auf "Publish" klicken.
   Mobile korrekt, Nav-Link scrollt zur Sektion, mobiles Menü zeigt den
   neuen Eintrag. Committet und gepusht, normaler rsync/Build-Ablauf für
   `landing/` reicht (kein Backend-Neustart nötig, keine Migration).
+  **Sofort-Fix nach dem Live-Rollout (25.08.2026):** Nutzer meldete
+  kaputte Bilder (nur Alt-Text sichtbar) auf dem echten Server, obwohl
+  der Build/die lokale Preview fehlerfrei liefen. Ursache: die
+  Screenshots lagen unter `landing/public/dashboard-preview/`, aber
+  `deploy/nginx/ki-works.conf` hat `location /dashboard` (**ohne**
+  abschließenden Slash) für die eigentliche Dashboard-App — ein reiner
+  String-Präfix-Match in nginx, der dadurch auch `/dashboard-preview/…`
+  fälschlich auf `/opt/ki-works/dashboard/dist` umleitete. Behoben ohne
+  nginx-Änderung (bewusst, siehe Ausfall-Historie unten zu diesem
+  Config-Bereich): Ordner nach `landing/public/screenshots/` umbenannt
+  (Pfad beginnt nicht mehr mit "dashboard"), vier `<img src>`-Stellen in
+  `App.jsx` angepasst. Committet und gepusht, normaler rsync/Build-Ablauf
+  für `landing/`. **Für später vorgemerkt (nicht dringend, kein aktives
+  Problem mehr):** `location /dashboard`/`location /intern` in
+  `deploy/nginx/ki-works.conf` fehlt der eigentlich nginx-übliche
+  abschließende Slash (`location /dashboard/`) — ohne den matcht der
+  Präfix jeden Pfad, der mit diesem String beginnt, nicht nur den
+  eigentlichen Unterordner. Kein akuter Fehler mehr (der auslösende
+  Ordnername existiert nicht mehr), aber die zugrunde liegende
+  Config-Falle bleibt bestehen, falls je wieder ein Pfad wie
+  `/dashboard-irgendwas` oder `/intern-irgendwas` entsteht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
