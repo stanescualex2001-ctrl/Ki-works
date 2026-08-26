@@ -4,7 +4,7 @@ import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
   Workflow, Plug, Layers, Play, Pause, Bell, LayoutDashboard,
-  ShoppingBag,
+  Pencil, Euro,
 } from "lucide-react";
 import { Header, roles } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -922,16 +922,29 @@ export default function App() {
               <p className="mt-4 text-foreground/65 leading-relaxed">
                 {t("dashboardSection.desc")}
               </p>
-              <ul className="mt-6 space-y-2.5 text-sm text-foreground/75">
-                {t("dashboardSection.features").map((f) => (
-                  <li key={f} className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-violet-400/15 text-violet-600 dark:text-violet-300">
-                      <Check className="h-3 w-3" />
-                    </span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-6 space-y-4">
+                {t("dashboardSection.trustPoints").map((point, i) => {
+                  const Icon = [Play, Pencil, Bell, Euro][i] || Check;
+                  const cyan = i % 2 === 0;
+                  return (
+                    <div key={point.title} className="flex items-start gap-3">
+                      <span
+                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                          cyan
+                            ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300"
+                            : "bg-violet-400/15 text-violet-600 dark:text-violet-300"
+                        }`}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
+                      <div>
+                        <div className="text-sm font-semibold text-foreground">{point.title}</div>
+                        <div className="mt-0.5 text-sm text-foreground/60">{point.desc}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
               <a
                 href={`/dashboard/?lang=${locale}`}
                 className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
@@ -940,45 +953,46 @@ export default function App() {
               </a>
             </div>
 
-            <GlowCard tone="violet" className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="text-xs font-mono text-foreground/50">{t("dashboardSection.mockLabel")}</div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-400/15 px-2.5 py-0.5 text-[10px] font-mono text-violet-600 dark:text-violet-300">
-                  <Bell className="h-3 w-3" /> {t("dashboardSection.newBadge")}
+            <div className="relative md:pb-14">
+              <div className="rounded-2xl border border-foreground/10 bg-background shadow-2xl overflow-hidden">
+                <div className="flex items-center gap-2 border-b border-foreground/10 bg-foreground/[0.03] px-3.5 py-2.5">
+                  <span className="h-2 w-2 rounded-full bg-foreground/15" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/15" />
+                  <span className="h-2 w-2 rounded-full bg-foreground/15" />
+                  <span className="ml-2 max-w-[220px] truncate rounded-md border border-foreground/10 bg-background px-2.5 py-0.5 text-[11px] font-mono text-foreground/40">
+                    dashboard.ki-works.eu
+                  </span>
+                </div>
+                <img
+                  src="/dashboard-preview/overview-light.webp"
+                  alt={t("dashboardSection.overviewAlt")}
+                  className="block w-full h-auto dark:hidden"
+                />
+                <img
+                  src="/dashboard-preview/overview-dark.webp"
+                  alt={t("dashboardSection.overviewAlt")}
+                  className="hidden w-full h-auto dark:block"
+                />
+              </div>
+
+              <div className="relative mt-6 pt-3.5 md:absolute md:bottom-0 md:left-1/2 md:mt-0 md:w-[62%] md:max-w-[340px] md:-translate-x-1/2">
+                <span className="absolute left-1/2 top-0 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-[10.5px] font-mono text-emerald-700 dark:text-emerald-300">
+                  {t("dashboardSection.proofLabel")}
                 </span>
-              </div>
-              <div className="mt-4 space-y-2.5">
-                {[
-                  { icon: PhoneCall, tone: "cyan", label: t("dashboardSection.rowCall"), meta: t("dashboardSection.metaCall") },
-                  { icon: ShoppingBag, tone: "violet", label: t("dashboardSection.rowOrder"), meta: t("dashboardSection.metaOrder") },
-                  { icon: CalendarDays, tone: "cyan", label: t("dashboardSection.rowReservation"), meta: t("dashboardSection.metaReservation") },
-                ].map((row) => (
-                  <div
-                    key={row.label}
-                    className="flex items-center gap-3 rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3"
-                  >
-                    <span
-                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                        row.tone === "cyan"
-                          ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300"
-                          : "bg-violet-400/10 text-violet-600 dark:text-violet-300"
-                      }`}
-                    >
-                      <row.icon className="h-4 w-4" />
-                    </span>
-                    <span className="min-w-0 flex-1 truncate text-sm text-foreground/85">{row.label}</span>
-                    <span className="shrink-0 text-[11px] font-mono text-foreground/40">{row.meta}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 rounded-xl border border-cyan-400/20 bg-cyan-400/5 p-4">
-                <div className="text-xs text-cyan-600 dark:text-cyan-300 font-mono">{t("dashboardSection.savedLabel")}</div>
-                <div className="mt-1.5 text-2xl font-semibold tabular-nums">{t("dashboardSection.savedValue")}</div>
-                <div className="mt-1.5 text-[11px] text-foreground/40">
-                  {t("dashboardSection.savedBasis")}
+                <div className="overflow-hidden rounded-xl border border-foreground/10 bg-background shadow-2xl">
+                  <img
+                    src="/dashboard-preview/call-light.webp"
+                    alt={t("dashboardSection.callAlt")}
+                    className="block w-full h-auto dark:hidden"
+                  />
+                  <img
+                    src="/dashboard-preview/call-dark.webp"
+                    alt={t("dashboardSection.callAlt")}
+                    className="hidden w-full h-auto dark:block"
+                  />
                 </div>
               </div>
-            </GlowCard>
+            </div>
           </div>
         </div>
       </section>

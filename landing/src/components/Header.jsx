@@ -250,6 +250,7 @@ export function Header({ page = "home" }) {
             </AnimatePresence>
           </div>
           <a href={`${homeHref}#live`} className="hover:text-foreground transition">{t("nav.liveTest")}</a>
+          <a href={`${homeHref}#dashboard`} className="hover:text-foreground transition">{t("nav.dashboard")}</a>
           <a href={`${homeHref}#platform`} className="hover:text-foreground transition">{t("nav.platform")}</a>
           <a href={`${homeHref}#preise`} className="hover:text-foreground transition">{t("nav.pricing")}</a>
           <a href={`${homeHref}#onboarding`} className="hover:text-foreground transition">{t("nav.onboarding")}</a>
@@ -327,6 +328,13 @@ export function Header({ page = "home" }) {
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 {t("nav.liveTest")}
+              </a>
+              <a
+                href={`${homeHref}#dashboard`}
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
+              >
+                {t("nav.dashboard")}
               </a>
               <a
                 href={`${homeHref}#platform`}

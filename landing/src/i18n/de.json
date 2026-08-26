@@ -2,6 +2,7 @@
   "nav": {
     "solutions": "Lösungen",
     "liveTest": "Live testen",
+    "dashboard": "Dashboard",
     "platform": "Plattform",
     "pricing": "Preise",
     "onboarding": "Onboarding",
@@ -187,28 +188,31 @@
   },
   "dashboardSection": {
     "eyebrow": "KUNDEN-DASHBOARD",
-    "headingPrefix": "Alles auf",
-    "headingHighlight": "einen Blick.",
-    "desc": "Reservierungen, Bestellungen und Anrufe laufen zentral in Ihrem eigenen Dashboard zusammen – kein Zettel, kein Durcheinander zwischen Telefon, WhatsApp und E-Mail.",
-    "features": [
-      "Alle Reservierungen, Bestellungen und Anrufe zentral an einem Ort",
-      "Benachrichtigung bei neuen Anrufen, Reservierungen und Bestellungen",
-      "Wochenkalender und Detailansicht auf einen Blick",
-      "Anruf-Zusammenfassungen und Aufnahmen direkt nachhören",
-      "Speisekarte, Öffnungszeiten und FAQ jederzeit selbst anpassen"
+    "headingPrefix": "Nichts verpasst.",
+    "headingHighlight": "Alles nachprüfbar.",
+    "desc": "Kiwo nimmt jeden Anruf entgegen – und jede Reservierung, jede Bestellung und jedes Gespräch landet live in Ihrem eigenen Dashboard, inklusive Aufnahme und Transkript zum Nachhören.",
+    "trustPoints": [
+      {
+        "title": "Jeden Anruf nachhören und nachlesen",
+        "desc": "Transkript zu jedem Gespräch – Sie können jederzeit prüfen, was Kiwo gesagt und verstanden hat."
+      },
+      {
+        "title": "Speisekarte, Öffnungszeiten & FAQ selbst ändern",
+        "desc": "Änderungen wirken sofort am Telefon – ohne Rückfrage bei uns, ohne Wartezeit."
+      },
+      {
+        "title": "Sofort benachrichtigt, nie mehr manuell nachschauen",
+        "desc": "E-Mail bei jedem neuen Anruf, jeder Reservierung, jeder Bestellung."
+      },
+      {
+        "title": "Ersparnis schwarz auf weiß",
+        "desc": "Wie viel Personalzeit Kiwo Ihnen seit dem Live-Gang abgenommen hat – als Zahl, nicht als Behauptung."
+      }
     ],
-    "linkText": "Dashboard ansehen",
-    "mockLabel": "// kiwo.dashboard",
-    "newBadge": "3 neu",
-    "rowCall": "Neuer Anruf",
-    "rowOrder": "Bestellung · 2× Pizza Margherita",
-    "rowReservation": "Reservierung · 4 Pers., Fr 19:00",
-    "metaCall": "vor 2 Min.",
-    "metaOrder": "vor 12 Min.",
-    "metaReservation": "vor 34 Min.",
-    "savedLabel": "Von Kiwo übernommen · dieser Monat",
-    "savedValue": "≈ 14 Std. · 294 €",
-    "savedBasis": "Basis: ⌀ 21 €/Stunde Vollkosten (Gehalt, Lohnnebenkosten & Overhead)"
+    "linkText": "Ihr Dashboard ansehen",
+    "proofLabel": "Anruf-Transkript",
+    "overviewAlt": "Kiwo-Dashboard Übersicht mit Ersparnis-Kachel, echter Screenshot",
+    "callAlt": "Anruf-Detail mit Transkript, echter Screenshot"
   },
   "platformSection": {
     "eyebrow": "KI-WORKS PLATTFORM",

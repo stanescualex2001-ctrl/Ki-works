@@ -2,6 +2,7 @@
   "nav": {
     "solutions": "Soluții",
     "liveTest": "Testați live",
+    "dashboard": "Dashboard",
     "platform": "Platformă",
     "pricing": "Prețuri",
     "onboarding": "Integrare",
@@ -187,28 +188,31 @@
   },
   "dashboardSection": {
     "eyebrow": "DASHBOARD PENTRU CLIENȚI",
-    "headingPrefix": "Totul dintr-o",
-    "headingHighlight": "privire.",
-    "desc": "Rezervările, comenzile și apelurile se centralizează în propriul dvs. dashboard – fără bilețele, fără haos între telefon, WhatsApp și e-mail.",
-    "features": [
-      "Toate rezervările, comenzile și apelurile centralizate într-un singur loc",
-      "Notificări pentru apeluri, rezervări și comenzi noi",
-      "Calendar săptămânal și vizualizare detaliată dintr-o privire",
-      "Ascultați rezumatele apelurilor și înregistrările direct",
-      "Actualizați singuri meniul, programul și întrebările frecvente oricând"
+    "headingPrefix": "Nimic nu se pierde.",
+    "headingHighlight": "Totul poate fi verificat.",
+    "desc": "Kiwo răspunde la fiecare apel – iar fiecare rezervare, comandă și conversație apare live în propriul dvs. dashboard, inclusiv înregistrarea și transcrierea, disponibile oricând.",
+    "trustPoints": [
+      {
+        "title": "Ascultați și recitiți fiecare apel",
+        "desc": "O transcriere pentru fiecare conversație – puteți verifica oricând exact ce a spus și a înțeles Kiwo."
+      },
+      {
+        "title": "Modificați singur meniul, programul & întrebările frecvente",
+        "desc": "Modificările se aplică imediat la telefon – fără să ne contactați, fără așteptare."
+      },
+      {
+        "title": "Notificat instant, fără verificări manuale",
+        "desc": "Un e-mail imediat ce sosește un apel nou, o rezervare sau o comandă."
+      },
+      {
+        "title": "Economii clare, alb pe negru",
+        "desc": "Câte ore de personal v-a scutit Kiwo de la lansare – o cifră reală, nu o afirmație."
+      }
     ],
-    "linkText": "Vedeți dashboardul",
-    "mockLabel": "// kiwo.dashboard",
-    "newBadge": "3 noi",
-    "rowCall": "Apel nou",
-    "rowOrder": "Comandă · 2× Pizza Margherita",
-    "rowReservation": "Rezervare · 4 pers., vineri ora 19:00",
-    "metaCall": "acum 2 min.",
-    "metaOrder": "acum 12 min.",
-    "metaReservation": "acum 34 min.",
-    "savedLabel": "Preluat de Kiwo · luna aceasta",
-    "savedValue": "≈ 14 ore · 294 €",
-    "savedBasis": "Bază de calcul: ⌀ 21 €/oră cost complet (salariu, contribuții și cheltuieli generale)"
+    "linkText": "Vedeți dashboardul dvs.",
+    "proofLabel": "Transcriere apel",
+    "overviewAlt": "Prezentare generală a dashboardului Kiwo cu economii, captură reală de ecran",
+    "callAlt": "Detaliu apel cu transcriere, captură reală de ecran"
   },
   "platformSection": {
     "eyebrow": "PLATFORMA KI-WORKS",

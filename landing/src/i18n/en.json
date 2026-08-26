@@ -2,6 +2,7 @@
   "nav": {
     "solutions": "Solutions",
     "liveTest": "Try it live",
+    "dashboard": "Dashboard",
     "platform": "Platform",
     "pricing": "Pricing",
     "onboarding": "Onboarding",
@@ -187,28 +188,31 @@
   },
   "dashboardSection": {
     "eyebrow": "CUSTOMER DASHBOARD",
-    "headingPrefix": "Everything at",
-    "headingHighlight": "a glance.",
-    "desc": "Reservations, orders and calls come together centrally in your own dashboard – no notepads, no chaos between phone, WhatsApp and email.",
-    "features": [
-      "All reservations, orders and calls in one central place",
-      "Notifications for new calls, reservations and orders",
-      "Weekly calendar and detail view at a glance",
-      "Listen back to call summaries and recordings directly",
-      "Update menu, opening hours and FAQ yourself at any time"
+    "headingPrefix": "Nothing missed.",
+    "headingHighlight": "Everything verifiable.",
+    "desc": "Kiwo answers every call – and every reservation, order and conversation shows up live in your own dashboard, including the recording and transcript to review anytime.",
+    "trustPoints": [
+      {
+        "title": "Listen back to and read every call",
+        "desc": "A transcript for every conversation – you can always check exactly what Kiwo said and understood."
+      },
+      {
+        "title": "Edit your menu, hours & FAQ yourself",
+        "desc": "Changes take effect on the phone immediately – no back-and-forth with us, no waiting."
+      },
+      {
+        "title": "Notified instantly, never check manually again",
+        "desc": "An email the moment a new call, reservation, or order comes in."
+      },
+      {
+        "title": "Savings in black and white",
+        "desc": "How much staff time Kiwo has taken off your hands since going live – a real number, not a claim."
+      }
     ],
-    "linkText": "View dashboard",
-    "mockLabel": "// kiwo.dashboard",
-    "newBadge": "3 new",
-    "rowCall": "New call",
-    "rowOrder": "Order · 2× Pizza Margherita",
-    "rowReservation": "Reservation · 4 guests, Fri 7:00 PM",
-    "metaCall": "2 min ago",
-    "metaOrder": "12 min ago",
-    "metaReservation": "34 min ago",
-    "savedLabel": "Handled by Kiwo · this month",
-    "savedValue": "≈ 14 hrs · €294",
-    "savedBasis": "Based on: avg. €21/hour fully-loaded cost (salary, payroll costs & overhead)"
+    "linkText": "See your dashboard",
+    "proofLabel": "Call transcript",
+    "overviewAlt": "Kiwo dashboard overview with savings tile, real screenshot",
+    "callAlt": "Call detail with transcript, real screenshot"
   },
   "platformSection": {
     "eyebrow": "KI-WORKS PLATFORM",
