@@ -1,9 +1,89 @@
-import { useId } from "react";
+import { useEffect, useId, useRef } from "react";
+
+// Werte aus dem Mausverfolgungs-Test-Artefakt (25.08.2026 mit Nutzer finalisiert):
+// Glanz-/Blickreichweite 75%, Glätte/Trägheit 0.40, Parallax-Versatz 35px,
+// Kugel-Glanz bewegt sich NICHT mit (nur Augen/Pupillen/Mund + leichter Parallax).
+const TRACK_INTENSITY = 0.75;
+const TRACK_EASE = 0.4;
+const TRACK_PARALLAX = 35;
+const TRACK_PUPIL_RANGE = 1.0 + TRACK_INTENSITY * 2.2;
+const TRACK_EYES_RANGE = 3 + TRACK_INTENSITY * 6;
+const TRACK_MOUTH_RANGE = 1.2 + TRACK_INTENSITY * 3.2;
+const BASE_PUPIL_L = { cx: 88, cy: 107.5 };
+const BASE_PUPIL_R = { cx: 116, cy: 107.5 };
 
 /* ---------- Kiwo character: Orb Buddy ---------- */
-export function OrbBuddy({ size = 44 }) {
+// track: aktiviert Mausverfolgung (nur für den großen Hero-/CTA-Orb Buddy
+// gedacht, nicht für kleine Instanzen wie Sidebar/Chat-Widget-Avatar).
+export function OrbBuddy({ size = 44, track = false }) {
   const uid = useId().replace(/:/g, "");
-  return (
+  const wrapRef = useRef(null);
+  const eyesRef = useRef(null);
+  const mouthRef = useRef(null);
+  const pupilLRef = useRef(null);
+  const pupilRRef = useRef(null);
+
+  useEffect(() => {
+    if (!track) return undefined;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    let targetDx = 0;
+    let targetDy = 0;
+    let curDx = 0;
+    let curDy = 0;
+    let raf = null;
+
+    const tick = () => {
+      curDx += (targetDx - curDx) * TRACK_EASE;
+      curDy += (targetDy - curDy) * TRACK_EASE;
+
+      if (wrapRef.current) {
+        const tx = curDx * TRACK_PARALLAX;
+        const ty = curDy * TRACK_PARALLAX * 0.7;
+        wrapRef.current.style.transform = `translate(${tx.toFixed(2)}px, ${ty.toFixed(2)}px)`;
+      }
+      if (pupilLRef.current) {
+        pupilLRef.current.setAttribute("cx", (BASE_PUPIL_L.cx + curDx * TRACK_PUPIL_RANGE).toFixed(2));
+        pupilLRef.current.setAttribute("cy", (BASE_PUPIL_L.cy + curDy * TRACK_PUPIL_RANGE).toFixed(2));
+      }
+      if (pupilRRef.current) {
+        pupilRRef.current.setAttribute("cx", (BASE_PUPIL_R.cx + curDx * TRACK_PUPIL_RANGE).toFixed(2));
+        pupilRRef.current.setAttribute("cy", (BASE_PUPIL_R.cy + curDy * TRACK_PUPIL_RANGE).toFixed(2));
+      }
+      if (eyesRef.current) {
+        eyesRef.current.setAttribute(
+          "transform",
+          `translate(${(curDx * TRACK_EYES_RANGE).toFixed(2)}, ${(curDy * TRACK_EYES_RANGE).toFixed(2)})`,
+        );
+      }
+      if (mouthRef.current) {
+        mouthRef.current.setAttribute(
+          "transform",
+          `translate(${(curDx * TRACK_MOUTH_RANGE).toFixed(2)}, ${(curDy * TRACK_MOUTH_RANGE).toFixed(2)})`,
+        );
+      }
+
+      raf = (Math.abs(targetDx - curDx) > 0.0008 || Math.abs(targetDy - curDy) > 0.0008)
+        ? requestAnimationFrame(tick)
+        : null;
+    };
+
+    const onMove = (e) => {
+      const halfW = window.innerWidth / 2;
+      const halfH = window.innerHeight / 2;
+      targetDx = Math.max(-1, Math.min(1, (e.clientX - halfW) / halfW));
+      targetDy = Math.max(-1, Math.min(1, (e.clientY - halfH) / halfH));
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [track]);
+
+  const orb = (
     <svg width={size} height={size} viewBox="0 0 200 200" aria-hidden="true" className="orb-float">
       <defs>
         <radialGradient id={`ob-glow-${uid}`} cx="50%" cy="55%" r="55%">
@@ -37,15 +117,26 @@ export function OrbBuddy({ size = 44 }) {
                filter={`url(#ob-blurB-${uid})`} transform="rotate(-18 83 92)" />
       <path d="M124 132 A46 46 0 0 1 96 157" fill="none" stroke="#4C1D95" strokeWidth="10"
             strokeLinecap="round" opacity="0.18" filter={`url(#ob-blurB-${uid})`} />
-      <g>
-        <animate attributeName="opacity" values="1;1;0.1;1;1" keyTimes="0;0.46;0.5;0.54;1"
-                 dur="4.2s" repeatCount="indefinite" />
-        <circle cx="86" cy="110" r="5.6" fill="#0B1220" />
-        <circle cx="114" cy="110" r="5.6" fill="#0B1220" />
-        <circle cx="88" cy="107.5" r="1.6" fill="#fff" />
-        <circle cx="116" cy="107.5" r="1.6" fill="#fff" />
+      <g ref={eyesRef}>
+        <g>
+          <animate attributeName="opacity" values="1;1;0.1;1;1" keyTimes="0;0.46;0.5;0.54;1"
+                   dur="4.2s" repeatCount="indefinite" />
+          <circle cx="86" cy="110" r="5.6" fill="#0B1220" />
+          <circle cx="114" cy="110" r="5.6" fill="#0B1220" />
+          <circle ref={pupilLRef} cx="88" cy="107.5" r="1.6" fill="#fff" />
+          <circle ref={pupilRRef} cx="116" cy="107.5" r="1.6" fill="#fff" />
+        </g>
       </g>
-      <path d="M87 126 Q100 136 113 126" fill="none" stroke="#0B1220" strokeWidth="4.2" strokeLinecap="round" />
+      <g ref={mouthRef}>
+        <path d="M87 126 Q100 136 113 126" fill="none" stroke="#0B1220" strokeWidth="4.2" strokeLinecap="round" />
+      </g>
     </svg>
+  );
+
+  if (!track) return orb;
+  return (
+    <span ref={wrapRef} style={{ display: "inline-block", lineHeight: 0 }}>
+      {orb}
+    </span>
   );
 }

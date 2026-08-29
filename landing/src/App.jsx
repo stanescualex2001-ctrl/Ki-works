@@ -80,7 +80,7 @@ function KiwoOrb() {
       </div>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="relative" style={{ width: 150, height: 150 }}>
-          <OrbBuddy size={150} />
+          <OrbBuddy size={150} track />
           <div
             className="glass absolute rounded-2xl rounded-bl-sm px-3 py-1.5 text-xs font-medium text-foreground/90 whitespace-nowrap shadow-lg"
             style={{ left: "68%", top: "14%" }}
@@ -1227,7 +1227,7 @@ export default function App() {
         <div className="mx-auto max-w-5xl px-5 pb-20 sm:px-6 md:pb-28">
           <GlowCard tone="cyan" className="p-8 md:p-12 text-center">
             <div className="flex justify-center">
-              <OrbBuddy size={72} />
+              <OrbBuddy size={72} track />
             </div>
             <h2 className="mt-2 text-3xl md:text-4xl font-semibold">
               {t("ctaSection.headingPrefix")}{" "}

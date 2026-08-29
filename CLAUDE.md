@@ -1581,6 +1581,32 @@ Version auf "Publish" klicken.
   Dateinamen. Lokal per Playwright auf allen 3 Sprachversionen verifiziert
   (korrekte `img[src]` pro Locale, keine fehlgeschlagenen Bild-Requests).
   Committet und gepusht, normaler rsync/Build-Ablauf für `landing/`.
+- **Orb Buddy: Mausverfolgung im echten Code umgesetzt (29.08.2026)** —
+  löst den zuvor offenen Punkt ein (Konzept war am 25.08.2026 nur in einem
+  Test-Artifact durchgespielt worden). Finale, vom Nutzer per Screenshot
+  bestätigte Werte ("so bleibt"): Glanz-/Blickreichweite 75%, Glätte/
+  Trägheit 0.40, Parallax-Versatz 35px, Kugel-Glanz/Schatten bewegen sich
+  NICHT mit (nur Augen/Pupillen/Mund + leichter Versatz der ganzen
+  Figur). Umsetzung in `landing/src/components/OrbBuddy.jsx`: neuer
+  optionaler `track`-Prop, aktiviert einen `pointermove`-Listener mit
+  rAF-Ease-Loop (Zielwerte aus Mausposition, weich Richtung Ist-Wert
+  angenähert, Loop stoppt automatisch bei Stillstand), respektiert
+  `prefers-reduced-motion`. **Scope bewusst eingeschränkt** — auf
+  Nutzer-Wahl ("Nur großer Hero-/CTA-Orb Buddy") läuft die Verfolgung
+  ausschließlich an den zwei großen Instanzen in `landing/src/App.jsx`
+  (Hero-Sektion, finale CTA-Sektion), NICHT an kleinen Instanzen wie dem
+  Sidebar-Maskottchen in `dashboard/`/`business-dashboard/` oder dem
+  Avatar im `ChatWidget.jsx` (dort bewusst kein `track`-Prop gesetzt).
+  Technischer Kniff: die bestehende CSS-Keyframe-Animation fürs
+  Schweben (`.orb-float`, `transform` auf dem `<svg>`) hätte mit einem
+  zusätzlichen JS-gesetzten `transform` auf demselben Element kollidiert
+  — der Parallax-Versatz landet daher auf einem separaten umschließenden
+  `<span>`, das SVG selbst bleibt unangetastet. Lokal per
+  `npm run build` (inkl. SSR-Prerender aller 9 Seiten, fehlerfrei) und
+  per Playwright-Screenshot-Vergleich bei unterschiedlichen Mausposition
+  verifiziert (sichtbare, korrekte Richtungsbewegung, Kreis bleibt rund,
+  keine Konsolenfehler). Committet und gepusht, normaler rsync/Build-
+  Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2214,36 +2240,6 @@ Version auf "Publish" klicken.
   in Rechnung stellen. Deckt sich mit dem bereits dokumentierten Stand
   bei „Nutzungsmessung + Anzeige pro Kunde" (17.08.2026): „Automatische
   Abrechnung ist explizit ein späterer, noch nicht begonnener Schritt".
-- **Orb Buddy: Mausverfolgung — Konzept per Test-Artifact durchgespielt
-  (25.08.2026), Umsetzung im echten Code weiterhin auf "morgen" vertagt.**
-  Ursprünglich (13.08.2026) im echten Code gebaut, nach Nutzer-Feedback
-  "mag ich nicht" entfernt, dann erneut gewünscht — statt direkt im
-  Produktivcode zu experimentieren, wurde diesmal eine eigenständige
-  Test-Vorschau als Artifact gebaut (interaktiver Regler-Prototyp, kein
-  Repo-Code), über mehrere Nutzer-Feedback-Runden verfeinert. **Wichtiger
-  Befund, der den ursprünglichen ±20°-Rotations-Ansatz verwirft:** ein
-  echtes 3D-`rotateX/rotateY` auf der flachen SVG-Kreisfläche lässt den
-  Kreis unter der Perspektive zur Ellipse werden — wirkt wie eine
-  kippende flache Scheibe, nicht wie eine Kugel (Nutzer-Feedback: "Orb
-  ist nicht wie ein Ball...sondern Flach"). **Neuer, funktionierender
-  Ansatz:** der Kreis-Umriss bleibt immer unverzerrt rund (kein 3D-Kippen
-  des Körpers mehr); stattdessen wandern Lichtquelle (Body-Gradient-
-  Zentrum) und Glanzpunkt über die Oberfläche, der Schatten driftet leicht
-  gegenläufig — das simuliert eine sich drehende Kugel rein über
-  Schattierung. Zusätzlich bewegen sich Augen (als Gruppe), Pupillen und
-  Mund in Cursor-Richtung (Nutzer-Wunsch: "Augen und Mund soll auch in
-  Maus Zeiger richtung mit die Orb bewegen"), plus ein leichter
-  Parallax-Versatz der ganzen Figur für mehr spürbare Bewegung
-  (Nutzer-Wunsch: "mehr Bewegung in alle Richtungen. Flüssiger."). Alle
-  Bewegungsradien sind im Test-Artifact über 3 Regler einstellbar
-  (Glanz-/Blickreichweite, Glätte/Trägheit, Parallax-Versatz) — konkrete
-  Zahlenwerte noch nicht vom Nutzer final bestätigt, das Testen wurde mit
-  "bleibt offen für Morgen" unterbrochen. **Nächster Schritt:** Regler-
-  Werte mit dem Nutzer finalisieren, danach 1:1 in den echten `OrbBuddy`
-  (`landing/src/components/OrbBuddy.jsx`, aktuell ohne jede
-  Mausverfolgung) übertragen — inkl. Entscheidung, ob es nur am
-  Hero-/CTA-Orb Buddy läuft oder auch am kleineren Sidebar-Pendant in
-  `dashboard/`/`business-dashboard/` (dort bisher komplett unangetastet).
 - `backend/sql/dev-seed-cleanup.sql` muss vor echtem Go-Live einmal auf dem
   Server laufen (entfernt `[DEMO]`-Testdaten). **Zusätzlich seit 25.08.2026:**
   vor Go-Live auch den neuen `ki-works-demo-refresh.timer` deaktivieren
