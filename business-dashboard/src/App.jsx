@@ -559,6 +559,7 @@ function BusinessGrid({ onOpen }) {
 }
 
 function SalesAgentRunner({ onDone }) {
+  const [region, setRegion] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -570,7 +571,7 @@ function SalesAgentRunner({ onDone }) {
     apiFetch('/api/sales-agent/run', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ maxCandidates: 5 }),
+      body: JSON.stringify({ maxCandidates: 5, region: region.trim() || undefined }),
     })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
@@ -584,6 +585,16 @@ function SalesAgentRunner({ onDone }) {
 
   return (
     <div className="sales-agent-box">
+      <div className="pending-detail-field" style={{ margin: '0 0 0.6rem' }}>
+        <div className="pending-detail-label">Ort/Region (optional)</div>
+        <input
+          type="text"
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          placeholder="Standard: Schwertberg / Mühlviertel / Oberösterreich"
+          disabled={loading}
+        />
+      </div>
       <button className="primary" disabled={loading} onClick={run}>
         {loading ? 'Claude recherchiert…' : 'Sales-Agent starten'}
       </button>

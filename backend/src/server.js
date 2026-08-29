@@ -1039,7 +1039,8 @@ app.post('/api/social-agent/run', adminOnly, async (req, res) => {
 app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
   try {
     const maxCandidates = Number(req.body?.maxCandidates) || 5;
-    const result = await runSalesAgent({ maxCandidates });
+    const region = typeof req.body?.region === 'string' ? req.body.region.trim().slice(0, 200) || undefined : undefined;
+    const result = await runSalesAgent({ maxCandidates, region });
     res.json(result);
   } catch (err) {
     console.error('Sales-Agent fehlgeschlagen:', err.message);

@@ -1784,6 +1784,39 @@ Version auf "Publish" klicken.
   Trefferquote beim nächsten eigenen "Sales-Agent starten". Committet+
   gepusht, braucht Backend-Neustart (`salesAgent.js` geändert) plus
   normalen `business-dashboard/`-Build.
+- **Sales-Agent: Ort/Region vor dem Start einstellbar (29.08.2026):**
+  Nutzer-Wunsch — das Zielgebiet war bisher hartcodiert
+  ("Schwertberg / Mühlviertel / Oberösterreich" als `TARGET_PROFILE`-
+  Konstante in `backend/src/salesAgent.js`). Jetzt optionales Textfeld
+  "Ort/Region" über dem "Sales-Agent starten"-Button im
+  Business-Dashboard (`SalesAgentRunner`) — leer lassen behält den
+  bisherigen Standard bei. `runSalesAgent({maxCandidates, region})`
+  reicht den Wert an `buildTargetProfile(region)` durch, das den
+  Prompt-Absatz "Zielprofil" dynamisch zusammensetzt statt der fixen
+  Konstante. `POST /api/sales-agent/run` nimmt `region` optional entgegen
+  (serverseitig auf 200 Zeichen begrenzt, getrimmt). Audit-Log-Eintrag
+  pro Lauf enthält jetzt auch die verwendete Region. Lokal nur Syntax-/
+  Build-Check möglich (kein echter Testlauf, siehe Standing Rule
+  Nutzungsguthaben). Committet+gepusht, braucht Backend-Neustart
+  (`salesAgent.js`/`server.js` geändert) plus normalen
+  `business-dashboard/`-Build.
+- **504-Fehler beim Sales-Agent behoben: nginx-Timeout für /api/ erhöht
+  (29.08.2026):** Nutzer meldete "Fehler: HTTP 504" beim Klick auf
+  "Sales-Agent starten". Ursache: `location /api/` in
+  `deploy/nginx/ki-works.conf` hatte kein `proxy_read_timeout` gesetzt,
+  nginx bricht dann nach seinem 60s-Standardwert ab — ein Sales-Agent-
+  Lauf mit mehreren Websuchen + (seit der E-Mail-Suche-Verschärfung von
+  heute) zusätzlichen Impressum-/Kontakt-Seiten-Abrufen dauert oft
+  länger. Der Lauf selbst läuft im Backend trotzdem zu Ende durch (das
+  504 kommt nur von nginx, nicht vom Node-Prozess) — das Ergebnis landet
+  also meist trotzdem in `pending_actions`, nur die Erfolgsmeldung im
+  Business-Dashboard fehlt dann. Fix: `proxy_read_timeout 300s;`/
+  `proxy_send_timeout 300s;` für `location /api/` ergänzt (gleicher Wert
+  wie beim bestehenden n8n-Block). **Nginx-Config wird NICHT automatisch
+  per rsync ausgerollt** (liegt unter `/etc/nginx/`, außerhalb von
+  `/opt/ki-works`) — nach dem Push muss die aktualisierte Datei manuell
+  auf den Server kopiert werden (siehe Deploy-Hinweis unten). Committet+
+  gepusht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

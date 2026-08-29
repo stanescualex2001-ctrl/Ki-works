@@ -9,9 +9,15 @@ const MODEL = process.env.SALES_AGENT_MODEL || 'claude-sonnet-5';
 // gehalten statt im Prompt-String vergraben — dieselbe Definition kann
 // später 1:1 in eine Vapi-"Kiwo Sales"-Telefonrolle (Live-Qualifizierung von
 // Anrufer-Leads) einfließen, ohne neu entworfen werden zu müssen.
-const TARGET_PROFILE = `Restaurants, Gasthäuser, Cafés und kleine Hotels im
-Raum Schwertberg / Mühlviertel / Oberösterreich (deckt sich mit dem
-geplanten lokalen Markteinstieg aus MARKETING.md).`;
+const DEFAULT_REGION = 'Schwertberg / Mühlviertel / Oberösterreich';
+
+// buildTargetProfile: region ist im Business-Dashboard vor jedem Lauf
+// einstellbar (Feld "Ort/Region"), Default deckt sich mit dem geplanten
+// lokalen Markteinstieg aus MARKETING.md.
+function buildTargetProfile(region) {
+  return `Restaurants, Gasthäuser, Cafés und kleine Hotels im
+Raum ${region || DEFAULT_REGION}.`;
+}
 
 const QUALIFICATION_CRITERIA = `Ein guter Kandidat:
 - ist ein Restaurant/Gasthaus/Café/kleines Hotel mit Telefonnummer und
@@ -22,12 +28,12 @@ const QUALIFICATION_CRITERIA = `Ein guter Kandidat:
   Online-Reservierung, Hinweise auf Personalmangel, Bewertungen die
   "schwer erreichbar" erwähnen)`;
 
-function buildPrompt(maxCandidates, excludeList) {
+function buildPrompt(maxCandidates, excludeList, region) {
   return `Du recherchierst potenzielle Neukunden für ki-works.eu, eine
 Plattform für KI-Telefonassistenten (Produktname "Kiwo") für Restaurants.
 
 Zielprofil:
-${TARGET_PROFILE}
+${buildTargetProfile(region)}
 
 Qualifizierungskriterien:
 ${QUALIFICATION_CRITERIA}
@@ -83,7 +89,7 @@ function extractJsonArray(text) {
   return parsed;
 }
 
-export async function runSalesAgent({ maxCandidates = 5 } = {}) {
+export async function runSalesAgent({ maxCandidates = 5, region } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
 
@@ -102,7 +108,7 @@ export async function runSalesAgent({ maxCandidates = 5 } = {}) {
     // von Impressum-/Kontakt-Seiten für die E-Mail-Suche dazu.
     { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 20 },
   ];
-  const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList) }];
+  const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region) }];
 
   // Server-Tools laufen serverseitig in einer eigenen Schleife; bei vielen
   // Websuchen kann das Limit von 10 Runden erreicht werden (stop_reason
@@ -153,7 +159,7 @@ export async function runSalesAgent({ maxCandidates = 5 } = {}) {
     source: 'sales_agent',
     action: 'run',
     summary: `Sales-Agent-Lauf: ${candidates.length} Kandidaten gefunden, ${drafted} Entwürfe erstellt`,
-    details: { found: candidates.length, drafted, skipped, maxCandidates },
+    details: { found: candidates.length, drafted, skipped, maxCandidates, region: region || DEFAULT_REGION },
   });
 
   return { found: candidates.length, drafted, skipped };
