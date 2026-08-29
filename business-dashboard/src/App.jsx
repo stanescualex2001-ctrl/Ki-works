@@ -365,7 +365,11 @@ function PendingActions({ businessId, refreshKey, onChanged }) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ status }),
     })
-      .then(() => onChanged())
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (d.mailDraftWarning) alert(d.mailDraftWarning);
+        onChanged();
+      })
       .finally(() => setDeciding(null));
   };
   if (error) return <p className="error">Fehler: {error}</p>;
@@ -392,7 +396,9 @@ function PendingActions({ businessId, refreshKey, onChanged }) {
                     </button>
                   ) : (
                     <>
-                      <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>✅ Freigeben</button>
+                      <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>
+                        {a.kind === 'outreach_email' ? '✅ Freigeben & Entwurf anlegen' : '✅ Freigeben'}
+                      </button>
                       <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
                     </>
                   )}

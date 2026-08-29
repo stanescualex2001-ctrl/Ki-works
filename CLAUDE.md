@@ -1713,6 +1713,40 @@ Version auf "Publish" klicken.
   (`navigator.clipboard.writeText`), damit Bild-Download + Copy-Paste in
   zwei Klicks erledigt ist. Committet+gepusht, normaler rsync/Build-Ablauf
   für `business-dashboard/` reicht.
+- **Sales-Freigabe legt Mail-Entwurf direkt im Postfach an (29.08.2026):**
+  Nutzer-Frage "was passiert nach Freigabe" deckte auf, dass "Freigeben"
+  bei Sales-Akquise-Mails bisher rein kosmetisch war (nur Status auf
+  "approved", kein Versand, kein Entwurf — Betreff/Text mussten manuell
+  aus der aufgeklappten Zeile kopiert werden, bevor man freigibt, sonst
+  waren sie weg). Neu: `backend/src/mailDraft.js` (`createSalesDraft()`)
+  legt bei Freigabe einer `role: 'sales'` + `kind: 'outreach_email'`-Aktion
+  die Mail direkt als **Entwurf im Postfach info@ki-works.eu** an (IMAP
+  APPEND ins Drafts-Verzeichnis, per `imapflow`; die eigentliche
+  MIME-Nachricht wird mit `nodemailer`s Stream-Transport korrekt
+  UTF-8-codiert erzeugt) — **kein automatischer Versand**, der letzte
+  Klick "Senden" bleibt bewusst manuell (Kalt-E-Mail-Versand in der EU ist
+  rechtlich heikel, siehe „Akquise-Agent"-Konzept). Neue Env-Variablen
+  `KIWORKS_MAIL_IMAP_HOST`/`_PORT`/`_USER`/`_PASSWORD` (Postfach liegt bei
+  einem Hosting-Reseller, IMAP-Host `cloud10.helloly.hosting`, Port 993
+  SSL/TLS — kein Gmail/Google Workspace, daher IMAP statt Gmail-API nötig).
+  Entwurf-Anlage ist bewusst **reine Komfort-Zusatzaktion, nicht
+  blockierend**: schlägt IMAP fehl (Zugangsdaten fehlen/falsch, Postfach
+  nicht erreichbar) oder fehlt die Kontakt-E-Mail im Lead, bleibt die
+  Freigabe trotzdem wirksam (Status wechselt auf "approved") — der Admin
+  bekommt nur eine `alert()`-Warnung im Business-Dashboard, nichts geht
+  verloren, aber auch kein Text mehr abrufbar (dann bleibt nur noch
+  manuelles Kopieren vor einem erneuten Freigabe-Versuch, siehe „Offene
+  Punkte"). Button für Sales-Zeilen zeigt jetzt "✅ Freigeben & Entwurf
+  anlegen" statt nur "✅ Freigeben". `GET /me/accounts`-artiges Vorgehen
+  wie bei Meta gab es hier nicht nötig — IMAP-Zugangsdaten kommen direkt
+  vom Nutzer, nicht per OAuth. Lokal nur Syntax-/Import-Check möglich
+  (`node --check`, `node -e "import(...)"`) — ein echter Lauf gegen das
+  reale Postfach erfordert die IMAP-Zugangsdaten, die der Nutzer noch
+  nicht geteilt hat (bewusst nicht im Chat, sondern direkt auf dem Server
+  einzutragen, siehe „Offene Punkte"). `business-dashboard`-Build
+  fehlerfrei. Committet+gepusht, braucht Backend-Neustart
+  (`server.js` geändert, neue `imapflow`/`nodemailer`-Abhängigkeiten) UND
+  die 4 neuen Env-Variablen in `/etc/ki-works/ki-works.env`.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2123,6 +2157,15 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **Sales-Mail-Entwurf-Anlage (siehe „Bereits erledigt", 29.08.2026):
+  IMAP-Zugangsdaten für info@ki-works.eu noch nicht gesetzt.** Nutzer hat
+  Host (`cloud10.helloly.hosting`, Port 993, SSL/TLS) genannt, Passwort
+  aber bewusst nicht im Chat geteilt (richtig so) — muss noch direkt in
+  `/etc/ki-works/ki-works.env` als `KIWORKS_MAIL_IMAP_HOST/_PORT/_USER/
+  _PASSWORD` eingetragen werden, danach `systemctl restart ki-works-api`.
+  Bis dahin liefert eine Sales-Freigabe zuverlässig die Warnung "Entwurf
+  konnte nicht angelegt werden" (Fallback bleibt: Text manuell aus der
+  aufgeklappten Zeile kopieren, bevor freigegeben wird).
 - **Deploy-Rückstand komplett aufgeholt (Nutzer-Bestätigung 25.08.2026:
   "alle Befehle... sind auf Server gelöst. Alle. Heute inklusiv."):**
   sämtliche zuvor hier gelisteten "noch nicht ausgerollt"-Punkte sind laut

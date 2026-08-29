@@ -10,6 +10,7 @@ import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent } from './socialAgent.js';
+import { createSalesDraft } from './mailDraft.js';
 import { runWebchatTurn } from './webchat.js';
 import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
@@ -958,6 +959,24 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
   const action = currentRows[0];
   if (!action) return res.status(404).json({ error: 'not found' });
   let payload = payloadEdit ? { ...action.payload, ...payloadEdit } : action.payload;
+  let mailDraftWarning = null;
+
+  // Sales-Freigabe: Entwurf im Postfach anlegen ist reine Komfort-Zusatz-
+  // aktion, keine Voraussetzung für die Freigabe selbst — schlägt sie fehl
+  // (z. B. IMAP-Zugangsdaten fehlen/falsch), bleibt die Freigabe trotzdem
+  // wirksam, der Admin bekommt nur eine Warnung zurück (siehe Frontend).
+  if (status === 'approved' && action.role === 'sales' && action.kind === 'outreach_email') {
+    if (payload.contact_email) {
+      try {
+        await createSalesDraft({ to: payload.contact_email, subject: payload.subject, text: payload.body });
+        payload = { ...payload, draftCreated: true };
+      } catch (err) {
+        mailDraftWarning = `Entwurf konnte nicht angelegt werden: ${err.message}`;
+      }
+    } else {
+      mailDraftWarning = 'Kein Kontakt-E-Mail hinterlegt — kein Entwurf angelegt, Text bitte manuell kopieren.';
+    }
+  }
 
   if (status === 'approved' && action.role === 'social' && action.kind === 'post') {
     const results = {};
@@ -995,7 +1014,7 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
      WHERE id = $3 RETURNING *`,
     [status, JSON.stringify(payload), action.id],
   );
-  res.json(rows[0]);
+  res.json({ ...rows[0], mailDraftWarning });
 });
 
 // Social-Media-Agent (Pilot ki-works.eu, Bild-Posts): wählt ein Thema, textet
