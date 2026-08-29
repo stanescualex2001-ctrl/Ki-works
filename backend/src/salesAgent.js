@@ -1,47 +1,27 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { query } from './db.js';
 import { logAction } from './auditLog.js';
+import { getBusinessProfile } from './businessProfiles.js';
 
 const MODEL = process.env.SALES_AGENT_MODEL || 'claude-sonnet-5';
 
-// Ziel-Profil + Qualifizierungskriterien für ki-works.eu (Pilot-Business,
-// siehe CLAUDE.md "Akquise-Agent"). Bewusst als eigene, benannte Konstanten
-// gehalten statt im Prompt-String vergraben — dieselbe Definition kann
-// später 1:1 in eine Vapi-"Kiwo Sales"-Telefonrolle (Live-Qualifizierung von
-// Anrufer-Leads) einfließen, ohne neu entworfen werden zu müssen.
-const DEFAULT_REGION = 'Schwertberg / Mühlviertel / Oberösterreich';
-
 // buildTargetProfile: region ist im Business-Dashboard vor jedem Lauf
-// einstellbar (Feld "Ort/Region"), Default deckt sich mit dem geplanten
-// lokalen Markteinstieg aus MARKETING.md.
-function buildTargetProfile(region) {
-  return `Restaurants, Gasthäuser, Cafés und kleine Hotels im
-Raum ${region || DEFAULT_REGION}.`;
+// einstellbar (Feld "Ort/Region"), Default kommt aus dem Business-Profil.
+function buildTargetProfile(region, profile) {
+  return `${profile.targetKind} im
+Raum ${region || profile.targetProfileDefault}.`;
 }
 
-const SIGNATURE = `Freundliche Grüße
-Alex von ki-works.eu
-Tel. +43 650 9915759
-info@ki-works.eu`;
+function buildPrompt(maxCandidates, excludeList, region, profile) {
+  return `Du recherchierst potenzielle Neukunden für ${profile.name}.
 
-const QUALIFICATION_CRITERIA = `Ein guter Kandidat:
-- ist ein Restaurant/Gasthaus/Café/kleines Hotel mit Telefonnummer und
-  Website ODER zumindest einem öffentlichen Google-Business-/
-  Social-Media-Eintrag
-- liegt im Zielgebiet (siehe oben)
-- hat erkennbar Bedarf an besserer telefonischer Erreichbarkeit (z. B. keine
-  Online-Reservierung, Hinweise auf Personalmangel, Bewertungen die
-  "schwer erreichbar" erwähnen)`;
-
-function buildPrompt(maxCandidates, excludeList, region) {
-  return `Du recherchierst potenzielle Neukunden für ki-works.eu, eine
-Plattform für KI-Telefonassistenten (Produktname "Kiwo") für Restaurants.
+${profile.brandBrief}
 
 Zielprofil:
-${buildTargetProfile(region)}
+${buildTargetProfile(region, profile)}
 
 Qualifizierungskriterien:
-${QUALIFICATION_CRITERIA}
+${profile.qualificationCriteria}
 
 Bereits kontaktiert (NICHT nochmal vorschlagen):
 ${excludeList}
@@ -51,12 +31,10 @@ Websuche. Entwirf für jeden Kandidaten eine kurze, individuelle Akquise-Mail
 auf Deutsch (Betreff + Text), die konkret auf etwas von der Website/dem
 Online-Auftritt des Betriebs Bezug nimmt (z. B. fehlende Online-Reservierung,
 Öffnungszeiten, eine echte Bewertung) — kein Massenmail-Ton, keine generische
-Anrede. Erwähne kurz den Nutzen (Telefon rund um die Uhr, Reservierungen
-automatisch entgegennehmen) und den ersten Monat kostenlos. Beende den
-Mail-Text (body) IMMER exakt mit dieser Signatur, unverändert, keine
-eigene Grußformel davor:
+Anrede. ${profile.productPitch} Beende den Mail-Text (body) IMMER exakt mit
+dieser Signatur, unverändert, keine eigene Grußformel davor:
 
-${SIGNATURE}
+${profile.signature}
 
 WICHTIG — Kontakt-E-Mail-Suche: du hast bereits Zugriff auf die Website
 jedes Kandidaten per web_fetch, nutze das aktiv, um eine E-Mail-Adresse zu
@@ -98,13 +76,15 @@ function extractJsonArray(text) {
   return parsed;
 }
 
-export async function runSalesAgent({ maxCandidates = 5, region } = {}) {
+export async function runSalesAgent({ business, maxCandidates = 5, region } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
+  const profile = getBusinessProfile(business);
 
   const { rows: existing } = await query(
     `SELECT payload->>'business_name' AS business_name, payload->>'website' AS website
-     FROM pending_actions WHERE role = 'sales'`,
+     FROM pending_actions WHERE role = 'sales' AND business = $1`,
+    [business],
   );
   const excludeList = existing.length
     ? existing.map((r) => `${r.business_name || '?'} (${r.website || 'Website unbekannt'})`).join('\n')
@@ -117,7 +97,7 @@ export async function runSalesAgent({ maxCandidates = 5, region } = {}) {
     // von Impressum-/Kontakt-Seiten für die E-Mail-Suche dazu.
     { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 20 },
   ];
-  const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region) }];
+  const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region, profile) }];
 
   // Server-Tools laufen serverseitig in einer eigenen Schleife; bei vielen
   // Websuchen kann das Limit von 10 Runden erreicht werden (stop_reason
@@ -157,18 +137,18 @@ export async function runSalesAgent({ maxCandidates = 5, region } = {}) {
     // eslint-disable-next-line no-await-in-loop
     await query(
       `INSERT INTO pending_actions (restaurant_id, business, role, kind, summary, payload)
-       VALUES (NULL, 'ki-works', 'sales', 'outreach_email', $1, $2)`,
-      [summary, JSON.stringify(payload)],
+       VALUES (NULL, $1, 'sales', 'outreach_email', $2, $3)`,
+      [business, summary, JSON.stringify(payload)],
     );
     drafted += 1;
   }
 
   await logAction({
-    business: 'ki-works',
+    business,
     source: 'sales_agent',
     action: 'run',
     summary: `Sales-Agent-Lauf: ${candidates.length} Kandidaten gefunden, ${drafted} Entwürfe erstellt`,
-    details: { found: candidates.length, drafted, skipped, maxCandidates, region: region || DEFAULT_REGION },
+    details: { found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault },
   });
 
   return { found: candidates.length, drafted, skipped };

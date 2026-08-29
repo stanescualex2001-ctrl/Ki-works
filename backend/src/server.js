@@ -11,6 +11,7 @@ import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent } from './socialAgent.js';
 import { createSalesDraft } from './mailDraft.js';
+import { BUSINESS_PROFILES } from './businessProfiles.js';
 import { runWebchatTurn } from './webchat.js';
 import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
@@ -965,8 +966,14 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
   // aktion, keine Voraussetzung für die Freigabe selbst — schlägt sie fehl
   // (z. B. IMAP-Zugangsdaten fehlen/falsch), bleibt die Freigabe trotzdem
   // wirksam, der Admin bekommt nur eine Warnung zurück (siehe Frontend).
+  // Mail-Entwurf-Anlage und Facebook/Instagram-Publish nutzen fest die
+  // ki-works-Zugangsdaten (KIWORKS_MAIL_IMAP_*/FB_PAGE_ID) — ohne diesen
+  // Business-Check würde eine LEDTEK-/pixelpress-Freigabe versehentlich
+  // versuchen, auf KI-Works' eigenem Postfach/Facebook-Auftritt zu landen.
   if (status === 'approved' && action.role === 'sales' && action.kind === 'outreach_email') {
-    if (payload.contact_email) {
+    if (action.business !== 'ki-works') {
+      mailDraftWarning = 'Kein Postfach für dieses Business konfiguriert — Text bitte manuell kopieren.';
+    } else if (payload.contact_email) {
       try {
         await createSalesDraft({ to: payload.contact_email, subject: payload.subject, text: payload.body });
         payload = { ...payload, draftCreated: true };
@@ -978,7 +985,7 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
     }
   }
 
-  if (status === 'approved' && action.role === 'social' && action.kind === 'post') {
+  if (status === 'approved' && action.role === 'social' && action.kind === 'post' && action.business === 'ki-works') {
     const results = {};
     try {
       results.facebook = await publishFacebookPhoto({ imageUrl: payload.imageUrl, caption: payload.caption });
@@ -1023,7 +1030,9 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
 // erst nach Freigabe im Dashboard (siehe PATCH oben).
 app.post('/api/social-agent/run', adminOnly, async (req, res) => {
   try {
-    const action = await runSocialAgent({ assetsDir: SOCIAL_ASSETS_DIR });
+    const business = req.body?.business;
+    if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
+    const action = await runSocialAgent({ business, assetsDir: SOCIAL_ASSETS_DIR });
     res.json(action);
   } catch (err) {
     console.error('Social-Agent fehlgeschlagen:', err.message);
@@ -1038,9 +1047,11 @@ app.post('/api/social-agent/run', adminOnly, async (req, res) => {
 // währenddessen einen Ladezustand.
 app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
   try {
+    const business = req.body?.business;
+    if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
     const maxCandidates = Number(req.body?.maxCandidates) || 5;
     const region = typeof req.body?.region === 'string' ? req.body.region.trim().slice(0, 200) || undefined : undefined;
-    const result = await runSalesAgent({ maxCandidates, region });
+    const result = await runSalesAgent({ business, maxCandidates, region });
     res.json(result);
   } catch (err) {
     console.error('Sales-Agent fehlgeschlagen:', err.message);
