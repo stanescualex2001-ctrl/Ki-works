@@ -319,6 +319,37 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
 .role-chip.role-chip-soon { background: rgba(var(--overlay-rgb),0.04); color: var(--muted); }
 .back-link { margin-bottom: 1rem; }
 
+/* ---- Agenturen ---- */
+.agencies-section { display: flex; flex-direction: column; gap: 0.9rem; }
+.agency-form {
+  display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-start;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 0.9rem;
+}
+.agency-form input {
+  flex: 1 1 220px; padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel-solid); color: var(--text); font: inherit;
+}
+.agency-row {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+}
+.agency-row-head {
+  width: 100%; text-align: left; background: none; border: none; color: inherit; font: inherit;
+  cursor: pointer; padding: 0.9rem 1rem; display: flex; align-items: baseline; gap: 0.5rem;
+}
+.agency-row-head:hover { background: rgba(var(--overlay-rgb),0.03); }
+.agency-branding {
+  display: flex; flex-direction: column; gap: 0.6rem; padding: 0 1rem 1rem;
+}
+.agency-branding label {
+  display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; color: var(--muted);
+}
+.agency-branding input {
+  padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel-solid); color: var(--text); font: inherit;
+}
+.agency-branding input[type="color"] { padding: 0.2rem; width: 4rem; }
+.agency-branding-actions { display: flex; align-items: center; gap: 0.7rem; }
+
 /* ---- Login ---- */
 .login-page {
   min-height: 100vh; display: flex; align-items: center; justify-content: center;

@@ -122,8 +122,7 @@
     "finance": "Citește bonuri și facturi și transmite datele către contabilitatea dvs."
   },
   "roleCard": {
-    "soon": "în curând",
-    "viewRole": "Vedeți rolul"
+    "soon": "în curând"
   },
   "liveTest": {
     "eyebrow": "ÎN ACȚIUNE",
@@ -215,17 +214,17 @@
     "eyebrow": "PLATFORMA KI-WORKS",
     "headingPrefix": "Kiwo rulează pe",
     "headingHighlight": "platforma KI-Works.",
-    "desc": "Sigur, conform RGPD și găzduit în UE. Kiwo se conectează perfect cu instrumentele dvs. existente – WhatsApp, centrale telefonice, Outlook, Google Calendar și CRM-ul dvs.",
+    "desc": "Sigur, conform RGPD și găzduit în UE. Kiwo rulează pe o infrastructură dovedită — inteligență vocală de la Anthropic, telefonie prin Vapi, notificări automate prin n8n.",
     "features": [
       "Găzduire UE & transmisie criptată TLS",
       "Separare strictă a datelor între clienți",
       "Acces protejat prin parolă pentru admin & clienți",
       "Backup automatizat & monitorizare a erorilor"
     ],
-    "mockLabel": "// integrations.stream",
+    "mockLabel": "// platform.stack",
     "onlineBadge": "online",
-    "statUptime": "Disponibilitate",
-    "statResponse": "Timp de răspuns",
+    "statEncryption": "Criptare",
+    "statCompliance": "Conformitate",
     "statData": "Locație date"
   },
   "roi": {

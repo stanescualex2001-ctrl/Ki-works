@@ -204,6 +204,11 @@
     "title": "Pricing plan for “{{name}}”",
     "tierLabel": "Plan"
   },
+  "agencyAssignForm": {
+    "title": "Agency for “{{name}}”",
+    "agencyLabel": "Agency",
+    "none": "– no agency (direct customer) –"
+  },
   "accessForm": {
     "title": "Login for “{{name}}”",
     "emailLabel": "Login email",
@@ -255,7 +260,8 @@
     "createAccess": "Create access",
     "sendInvite": "Send invitation",
     "changeRoles": "Change roles",
-    "changeTier": "Change plan"
+    "changeTier": "Change plan",
+    "changeAgency": "Change agency"
   },
   "orderStatus": {
     "new": "🆕 New",
