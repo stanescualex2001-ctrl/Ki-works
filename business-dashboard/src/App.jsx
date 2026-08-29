@@ -388,7 +388,12 @@ function PendingActions({ businessId, refreshKey, onChanged }) {
                 <td>{fmtDateTime(a.created_at)}</td>
                 <td>{PENDING_ROLE_LABEL[a.role] || a.role}</td>
                 <td>{PENDING_KIND_LABEL[a.kind] || a.kind}</td>
-                <td>{a.summary}</td>
+                <td>
+                  {a.summary}
+                  {a.kind === 'outreach_email' && !a.payload.contact_email && (
+                    <div className="hint" style={{ margin: '0.2rem 0 0' }}>⚠ keine E-Mail gefunden</div>
+                  )}
+                </td>
                 <td className="lead-actions" onClick={(e) => e.stopPropagation()}>
                   {a.kind === 'post' ? (
                     <button className="link" onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}>
@@ -397,7 +402,7 @@ function PendingActions({ businessId, refreshKey, onChanged }) {
                   ) : (
                     <>
                       <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>
-                        {a.kind === 'outreach_email' ? '✅ Freigeben & Entwurf anlegen' : '✅ Freigeben'}
+                        {a.kind === 'outreach_email' && a.payload.contact_email ? '✅ Freigeben & Entwurf anlegen' : '✅ Freigeben'}
                       </button>
                       <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
                     </>

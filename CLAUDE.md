@@ -1747,6 +1747,15 @@ Version auf "Publish" klicken.
   fehlerfrei. Committet+gepusht, braucht Backend-Neustart
   (`server.js` geändert, neue `imapflow`/`nodemailer`-Abhängigkeiten) UND
   die 4 neuen Env-Variablen in `/etc/ki-works/ki-works.env`.
+  **Nachbesserung (29.08.2026), Nutzer-Feedback nach Live-Test:** der
+  Button zeigte "✅ Freigeben & Entwurf anlegen" für JEDE Sales-Zeile,
+  auch wenn `contact_email` fehlte (Sales-Agent findet nicht immer eine
+  öffentliche Mail-Adresse) — Nutzer erwartete zurecht, dass so ein Fall
+  vorher sichtbar ist statt erst nach dem Klick per Warnung aufzufallen.
+  Zeile zeigt jetzt "⚠ keine E-Mail gefunden" unter der Zusammenfassung
+  und der Button-Text fällt in dem Fall auf schlichtes "✅ Freigeben"
+  zurück (kein leeres Versprechen mehr). Committet+gepusht, normaler
+  rsync/Build-Ablauf für `business-dashboard/` reicht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
