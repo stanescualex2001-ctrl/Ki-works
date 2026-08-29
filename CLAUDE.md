@@ -59,6 +59,14 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   ki-works.eu soll dasselbe Prerendering (`react-dom/server`, kein
   Headless-Browser) + Meta-Tags/JSON-LD/robots.txt/sitemap.xml/llms.txt
   bekommen wie in `landing/` bereits umgesetzt (siehe „Bereits erledigt").
+- **Nie echtes Nutzungsguthaben verbrauchen ohne Bestätigung des Nutzers:**
+  jede Aktion, die reales Anthropic-/Vapi-/Twilio-Guthaben kostet (z. B.
+  Sales-Agent oder Social-Agent auf dem Server auslösen, einen Testanruf
+  starten, das Kiwo-Web-Chat-Widget mit echten Nachrichten durchtesten,
+  eine eigene Websuche/Claude-API-Anfrage in dieser Sitzung ausführen, die
+  nicht rein für Code-Recherche/Doku ist) nur nach expliziter Bestätigung
+  des Nutzers auslösen — auch wenn es als nächster logischer Schritt
+  naheliegt. Im Zweifel fragen statt einfach loslaufen zu lassen.
 - **Deploy-Befehle immer proaktiv mitgeben:** Sobald eine gepushte
   Code-Änderung serverseitig ausgerollt werden muss (z. B. `landing/`
   oder `dashboard/` neu bauen), die passenden copy-paste-fertigen Befehle
