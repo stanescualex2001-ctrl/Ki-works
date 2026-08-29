@@ -286,7 +286,7 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
 }
 .social-post-image { width: 100%; border-radius: 10px; border: 1px solid var(--border); }
 .social-post-fields { display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
-.social-post-fields textarea {
+.social-post-fields textarea, .social-post-fields input[type="text"] {
   width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
   background: var(--panel); color: var(--text); font: inherit; resize: vertical;
 }
@@ -294,6 +294,12 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
 @media (max-width: 640px) {
   .social-post-detail { grid-template-columns: 1fr; }
 }
+
+/* Sales-Mail-Vorschau: kein Bild wie beim Social-Post, deshalb eigenes
+   vollbreites Layout statt des 200px-Bild-Rasters von .social-post-detail
+   (dort landete der Inhalt sonst in der schmalen Bildspalte, siehe
+   Nutzer-Fund 29.08.2026). */
+.sales-email-detail { background: var(--panel-solid); padding: 0.9rem 1rem; }
 
 .link { background: none; border: none; color: var(--accent); cursor: pointer; padding: 0; font-size: 0.85rem; }
 .error { color: var(--bad-text); }

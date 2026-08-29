@@ -67,6 +67,12 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   nicht rein für Code-Recherche/Doku ist) nur nach expliziter Bestätigung
   des Nutzers auslösen — auch wenn es als nächster logischer Schritt
   naheliegt. Im Zweifel fragen statt einfach loslaufen zu lassen.
+- **Bei erreichtem Nutzungslimit dieser Chat-Sitzung selbst (Claude-Code-
+  Kontingent, nicht Anthropic-/Vapi-/Twilio-API-Guthaben) sofort stoppen:**
+  zeigt diese Sitzung einen Hinweis auf ein erreichtes/nahendes
+  Nutzungslimit oder Kontingent, keine weiteren kostenintensiven
+  Aktionen mehr fortsetzen — den Nutzer informieren und nachfragen statt
+  einfach weiterzuarbeiten.
 - **Deploy-Befehle immer proaktiv mitgeben:** Sobald eine gepushte
   Code-Änderung serverseitig ausgerollt werden muss (z. B. `landing/`
   oder `dashboard/` neu bauen), die passenden copy-paste-fertigen Befehle
@@ -1817,6 +1823,24 @@ Version auf "Publish" klicken.
   `/opt/ki-works`) — nach dem Push muss die aktualisierte Datei manuell
   auf den Server kopiert werden (siehe Deploy-Hinweis unten). Committet+
   gepusht.
+- **Sales-Mail-Vorschau: volle Breite + feste Signatur (29.08.2026):**
+  zwei Nutzer-Funde nach dem ersten echten Sales-Agent-Testlauf (Region
+  "Perg Stadt" — Trefferquote für Kontakt-E-Mails deutlich besser, wie
+  gehofft). (1) Die neue `SalesEmailDetail`-Vorschau nutzte versehentlich
+  dieselbe CSS-Klasse (`social-post-detail`) wie die Social-Post-Vorschau
+  — die reserviert per Grid eine feste 200px-Bildspalte links; ohne Bild
+  landete der komplette Inhalt (Website/Begründung/Betreff/Text) in dieser
+  schmalen Spalte statt die volle Zeilenbreite zu nutzen. Neue eigene
+  Klasse `.sales-email-detail` (vollbreit, kein Bild-Raster) behebt das,
+  zusätzlich CSS-Fix, dass auch das Betreff-`<input>` (nicht nur die
+  Text-`<textarea>`) `width: 100%` bekommt. (2) Mails endeten bisher ohne
+  einheitliche Signatur (z. B. nur "Herzliche Grüße ins Machland", kein
+  Name) — neue feste `SIGNATURE`-Konstante in `backend/src/salesAgent.js`
+  ("Freundliche Grüße / Alex von ki-works.eu / Tel. +43 650 9915759 /
+  info@ki-works.eu"), Prompt verlangt jetzt, dass jede Mail exakt damit
+  endet. Lokal nur Build-/Syntax-Check möglich (kein echter Testlauf).
+  Committet+gepusht, braucht Backend-Neustart (`salesAgent.js` geändert)
+  plus normalen `business-dashboard/`-Build.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

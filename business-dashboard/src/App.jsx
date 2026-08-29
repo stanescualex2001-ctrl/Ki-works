@@ -398,7 +398,7 @@ function SalesEmailDetail({ action, onChanged }) {
   };
 
   return (
-    <div className="social-post-detail">
+    <div className="sales-email-detail">
       <div className="social-post-fields">
         {action.payload.website && (
           <div className="pending-detail-field">

@@ -19,6 +19,11 @@ function buildTargetProfile(region) {
 Raum ${region || DEFAULT_REGION}.`;
 }
 
+const SIGNATURE = `Freundliche Grüße
+Alex von ki-works.eu
+Tel. +43 650 9915759
+info@ki-works.eu`;
+
 const QUALIFICATION_CRITERIA = `Ein guter Kandidat:
 - ist ein Restaurant/Gasthaus/Café/kleines Hotel mit Telefonnummer und
   Website ODER zumindest einem öffentlichen Google-Business-/
@@ -47,7 +52,11 @@ auf Deutsch (Betreff + Text), die konkret auf etwas von der Website/dem
 Online-Auftritt des Betriebs Bezug nimmt (z. B. fehlende Online-Reservierung,
 Öffnungszeiten, eine echte Bewertung) — kein Massenmail-Ton, keine generische
 Anrede. Erwähne kurz den Nutzen (Telefon rund um die Uhr, Reservierungen
-automatisch entgegennehmen) und den ersten Monat kostenlos.
+automatisch entgegennehmen) und den ersten Monat kostenlos. Beende den
+Mail-Text (body) IMMER exakt mit dieser Signatur, unverändert, keine
+eigene Grußformel davor:
+
+${SIGNATURE}
 
 WICHTIG — Kontakt-E-Mail-Suche: du hast bereits Zugriff auf die Website
 jedes Kandidaten per web_fetch, nutze das aktiv, um eine E-Mail-Adresse zu
