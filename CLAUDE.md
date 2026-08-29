@@ -1904,6 +1904,26 @@ Version auf "Publish" klicken.
   Zielprofil bleiben weiterhin Annahmen, nur die Kontaktdaten sind jetzt
   bestätigt. Committet+gepusht, braucht Backend-Neustart
   (`businessProfiles.js` geändert).
+- **Partner-Landingpage (White-Label-Pitch) um FAQ + "Tage statt
+  Monate"-Argument ergänzt (29.08.2026):** Nutzer hat voice-one.ai/
+  white-label.html als Inspiration geteilt (per WebFetch analysiert).
+  Übernommen: das Time-to-Market-Argument (dort "14 Tage vs. 12-18
+  Monate Eigenentwicklung") als eigener, ehrlicher Hinweiskasten
+  ("Tage statt Monate") direkt nach den White-Label-Punkten, sowie eine
+  FAQ-Sektion (Accordion, 6 Fragen: Startgeschwindigkeit, Sichtbarkeit
+  von ki-works, Kundenkontakt, Preise, DSGVO, Entwicklungsaufwand) am
+  Seitenende vor dem CTA. **Bewusst NICHT übernommen** (Vorbild-Seite ist
+  für Enterprise-Reseller mit eigenem Vertriebsteam, passt nicht zur
+  aktuellen Größe als Einzelunternehmer ohne erste aktive Agentur):
+  SAML-SSO/SCIM, eigene Stripe/Paddle-Self-Service-Anbindung, dedizierter
+  Customer Success Manager, eigene Mobile-App, ISO-27001-Briefings,
+  Mindestbestellmenge — das wäre dieselbe Fehlerklasse wie die früher
+  korrigierten überzogenen Versprechen. FAQ-Antworten bewusst nur mit
+  bereits an anderer Stelle belegten Fakten (EU-Hosting/TLS, wie in der
+  Datenschutzerklärung) statt neuer, ungeprüfter Zusagen. `landing/`
+  gebaut + SSR-Prerender aller Seiten fehlerfrei. Committet+gepusht,
+  normaler rsync/Build-Ablauf für `landing/` reicht (kein
+  Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

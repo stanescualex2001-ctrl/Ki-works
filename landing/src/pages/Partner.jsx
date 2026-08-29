@@ -1,7 +1,8 @@
 import {
   Layers, ShoppingBag, TrendingUp, Mail, Check, ArrowRight, Shield,
-  LayoutDashboard, Sparkles,
+  LayoutDashboard, Sparkles, Zap, ChevronDown,
 } from "lucide-react";
+import { useState } from "react";
 import { PageShell } from "../components/PageShell.jsx";
 import { OrbBuddy } from "../components/OrbBuddy.jsx";
 
@@ -33,6 +34,33 @@ const whyPoints = [
   "Cross-/Upsell bei Ihren bestehenden Kunden — Sie kennen deren Bedarf bereits",
   "Abo-Umsatz statt Einmal-Projektgeschäft — planbarer als klassische Webprojekte",
   "Schnelle Einführung pro Kunde, kein monatelanges Entwicklungsprojekt",
+];
+
+const faqItems = [
+  {
+    q: "Wie schnell können wir starten?",
+    a: "Die technische Einrichtung pro Agentur (eigene Domain, eigenes Branding, eigener Assistentenname) ist in Tagen erledigt, nicht Monaten — sobald Ihre Domain per DNS auf unseren Server zeigt, ist der Rest ein kurzer, standardisierter Ablauf. Kein monatelanges Entwicklungsprojekt wie bei einer Eigenentwicklung.",
+  },
+  {
+    q: "Sehen unsere Kunden irgendwo \"ki-works\" oder \"Kiwo\"?",
+    a: "Nein. Eigene Domain, eigenes Logo/Farben/Produktname und ein von Ihnen gewählter Assistentenname — für Ihre Kunden ist ki-works als Technik-Lieferant unsichtbar.",
+  },
+  {
+    q: "Behalten wir den Kundenkontakt?",
+    a: "Ja, durchgehend. Sie legen Ihre Kunden selbst an und verwalten sie selbst im eigenen Login — wir liefern nur die Technik im Hintergrund, keinen direkten Draht zu Ihren Endkunden.",
+  },
+  {
+    q: "Was kostet das?",
+    a: "Gestaffelte Partnerkonditionen je nach Anzahl Ihrer Endkunden — die Details besprechen wir im persönlichen Gespräch, passend zu Ihrer Kundenstruktur. Kein starres Preisblatt.",
+  },
+  {
+    q: "Ist das DSGVO-konform?",
+    a: "EU-Hosting und TLS-verschlüsselte Übertragung, strikte Datentrennung zwischen den Kunden verschiedener Agenturen. Details für Ihre eigene Prüfung besprechen wir gerne im Gespräch.",
+  },
+  {
+    q: "Müssen wir selbst etwas entwickeln oder warten?",
+    a: "Nein. Kein eigenes Vapi-/Anthropic-Setup, keine eigene Server-Infrastruktur, kein Support für die Kerntechnik — das läuft komplett bei uns.",
+  },
 ];
 
 const steps = [
@@ -80,6 +108,35 @@ function DemoPreviewCard() {
         So könnte das Dashboard aussehen, das Ihre Kunden unter Ihrem eigenen
         Namen nutzen — die Zahlen sind ein Beispiel, keine echten Kundendaten.
       </p>
+    </div>
+  );
+}
+
+function FaqAccordion() {
+  const [openIndex, setOpenIndex] = useState(null);
+  return (
+    <div className="mt-6 space-y-3">
+      {faqItems.map((item, i) => {
+        const open = openIndex === i;
+        return (
+          <div key={item.q} className="glass overflow-hidden rounded-2xl">
+            <button
+              type="button"
+              className="flex w-full items-center justify-between gap-3 p-5 text-left"
+              onClick={() => setOpenIndex(open ? null : i)}
+              aria-expanded={open}
+            >
+              <span className="text-sm font-semibold text-foreground/90">{item.q}</span>
+              <ChevronDown
+                className={`h-4 w-4 shrink-0 text-foreground/45 transition-transform ${open ? "rotate-180" : ""}`}
+              />
+            </button>
+            {open && (
+              <div className="px-5 pb-5 text-sm leading-relaxed text-foreground/60">{item.a}</div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -142,6 +199,21 @@ export default function Partner() {
           ))}
         </div>
 
+        {/* Time-to-Market */}
+        <div className="mt-8 flex flex-col items-start gap-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.06] p-5 sm:flex-row sm:items-center md:p-6">
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-400/15 text-cyan-600 ring-1 ring-cyan-400/25 dark:text-cyan-300">
+            <Zap className="h-5 w-5" />
+          </span>
+          <div>
+            <div className="text-sm font-semibold text-foreground/90">Tage statt Monate</div>
+            <div className="mt-0.5 text-xs leading-relaxed text-foreground/60">
+              Eine eigene KI-Mitarbeiter-Lösung selbst zu entwickeln dauert typischerweise
+              Monate. Die technische Einrichtung als Kiwo-Partner (eigene Domain, eigenes
+              Branding) ist in Tagen erledigt — sobald Ihre Domain per DNS auf uns zeigt.
+            </div>
+          </div>
+        </div>
+
         {/* Warum attraktiv */}
         <div className="mt-14 grid gap-10 md:grid-cols-2">
           <div>
@@ -184,6 +256,10 @@ export default function Partner() {
             Gespräch, passend zu Ihrer Kundenstruktur.
           </p>
         </div>
+
+        {/* FAQ */}
+        <h2 className="mt-14 text-xl font-semibold">Häufige Fragen</h2>
+        <FaqAccordion />
 
         {/* CTA */}
         <div className="mt-14 flex flex-col items-start gap-4 rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
