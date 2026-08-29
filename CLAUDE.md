@@ -64,6 +64,14 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   oder `dashboard/` neu bauen), die passenden copy-paste-fertigen Befehle
   direkt in derselben Antwort mitgeben — ohne dass der Nutzer extra danach
   fragen muss.
+- **Kein Anthropic-Nutzungsguthaben ohne ausdrückliche Bestätigung des
+  Nutzers verwenden** (spontane Chat-Aktionen wie Sales-/Social-Media-Agent
+  manuell starten oder andere Anthropic-API-Aufrufe, die ich selbst
+  vorschlagen würde — immer erst fragen). **Ausnahme:** der bereits
+  eingerichtete tägliche Kaltakquise-Cron (`backend/scripts/
+  kaltakquise-agent.js`) läuft weiterhin autonom, da der Nutzer diese
+  Automatik bewusst so eingerichtet haben wollte (Entscheidung
+  29.08.2026).
 
 ## Bereits erledigt (nicht mehr offen)
 
