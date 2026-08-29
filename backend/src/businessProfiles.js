@@ -5,10 +5,8 @@
 //
 // Hinweis Inhalte LEDTEK/pixelpress: Markenstimme/Zielprofil sind
 // sinnvolle Annahmen auf Basis bereits dokumentierter Fakten (siehe
-// CLAUDE.md "Erste Social-Media-Inhalte für LEDTEK und pixelpress"),
-// echte Kontaktdaten fehlen — Signatur nutzt vorerst dieselben
-// Alex-Kontaktdaten wie ki-works (einzig bekanntes, überwachtes
-// Postfach). Vor dem ersten produktiven Lauf mit dem Nutzer gegenprüfen.
+// CLAUDE.md "Erste Social-Media-Inhalte für LEDTEK und pixelpress").
+// Kontaktdaten in den Signaturen sind vom Nutzer bestätigt (29.08.2026).
 export const BUSINESS_PROFILES = {
   'ki-works': {
     name: 'ki-works.eu',
@@ -58,7 +56,7 @@ Wartezeiten wie bei Großhändlern.`,
     signature: `Freundliche Grüße
 Alex von LEDTEK
 Tel. +43 650 9915759
-info@ki-works.eu`,
+kontakt@ledtek.at`,
     seedTopics: ['LED-Ware in 48h. Ohne Rätselraten.'],
   },
   pixelpress: {
@@ -79,7 +77,7 @@ statt Template von der Stange, moderne KI-Features auf Wunsch.`,
     signature: `Freundliche Grüße
 Alex von pixelpress
 Tel. +43 650 9915759
-info@ki-works.eu`,
+hallo@pixelpress.at`,
     seedTopics: [],
   },
 };

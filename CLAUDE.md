@@ -1896,6 +1896,14 @@ Version auf "Publish" klicken.
   geändert) plus normalen `business-dashboard/`-Build, keine Migration
   nötig (`business`-Spalte existiert in `pending_actions`/`audit_log`
   bereits).
+  **Echte Kontaktdaten für LEDTEK/pixelpress nachgetragen (29.08.2026):**
+  Nutzer hat die echten Signatur-Daten geliefert — LEDTEK: Tel.
+  +43 650 9915759, kontakt@ledtek.at; pixelpress: Tel. +43 650 9915759,
+  hallo@pixelpress.at. `backend/src/businessProfiles.js` entsprechend
+  angepasst (vorher Platzhalter mit info@ki-works.eu). Markenstimme/
+  Zielprofil bleiben weiterhin Annahmen, nur die Kontaktdaten sind jetzt
+  bestätigt. Committet+gepusht, braucht Backend-Neustart
+  (`businessProfiles.js` geändert).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
