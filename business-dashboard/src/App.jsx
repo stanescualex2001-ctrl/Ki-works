@@ -339,7 +339,9 @@ function SocialPostDetail({ action, onChanged }) {
         {error && <p className="error">Fehler: {error}</p>}
         <div className="social-post-actions">
           <button className="primary" disabled={!!loading} onClick={() => decide('approved')}>
-            {loading === 'approved' ? 'Veröffentliche…' : '✅ Freigeben & veröffentlichen'}
+            {loading === 'approved'
+              ? 'Veröffentliche…'
+              : action.business === 'ki-works' ? '✅ Freigeben & veröffentlichen' : '✅ Freigeben'}
           </button>
           <button className="link" disabled={!!loading} onClick={() => decide('rejected')}>
             {loading === 'rejected' ? '…' : '❌ Verwerfen'}
@@ -558,7 +560,7 @@ function BusinessGrid({ onOpen }) {
   );
 }
 
-function SalesAgentRunner({ onDone }) {
+function SalesAgentRunner({ business, onDone }) {
   const [region, setRegion] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -571,7 +573,7 @@ function SalesAgentRunner({ onDone }) {
     apiFetch('/api/sales-agent/run', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ maxCandidates: 5, region: region.trim() || undefined }),
+      body: JSON.stringify({ business, maxCandidates: 5, region: region.trim() || undefined }),
     })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
@@ -591,7 +593,7 @@ function SalesAgentRunner({ onDone }) {
           type="text"
           value={region}
           onChange={(e) => setRegion(e.target.value)}
-          placeholder="Standard: Schwertberg / Mühlviertel / Oberösterreich"
+          placeholder="Leer lassen für die Standardregion dieses Businesses"
           disabled={loading}
         />
       </div>
@@ -609,7 +611,7 @@ function SalesAgentRunner({ onDone }) {
   );
 }
 
-function SocialAgentRunner({ onDone }) {
+function SocialAgentRunner({ business, onDone }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -618,7 +620,11 @@ function SocialAgentRunner({ onDone }) {
     setLoading(true);
     setError(null);
     setResult(null);
-    apiFetch('/api/social-agent/run', { method: 'POST' })
+    apiFetch('/api/social-agent/run', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ business }),
+    })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
@@ -707,27 +713,36 @@ function BusinessAuditLog({ businessId, refreshKey }) {
   );
 }
 
+// Businesses, für die die generischen Sales-/Social-Agenten bereits ein
+// Profil in backend/src/businessProfiles.js haben (siehe dortige Registry).
+// Neues Business bekommt Agenten-Buttons einfach durch Eintrag in beiden
+// Listen — kein weiterer Code-Umbau hier nötig.
+const AGENT_ENABLED_BUSINESSES = ['ki-works', 'ledtek', 'pixelpress'];
+
 function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
+  const agentsEnabled = AGENT_ENABLED_BUSINESSES.includes(business.id);
   return (
     <>
       <button className="link back-link" onClick={onBack}>← Zurück zur Übersicht</button>
       <h1 style={{ marginBottom: '0.3rem' }}>{business.name}</h1>
-      {business.id === 'ki-works' ? (
+      {agentsEnabled ? (
         <>
           <p className="hint">
-            Pilot-Rolle Sales: recherchiert per Websuche passende Restaurants/Gasthäuser im
-            Zielgebiet und legt individuelle Akquise-Mail-Entwürfe zur Freigabe an
-            (landen unten in der Freigaben-Liste dieser Karte unter „Sales" / „Akquise-E-Mail").
+            Pilot-Rolle Sales: recherchiert per Websuche passende Kunden im Zielgebiet und legt
+            individuelle Akquise-Mail-Entwürfe zur Freigabe an (landen unten in der Freigaben-Liste
+            dieser Karte unter „Sales" / „Akquise-E-Mail").
           </p>
-          <SalesAgentRunner onDone={onAgentDone} />
+          <SalesAgentRunner business={business.id} onDone={onAgentDone} />
 
           <h3 style={{ marginTop: '1.6rem' }}>Social-Media (Bild-Posts)</h3>
           <p className="hint" style={{ marginTop: '0.3rem' }}>
             Claude wählt ein Thema, texted Headline/Caption und erstellt die Grafik automatisch.
-            Vor der Veröffentlichung auf Facebook/Instagram kannst du den Text bearbeiten und
-            musst freigeben (landet unten in der Freigaben-Liste unter „Social" / „Social-Media-Post").
+            {business.id === 'ki-works'
+              ? ' Vor der Veröffentlichung auf Facebook/Instagram kannst du den Text bearbeiten und musst freigeben'
+              : ' Bild+Text landen zur Freigabe/zum Download — für dieses Business gibt es noch keine automatische Veröffentlichung'}
+            {' '}(landet unten in der Freigaben-Liste unter „Social" / „Social-Media-Post").
           </p>
-          <SocialAgentRunner onDone={onAgentDone} />
+          <SocialAgentRunner business={business.id} onDone={onAgentDone} />
 
           <h3 style={{ marginTop: '1.6rem' }}>Freigaben</h3>
           <p className="hint" style={{ marginTop: '0.3rem' }}>

@@ -1841,6 +1841,61 @@ Version auf "Publish" klicken.
   endet. Lokal nur Build-/Syntax-Check möglich (kein echter Testlauf).
   Committet+gepusht, braucht Backend-Neustart (`salesAgent.js` geändert)
   plus normalen `business-dashboard/`-Build.
+- **Sales-/Social-Agent generisch für mehrere Businesses: LEDTEK +
+  pixelpress bekommen dieselben Agenten wie ki-works (29.08.2026):**
+  Nutzer-Wunsch, dieselben Kiwo-Agenten auch für LEDTEK und pixelpress zu
+  nutzen (waren bisher Business-Dashboard-Karten ohne Funktion). Auf
+  Rückfrage entschieden: (1) Architektur generisch umbauen statt Dateien
+  zu duplizieren, (2) beide Agenten (Sales + Social) für beide neuen
+  Businesses, (3) noch kein Auto-Publish auf Facebook/Instagram für
+  LEDTEK/pixelpress (nur Bild+Text zum manuellen Download/Copy-Paste, wie
+  aktuell schon TikTok/LinkedIn bei ki-works). Neue Registry
+  `backend/src/businessProfiles.js` (`BUSINESS_PROFILES`,
+  `getBusinessProfile()`) — pro Business: Markenstimme (`brandBrief`),
+  Verkaufsargument (`productPitch`), Ziel-Region-Default
+  (`targetProfileDefault`), Zielgruppe (`targetKind`),
+  Qualifizierungskriterien, Mail-Signatur, Social-Themen-Startausschluss
+  (`seedTopics`) — analog zu `ROLE_BLOCKS` in `vapiAdmin.js`, neues
+  Business = neuer Registry-Eintrag, kein Umbau der Agenten-Kernlogik.
+  `backend/src/salesAgent.js`/`socialAgent.js` lesen jetzt aus der
+  Registry statt hartcodierter ki-works-Konstanten, `runSalesAgent()`/
+  `runSocialAgent()` bekommen einen Pflicht-`business`-Parameter. Dabei
+  einen **echten Bug gefunden und gefixt**: die Kandidaten-/Themen-
+  Dedupe-Queries filterten bisher NICHT nach `business` — ein LEDTEK-Lauf
+  hätte fälschlich gegen ki-works-Kandidaten/-Themen abgeglichen (jetzt
+  `AND business = $1`). `POST /api/sales-agent/run`/`social-agent/run`
+  validieren `business` gegen die Registry (400 bei unbekanntem Wert).
+  **Sicherheits-Fix in `PATCH /api/pending-actions/:id`:** der Facebook/
+  Instagram-Publish-Versuch und die IMAP-Mail-Entwurf-Anlage liefen
+  bisher unabhängig vom `business`-Feld der Aktion, nutzten aber fest die
+  ki-works-Zugangsdaten — ohne Fix hätte eine LEDTEK-/pixelpress-Freigabe
+  versehentlich versucht, auf KI-Works' eigenem Postfach/Facebook-Auftritt
+  zu landen. Beide Blöcke prüfen jetzt `action.business === 'ki-works'`,
+  für andere Businesses bleibt die Freigabe wirksam, nur ohne Publish-/
+  Entwurf-Versuch (Warnhinweis statt stillem Fehlschlag). Im Business-
+  Dashboard: `SalesAgentRunner`/`SocialAgentRunner` schicken jetzt einen
+  `business`-Parameter mit, `BusinessDetail` zeigt die Agenten-Buttons für
+  `['ki-works', 'ledtek', 'pixelpress']` (Memcore bleibt "noch nicht
+  verknüpft", kein Registry-Eintrag), Freigabe-/Aktivitätsprotokoll-
+  Listen filtern bereits generisch über `business.id`, keine Änderung
+  nötig. **Wichtiger Vorbehalt zu den Inhalten:** LEDTEK-/pixelpress-
+  Markenstimme, Zielprofil und Mail-Signatur in der Registry sind
+  sinnvolle Annahmen auf Basis bereits dokumentierter Fakten (siehe
+  „Erste Social-Media-Inhalte für LEDTEK und pixelpress" weiter oben) —
+  echte Kontaktdaten für LEDTEK/pixelpress fehlen, Signatur nutzt
+  vorerst dieselben Alex-Kontaktdaten wie ki-works (einziges bekanntes,
+  überwachtes Postfach). Nutzer sollte das nach dem ersten Testlauf
+  gegenprüfen, exakt der gleiche iterative Ablauf wie bei der
+  ki-works-Signatur. Lokal nur Syntax-/Build-Check möglich (kein echter
+  Agenten-Testlauf, Standing Rule Nutzungsguthaben) — **Sitzung wurde
+  zwischen Backend-Teil und Frontend-Teil durch ein erreichtes
+  Claude-Code-Nutzungslimit unterbrochen** (Backend-Teil als klar
+  markierter WIP-Commit "NICHT DEPLOYEN" zwischengesichert, dann nach
+  Kontingent-Reset mit dem Frontend-Teil fortgesetzt). Committet+gepusht,
+  braucht Backend-Neustart (`salesAgent.js`/`socialAgent.js`/`server.js`
+  geändert) plus normalen `business-dashboard/`-Build, keine Migration
+  nötig (`business`-Spalte existiert in `pending_actions`/`audit_log`
+  bereits).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
