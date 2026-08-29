@@ -13,6 +13,7 @@ export function Footer({ page = "home" }) {
           <a href={kontaktHref} className="hover:text-foreground/70 transition">{t("footer.contact")}</a>
           <a href="/impressum.html" className="hover:text-foreground/70 transition">{t("footer.imprint")}</a>
           <a href="/datenschutz.html" className="hover:text-foreground/70 transition">{t("footer.privacy")}</a>
+          <a href="/partner.html" className="hover:text-foreground/70 transition">{t("footer.forAgencies")}</a>
           <button
             type="button"
             onClick={() => window.dispatchEvent(new Event(REOPEN_COOKIE_BANNER_EVENT))}

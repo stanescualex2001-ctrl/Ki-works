@@ -7,6 +7,7 @@
     "pricing": "Preise",
     "onboarding": "Onboarding",
     "contact": "Kontakt",
+    "forAgencies": "Für Agenturen",
     "customerLogin": "Kunden-Login",
     "tryKiwo": "Kiwo testen",
     "menuAriaLabel": "Menü",
@@ -44,6 +45,7 @@
     "contact": "Kontakt",
     "imprint": "Impressum",
     "privacy": "Datenschutz",
+    "forAgencies": "Für Agenturen",
     "cookieSettings": "Cookie-Einstellungen",
     "systemsOperational": "systems operational"
   },
@@ -349,7 +351,8 @@
     "customName": "Custom",
     "customPrice": "Individuell",
     "customDesc": "Mehr Volumen, mehrere Standorte oder besondere Anforderungen? Wir erstellen Ihnen ein passendes Angebot.",
-    "customCta": "Sprechen Sie uns an"
+    "customCta": "Sprechen Sie uns an",
+    "agencyHint": "Sind Sie eine Agentur? → Partnerprogramm"
   },
   "ctaSection": {
     "headingPrefix": "Bereit für Ihren",

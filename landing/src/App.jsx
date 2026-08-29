@@ -1210,6 +1210,12 @@ export default function App() {
               >
                 {t("pricing.customCta")} <ArrowRight className="h-3.5 w-3.5" />
               </a>
+              <a
+                href="/partner.html"
+                className="mt-3 text-center text-xs text-foreground/50 hover:text-foreground/70 transition"
+              >
+                {t("pricing.agencyHint")}
+              </a>
             </GlowCard>
           </div>
           <p className="mt-6 text-center text-[11px] text-foreground/35">

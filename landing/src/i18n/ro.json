@@ -7,6 +7,7 @@
     "pricing": "Prețuri",
     "onboarding": "Integrare",
     "contact": "Contact",
+    "forAgencies": "Pentru agenții",
     "customerLogin": "Autentificare clienți",
     "tryKiwo": "Testați Kiwo",
     "menuAriaLabel": "Meniu",
@@ -44,6 +45,7 @@
     "contact": "Contact",
     "imprint": "Date de identificare",
     "privacy": "Confidențialitate",
+    "forAgencies": "Pentru agenții",
     "cookieSettings": "Setări cookie-uri",
     "systemsOperational": "sisteme funcționale"
   },
@@ -320,7 +322,8 @@
     "customName": "Custom",
     "customPrice": "Preț individual",
     "customDesc": "Aveți nevoie de mai multe minute, mai multe locații sau cerințe speciale? Vă pregătim o ofertă potrivită.",
-    "customCta": "Contactați-ne"
+    "customCta": "Contactați-ne",
+    "agencyHint": "Sunteți o agenție? → Program de parteneriat"
   },
   "ctaSection": {
     "headingPrefix": "Sunteți pregătit pentru",

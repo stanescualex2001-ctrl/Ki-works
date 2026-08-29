@@ -1924,6 +1924,23 @@ Version auf "Publish" klicken.
   gebaut + SSR-Prerender aller Seiten fehlerfrei. Committet+gepusht,
   normaler rsync/Build-Ablauf für `landing/` reicht (kein
   Backend-Neustart nötig).
+- **Partner-Seite sichtbar verlinkt statt nur per Direktlink (29.08.2026):**
+  Nutzer-Einwand zu Recht: `partner.html` war bisher nirgends verlinkt —
+  eine Agentur, die zufällig organisch auf ki-works.eu landet, hätte das
+  Partnerprogramm nie gefunden. Neuer Nav-Link "Für Agenturen" im
+  Hauptmenü (Desktop + Mobile, `Header.jsx`, nach "Kontakt"), zusätzlich
+  im Footer und als dezenter Zusatz-Link unter der "Custom"-Preiskarte
+  ("Sind Sie eine Agentur? → Partnerprogramm"). Logische Konsequenz mit
+  umgesetzt: `noindex,nofollow` aus `landing/partner.html` entfernt und
+  die Seite in `sitemap.xml` ergänzt — eine im Hauptmenü beworbene Seite
+  sollte auch über Suchmaschinen auffindbar sein, das widersprach sich
+  sonst. Neue i18n-Keys `nav.forAgencies`/`footer.forAgencies`/
+  `pricing.agencyHint` in allen 3 Sprachen. `landing/` gebaut, SSR-
+  Prerender aller Seiten fehlerfrei, per Grep verifiziert (kein
+  `noindex` mehr in `dist/partner.html`, Eintrag in `dist/sitemap.xml`,
+  übersetzter Nav-Text in allen 3 Sprachversionen). Committet+gepusht,
+  normaler rsync/Build-Ablauf für `landing/` reicht (kein
+  Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

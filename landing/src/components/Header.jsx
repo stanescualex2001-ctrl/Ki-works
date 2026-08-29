@@ -255,6 +255,7 @@ export function Header({ page = "home" }) {
           <a href={`${homeHref}#preise`} className="hover:text-foreground transition">{t("nav.pricing")}</a>
           <a href={`${homeHref}#onboarding`} className="hover:text-foreground transition">{t("nav.onboarding")}</a>
           <a href={kontaktHref} className="hover:text-foreground transition">{t("nav.contact")}</a>
+          <a href="/partner.html" className="hover:text-foreground transition">{t("nav.forAgencies")}</a>
         </nav>
         <div className="justify-self-end flex items-center gap-2.5">
           <LanguageToggle page={page} />
@@ -363,6 +364,13 @@ export function Header({ page = "home" }) {
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 {t("nav.contact")}
+              </a>
+              <a
+                href="/partner.html"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
+              >
+                {t("nav.forAgencies")}
               </a>
               <a
                 href={`/dashboard/?lang=${locale}`}
