@@ -1941,6 +1941,28 @@ Version auf "Publish" klicken.
   übersetzter Nav-Text in allen 3 Sprachversionen). Committet+gepusht,
   normaler rsync/Build-Ablauf für `landing/` reicht (kein
   Backend-Neustart nötig).
+- **Eigene "Reseller & Partner"-Sektion auf der Startseite (29.08.2026):**
+  Nutzer-Einwand nach dem vorherigen Schritt: der kleine Hinweis unter der
+  Custom-Preiskarte war zu unauffällig, und der Begriff "Agentur" zu eng
+  — auch andere Firmentypen (IT-Dienstleister, Berater) könnten Interesse
+  am White-Label-Partnerprogramm haben. Auf Rückfrage entschieden:
+  neutralerer Begriff **"Reseller & Partner"** statt "Agenturen", neue
+  eigene Sektion direkt nach der Preise-Sektion (nicht davor, um die
+  Restaurant-Kunden-Preise nicht zu verdrängen). Neue Sektion
+  `id="reseller"` in `landing/src/App.jsx` mit 3 kompakten Vorteils-
+  Karten (Branding/Ansprechpartner/kein Entwicklungsaufwand) und CTA
+  "Partnerprogramm entdecken" → `/partner.html` (volle Details/FAQ dort).
+  Der Hauptmenü-Link "Reseller & Partner" (vorher "Für Agenturen")
+  scrollt jetzt zu dieser Sektion statt direkt auf `/partner.html` zu
+  springen (`${homeHref}#reseller` in `Header.jsx`, Desktop+Mobile), der
+  Preise-Card-Hinweis verlinkt ebenfalls dorthin. Footer-Link bleibt
+  direkt auf `/partner.html` (dort sinnvoll neben Impressum/Datenschutz).
+  Alle Texte (`nav.forAgencies`, `footer.forAgencies`, `pricing.
+  agencyHint`, neuer `resellerSection.*`-Namespace) in allen 3 Sprachen
+  aktualisiert/ergänzt. `landing/` gebaut + SSR-Prerender fehlerfrei,
+  per Grep verifiziert (neue Sektion + übersetzte Texte in DE/EN/RO
+  vorhanden). Committet+gepusht, normaler rsync/Build-Ablauf für
+  `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

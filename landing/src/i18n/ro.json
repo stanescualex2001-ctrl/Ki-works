@@ -7,7 +7,7 @@
     "pricing": "Prețuri",
     "onboarding": "Integrare",
     "contact": "Contact",
-    "forAgencies": "Pentru agenții",
+    "forAgencies": "Reselleri și parteneri",
     "customerLogin": "Autentificare clienți",
     "tryKiwo": "Testați Kiwo",
     "menuAriaLabel": "Meniu",
@@ -45,7 +45,7 @@
     "contact": "Contact",
     "imprint": "Date de identificare",
     "privacy": "Confidențialitate",
-    "forAgencies": "Pentru agenții",
+    "forAgencies": "Reselleri și parteneri",
     "cookieSettings": "Setări cookie-uri",
     "systemsOperational": "sisteme funcționale"
   },
@@ -323,7 +323,19 @@
     "customPrice": "Preț individual",
     "customDesc": "Aveți nevoie de mai multe minute, mai multe locații sau cerințe speciale? Vă pregătim o ofertă potrivită.",
     "customCta": "Contactați-ne",
-    "agencyHint": "Sunteți o agenție? → Program de parteneriat"
+    "agencyHint": "Doriți să revindeți Kiwo? → Program de reseller"
+  },
+  "resellerSection": {
+    "eyebrow": "RESELLERI ȘI PARTENERI",
+    "headingPrefix": "Kiwo sub",
+    "headingHighlight": "numele dvs.",
+    "subtitle": "Sunteți o agenție, un furnizor de servicii IT sau un consultant și doriți să oferiți Kiwo propriilor clienți? Cu programul nostru de parteneriat white-label, Kiwo funcționează sub brandul dvs. — dvs. rămâneți persoana de contact, noi livrăm tehnologia.",
+    "points": [
+      { "title": "Brandul dvs., nu al nostru", "desc": "Domeniu propriu, logo propriu, nume propriu al asistentului — clienții dvs. nu văd ki-works." },
+      { "title": "Rămâneți persoana de contact", "desc": "Relația cu clienții rămâne la dvs., noi livrăm doar tehnologia în fundal." },
+      { "title": "Fără efort de dezvoltare", "desc": "Nicio dezvoltare proprie de AI, nicio configurare, niciun suport necesar pentru tehnologia de bază." }
+    ],
+    "cta": "Descoperiți programul de parteneriat"
   },
   "ctaSection": {
     "headingPrefix": "Sunteți pregătit pentru",

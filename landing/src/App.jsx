@@ -4,7 +4,7 @@ import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
   Workflow, Plug, Layers, Play, Pause, Bell, LayoutDashboard,
-  Pencil, Euro,
+  Pencil, Euro, Handshake,
 } from "lucide-react";
 import { Header, roles } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -1211,7 +1211,7 @@ export default function App() {
                 {t("pricing.customCta")} <ArrowRight className="h-3.5 w-3.5" />
               </a>
               <a
-                href="/partner.html"
+                href="#reseller"
                 className="mt-3 text-center text-xs text-foreground/50 hover:text-foreground/70 transition"
               >
                 {t("pricing.agencyHint")}
@@ -1225,6 +1225,40 @@ export default function App() {
             </a>
             .
           </p>
+        </div>
+      </section>
+
+      {/* Reseller & Partner (White-Label) */}
+      <section id="reseller" className="relative z-10">
+        <div className="mx-auto max-w-5xl px-5 py-16 sm:px-6 md:py-24">
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-violet-600/90 dark:text-violet-300/90">
+              <Handshake className="h-3.5 w-3.5" /> {t("resellerSection.eyebrow")}
+            </div>
+            <h2 className="mt-3 text-3xl md:text-4xl font-semibold">
+              {t("resellerSection.headingPrefix")}{" "}
+              <span className="text-gradient">{t("resellerSection.headingHighlight")}</span>
+            </h2>
+            <p className="mt-4 max-w-2xl mx-auto text-sm md:text-base text-foreground/60">
+              {t("resellerSection.subtitle")}
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {t("resellerSection.points").map((p) => (
+              <GlowCard key={p.title} tone="violet" className="p-5">
+                <div className="text-sm font-semibold text-foreground/90">{p.title}</div>
+                <p className="mt-1.5 text-xs leading-relaxed text-foreground/55">{p.desc}</p>
+              </GlowCard>
+            ))}
+          </div>
+          <div className="mt-8 flex justify-center">
+            <a
+              href="/partner.html"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
+            >
+              {t("resellerSection.cta")} <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
         </div>
       </section>
 

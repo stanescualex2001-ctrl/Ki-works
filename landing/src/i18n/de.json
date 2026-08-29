@@ -7,7 +7,7 @@
     "pricing": "Preise",
     "onboarding": "Onboarding",
     "contact": "Kontakt",
-    "forAgencies": "Für Agenturen",
+    "forAgencies": "Reseller & Partner",
     "customerLogin": "Kunden-Login",
     "tryKiwo": "Kiwo testen",
     "menuAriaLabel": "Menü",
@@ -45,7 +45,7 @@
     "contact": "Kontakt",
     "imprint": "Impressum",
     "privacy": "Datenschutz",
-    "forAgencies": "Für Agenturen",
+    "forAgencies": "Reseller & Partner",
     "cookieSettings": "Cookie-Einstellungen",
     "systemsOperational": "systems operational"
   },
@@ -352,7 +352,19 @@
     "customPrice": "Individuell",
     "customDesc": "Mehr Volumen, mehrere Standorte oder besondere Anforderungen? Wir erstellen Ihnen ein passendes Angebot.",
     "customCta": "Sprechen Sie uns an",
-    "agencyHint": "Sind Sie eine Agentur? → Partnerprogramm"
+    "agencyHint": "Sie möchten Kiwo weiterverkaufen? → Reseller-Partnerprogramm"
+  },
+  "resellerSection": {
+    "eyebrow": "RESELLER & PARTNER",
+    "headingPrefix": "Kiwo unter",
+    "headingHighlight": "Ihrem eigenen Namen",
+    "subtitle": "Sie sind eine Agentur, ein IT-Dienstleister oder Berater und möchten Kiwo Ihren eigenen Kunden anbieten? Mit unserem White-Label-Partnerprogramm läuft Kiwo unter Ihrem Branding — Sie bleiben Ansprechpartner, wir liefern die Technik.",
+    "points": [
+      { "title": "Ihr Branding, nicht unseres", "desc": "Eigene Domain, eigenes Logo, eigener Assistentenname — Ihre Kunden sehen ki-works nicht." },
+      { "title": "Sie bleiben Ansprechpartner", "desc": "Der Kundenkontakt bleibt bei Ihnen, wir liefern nur die Technik im Hintergrund." },
+      { "title": "Kein Entwicklungsaufwand", "desc": "Keine eigene KI-Entwicklung, kein Setup, kein Support für die Kerntechnik nötig." }
+    ],
+    "cta": "Partnerprogramm entdecken"
   },
   "ctaSection": {
     "headingPrefix": "Bereit für Ihren",
