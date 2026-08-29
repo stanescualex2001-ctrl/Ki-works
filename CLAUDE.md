@@ -20,7 +20,7 @@ git fetch origin
 git checkout claude/ki-works-mvp-deploy-0wtfaz
 git pull origin claude/ki-works-mvp-deploy-0wtfaz
 
-rsync -a --delete --exclude .git --exclude node_modules --exclude dist /root/ki-works-src/ /opt/ki-works/
+rsync -a --delete --exclude .git --exclude node_modules --exclude dist --exclude backend/public/social-assets /root/ki-works-src/ /opt/ki-works/
 chown -R kiworks:kiworks /opt/ki-works
 
 sudo -u kiworks bash -c "cd /opt/ki-works/landing && npm install --no-audit --no-fund && npm run build"
@@ -1671,6 +1671,30 @@ Version auf "Publish" klicken.
   erreichbare `imageUrl`). Reine Frontend-Ergänzung, kein Backend-/
   Migrationsbedarf. Committet+gepusht, normaler rsync/Build-Ablauf für
   `business-dashboard/` reicht.
+- **Deploy-Bug behoben: rsync löschte social-assets bei jedem Deploy
+  (29.08.2026):** Nutzer meldete "Datei ist auf der Website nicht
+  verfügbar" beim Bild-Download — `ls
+  /opt/ki-works/backend/public/social-assets/` zeigte den Ordner
+  nicht mehr, obwohl er kurz zuvor per Backend-Neustart angelegt worden
+  war. Ursache: der zentrale Deploy-Befehl in diesem Dokument
+  (`rsync -a --delete ...`) spiegelt `/root/ki-works-src` 1:1 nach
+  `/opt/ki-works` — der Ordner `backend/public/social-assets/` ist aber
+  zur Laufzeit erzeugter Content, kein Git-Inhalt, wird also bei JEDEM
+  Deploy (auch reinen `landing/`- oder `business-dashboard/`-Änderungen)
+  automatisch mitgelöscht. Der Ordner tauchte nur kurz nach einem
+  Backend-Neustart wieder auf (der ihn per `fs.mkdirSync` am Programmstart
+  neu anlegt) und verschwand beim nächsten Deploy ohne Neustart erneut.
+  **Doppelt behoben:** (1) der Deploy-Befehl oben im Dokument hat jetzt
+  `--exclude backend/public/social-assets`, damit rsync diesen Ordner nie
+  wieder anfasst; (2) zusätzlich `fs.mkdirSync(assetsDir, {recursive:
+  true})` direkt vor jedem `writeFileSync` in `socialAgent.js` und dem
+  `/api/webhooks/social-post`-Handler in `server.js` ergänzt (Verteidigung
+  in der Tiefe — der Ordner wird jetzt bei jedem einzelnen Bild-Schreiben
+  notfalls neu angelegt, nicht nur einmal beim Serverstart). Committet+
+  gepusht, braucht Backend-Neustart (server.js/socialAgent.js geändert)
+  UND — wichtig — beim nächsten Deploy den **neuen** rsync-Befehl mit dem
+  `--exclude` verwenden, sonst tritt der Bug ein letztes Mal auf, bevor er
+  behoben ist.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

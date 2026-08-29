@@ -92,6 +92,7 @@ export async function runSocialAgent({ assetsDir }) {
 
   const imageBuffer = await renderSocialImage({ headline: draft.headline, subline: draft.subline });
   const filename = `${crypto.randomUUID()}.png`;
+  fs.mkdirSync(assetsDir, { recursive: true });
   fs.writeFileSync(path.join(assetsDir, filename), imageBuffer);
   const imageUrl = `${process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu'}/api/public/social-assets/${filename}`;
 

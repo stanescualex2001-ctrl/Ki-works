@@ -273,6 +273,7 @@ app.post('/api/webhooks/social-post', async (req, res) => {
     return res.status(400).json({ error: 'caption und imageBase64 erforderlich' });
   }
   const filename = `${crypto.randomUUID()}.png`;
+  fs.mkdirSync(SOCIAL_ASSETS_DIR, { recursive: true });
   fs.writeFileSync(path.join(SOCIAL_ASSETS_DIR, filename), Buffer.from(imageBase64, 'base64'));
   const imageUrl = `${process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu'}/api/public/social-assets/${filename}`;
 
