@@ -290,6 +290,14 @@ function SocialPostDetail({ action, onChanged }) {
   const [caption, setCaption] = useState(action.payload.caption || '');
   const [loading, setLoading] = useState(null);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyCaption = () => {
+    navigator.clipboard?.writeText(caption).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   const decide = (status) => {
     setLoading(status);
@@ -322,18 +330,11 @@ function SocialPostDetail({ action, onChanged }) {
           ⬇ Bild herunterladen (für TikTok/LinkedIn/manuellen Upload)
         </a>
         <div className="pending-detail-field">
-          <div className="pending-detail-label">Headline im Bild</div>
-          <div>{action.payload.headline}</div>
-        </div>
-        {action.payload.subline && (
-          <div className="pending-detail-field">
-            <div className="pending-detail-label">Subline im Bild</div>
-            <div>{action.payload.subline}</div>
-          </div>
-        )}
-        <div className="pending-detail-field">
-          <div className="pending-detail-label">Beitragstext (bearbeitbar)</div>
+          <div className="pending-detail-label">Beitragstext (bearbeitbar, zum Copy-Paste)</div>
           <textarea rows={5} value={caption} onChange={(e) => setCaption(e.target.value)} />
+          <button type="button" className="link" onClick={copyCaption} style={{ marginTop: '0.3rem' }}>
+            {copied ? '✅ Kopiert' : '📋 Text kopieren'}
+          </button>
         </div>
         {error && <p className="error">Fehler: {error}</p>}
         <div className="social-post-actions">

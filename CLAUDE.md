@@ -1695,6 +1695,16 @@ Version auf "Publish" klicken.
   UND — wichtig — beim nächsten Deploy den **neuen** rsync-Befehl mit dem
   `--exclude` verwenden, sonst tritt der Bug ein letztes Mal auf, bevor er
   behoben ist.
+- **Social-Post-Vorschau vereinfacht (29.08.2026):** Nutzer nutzt aktuell
+  (bis Facebook/Instagram-Zugangsdaten hinterlegt sind, siehe unten) den
+  manuellen Weg: Bild herunterladen + Beitragstext kopieren, direkt in
+  Facebook einfügen. Die separaten Vorschau-Felder "Headline im Bild" und
+  "Subline im Bild" in `SocialPostDetail` waren dafür überflüssig (der
+  Text steht ja schon im heruntergeladenen Bild) — entfernt. Stattdessen
+  neuer "📋 Text kopieren"-Button direkt neben dem Beitragstext-Feld
+  (`navigator.clipboard.writeText`), damit Bild-Download + Copy-Paste in
+  zwei Klicks erledigt ist. Committet+gepusht, normaler rsync/Build-Ablauf
+  für `business-dashboard/` reicht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
