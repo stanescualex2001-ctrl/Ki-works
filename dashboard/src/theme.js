@@ -1,4 +1,4 @@
-const KEY = "kiworks-theme";
+const KEY = "kiworks-theme-dashboard";
 
 export function getStoredTheme() {
   try {

@@ -1607,6 +1607,20 @@ Version auf "Publish" klicken.
   verifiziert (sichtbare, korrekte Richtungsbewegung, Kreis bleibt rund,
   keine Konsolenfehler). Committet und gepusht, normaler rsync/Build-
   Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
+- **Dark/Light-Mode zwischen den 3 Apps getrennt (29.08.2026):** Nutzer-Fund
+  — Theme-Wahl in `/intern` (Business-Dashboard) änderte auch die Landingpage
+  und das Kunden-Dashboard. Ursache: alle 3 Apps (`landing/`, `dashboard/`,
+  `business-dashboard/`) speicherten die Wahl unter demselben localStorage-
+  Schlüssel `kiworks-theme` — da alle auf derselben Domain `ki-works.eu`
+  laufen (nur andere Pfade `/`, `/dashboard/`, `/intern/`), teilen sie sich
+  denselben Speicher (localStorage ist pro Origin, nicht pro Pfad). Fix: je
+  eigener Schlüssel (`kiworks-theme-landing`/`-dashboard`/`-intern`) in
+  `theme.js` jeder App plus dem jeweiligen Anti-Flacker-Inline-Script in
+  allen 11 HTML-Einstiegspunkten (9× `landing/`, je 1× `dashboard/`/
+  `business-dashboard/`). Jede App merkt sich ihre Theme-Wahl jetzt
+  unabhängig. Alle 3 Builds fehlerfrei. Committet+gepusht, normaler
+  rsync/Build-Ablauf für `landing/`+`dashboard/`+`business-dashboard/`
+  (kein Backend-Neustart, keine Migration).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
