@@ -122,8 +122,8 @@ export async function runSalesAgent({ maxCandidates = 5 } = {}) {
     };
     // eslint-disable-next-line no-await-in-loop
     await query(
-      `INSERT INTO pending_actions (restaurant_id, role, kind, summary, payload)
-       VALUES (NULL, 'sales', 'outreach_email', $1, $2)`,
+      `INSERT INTO pending_actions (restaurant_id, business, role, kind, summary, payload)
+       VALUES (NULL, 'ki-works', 'sales', 'outreach_email', $1, $2)`,
       [summary, JSON.stringify(payload)],
     );
     drafted += 1;

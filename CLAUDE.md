@@ -1621,6 +1621,46 @@ Version auf "Publish" klicken.
   unabhängig. Alle 3 Builds fehlerfrei. Committet+gepusht, normaler
   rsync/Build-Ablauf für `landing/`+`dashboard/`+`business-dashboard/`
   (kein Backend-Neustart, keine Migration).
+- **Freigaben pro Business-Karte statt gemeinsamer Meta-Liste (29.08.2026):**
+  Nutzer-Fund/-Einwand nach dem ersten echten Social-Agent-Testlauf — die
+  bisherige "Meta-Ansicht" oben im Business-Dashboard zeigte alle offenen
+  `pending_actions` aller 4 Businesses gebündelt in einer Liste; Nutzer
+  wollte das nicht ("soll n eigene Karte bleiben") — ki-works-, LEDTEK- und
+  pixelpress-Freigaben sollen nicht vermischt erscheinen, sobald auch die
+  anderen Businesses eigene Agenten bekommen. Ursache, warum das technisch
+  nötig wurde: `pending_actions.restaurant_id` ist für alle internen
+  Business-Agenten (Sales/Social) NULL, es gab bisher kein Feld, um die 4
+  Businesses selbst zu unterscheiden. Fix nach demselben Muster wie
+  `audit_log.business` (migration-020): neue Spalte
+  `pending_actions.business` (`migration-027-pending-actions-business.sql`),
+  `salesAgent.js`/`socialAgent.js` setzen jetzt `business: 'ki-works'` beim
+  Insert, `GET /api/pending-actions` akzeptiert optional `?business=`
+  (nur wirksam ohne `customerScope`, analog Audit-Log). Im Business-
+  Dashboard: die bisherige globale `PendingActions`-Liste auf der
+  Übersichtsseite entfernt, stattdessen zeigt jede Business-Karte
+  (`BusinessDetail`) ihre eigene, nach `business.id` gefilterte
+  Freigaben-Liste direkt unter den Agenten-Buttons — genau wie das
+  bestehende `BusinessAuditLog`-Muster darunter. Funktioniert automatisch
+  für künftige Agenten anderer Businesses, ohne weitere Code-Änderung
+  (gleiches "generisch pro Karte"-Prinzip wie beim Audit-Log). Beide
+  Builds (`backend` Syntax-Check, `business-dashboard`) fehlerfrei.
+  Committet+gepusht, braucht zusätzlich zum normalen rsync/Build-Ablauf
+  für `business-dashboard/` die neue Migration
+  `migration-027-pending-actions-business.sql` und einen Backend-Neustart
+  (`server.js`/`salesAgent.js`/`socialAgent.js` geändert).
+  **Dabei außerdem gefunden:** der erste echte Social-Agent-Testlauf schlug
+  zunächst mit `ENOENT ... social-assets/...png` fehl — der Backend-Prozess
+  auf dem Server lief noch mit einem alten Code-Stand von vor Einführung
+  des `fs.mkdirSync(SOCIAL_ASSETS_DIR, ...)`-Anlegens (mehrere vorherige
+  Deploy-Hinweise für reine `landing/`-Änderungen sagten bewusst "kein
+  Backend-Neustart nötig", wodurch der Social-Agent-Code nie aktiv wurde).
+  Behoben durch manuellen `mkdir -p .../social-assets` + `systemctl
+  restart ki-works-api` auf dem Server — kein Code-Fehler, nur ausstehender
+  Neustart. Erster echter Social-Agent-Lauf danach erfolgreich (Entwurf
+  "Küche kocht, Kiwo telefoniert" erstellt, im Audit-Log sichtbar) — die
+  Veröffentlichung selbst schlägt aktuell noch erwartungsgemäß mit "FB_PAGE_ID/
+  FB_PAGE_ACCESS_TOKEN fehlen" fehl, siehe Social-Media-Automatisierung-
+  Abschnitt („Noch offen").
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

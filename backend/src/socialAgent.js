@@ -103,8 +103,8 @@ export async function runSocialAgent({ assetsDir }) {
     imageUrl,
   };
   const { rows } = await query(
-    `INSERT INTO pending_actions (restaurant_id, role, kind, summary, payload)
-     VALUES (NULL, 'social', 'post', $1, $2) RETURNING *`,
+    `INSERT INTO pending_actions (restaurant_id, business, role, kind, summary, payload)
+     VALUES (NULL, 'ki-works', 'social', 'post', $1, $2) RETURNING *`,
     [draft.headline, JSON.stringify(payload)],
   );
 

@@ -340,8 +340,12 @@ function SocialPostDetail({ action, onChanged }) {
   );
 }
 
-function PendingActions({ refreshKey, onChanged }) {
-  const { data: actions, error } = useFetch('/api/pending-actions', refreshKey);
+// Freigaben-Liste, per business-Query-Param auf eine einzelne
+// Business-Dashboard-Karte gefiltert (analog BusinessAuditLog) — keine
+// businessweit vermischte Meta-Liste mehr, jede Karte zeigt nur ihre
+// eigenen Sales-/Social-Entwürfe.
+function PendingActions({ businessId, refreshKey, onChanged }) {
+  const { data: actions, error } = useFetch(`/api/pending-actions?business=${businessId}`, refreshKey);
   const [deciding, setDeciding] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const decide = (id, status) => {
@@ -361,14 +365,13 @@ function PendingActions({ refreshKey, onChanged }) {
     <div className="table-wrap">
       <table>
         <thead>
-          <tr><th>Erstellt</th><th>Betrieb</th><th>Rolle</th><th>Art</th><th>Zusammenfassung</th><th>Aktion</th></tr>
+          <tr><th>Erstellt</th><th>Rolle</th><th>Art</th><th>Zusammenfassung</th><th>Aktion</th></tr>
         </thead>
         <tbody>
           {actions.map((a) => (
             <React.Fragment key={a.id}>
               <tr className="pending-row" onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}>
                 <td>{fmtDateTime(a.created_at)}</td>
-                <td>{a.restaurant_name || '–'}</td>
                 <td>{PENDING_ROLE_LABEL[a.role] || a.role}</td>
                 <td>{PENDING_KIND_LABEL[a.kind] || a.kind}</td>
                 <td>{a.summary}</td>
@@ -387,7 +390,7 @@ function PendingActions({ refreshKey, onChanged }) {
               </tr>
               {expandedId === a.id && (
                 <tr className="pending-row-detail">
-                  <td colSpan={6}>
+                  <td colSpan={5}>
                     {a.kind === 'post'
                       ? <SocialPostDetail action={a} onChanged={() => { onChanged(); setExpandedId(null); }} />
                       : <PendingActionDetail payload={a.payload} />}
@@ -498,7 +501,7 @@ function SocialAgentRunner({ onDone }) {
       </button>
       {result && (
         <p className="hint" style={{ margin: '0.6rem 0 0' }}>
-          Entwurf „{result.summary}" erstellt — Bild+Text zur Freigabe unten in der Meta-Ansicht.
+          Entwurf „{result.summary}" erstellt — Bild+Text zur Freigabe weiter unten auf dieser Karte.
         </p>
       )}
       {error && <p className="error" style={{ margin: '0.6rem 0 0' }}>Fehler: {error}</p>}
@@ -579,7 +582,7 @@ function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
           <p className="hint">
             Pilot-Rolle Sales: recherchiert per Websuche passende Restaurants/Gasthäuser im
             Zielgebiet und legt individuelle Akquise-Mail-Entwürfe zur Freigabe an
-            (landen unten in der Meta-Ansicht unter „Sales" / „Akquise-E-Mail").
+            (landen unten in der Freigaben-Liste dieser Karte unter „Sales" / „Akquise-E-Mail").
           </p>
           <SalesAgentRunner onDone={onAgentDone} />
 
@@ -587,9 +590,16 @@ function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
           <p className="hint" style={{ marginTop: '0.3rem' }}>
             Claude wählt ein Thema, texted Headline/Caption und erstellt die Grafik automatisch.
             Vor der Veröffentlichung auf Facebook/Instagram kannst du den Text bearbeiten und
-            musst freigeben (landet unten unter „Social" / „Social-Media-Post").
+            musst freigeben (landet unten in der Freigaben-Liste unter „Social" / „Social-Media-Post").
           </p>
           <SocialAgentRunner onDone={onAgentDone} />
+
+          <h3 style={{ marginTop: '1.6rem' }}>Freigaben</h3>
+          <p className="hint" style={{ marginTop: '0.3rem' }}>
+            Entwürfe der Kiwo-Agenten für {business.name} — nur diese Karte, nicht mit anderen
+            Businesses vermischt.
+          </p>
+          <PendingActions businessId={business.id} refreshKey={refreshKey} onChanged={onAgentDone} />
         </>
       ) : (
         <p className="hint">
@@ -660,15 +670,12 @@ export default function App() {
           <>
             <header className="main-head">
               <div className="main-head-top">
-                <h1>Meta-Ansicht</h1>
+                <h1>Businesses</h1>
               </div>
               <p className="hint" style={{ margin: 0 }}>
-                Alle offenen Freigaben aus allen Businesses, gebündelt.
+                Offene Freigaben findest du auf der jeweiligen Business-Karte, nicht vermischt.
               </p>
             </header>
-            <PendingActions refreshKey={refreshKey} onChanged={refresh} />
-
-            <h2 style={{ marginTop: '2rem' }}>Businesses</h2>
             <BusinessGrid onOpen={setOpenBusiness} />
           </>
         )}

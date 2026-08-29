@@ -892,14 +892,20 @@ app.patch('/api/callback-requests/:id', async (req, res) => {
 });
 
 // Freigabe-Gate: Ausgaben von Kiwo-Agenten (z.B. Sales-Akquise-Mails), die
-// vor dem Ausführen eine manuelle Freigabe im Dashboard brauchen. Admin ohne
-// Betrieb-Filter sieht alle Betriebe (Meta-Ansicht), Betreiber nur eigene.
+// vor dem Ausführen eine manuelle Freigabe im Dashboard brauchen. Betreiber
+// sehen nur eigene Restaurant-Aktionen. Interne Business-Aktionen ohne
+// restaurant_id (Sales/Social für ki-works.eu, künftig weitere eigene
+// Businesses) sind per business-Query-Param filterbar — analog audit-log,
+// damit das Business-Dashboard jede Karte mit ihren eigenen Freigaben
+// zeigt statt alles vermischt in einer Meta-Liste.
 app.get('/api/pending-actions', async (req, res) => {
   const scope = customerScope(req);
   const restaurantId = scope ?? req.query.restaurant_id;
+  const business = scope ? null : req.query.business;
   const vals = [];
   const cond = [`status = 'pending'`];
   if (restaurantId) { vals.push(restaurantId); cond.push(`restaurant_id = $${vals.length}`); }
+  if (business) { vals.push(business); cond.push(`business = $${vals.length}`); }
   const { rows } = await query(
     `SELECT pa.*, rest.name AS restaurant_name FROM pending_actions pa
      LEFT JOIN restaurants rest ON rest.id = pa.restaurant_id
