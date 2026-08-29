@@ -312,6 +312,15 @@ function SocialPostDetail({ action, onChanged }) {
     <div className="social-post-detail">
       <img className="social-post-image" src={action.payload.imageUrl} alt="" />
       <div className="social-post-fields">
+        <a
+          className="link"
+          href={action.payload.imageUrl}
+          download={`kiwo-social-${action.id}.png`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          ⬇ Bild herunterladen (für TikTok/LinkedIn/manuellen Upload)
+        </a>
         <div className="pending-detail-field">
           <div className="pending-detail-label">Headline im Bild</div>
           <div>{action.payload.headline}</div>

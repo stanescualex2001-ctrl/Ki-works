@@ -1661,6 +1661,16 @@ Version auf "Publish" klicken.
   Veröffentlichung selbst schlägt aktuell noch erwartungsgemäß mit "FB_PAGE_ID/
   FB_PAGE_ACCESS_TOKEN fehlen" fehl, siehe Social-Media-Automatisierung-
   Abschnitt („Noch offen").
+- **Social-Post-Vorschau: Bild-Download-Link ergänzt (29.08.2026):** da
+  TikTok/LinkedIn bewusst nicht automatisch bespielt werden (App-Review-
+  Aufwand, siehe unten), aber Facebook/Instagram schon, brauchte die
+  Freigabe-Vorschau eine Möglichkeit, das erzeugte Bild für den manuellen
+  Upload woanders herunterzuladen. `SocialPostDetail` im
+  Business-Dashboard zeigt jetzt einen "⬇ Bild herunterladen"-Link über
+  dem Bild (echter `<a download>`-Link auf die bereits öffentlich
+  erreichbare `imageUrl`). Reine Frontend-Ergänzung, kein Backend-/
+  Migrationsbedarf. Committet+gepusht, normaler rsync/Build-Ablauf für
+  `business-dashboard/` reicht.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
