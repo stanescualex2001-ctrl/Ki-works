@@ -1756,6 +1756,34 @@ Version auf "Publish" klicken.
   und der Button-Text fällt in dem Fall auf schlichtes "✅ Freigeben"
   zurück (kein leeres Versprechen mehr). Committet+gepusht, normaler
   rsync/Build-Ablauf für `business-dashboard/` reicht.
+- **Sales-Agent-E-Mail-Suche verschärft + editierbare Sales-Vorschau
+  (29.08.2026):** Nutzer wies den ersten Fix (nur Hinweis auf Impressum
+  prüfen) klar zurück — der Agent sieht die Website bereits per
+  `web_fetch`, es gibt keinen Grund für "keine E-Mail gefunden", solange
+  er nicht aktiv Footer/Impressum/Kontakt-Seite durchsucht (in AT/DE ist
+  eine E-Mail-Adresse dort gesetzlich vorgeschrieben). `buildPrompt()` in
+  `backend/src/salesAgent.js` verlangt jetzt eine klare Schrittfolge vor
+  `contact_email: null` (Footer prüfen → Impressum-/Kontakt-Unterseiten
+  gezielt per `web_fetch` laden → erst danach `null` erlauben), `null`
+  soll die Ausnahme sein, nicht der Normalfall. `web_fetch`-`max_uses`
+  von 15 auf 20 erhöht (mehr Unterseiten pro Kandidat). Zusätzlich, wie
+  vom Nutzer gefordert: neue `SalesEmailDetail`-Komponente im
+  Business-Dashboard (analog `SocialPostDetail`) — Betreff und Text vor
+  der Freigabe editierbar, dazu einzelne "📋 Kopieren"-Buttons für
+  Betreff/Text/Kontakt-E-Mail (`CopyFieldButton`, `navigator.clipboard`),
+  damit nichts verloren geht, bevor freigegeben wird. Sales-Zeilen zeigen
+  jetzt wie Social-Posts einen "👁 Vorschau & Freigabe"-Umschalter statt
+  direkter Freigeben/Ablehnen-Buttons in der Zeile. Freigeben schickt
+  `{status, payload: {subject, body}}` — nutzt die bereits bestehende
+  `payloadEdit`-Merge-Logik in `PATCH /api/pending-actions/:id`, keine
+  Backend-Änderung nötig außer der schon vorhandenen `mailDraftWarning`-
+  Anzeige (jetzt auch hier verdrahtet). Lokal verifiziert: `node --check`
+  für `salesAgent.js`, `business-dashboard`-Build fehlerfrei — kein
+  echter Sales-Agent-Testlauf (würde laut Standing Rule echtes
+  Anthropic-/Websuche-Guthaben kosten), Nutzer prüft die verbesserte
+  Trefferquote beim nächsten eigenen "Sales-Agent starten". Committet+
+  gepusht, braucht Backend-Neustart (`salesAgent.js` geändert) plus
+  normalen `business-dashboard/`-Build.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 

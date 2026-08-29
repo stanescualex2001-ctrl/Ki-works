@@ -350,6 +350,105 @@ function SocialPostDetail({ action, onChanged }) {
   );
 }
 
+function CopyFieldButton({ value, label }) {
+  const [copied, setCopied] = useState(false);
+  if (!value) return null;
+  return (
+    <button
+      type="button"
+      className="link"
+      onClick={() => navigator.clipboard?.writeText(value).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })}
+    >
+      {copied ? '✅ Kopiert' : `📋 ${label} kopieren`}
+    </button>
+  );
+}
+
+// Akquise-Mail-Entwurf: Betreff/Text editierbar (landet bei Freigabe direkt
+// als Entwurf im Postfach, siehe mailDraft.js), plus einzelne
+// Kopieren-Buttons für Betreff/Text/Kontakt-E-Mail, falls man's doch
+// manuell woanders einfügen will — nichts soll vor der Freigabe verloren
+// gehen können.
+function SalesEmailDetail({ action, onChanged }) {
+  const [subject, setSubject] = useState(action.payload.subject || '');
+  const [body, setBody] = useState(action.payload.body || '');
+  const [loading, setLoading] = useState(null);
+  const [error, setError] = useState(null);
+  const contactEmail = action.payload.contact_email;
+
+  const decide = (status) => {
+    setLoading(status);
+    setError(null);
+    apiFetch(`/api/pending-actions/${action.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ status, payload: { subject, body } }),
+    })
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        if (d.mailDraftWarning) alert(d.mailDraftWarning);
+        onChanged();
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(null));
+  };
+
+  return (
+    <div className="social-post-detail">
+      <div className="social-post-fields">
+        {action.payload.website && (
+          <div className="pending-detail-field">
+            <div className="pending-detail-label">Website</div>
+            <a className="site-link" href={action.payload.website} target="_blank" rel="noreferrer">
+              {action.payload.website}
+            </a>
+          </div>
+        )}
+        {action.payload.why_fit && (
+          <div className="pending-detail-field">
+            <div className="pending-detail-label">Begründung</div>
+            <div>{action.payload.why_fit}</div>
+          </div>
+        )}
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Kontakt-E-Mail</div>
+          {contactEmail ? (
+            <a className="site-link" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+          ) : (
+            <div className="hint">⚠ keine E-Mail gefunden</div>
+          )}
+          <CopyFieldButton value={contactEmail} label="E-Mail" />
+        </div>
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Betreff (bearbeitbar)</div>
+          <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} />
+          <CopyFieldButton value={subject} label="Betreff" />
+        </div>
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Text (bearbeitbar)</div>
+          <textarea rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
+          <CopyFieldButton value={body} label="Text" />
+        </div>
+        {error && <p className="error">Fehler: {error}</p>}
+        <div className="social-post-actions">
+          <button className="primary" disabled={!!loading} onClick={() => decide('approved')}>
+            {loading === 'approved'
+              ? 'Freigebe…'
+              : contactEmail ? '✅ Freigeben & Entwurf anlegen' : '✅ Freigeben'}
+          </button>
+          <button className="link" disabled={!!loading} onClick={() => decide('rejected')}>
+            {loading === 'rejected' ? '…' : '❌ Ablehnen'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Freigaben-Liste, per business-Query-Param auf eine einzelne
 // Business-Dashboard-Karte gefiltert (analog BusinessAuditLog) — keine
 // businessweit vermischte Meta-Liste mehr, jede Karte zeigt nur ihre
@@ -395,15 +494,13 @@ function PendingActions({ businessId, refreshKey, onChanged }) {
                   )}
                 </td>
                 <td className="lead-actions" onClick={(e) => e.stopPropagation()}>
-                  {a.kind === 'post' ? (
+                  {a.kind === 'post' || a.kind === 'outreach_email' ? (
                     <button className="link" onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}>
                       {expandedId === a.id ? '▲ Schließen' : '👁 Vorschau & Freigabe'}
                     </button>
                   ) : (
                     <>
-                      <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>
-                        {a.kind === 'outreach_email' && a.payload.contact_email ? '✅ Freigeben & Entwurf anlegen' : '✅ Freigeben'}
-                      </button>
+                      <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'approved')}>✅ Freigeben</button>
                       <button className="link" disabled={deciding === a.id} onClick={() => decide(a.id, 'rejected')}>❌ Ablehnen</button>
                     </>
                   )}
@@ -412,9 +509,15 @@ function PendingActions({ businessId, refreshKey, onChanged }) {
               {expandedId === a.id && (
                 <tr className="pending-row-detail">
                   <td colSpan={5}>
-                    {a.kind === 'post'
-                      ? <SocialPostDetail action={a} onChanged={() => { onChanged(); setExpandedId(null); }} />
-                      : <PendingActionDetail payload={a.payload} />}
+                    {a.kind === 'post' && (
+                      <SocialPostDetail action={a} onChanged={() => { onChanged(); setExpandedId(null); }} />
+                    )}
+                    {a.kind === 'outreach_email' && (
+                      <SalesEmailDetail action={a} onChanged={() => { onChanged(); setExpandedId(null); }} />
+                    )}
+                    {a.kind !== 'post' && a.kind !== 'outreach_email' && (
+                      <PendingActionDetail payload={a.payload} />
+                    )}
                   </td>
                 </tr>
               )}

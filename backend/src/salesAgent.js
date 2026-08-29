@@ -43,11 +43,28 @@ Online-Auftritt des Betriebs Bezug nimmt (z. B. fehlende Online-Reservierung,
 Anrede. Erwähne kurz den Nutzen (Telefon rund um die Uhr, Reservierungen
 automatisch entgegennehmen) und den ersten Monat kostenlos.
 
+WICHTIG — Kontakt-E-Mail-Suche: du hast bereits Zugriff auf die Website
+jedes Kandidaten per web_fetch, nutze das aktiv, um eine E-Mail-Adresse zu
+finden. Fast jede Geschäftswebsite in Österreich/Deutschland zeigt eine
+E-Mail-Adresse im Footer der Startseite, auf einer Impressum-Seite oder auf
+einer Kontakt-Seite (Impressumspflicht ist dort gesetzlich vorgeschrieben).
+Gehe für jeden Kandidaten diese Schritte durch, BEVOR du contact_email auf
+null setzt:
+1. Footer der Startseite auf eine E-Mail-Adresse prüfen.
+2. Verlinkte Seiten mit "Impressum"/"Kontakt"/"Imprint"/"Contact" im
+   Linktext oder in der URL (z. B. .../impressum, .../kontakt) gezielt per
+   web_fetch laden und dort nach einer E-Mail-Adresse suchen.
+3. Erst wenn du nach Prüfung von Startseite, Footer, Impressum UND
+   Kontakt-Seite wirklich keine E-Mail-Adresse gefunden hast (z. B. nur ein
+   Kontaktformular ohne sichtbare Adresse), darfst du contact_email auf
+   null setzen — das soll die Ausnahme sein, nicht der Normalfall.
+
 Antworte NUR mit einem JSON-Codeblock (\`\`\`json ... \`\`\`), keinem weiteren
 Text davor oder danach. Format: ein JSON-Array von Objekten mit genau diesen
 Feldern: business_name, website (string oder null), city (string oder null),
-why_fit (ein Satz Begründung), contact_email (string oder null, falls online
-keine Mail-Adresse auffindbar war), subject, body.
+why_fit (ein Satz Begründung), contact_email (string oder null, nur falls
+nach den obigen Schritten wirklich keine Mail-Adresse auffindbar war),
+subject, body.
 Wenn du keine passenden, noch nicht kontaktierten Kandidaten findest, gib ein
 leeres Array [] zurück.`;
 }
@@ -81,7 +98,9 @@ export async function runSalesAgent({ maxCandidates = 5 } = {}) {
   const client = new Anthropic({ apiKey });
   const tools = [
     { type: 'web_search_20260209', name: 'web_search', max_uses: 15 },
-    { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 15 },
+    // 20 statt 15: pro Kandidat kommt jetzt zusätzlich das gezielte Nachladen
+    // von Impressum-/Kontakt-Seiten für die E-Mail-Suche dazu.
+    { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 20 },
   ];
   const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList) }];
 
