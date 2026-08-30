@@ -2043,6 +2043,29 @@ Version auf "Publish" klicken.
   Nachbar-Elemente) — Mobile (Grid) und Desktop (Flexbox) verhalten sich
   bei `min-w-0`/`shrink-0` grundverschieden, ein Fix für die eine Ebene
   kann auf der anderen unbemerkt etwas kaputt machen.
+- **Prompt Caching für Web-Chat-Widget aktiviert (30.08.2026):** Nutzer
+  fragte nach den Ausgaben/Guthaben in der Anthropic-Konsole, dabei kam
+  die Konsolen-Funktion "Prompt-Caching" zur Sprache (bisher 0 % Nutzung).
+  Einschätzung: lohnt sich am ehesten für `backend/src/webchat.js` — bei
+  jeder Besucher-Nachricht wird derselbe System-Prompt (Wissensdatenbank/
+  FAQ/Öffnungszeiten des Restaurants) + dasselbe `capture_lead`-Tool
+  mitgeschickt, spart bei aktiver Nutzung laut Anthropic 50-90 % der
+  Eingabekosten. Sales-/Social-Agent (Einzelläufe auf Admin-Klick, kein
+  wiederholter identischer Kontext) und Anruf-Klassifizierung (kurze
+  Einzel-Prompts) bringen dagegen keinen spürbaren Vorteil — dort bewusst
+  nichts geändert. Umgesetzt: `CAPTURE_LEAD_TOOL` bekam
+  `cache_control: {type: 'ephemeral'}`, der bisher als reiner String
+  übergebene System-Prompt läuft jetzt als Content-Block-Array mit
+  demselben Cache-Breakpoint. Kein Verhaltensunterschied für Besucher,
+  reine Kosten-/Latenz-Optimierung. Mindestgröße fürs Caching bei
+  `claude-sonnet-5` liegt bei 1.024 Tokens — bei sehr kleiner
+  Wissensdatenbank greift es evtl. noch nicht, das ist kein Fehler,
+  sondern wird automatisch wirksam, sobald der Inhalt wächst. Nur
+  Syntax-Check möglich (kein `ANTHROPIC_API_KEY` in dieser Sandbox,
+  Standing Rule Nutzungsguthaben) — Wirkung zeigt sich live über
+  `usage.cache_read_input_tokens` bzw. im Konsolen-Cache-Tab, sobald das
+  Widget genutzt wird. Committet+gepusht, braucht Backend-Neustart
+  (`webchat.js` geändert), keine Migration.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
