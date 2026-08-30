@@ -181,6 +181,23 @@ export function Header({ page = "home" }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSolutionsOpen, setMobileSolutionsOpen] = useState(false);
   const solutionsRef = useRef(null);
+  const logoTitleRef = useRef(null);
+  const logoSubtitleRef = useRef(null);
+
+  // Subtitle "PLATFORM" per Letter-Spacing auf dieselbe Breite wie "KI-Works"
+  // darüber strecken (Länge variiert je Sprache: PLATFORM vs. PLATFORMĂ).
+  useEffect(() => {
+    const title = logoTitleRef.current;
+    const subtitle = logoSubtitleRef.current;
+    if (!title || !subtitle) return;
+    subtitle.style.letterSpacing = "normal";
+    const targetWidth = title.getBoundingClientRect().width;
+    const naturalWidth = subtitle.getBoundingClientRect().width;
+    const chars = subtitle.textContent?.length || 0;
+    if (chars > 1 && targetWidth > naturalWidth) {
+      subtitle.style.letterSpacing = `${((targetWidth - naturalWidth) / chars).toFixed(2)}px`;
+    }
+  }, [locale]);
 
   useEffect(() => {
     function handleClick(e) {
@@ -217,9 +234,11 @@ export function Header({ page = "home" }) {
             <OrbitKLogo size={54} />
           </span>
           <div className="leading-tight min-w-0">
-            <div className="truncate text-sm font-semibold tracking-tight">KI-Works</div>
-            <div className="truncate text-[10px] font-mono tracking-wide text-foreground/40">
-              {t("nav.logoSubtitle")}
+            <div className="truncate text-sm font-semibold tracking-tight">
+              <span ref={logoTitleRef}>KI-Works</span>
+            </div>
+            <div className="truncate text-[10px] font-mono text-foreground/40">
+              <span ref={logoSubtitleRef}>{t("nav.logoSubtitle")}</span>
             </div>
           </div>
         </a>
