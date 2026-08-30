@@ -20,6 +20,9 @@ const CAPTURE_LEAD_TOOL = {
     },
     required: ['name', 'message'],
   },
+  // Letztes (einziges) Tool -> Cache-Breakpoint für den Tools-Block, siehe
+  // buildSystemPrompt()/runWebchatTurn() für die restlichen Breakpoints.
+  cache_control: { type: 'ephemeral' },
 };
 
 function buildSystemPrompt(restaurant) {
@@ -63,7 +66,17 @@ export async function runWebchatTurn({ restaurant, history, message }) {
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
 
   const client = new Anthropic({ apiKey });
-  const system = buildSystemPrompt(restaurant);
+  // Cache-Breakpoint: derselbe System-Prompt (Wissensdatenbank/FAQ/
+  // Öffnungszeiten des Restaurants) wird bei jeder Besucher-Nachricht
+  // mitgeschickt — Caching spart hier laut Anthropic 50-90% der
+  // Eingabekosten, sobald das Widget aktiv genutzt wird.
+  const system = [
+    {
+      type: 'text',
+      text: buildSystemPrompt(restaurant),
+      cache_control: { type: 'ephemeral' },
+    },
+  ];
   const messages = [...history, { role: 'user', content: message }];
   const tools = [CAPTURE_LEAD_TOOL];
 
