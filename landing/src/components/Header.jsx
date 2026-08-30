@@ -229,11 +229,11 @@ export function Header({ page = "home" }) {
   return (
     <header className="relative z-20">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 md:flex md:justify-between">
-        <a href={homeHref} className="flex min-w-0 items-center gap-2.5">
+        <a href={homeHref} className="flex shrink-0 items-center gap-2.5">
           <span className="relative flex h-[54px] w-[54px] shrink-0 items-center justify-center">
             <OrbitKLogo size={54} />
           </span>
-          <div className="leading-tight min-w-0">
+          <div className="leading-tight">
             <div className="truncate text-sm font-semibold tracking-tight">
               <span ref={logoTitleRef}>KI-Works</span>
             </div>
@@ -242,7 +242,7 @@ export function Header({ page = "home" }) {
             </div>
           </div>
         </a>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-foreground/60">
+        <nav className="hidden md:flex flex-wrap items-center gap-4 lg:gap-6 xl:gap-8 text-sm text-foreground/60">
           <div ref={solutionsRef} className="relative">
             <button
               type="button"
