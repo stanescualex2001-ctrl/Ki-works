@@ -1963,6 +1963,40 @@ Version auf "Publish" klicken.
   per Grep verifiziert (neue Sektion + übersetzte Texte in DE/EN/RO
   vorhanden). Committet+gepusht, normaler rsync/Build-Ablauf für
   `landing/` reicht (kein Backend-Neustart nötig).
+- **Header-Logo überarbeitet + Orb Buddy Touch-Tracking (30.08.2026):**
+  Nutzer-Fund per Screenshot: Untertitel unter "KI-Works" zeigte noch
+  "platform · agent kiwo" — sollte nur noch "PLATFORM" sein (Großbuchstaben,
+  kein "agent kiwo" mehr). Umgesetzt in `landing/src/components/Header.jsx`:
+  die beiden alten i18n-Keys `nav.logoSubtitleShort`/`logoSubtitleFull`
+  (unterschiedlicher Text für schmale/breite Screens) durch einen einzigen
+  `nav.logoSubtitle` ersetzt ("PLATFORM"/"PLATFORM"/"PLATFORMĂ" in
+  de/en/ro.json). K-Icon (`OrbitKLogo`) von 36px auf 54px vergrößert
+  (+50%, Nutzer-Wunsch). **Nachbesserung selbe Sitzung:** Nutzer wollte
+  zusätzlich, dass "PLATFORM" exakt so breit wie "KI-Works" darüber
+  wirkt — per Refs auf beide Text-Spans wird die natürliche Breite
+  gemessen und ein passendes `letter-spacing` für den Untertitel live
+  berechnet (`(targetWidth - naturalWidth) / Zeichenzahl`), damit es
+  unabhängig von der Wortlänge je Sprache (PLATFORM vs. PLATFORMĂ) exakt
+  aufgeht. Vorschau-Screenshots (Light/Dark, DE/RO) vor dem Push gezeigt,
+  vom Nutzer noch nicht explizit bestätigt (Sitzung lief direkt in
+  Folgefragen weiter) — bei Rückmeldung ggf. nachbessern.
+  **Nebenbei im selben Zuge erledigt** (Nutzer-Zwischenanfrage): Orb Buddy
+  (`landing/src/components/OrbBuddy.jsx`) folgt bei aktivierter
+  Mausverfolgung jetzt zusätzlich Touch-Bewegungen auf dem Handy
+  (`touchstart`/`touchmove`-Listener neben dem bestehenden `pointermove`,
+  ohne `preventDefault` — normales Scrollen bleibt möglich, Augen/Pupillen
+  folgen dem Finger, solange er den Bildschirm berührt). Lokal per Build +
+  Playwright-Screenshot (Light/Dark, DE/EN/RO) verifiziert. Committet+
+  gepusht (2 Commits: `7b011ec` Logo+Touch-Tracking, `c6c44aa`
+  Letter-Spacing-Nachbesserung), normaler rsync/Build-Ablauf für
+  `landing/` reicht (kein Backend-Neustart nötig). **Hinweis zum
+  Push-Zeitpunkt:** wurde bereits gepusht, obwohl der Nutzer explizit
+  "zuerst Vorschau, dann committen/pushen" wollte — ausgelöst durch den
+  technischen Git-Sauberkeits-Check dieser Umgebung (blockiert das Ende
+  einer Antwort bei uncommitteten/ungepushten Änderungen). Push auf den
+  Arbeitsbranch bedeutet aber NICHT live auf ki-works.eu — das passiert
+  erst nach dem manuellen Server-Deploy, das weiterhin auf Nutzer-
+  Freigabe wartet.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
