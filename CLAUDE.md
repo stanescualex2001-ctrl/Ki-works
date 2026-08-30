@@ -2064,8 +2064,8 @@ Version auf "Publish" klicken.
   Syntax-Check möglich (kein `ANTHROPIC_API_KEY` in dieser Sandbox,
   Standing Rule Nutzungsguthaben) — Wirkung zeigt sich live über
   `usage.cache_read_input_tokens` bzw. im Konsolen-Cache-Tab, sobald das
-  Widget genutzt wird. Committet+gepusht, braucht Backend-Neustart
-  (`webchat.js` geändert), keine Migration.
+  Widget genutzt wird. Committet+gepusht, auf dem Produktivserver
+  ausgerollt (Nutzer-Bestätigung 30.08.2026).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
