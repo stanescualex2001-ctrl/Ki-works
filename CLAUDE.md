@@ -2481,6 +2481,42 @@ Version auf "Publish" klicken.
   Recherche-Agent für künftige Preis-Updates bleibt eine mögliche, aber
   nicht mehr dringende Idee.
 
+- **Sales-Agent-Kosten drastisch gesenkt (30.08.2026):** Auslöser — ein
+  einzelner Sales-Agent-Lauf hat laut Anthropic-Konsole 4,14 Mio.
+  Eingabe-Tokens auf `claude-sonnet-5` verbraucht (~9 $), obwohl er wegen
+  eines 504-Fehlers nicht mal im Dashboard sichtbar wurde. Ursache: die
+  `pause_turn`-Retry-Schleife in `backend/src/salesAgent.js` (bis zu 3
+  Versuche bei vielen Websuchen) hat bei jedem Versuch den kompletten
+  bisherigen Verlauf inkl. aller Web-Search-/Web-Fetch-Ergebnisse erneut
+  voll abgerechnet — es gab dort kein Prompt Caching. Behoben: (1)
+  automatisches Caching aktiviert (`cache_control: {type: 'ephemeral'}`
+  als Top-Level-Feld im `client.messages.create()`-Aufruf) — ab dem 2.
+  Retry-Versuch wird der bereits gesendete Verlauf zu 10 % des Preises aus
+  dem Cache gelesen statt voll neu abgerechnet; (2) `max_content_tokens:
+  3000` auf dem `web_fetch`-Tool ergänzt, begrenzt die Textmenge pro
+  abgerufener Seite. `max_uses` (15 Websuchen/20 Seitenabrufe) bewusst
+  unverändert gelassen, da erst kürzlich gezielt erhöht für bessere
+  E-Mail-Fundquote. **Andere Agenten geprüft, keine Änderung nötig:**
+  `claude.js` (Anruf-Zusammenfassung/-Klassifizierung/Empfehlungen/
+  Übersetzung) läuft bereits auf `claude-haiku-4-5-20251001` — schon das
+  günstigste Modell. `socialAgent.js` ist mit ~200 Wörtern Prompt (unter
+  der 1024-Token-Cache-Mindestgröße) ohnehin schon der günstigste der
+  größeren Agenten, kein Caching nötig. `webchat.js` hatte bereits am
+  selben Tag Caching bekommen (siehe Eintrag oben). **Modellwahl bewusst
+  bei `claude-sonnet-5` belassen** (Sales-/Social-Agent) statt auf Haiku
+  zu wechseln: `claude-haiku-4-5` unterstützt die genutzten Web-Tools
+  `web_search_20260209`/`web_fetch_20260209` (dynamische Filterung) laut
+  Anthropic-Doku nicht — ein Wechsel würde auf ältere Basic-Varianten ohne
+  Filterung zurückfallen, potenziell mehr Rohtext laden statt weniger, und
+  die Qualität von Akquise-Mails (nach außen sichtbarer Content) senken.
+  Da das fehlende Caching der eigentliche Kostentreiber war, nicht das
+  Modell, bringt der Caching-Fix den weitaus größeren Hebel ohne
+  Qualitätsverlust. Nur Syntax-Check möglich (kein echter Testlauf,
+  Standing Rule Nutzungsguthaben) — Wirkung zeigt sich beim nächsten
+  echten Lauf über `cache_read_input_tokens` > 0 in der Anthropic-Konsole.
+  **Nutzer hat für in einer Woche einen Nachfass-Check zu den neuen Kosten
+  vereinbart.**
+
 ## Offene Punkte (Stand zuletzt bekannt)
 
 - **Sales-Mail-Entwurf-Anlage (siehe „Bereits erledigt", 29.08.2026):

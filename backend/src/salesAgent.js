@@ -95,20 +95,27 @@ export async function runSalesAgent({ business, maxCandidates = 5, region } = {}
     { type: 'web_search_20260209', name: 'web_search', max_uses: 15 },
     // 20 statt 15: pro Kandidat kommt jetzt zusätzlich das gezielte Nachladen
     // von Impressum-/Kontakt-Seiten für die E-Mail-Suche dazu.
-    { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 20 },
+    // max_content_tokens begrenzt, wie viel Text pro abgerufener Seite in
+    // den Kontext wandert (Kostenschutz gegen ungewöhnlich lange Seiten).
+    { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 20, max_content_tokens: 3000 },
   ];
   const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region, profile) }];
 
   // Server-Tools laufen serverseitig in einer eigenen Schleife; bei vielen
   // Websuchen kann das Limit von 10 Runden erreicht werden (stop_reason
   // "pause_turn") — dann laut Doku Assistant-Antwort anhängen und erneut
-  // senden, bis zu einem kleinen Sicherheits-Limit.
+  // senden, bis zu einem kleinen Sicherheits-Limit. Ohne Caching wird dabei
+  // bei jedem Versuch der komplette bisherige Verlauf (inkl. aller
+  // Web-Search-/Web-Fetch-Ergebnisse) erneut voll abgerechnet — automatisches
+  // Caching (Top-Level-Feld) liest das ab dem 2. Versuch stattdessen zu 10%
+  // des Preises aus dem Cache.
   let response;
   for (let attempt = 0; attempt < 3; attempt += 1) {
     // eslint-disable-next-line no-await-in-loop
     response = await client.messages.create({
       model: MODEL,
       max_tokens: 8000,
+      cache_control: { type: 'ephemeral' },
       tools,
       messages,
     });
