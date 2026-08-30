@@ -2514,8 +2514,15 @@ Version auf "Publish" klicken.
   Qualitätsverlust. Nur Syntax-Check möglich (kein echter Testlauf,
   Standing Rule Nutzungsguthaben) — Wirkung zeigt sich beim nächsten
   echten Lauf über `cache_read_input_tokens` > 0 in der Anthropic-Konsole.
-  **Nutzer hat für in einer Woche einen Nachfass-Check zu den neuen Kosten
-  vereinbart.**
+  **Auf dem Produktivserver ausgerollt (Nutzer-Bestätigung 30.08.2026,**
+  reiner Backend-Neustart, kein Frontend-Build/keine Migration nötig).
+  **Nachfass-Check zu den neuen Kosten in einer Woche vereinbart** — der
+  automatische `send_later`-Reminder dafür ließ sich technisch nicht
+  einrichten ("MCP tool call requires approval", dieselbe bekannte
+  Einschränkung wie bei `create_trigger` für die Social-Media-Routine,
+  siehe „Social-Media-Automatisierung" oben) — Nutzer muss selbst
+  nachfragen, wenn er die Anthropic-Konsolen-Zahlen vom nächsten
+  Sales-Agent-Lauf mit den früheren 4,14 Mio. Tokens vergleichen will.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
