@@ -228,12 +228,12 @@ export function Header({ page = "home" }) {
 
   return (
     <header className="relative z-20">
-      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 md:flex md:justify-between">
-        <a href={homeHref} className="flex shrink-0 items-center gap-2.5">
+      <div className="mx-auto grid max-w-[1440px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 min-[1440px]:flex min-[1440px]:justify-between">
+        <a href={homeHref} className="flex min-w-0 items-center gap-2.5 min-[1440px]:shrink-0">
           <span className="relative flex h-[54px] w-[54px] shrink-0 items-center justify-center">
             <OrbitKLogo size={54} />
           </span>
-          <div className="leading-tight">
+          <div className="hidden min-w-0 leading-tight sm:block">
             <div className="truncate text-sm font-semibold tracking-tight">
               <span ref={logoTitleRef}>KI-Works</span>
             </div>
@@ -242,7 +242,7 @@ export function Header({ page = "home" }) {
             </div>
           </div>
         </a>
-        <nav className="hidden md:flex flex-wrap items-center gap-4 lg:gap-6 xl:gap-8 text-sm text-foreground/60">
+        <nav className="hidden min-[1440px]:flex flex-wrap items-center gap-6 text-sm text-foreground/60">
           <div ref={solutionsRef} className="relative">
             <button
               type="button"
@@ -295,7 +295,7 @@ export function Header({ page = "home" }) {
             onClick={() => setMobileOpen((v) => !v)}
             aria-expanded={mobileOpen}
             aria-label={t("nav.menuAriaLabel")}
-            className="ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-foreground/80 transition hover:border-foreground/30 hover:text-foreground md:hidden"
+            className="ml-1 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-foreground/15 text-foreground/80 transition hover:border-foreground/30 hover:text-foreground min-[1440px]:hidden"
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -309,7 +309,7 @@ export function Header({ page = "home" }) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="glass overflow-hidden border-t border-foreground/10 md:hidden"
+            className="glass overflow-hidden border-t border-foreground/10 min-[1440px]:hidden"
           >
             <div className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-5 text-sm sm:px-6">
               <button

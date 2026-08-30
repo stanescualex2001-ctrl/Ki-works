@@ -1997,6 +1997,52 @@ Version auf "Publish" klicken.
   Arbeitsbranch bedeutet aber NICHT live auf ki-works.eu — das passiert
   erst nach dem manuellen Server-Deploy, das weiterhin auf Nutzer-
   Freigabe wartet.
+- **Header-Logo/Nav: zwei Nachbesserungsrunden nach obigem Umbau
+  (30.08.2026):** der 54px-Icon+breitengleicher-Subtitle-Umbau hatte
+  reale Layout-Nebenwirkungen, die erst durch Nutzer-Screenshots
+  auffielen. **Runde 1 (Desktop-Truncation):** bei mittleren Fenster-
+  breiten (~800-1440px) wurde "KI-Works"/"PLATFORM" hart zu "KI-Wo…"/
+  "PLATFO…" abgeschnitten — Ursache: nur der Logo-Block hatte `min-w-0`
+  (Nav/rechte Icon-Gruppe nicht), Flexbox hat deshalb ausschließlich das
+  Logo gequetscht. Fix: `min-w-0` vom Logo entfernt + `shrink-0` ergänzt,
+  `<nav>` bekam `flex-wrap` als Absicherung. **Runde 2 (eigener Bug im
+  Runde-1-Fix, von Nutzer per Zoom-Screenshot gefunden):** auf Mobile
+  (Header ist dort ein CSS-**Grid**, kein Flexbox — `shrink-0` also
+  wirkungslos) führte das Entfernen von `min-w-0` dazu, dass der Text
+  über das danebenliegende Flaggen-Icon **hinweglief** (echte
+  Überlappung, kein bloßes "eng"). Zusätzlich sah der Desktop-Zeilenumbruch
+  bei ~900-1366px kaputt aus: "Reseller & Partner" hing als einzelnes,
+  verwaistes Nav-Element mit viel Leerraum in einer zweiten Zeile.
+  Nutzer lehnte beide angebotenen Korrekturrichtungen ("enger packen"/
+  "weniger Menüpunkte") ab ("Keine davon. Sieh dein Bild nochmal") —
+  nach genauerem Hinsehen echte Lösung statt Kompromiss gefunden: (1)
+  `min-w-0` auf Logo-`<a>` wieder ergänzt (mobile-sicheres Grid-Verhalten
+  wiederhergestellt), (2) **Logo-Text unter `sm:` (640px) komplett
+  ausgeblendet** — Nutzer-Vorschlag "dann auf mobile nur K Logo lassen"
+  war die einfachste, robusteste Lösung (kein Platzproblem auf Mobile
+  mehr, per `getBoundingClientRect()`-Messung bestätigt: bei 375px waren
+  nur 12,7px für den ~60px breiten Text übrig — kein Tuning hätte
+  gereicht, außer den User-Wunsch "Icon 50% größer" zurückzudrehen); (3)
+  Desktop-Nav zeigt sich jetzt nur noch ab einem eigenen `min-[1440px]:`-
+  Breakpoint (statt `md:`/`lg:`) — per Messung empirisch ermittelt: bei
+  1024/1100/1280/1366px passten die 8 Menüpunkte selbst mit `flex-wrap`
+  und engerem Gap nicht in eine Zeile, erst ab 1440px klappte es sauber;
+  darunter zeigt sich durchgängig nur der (ohnehin schon vorhandene,
+  vollwertige) Hamburger, nie ein halb sichtbarer Zwischenzustand.
+  Header-Container-Breite dafür von `max-w-7xl` (1280px) auf `max-w-
+  [1440px]` angehoben (nur der Header, restlicher Seiteninhalt bleibt
+  bei `max-w-7xl`). Alle zugehörigen Sichtbarkeits-Schwellen (Hamburger-
+  Button, mobiles Menü-Panel) konsistent mitgezogen. Per Playwright an
+  13 Breiten (320/360/375/390/414/430/768/900/1024/1100/1280/1366/1440/
+  1536/1920px) + Dark Mode verifiziert — keine Überlappung, keine
+  sichtbare Abschneidung mehr, Nav-Zwischenzustand komplett eliminiert.
+  Committet+gepusht, normaler rsync/Build-Ablauf für `landing/` reicht
+  (kein Backend-Neustart nötig). **Lehre für künftige Layout-Änderungen
+  an diesem Header:** immer bei realistischen Breiten MIT sichtbarem
+  Menü/Icon-Cluster testen (nicht nur eine isolierte Schmalansicht ohne
+  Nachbar-Elemente) — Mobile (Grid) und Desktop (Flexbox) verhalten sich
+  bei `min-w-0`/`shrink-0` grundverschieden, ein Fix für die eine Ebene
+  kann auf der anderen unbemerkt etwas kaputt machen.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2059,31 +2105,38 @@ Version auf "Publish" klicken.
   wäre `create_order` (Bestellung) durch ein generisches `create_appointment`
   (Termin) zu ergänzen/ersetzen — Rest der Architektur ist schon
   branchenneutral. Nur Brainstorming, nichts entschieden.
-- **Mehrsprachigkeit am Telefon (Kiwo selbst, nicht nur Website/Dashboard,
-  19.08.2026 aktualisiert):** Nutzer-Frage "spricht kiwo de en und ro
+- **Mehrsprachigkeit am Telefon (Kiwo selbst) — ENTSCHIEDEN, noch nicht
+  gebaut (30.08.2026):** offene Frage vom 19.08.2026 (siehe Verlauf unten)
+  jetzt vom Nutzer beantwortet: "Live-Sprachwechsel vergiss es. einplanen
+  für später. Kunde soll Stimme und Sprache wählen. Und später auch
+  wechseln kann." — bestätigt damit genau den am 19.08. vorgeschlagenen
+  Ansatz (feste, pro Kunde wählbare Sprache statt Live-Umschaltung
+  innerhalb eines Anrufs). **Nur eingeplant, keine Umsetzung jetzt.**
+  Architektur-Einschätzung: `restaurants.settings` (bestehende JSONB-
+  Spalte, aktuell ungenutzt) ist der passende Ort für
+  `settings.voice = {language, voiceId, displayName}` — keine neue
+  Migration nötig; der bestehende Vapi-Resync-Mechanismus (greift schon
+  bei Rollen-/Tarif-Änderungen) deckt "später wechseln" automatisch mit
+  ab. Sprachwechsel betrifft 3 Ebenen: `voice` (Azure-TTS), `transcriber.
+  language` (Deepgram-Erkennung, muss zur Stimme passen) und den System-
+  Prompt selbst (Empfehlung: keine Volltext-Übersetzung wie bei der
+  Website, sondern eine Prompt-Instruktion "antworte nur auf [Sprache]"
+  — Claude kann das zuverlässig selbst). Empfehlung: mit einer
+  **kuratierten Kurzliste** starten (3-4 Sprachen × 2-3 getestete
+  Stimmen mit Hörbeispiel, per bestehender `edge-tts`-Pipeline
+  vorproduzierbar) statt aller 140+ Azure-Sprachen roh anzubieten —
+  Qualitätskontrolle wichtiger als Breite. Detaillierter Grobplan
+  (Registry-Datei `backend/src/voiceOptions.js`, betroffene Endpunkte/
+  Dashboard-Sektion) steht im Plan-Scratchfile, noch nicht in Code
+  überführt.
+  **Vorgeschichte (19.08.2026):** Nutzer-Frage "spricht kiwo de en und ro
   schon? Vielleicht in gleiche Gespräch?" — Recherche ergab einen harten
   technischen Blocker gegen Live-Sprachwechsel *innerhalb* eines Anrufs:
   Deepgram Nova-3 (aktuell für die Transkription genutzt, fest
   `"language": "de"`) unterstützt Echtzeit-Sprach-Auto-Erkennung/-Wechsel
   ("Code-Switching") nur für 10 Sprachen (Englisch, Spanisch, Französisch,
   Deutsch, Hindi, Russisch, Portugiesisch, Japanisch, Italienisch,
-  Niederländisch) — **Rumänisch ist NICHT darunter**. Vapi bietet für die
-  Stimme (Azure) einen "multilingual-auto"-Modus, konkrete Stimmen-IDs für
-  Deutsch/Rumänisch dafür wurden aber nicht verifiziert. Nutzer hat daraufhin
-  selbst vorgeschlagen, statt Live-Umschaltung im selben Gespräch lieber
-  **eine feste, pro Kunde wählbare Sprache** (analog zu Website/Dashboard:
-  DE/EN/RO, je ein Wert statt Live-Erkennung) zu nutzen, und explizit nach
-  meiner Einschätzung dazu gefragt — **diese Frage wurde in der Sitzung vom
-  19.08.2026 noch nicht beantwortet** (Sitzung wurde vom parallel laufenden
-  Agentur-White-Label-Plan unterbrochen, siehe „Bereits erledigt"). Fester
-  Vorschlag für die Antwort beim nächsten Gespräch: dem Nutzer zustimmen
-  (ein fester Wert pro Kunde vermeidet den Rumänisch-Blocker vollständig und
-  ist technisch deutlich einfacher als Live-Wechsel) — **noch nicht mit dem
-  Nutzer bestätigt.** Falls umgesetzt: größter Aufwand ist nicht die
-  Sprach-/Stimmwahl selbst (z. B. `restaurants.settings.language`,
-  bestehende JSONB-Spalte, keine Migration nötig), sondern die Übersetzung
-  des kompletten Vapi-System-Prompts (`vapiAdmin.js`) in EN/RO — bisher nur
-  grob abgeschätzt, nicht im Detail geplant.
+  Niederländisch) — **Rumänisch ist NICHT darunter**.
 - **Admin-Dashboard überarbeiten:** Nutzer-Brainstorming — soll künftig zeigen:
   Anzahl aktiver Kunden, Umsatz/Kosten/Gewinn, unternehmensweite KI-Empfehlungen
   (nicht nur pro Betrieb), sowie die Ersparnis-Kachel aggregiert über alle
