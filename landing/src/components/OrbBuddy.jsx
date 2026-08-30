@@ -68,17 +68,30 @@ export function OrbBuddy({ size = 44, track = false }) {
         : null;
     };
 
-    const onMove = (e) => {
+    const updateTarget = (clientX, clientY) => {
       const halfW = window.innerWidth / 2;
       const halfH = window.innerHeight / 2;
-      targetDx = Math.max(-1, Math.min(1, (e.clientX - halfW) / halfW));
-      targetDy = Math.max(-1, Math.min(1, (e.clientY - halfH) / halfH));
+      targetDx = Math.max(-1, Math.min(1, (clientX - halfW) / halfW));
+      targetDy = Math.max(-1, Math.min(1, (clientY - halfH) / halfH));
       if (!raf) raf = requestAnimationFrame(tick);
     };
 
+    const onMove = (e) => updateTarget(e.clientX, e.clientY);
+    // Touch-Geräte haben kein Hover — die Augen folgen stattdessen dem
+    // Finger, solange er den Bildschirm berührt (kein preventDefault,
+    // Scrollen bleibt normal möglich).
+    const onTouchMove = (e) => {
+      const touch = e.touches[0];
+      if (touch) updateTarget(touch.clientX, touch.clientY);
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("touchstart", onTouchMove, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("touchstart", onTouchMove);
+      window.removeEventListener("touchmove", onTouchMove);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [track]);

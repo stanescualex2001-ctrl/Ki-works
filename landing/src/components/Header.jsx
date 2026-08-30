@@ -213,14 +213,13 @@ export function Header({ page = "home" }) {
     <header className="relative z-20">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-5 sm:px-6 md:flex md:justify-between">
         <a href={homeHref} className="flex min-w-0 items-center gap-2.5">
-          <span className="relative flex h-9 w-9 shrink-0 items-center justify-center">
-            <OrbitKLogo size={36} />
+          <span className="relative flex h-[54px] w-[54px] shrink-0 items-center justify-center">
+            <OrbitKLogo size={54} />
           </span>
           <div className="leading-tight min-w-0">
             <div className="truncate text-sm font-semibold tracking-tight">KI-Works</div>
-            <div className="truncate text-[10px] font-mono text-foreground/40">
-              <span className="sm:hidden">{t("nav.logoSubtitleShort")}</span>
-              <span className="hidden sm:inline">{t("nav.logoSubtitleFull")}</span>
+            <div className="truncate text-[10px] font-mono tracking-wide text-foreground/40">
+              {t("nav.logoSubtitle")}
             </div>
           </div>
         </a>
