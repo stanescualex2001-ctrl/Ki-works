@@ -280,13 +280,13 @@ export function Header({ page = "home" }) {
           <ThemeToggle />
           <a
             href={`/dashboard/?lang=${locale}`}
-            className="hidden rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-3 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap sm:inline-flex"
+            className="inline-flex rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-3 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap"
           >
             {t("nav.customerLogin")}
           </a>
           <a
             href={`${homeHref}#live`}
-            className="rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap"
+            className="hidden rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2 text-xs font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform whitespace-nowrap sm:inline-flex"
           >
             {t("nav.tryKiwo")}
           </a>
