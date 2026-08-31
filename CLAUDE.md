@@ -2557,9 +2557,21 @@ Version auf "Publish" klicken.
   "Kiwo testen" umgestaltet, statt eines zusätzlichen zweiten
   Menüpunkts (Commit `fa90f95`). Desktop/Tablet (≥ 640px) war von der
   gesamten Änderung nie betroffen — dort waren und bleiben beide Buttons
-  nebeneinander sichtbar. Build + Prerender nach jedem Schritt
-  fehlerfrei geprüft, kein Playwright-Screenshot-Test möglich (Tool in
-  dieser Sitzung nicht verfügbar) — nur per Code-Analyse verifiziert.
+  nebeneinander sichtbar. **Sofort-Nachbesserung (Nutzer-Fund):** die
+  neue "Kiwo testen"-Pille im Menü hatte anfangs keine eigene
+  Breiten-Bedingung — im Bereich 640-1439px (Nav schon zum Hamburger
+  eingeklappt, "Kiwo testen" in der Kopfzeile aber schon sichtbar)
+  erschien sie beim Öffnen des Menüs zusätzlich zur bereits sichtbaren
+  Kopfzeilen-Pille — zwei "Kiwo testen"-Buttons gleichzeitig auf dem
+  Screen. Mit `sm:hidden` behoben (Commit `76509a5`), damit die
+  Menü-Pille exakt im Gegenzug zur Kopfzeilen-Pille sichtbar ist (nur
+  unter 640px). Build + Prerender nach jedem Schritt fehlerfrei
+  geprüft, kein Playwright-Screenshot-Test möglich (Tool in dieser
+  Sitzung nicht verfügbar) — nur per Code-Analyse verifiziert. **Lehre:**
+  bei einem neuen, breitenbedingt sichtbaren UI-Element in einer bereits
+  bestehenden Breiten-Logik immer sofort die komplementäre
+  Sichtbarkeits-Bedingung mitdenken, nicht nur den ursprünglich
+  gemeldeten Breitenbereich.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
