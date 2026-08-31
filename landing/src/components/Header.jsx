@@ -344,9 +344,9 @@ export function Header({ page = "home" }) {
               <a
                 href={`${homeHref}#live`}
                 onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
+                className="mt-1 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2.5 text-sm font-semibold text-[#0A0F1D] glow-cyan"
               >
-                {t("nav.liveTest")}
+                {t("nav.tryKiwo")}
               </a>
               <a
                 href={`${homeHref}#dashboard`}
@@ -389,13 +389,6 @@ export function Header({ page = "home" }) {
                 className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
               >
                 {t("nav.forAgencies")}
-              </a>
-              <a
-                href={`/dashboard/?lang=${locale}`}
-                onClick={() => setMobileOpen(false)}
-                className="rounded-lg px-2 py-2.5 text-foreground/80 transition hover:text-foreground"
-              >
-                {t("nav.customerLogin")}
               </a>
             </div>
           </motion.div>
