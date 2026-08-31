@@ -344,7 +344,7 @@ export function Header({ page = "home" }) {
               <a
                 href={`${homeHref}#live`}
                 onClick={() => setMobileOpen(false)}
-                className="mt-1 inline-flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2.5 text-sm font-semibold text-[#0A0F1D] glow-cyan"
+                className="mt-1 flex items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2.5 text-sm font-semibold text-[#0A0F1D] glow-cyan sm:hidden"
               >
                 {t("nav.tryKiwo")}
               </a>
