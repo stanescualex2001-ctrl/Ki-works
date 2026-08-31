@@ -2523,6 +2523,43 @@ Version auf "Publish" klicken.
   siehe „Social-Media-Automatisierung" oben) — Nutzer muss selbst
   nachfragen, wenn er die Anthropic-Konsolen-Zahlen vom nächsten
   Sales-Agent-Lauf mit den früheren 4,14 Mio. Tokens vergleichen will.
+- **Kunden-Dashboard-Vorschau: "Ihr Dashboard ansehen"-Link auf Mobile
+  nach unten verschoben (30.08.2026):** Nutzer-Screenshot zeigte den
+  Link zwischen den vier Vertrauensargumenten und dem Screenshot-Mockup
+  — auf Mobile (Grid stapelt einspaltig) stand er dadurch VOR dem
+  Übersicht-Screenshot und der schwebenden Anruf-Transkript-Karte, statt
+  danach. `landing/src/App.jsx` (Dashboard-Sektion): der Link existiert
+  jetzt zweimal — eine Desktop-Version (`hidden md:inline-flex`, bleibt
+  an der bisherigen Stelle im Textblock links) und eine neue
+  Mobile-Version (`md:hidden`) direkt nach der Anruf-Transkript-Karte
+  im Bild-Block. Ab `md:` (Grid wird zweispaltig) ist die Mobile-Version
+  unsichtbar, keine Dopplung. Build + Prerender fehlerfrei geprüft.
+- **Header: "Kunden-Login"/"Kiwo testen" auf Mobile getauscht + zwei
+  Nachbesserungen (30.08.2026):** Nutzer-Fund — auf großen Handys (S25
+  Ultra) blieb "Kunden-Login" trotz einer gemeldeten Breite über 640px
+  unsichtbar. Ursache geklärt: die CSS-Viewport-Breite (die für
+  Tailwinds `sm:`-Grenze zählt) ist bei solchen Geräten trotz hoher
+  physischer Auflösung nur ca. 412-480px — kein Bug, die 640px-Grenze
+  aus der Nachschärfung vom 13.08.2026 bleibt bestehen. Auf
+  Nutzer-Wunsch stattdessen die Sichtbarkeits-Regel der beiden
+  CTA-Buttons in `landing/src/components/Header.jsx` getauscht: auf
+  Handy-Breiten (< 640px) steht jetzt "Kunden-Login" in der Kopfzeile
+  statt "Kiwo testen" (Commit `a515626`). **Nachbesserung, direkt vom
+  Nutzer nach dem Livetest gemeldet:** (1) "Kunden-Login" stand dadurch
+  doppelt da (schon fest in der Kopfzeile + weiterhin als eigene Zeile
+  im aufklappbaren Mobile-Menü) — Menü-Zeile entfernt; (2) "Kiwo testen"
+  war auf Mobile dadurch nur noch als unauffälliger Text-Link
+  ("Live testen") im Menü erreichbar, wirkte für den Nutzer wie
+  komplett verschwunden — auf Nachfrage entschieden (`AskUserQuestion`:
+  "Nur im Menü, aber als CTA-Button gestalten"), der bisherige
+  "Live testen"-Text-Link im Mobile-Menü wurde zu einer echten
+  CTA-Pille (Farbverlauf, wie in der Kopfzeile) mit dem Label
+  "Kiwo testen" umgestaltet, statt eines zusätzlichen zweiten
+  Menüpunkts (Commit `fa90f95`). Desktop/Tablet (≥ 640px) war von der
+  gesamten Änderung nie betroffen — dort waren und bleiben beide Buttons
+  nebeneinander sichtbar. Build + Prerender nach jedem Schritt
+  fehlerfrei geprüft, kein Playwright-Screenshot-Test möglich (Tool in
+  dieser Sitzung nicht verfügbar) — nur per Code-Analyse verifiziert.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
