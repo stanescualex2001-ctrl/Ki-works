@@ -2572,6 +2572,19 @@ Version auf "Publish" klicken.
   bestehenden Breiten-Logik immer sofort die komplementäre
   Sichtbarkeits-Bedingung mitdenken, nicht nur den ursprünglich
   gemeldeten Breitenbereich.
+- **ROI-Rechner: Ergebnis-Box auf Mobile an den Anfang gestellt
+  (03.09.2026):** Nutzer-Idee nach eigenem Live-Screenshot — auf Mobile
+  stapelten sich bisher erst alle 8 Eingabefelder + 3 Paket-Karten,
+  bevor überhaupt eine Ergebniszahl sichtbar war (auf Desktop stand die
+  Box dank des zweispaltigen Layouts schon immer direkt daneben).
+  `landing/src/App.jsx` (`ROICalc`): die "Geschätzter Netto-Nutzen"-Box
+  (inkl. ROI/Amortisation) wurde in eine gemeinsame `heroContent`-
+  Variable ausgelagert, die jetzt zweimal gerendert wird — einmal ganz
+  oben (`lg:hidden`, nur Mobile/Tablet) mit den Default-Werten
+  vorberechnet, einmal an der bisherigen Stelle (`hidden lg:block`, nur
+  Desktop) — kein doppelter Code, nur sichtbarkeitsgesteuert. Reagiert
+  live auf die Eingaben weiter unten, genau wie zuvor. Build + Prerender
+  fehlerfrei geprüft.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
