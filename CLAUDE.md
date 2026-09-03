@@ -2585,6 +2585,21 @@ Version auf "Publish" klicken.
   Desktop) — kein doppelter Code, nur sichtbarkeitsgesteuert. Reagiert
   live auf die Eingaben weiter unten, genau wie zuvor. Build + Prerender
   fehlerfrei geprüft.
+- **Fix: ROI-Rechner Zahlenfeld blieb beim Löschen bei 0 hängen
+  (03.09.2026):** Nutzer-Fund per Screenshot — das Zahlenfeld
+  ("Ø Wert pro gewonnenem Kontakt") ließ sich nicht leeren, neue Ziffern
+  landeten hinter der stehengebliebenen "0" (z. B. "0220" statt "220").
+  Ursache in `RoiNumberField` (`landing/src/App.jsx`): `value={value}`
+  war direkt an die Zahl gebunden — beim Löschen der letzten Ziffer wird
+  `Number('')` sofort zu `0`, der Zustand ändert sich dadurch nicht
+  (0 → 0), React rendert nicht neu, das Feld bleibt optisch bei "0"
+  hängen. Fix: eigener Text-Zustand im Feld, der während der Eingabe
+  leer sein darf; die Zahl wird trotzdem bei jedem gültigen Zwischenwert
+  live an den Rechner gemeldet, beim Verlassen des Feldes springt ein
+  leerer/ungültiger Wert auf den letzten gültigen Stand zurück. Betrifft
+  beide Zahlenfelder im Rechner (Stundensatz + Wert pro Kontakt), da
+  beide dieselbe Komponente nutzen. Build + Prerender fehlerfrei
+  geprüft.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
