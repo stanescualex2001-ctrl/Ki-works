@@ -461,6 +461,25 @@ function RoiSlider({ label, hint, value, onChange, min, max, step = 1, format })
 }
 
 function RoiNumberField({ label, hint, value, onChange, min, max, step = 1 }) {
+  // Eigener Text-Zustand statt value={value} direkt zu binden: sonst wird
+  // beim Löschen der letzten Ziffer sofort Number('') -> 0 gesetzt, der
+  // Zustand ändert sich dadurch nicht (0 -> 0), React rendert nicht neu und
+  // das Feld "klebt" bei 0 fest — neue Ziffern landen dahinter (z. B. "0220").
+  const [raw, setRaw] = useState(String(value));
+
+  function handleChange(e) {
+    const next = e.target.value;
+    setRaw(next);
+    if (next === "" || next === "-") return;
+    const parsed = Number(next);
+    if (!Number.isNaN(parsed)) onChange(parsed);
+  }
+
+  function handleBlur() {
+    const parsed = Number(raw);
+    setRaw(Number.isNaN(parsed) || raw === "" || raw === "-" ? String(value) : String(parsed));
+  }
+
   return (
     <div className="mb-5">
       <label className="block text-sm font-medium">{label}</label>
@@ -469,8 +488,9 @@ function RoiNumberField({ label, hint, value, onChange, min, max, step = 1 }) {
         min={min}
         max={max}
         step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        value={raw}
+        onChange={handleChange}
+        onBlur={handleBlur}
         className="mt-2 w-full rounded-lg border border-foreground/10 bg-foreground/[0.03] px-3 py-2 text-sm text-foreground outline-none transition focus:border-violet-400/40"
       />
       {hint && <p className="mt-1.5 text-xs text-foreground/45 leading-relaxed">{hint}</p>}
