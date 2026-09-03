@@ -529,8 +529,46 @@ function ROICalc() {
 
   const { activeTier } = calc;
 
+  const heroContent = (
+    <>
+      <div className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.results.heroLabel")}</div>
+      <div className={`mt-2 text-4xl font-bold tabular-nums ${calc.activeTier.net >= 0 ? "text-gradient" : "text-red-500"}`}>
+        {(calc.activeTier.net >= 0 ? "" : "−") + fmt(Math.abs(calc.activeTier.net))} € /Mo.
+      </div>
+      <div className="mt-1 text-xs text-foreground/50">
+        {calc.activeTier.net >= 0
+          ? t("roi.results.heroSubPositive", { tier: activeTier.name })
+          : t("roi.results.heroSubNegative")}
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3">
+          <div className="text-[10px] uppercase tracking-wide text-foreground/40">{t("roi.results.roiLabel")}</div>
+          <div className={`mt-1 text-lg font-bold font-mono ${calc.roiPct >= 0 ? "text-emerald-600 dark:text-emerald-300" : "text-red-500"}`}>
+            {(calc.roiPct >= 0 ? "+" : "") + Math.round(calc.roiPct)} %
+          </div>
+        </div>
+        <div className="rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3">
+          <div className="text-[10px] uppercase tracking-wide text-foreground/40">{t("roi.results.paybackLabel")}</div>
+          <div className="mt-1 text-lg font-bold font-mono">
+            {calc.payback.type === "none"
+              ? t("roi.results.paybackNotReached")
+              : calc.payback.type === "days"
+                ? t("roi.results.paybackDays", { n: calc.payback.value })
+                : t("roi.results.paybackMonths", { n: calc.payback.value })}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
+      {/* Nur Mobile: Ergebnis zuerst zeigen, bevor die Eingabefelder kommen
+          — ab lg: steht die Box ohnehin schon direkt neben den Eingaben. */}
+      <GlowCard tone="cyan" className="p-6 md:p-7 text-center lg:hidden">
+        {heroContent}
+      </GlowCard>
+
       <div className="space-y-6">
         <GlowCard tone="violet" className="p-6 md:p-7">
           <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.companyCardTitle")}</h3>
@@ -632,34 +670,8 @@ function ROICalc() {
       </div>
 
       <div className="space-y-6">
-        <GlowCard tone="cyan" className="p-6 md:p-7 text-center">
-          <div className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.results.heroLabel")}</div>
-          <div className={`mt-2 text-4xl font-bold tabular-nums ${calc.activeTier.net >= 0 ? "text-gradient" : "text-red-500"}`}>
-            {(calc.activeTier.net >= 0 ? "" : "−") + fmt(Math.abs(calc.activeTier.net))} € /Mo.
-          </div>
-          <div className="mt-1 text-xs text-foreground/50">
-            {calc.activeTier.net >= 0
-              ? t("roi.results.heroSubPositive", { tier: activeTier.name })
-              : t("roi.results.heroSubNegative")}
-          </div>
-          <div className="mt-5 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3">
-              <div className="text-[10px] uppercase tracking-wide text-foreground/40">{t("roi.results.roiLabel")}</div>
-              <div className={`mt-1 text-lg font-bold font-mono ${calc.roiPct >= 0 ? "text-emerald-600 dark:text-emerald-300" : "text-red-500"}`}>
-                {(calc.roiPct >= 0 ? "+" : "") + Math.round(calc.roiPct)} %
-              </div>
-            </div>
-            <div className="rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3">
-              <div className="text-[10px] uppercase tracking-wide text-foreground/40">{t("roi.results.paybackLabel")}</div>
-              <div className="mt-1 text-lg font-bold font-mono">
-                {calc.payback.type === "none"
-                  ? t("roi.results.paybackNotReached")
-                  : calc.payback.type === "days"
-                    ? t("roi.results.paybackDays", { n: calc.payback.value })
-                    : t("roi.results.paybackMonths", { n: calc.payback.value })}
-              </div>
-            </div>
-          </div>
+        <GlowCard tone="cyan" className="hidden p-6 md:p-7 text-center lg:block">
+          {heroContent}
         </GlowCard>
 
         <GlowCard tone="violet" className="p-6 md:p-7">
