@@ -2600,6 +2600,59 @@ Version auf "Publish" klicken.
   beide Zahlenfelder im Rechner (Stundensatz + Wert pro Kontakt), da
   beide dieselbe Komponente nutzen. Build + Prerender fehlerfrei
   geprüft.
+- **Business-Dashboard: verlorene Freigaben, falsches Branding bei
+  Social-Posts, fehlender Website-Link bei Sales-Leads (05.09.2026):**
+  drei Nutzer-Funde in einer Sitzung. (1) **Freigaben-Verlust:** ein
+  versehentlicher Klick auf "Freigeben"/"Ablehnen" bei einer Sales-/
+  Social-Zeile machte deren Inhalt (Mailtext, Kontakt-E-Mail, Bild)
+  unwiderruflich unzugänglich — `GET /api/pending-actions` liefert nur
+  `status='pending'`, und die Entscheidung wurde bisher nicht mit vollem
+  Inhalt geloggt. Fix: `PATCH /api/pending-actions/:id`
+  (`backend/src/server.js`) schreibt jetzt bei jeder Sales-Entscheidung
+  und jeder Social-Ablehnung/-Fremdbusiness-Freigabe einen `logAction()`-
+  Eintrag mit dem kompletten Inhalt (Betreff/Text/Kontakt-E-Mail bzw.
+  Bild/Caption) in `audit_log`. Neue Komponenten `SalesEmailAuditDetail`/
+  `SocialPostAuditDetail` (`business-dashboard/src/App.jsx`) zeigen das
+  im Aktivitätsprotokoll genauso aufklappbar mit Kopieren-Buttons wie in
+  den Freigaben selbst — nichts geht mehr verloren, unabhängig davon, ob
+  danach z. B. der Mail-Entwurf (IMAP) fehlschlägt. (2) **Falsches
+  Branding:** ein Social-Post für LEDTEK zeigte optisch ki-works-Design
+  (Farben/Eyebrow/Orb Buddy) — `backend/src/socialGraphic.js` war beim
+  Generalisieren der Agenten auf mehrere Businesses (29.08.2026) nie
+  business-bewusst gemacht worden, nur der Text lief über die Registry,
+  das Bild blieb hartcodiert. Fix: neues `visual`-Feld pro Business in
+  `backend/src/businessProfiles.js` (Farben/Eyebrow/Domain/Mascot je
+  ki-works/LEDTEK/pixelpress), `socialGraphic.js`s `buildSvg()` nutzt
+  jetzt `{...DEFAULT_VISUAL, ...visual}` statt fixer Werte,
+  `socialAgent.js` reicht `profile.visual` durch. (3) **Fehlender
+  Website-Link:** Sales-Leads hatten kein `website`-Feld, wenn der
+  Kandidat keine eigene Website hat — erschwerte den schnellen manuellen
+  Check. Prompt in `salesAgent.js` verlangt jetzt einen Fallback-Link
+  (Facebook-Seite/Google-Maps-Eintrag/Branchenverzeichnis), `null` nur
+  falls wirklich gar kein Online-Auftritt auffindbar war. Dabei geklärt:
+  "nur 1 statt 5 Social-Posts pro Lauf" ist kein Bug — der Social-Agent
+  erzeugt bewusst genau einen Entwurf pro Lauf (anders als der
+  5-Kandidaten-Sales-Agent). `business-dashboard`-Build fehlerfrei.
+  **Committet+gepusht (`377c97d`), braucht Backend-Neustart**
+  (`server.js`/`socialGraphic.js`/`businessProfiles.js`/`socialAgent.js`
+  geändert) plus normalen `business-dashboard/`-Build.
+- **Fix: Sales-Agent behauptete fälschlich fehlende Website bei
+  Kandidaten (05.09.2026):** direkt im Anschluss an den Website-Link-Fix
+  oben zwei reale Fälle vom Nutzer gemeldet — "Bäckerei Kern"
+  (kern-baecker.at) und "PANI der Bäcker" (pani.baecker.at) hatten beide
+  eine eigene, funktionierende Website, der Agent hat die Akquise-Mail
+  aber komplett auf der falschen Behauptung "keine eigene Website"
+  aufgebaut (nur aus einem Facebook-/Branchenbuch-Treffer geschlossen,
+  nie aktiv nachgeprüft). Prompt in `buildPrompt()`
+  (`backend/src/salesAgent.js`) verlangt jetzt eine gezielte Websuche
+  nach der eigenen Website, BEVOR eine "keine Website"-Behauptung erlaubt
+  ist, und verwirft den Kandidaten, falls doch eine gefunden wird (falls
+  die fehlende Website der einzige Qualifizierungsgrund war). Die beiden
+  fehlerhaften Alt-Einträge muss der Nutzer im Business-Dashboard manuell
+  ablehnen (sind mit falscher Grundlage entstanden, vor diesem Fix
+  erzeugt). Nur Syntax-Check möglich (`node --check`, kein echter
+  Testlauf, Standing Rule Nutzungsguthaben). **Committet+gepusht
+  (`eba3a6a`), braucht Backend-Neustart** (`salesAgent.js` geändert).
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
