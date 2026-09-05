@@ -27,7 +27,23 @@ Bereits kontaktiert (NICHT nochmal vorschlagen):
 ${excludeList}
 
 Finde bis zu ${maxCandidates} passende, noch nicht kontaktierte Betriebe per
-Websuche. Entwirf für jeden Kandidaten eine kurze, individuelle Akquise-Mail
+Websuche.
+
+WICHTIG — negative Behauptungen aktiv verifizieren: Falls die
+Qualifizierungskriterien oben eine FEHLENDE Eigenschaft verlangen (z. B.
+"keine eigene Website", "veraltete Website"), darfst du das niemals nur
+daraus schließen, dass du zufällig nur eine Facebook-Seite oder einen
+Branchenverzeichnis-Eintrag gefunden hast. Suche IMMER gezielt nach der
+eigenen Website des Betriebs (z. B. Websuche nach "<Firmenname> <Ort>"
+oder "<Firmenname> offizielle Website") und prüfe die Treffer, BEVOR du
+"keine eigene Website" behauptest. Findest du dabei doch eine eigene,
+zeitgemäße Website, ist dieser Kandidat NICHT qualifiziert (falls die
+fehlende Website der einzige Qualifizierungsgrund war) — verwirf ihn und
+suche einen anderen. Eine falsche Behauptung in einer Akquise-Mail über
+den Empfänger selbst ist schädlicher als ein verpasster Kandidat.
+
+Entwirf für jeden verbleibenden, wirklich qualifizierten Kandidaten eine
+kurze, individuelle Akquise-Mail
 auf Deutsch (Betreff + Text), die konkret auf etwas von der Website/dem
 Online-Auftritt des Betriebs Bezug nimmt (z. B. fehlende Online-Reservierung,
 Öffnungszeiten, eine echte Bewertung) — kein Massenmail-Ton, keine generische
