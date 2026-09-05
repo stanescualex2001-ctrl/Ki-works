@@ -672,6 +672,73 @@ function AuditDetail({ details }) {
   );
 }
 
+// Vollständige, kopierbare Vorschau für eine bereits entschiedene Akquise-Mail
+// (Betreff/Text/Kontakt bleiben nach der Entscheidung nur noch hier
+// einsehbar, da die Zeile selbst aus "Freigaben" verschwindet).
+function SalesEmailAuditDetail({ details }) {
+  return (
+    <div className="sales-email-detail">
+      <div className="social-post-fields">
+        {details.website && (
+          <div className="pending-detail-field">
+            <div className="pending-detail-label">Website</div>
+            <a className="site-link" href={details.website} target="_blank" rel="noreferrer">{details.website}</a>
+          </div>
+        )}
+        {details.why_fit && (
+          <div className="pending-detail-field">
+            <div className="pending-detail-label">Begründung</div>
+            <div>{details.why_fit}</div>
+          </div>
+        )}
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Kontakt-E-Mail</div>
+          {details.contact_email ? (
+            <a className="site-link" href={`mailto:${details.contact_email}`}>{details.contact_email}</a>
+          ) : (
+            <div className="hint">⚠ keine E-Mail gefunden</div>
+          )}
+          <CopyFieldButton value={details.contact_email} label="E-Mail" />
+        </div>
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Betreff</div>
+          <div>{details.subject}</div>
+          <CopyFieldButton value={details.subject} label="Betreff" />
+        </div>
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Text</div>
+          <div className="pending-detail-mono">{details.body}</div>
+          <CopyFieldButton value={details.body} label="Text" />
+        </div>
+        {details.mailDraftWarning && <p className="hint">⚠ {details.mailDraftWarning}</p>}
+      </div>
+    </div>
+  );
+}
+
+// Vollständige, kopierbare Vorschau für einen bereits entschiedenen
+// Social-Media-Post (Bild + Beitragstext bleiben nach der Entscheidung nur
+// noch hier einsehbar).
+function SocialPostAuditDetail({ details }) {
+  return (
+    <div className="social-post-detail">
+      {details.imageUrl && <img className="social-post-image" src={details.imageUrl} alt="" />}
+      <div className="social-post-fields">
+        {details.imageUrl && (
+          <a className="link" href={details.imageUrl} download target="_blank" rel="noreferrer">
+            ⬇ Bild herunterladen
+          </a>
+        )}
+        <div className="pending-detail-field">
+          <div className="pending-detail-label">Beitragstext</div>
+          <div className="pending-detail-mono">{details.caption}</div>
+          <CopyFieldButton value={details.caption} label="Text" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Protokoll der Aktionen, die Kiwo-Agenten FÜR DIESES BUSINESS selbst
 // ausgeführt haben (nicht zu verwechseln mit den Freigaben oben — das hier
 // ist die abgeschlossene Historie). Generisch über business.id gefiltert,
@@ -702,7 +769,15 @@ function BusinessAuditLog({ businessId, refreshKey }) {
               </tr>
               {expandedId === e.id && (
                 <tr className="pending-row-detail">
-                  <td colSpan={4}><AuditDetail details={e.details} /></td>
+                  <td colSpan={4}>
+                    {e.source === 'sales_agent' && ['approved', 'rejected'].includes(e.action) ? (
+                      <SalesEmailAuditDetail details={e.details} />
+                    ) : e.source === 'social_agent' && ['approved', 'rejected', 'publish'].includes(e.action) ? (
+                      <SocialPostAuditDetail details={e.details} />
+                    ) : (
+                      <AuditDetail details={e.details} />
+                    )}
+                  </td>
                 </tr>
               )}
             </React.Fragment>

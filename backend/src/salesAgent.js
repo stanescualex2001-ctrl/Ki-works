@@ -54,7 +54,12 @@ null setzt:
 
 Antworte NUR mit einem JSON-Codeblock (\`\`\`json ... \`\`\`), keinem weiteren
 Text davor oder danach. Format: ein JSON-Array von Objekten mit genau diesen
-Feldern: business_name, website (string oder null), city (string oder null),
+Feldern: business_name, website (Link zum schnellen Nachschlagen/Prüfen des
+Kandidaten — die eigene Website, falls vorhanden; hat der Betrieb KEINE
+eigene Website, stattdessen den Link zu dessen Facebook-Seite,
+Google-Maps-/Google-Business-Eintrag oder Branchenverzeichnis-Eintrag, den du
+bei der Recherche gefunden hast; nur null setzen, wenn wirklich gar kein
+öffentlicher Online-Auftritt auffindbar war), city (string oder null),
 why_fit (ein Satz Begründung), contact_email (string oder null, nur falls
 nach den obigen Schritten wirklich keine Mail-Adresse auffindbar war),
 subject, body.

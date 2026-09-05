@@ -76,7 +76,7 @@ export async function runSocialAgent({ business, assetsDir }) {
   const fullText = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n');
   const draft = extractJsonObject(fullText);
 
-  const imageBuffer = await renderSocialImage({ headline: draft.headline, subline: draft.subline });
+  const imageBuffer = await renderSocialImage({ headline: draft.headline, subline: draft.subline, visual: profile.visual });
   const filename = `${crypto.randomUUID()}.png`;
   fs.mkdirSync(assetsDir, { recursive: true });
   fs.writeFileSync(path.join(assetsDir, filename), imageBuffer);

@@ -985,6 +985,53 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
     }
   }
 
+  // Eigener Audit-Log-Eintrag pro Entscheidung, mit dem vollen Inhalt
+  // (Betreff/Text/Kontakt-E-Mail) — die Zeile selbst verschwindet nach der
+  // Entscheidung aus "Freigaben" (GET /api/pending-actions liefert nur noch
+  // status='pending'), ohne das hier wäre der Text bei einer versehentlichen
+  // Freigabe/Ablehnung unwiderruflich weg, sobald z. B. der Mail-Entwurf
+  // (IMAP) fehlschlägt oder gar nicht erst versucht wird.
+  if (action.role === 'sales' && action.kind === 'outreach_email') {
+    await logAction({
+      restaurantId: action.restaurant_id,
+      business: action.business,
+      source: 'sales_agent',
+      action: status,
+      summary: `Akquise-Mail ${status === 'approved' ? 'freigegeben' : 'abgelehnt'}: ${payload.business_name || '?'}`,
+      details: {
+        business_name: payload.business_name,
+        website: payload.website,
+        why_fit: payload.why_fit,
+        contact_email: payload.contact_email,
+        subject: payload.subject,
+        body: payload.body,
+        mailDraftWarning,
+      },
+    });
+  }
+
+  if (action.role === 'social' && action.kind === 'post' && status === 'rejected') {
+    await logAction({
+      restaurantId: action.restaurant_id,
+      business: action.business,
+      source: 'social_agent',
+      action: 'rejected',
+      summary: `Social-Post abgelehnt: „${payload.headline}"`,
+      details: { headline: payload.headline, caption: payload.caption, imageUrl: payload.imageUrl },
+    });
+  }
+
+  if (status === 'approved' && action.role === 'social' && action.kind === 'post' && action.business !== 'ki-works') {
+    await logAction({
+      restaurantId: action.restaurant_id,
+      business: action.business,
+      source: 'social_agent',
+      action: 'approved',
+      summary: `Social-Post freigegeben: „${payload.headline}"`,
+      details: { headline: payload.headline, caption: payload.caption, imageUrl: payload.imageUrl },
+    });
+  }
+
   if (status === 'approved' && action.role === 'social' && action.kind === 'post' && action.business === 'ki-works') {
     const results = {};
     try {
@@ -1006,7 +1053,7 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
       summary: failed
         ? `Veröffentlichung fehlgeschlagen: „${payload.headline}"`
         : `Post veröffentlicht: „${payload.headline}"`,
-      details: { headline: payload.headline, results },
+      details: { headline: payload.headline, caption: payload.caption, imageUrl: payload.imageUrl, results },
     });
     if (failed) {
       await query('UPDATE pending_actions SET payload = $1 WHERE id = $2', [JSON.stringify(payload), action.id]);

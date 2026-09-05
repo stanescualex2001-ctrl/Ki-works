@@ -75,7 +75,20 @@ function orbBuddyMark(cx, cy, scale) {
     </g>`;
 }
 
-function buildSvg({ headline, subline }) {
+// Default entspricht dem bisherigen, fest verdrahteten ki-works-Design —
+// Aufrufer ohne visual-Angabe (z. B. ältere Skripte) bekommen weiterhin
+// exakt dasselbe Bild wie vorher.
+const DEFAULT_VISUAL = {
+  eyebrow: 'KI-WORKS · KIWO',
+  domain: 'ki-works.eu',
+  bgColors: ['#0B1220', '#161233', '#1E1B4B'],
+  accentColor: '#22D3EE',
+  textColor: '#F3F6FB',
+  mascot: 'orb',
+};
+
+function buildSvg({ headline, subline, visual }) {
+  const v = { ...DEFAULT_VISUAL, ...visual };
   const fontSize = headlineFontSize(headline);
   const lines = wrapLines(headline, fontSize);
   const lineHeight = fontSize * 1.12;
@@ -98,13 +111,13 @@ function buildSvg({ headline, subline }) {
       @font-face { font-family: 'Space Grotesk'; font-weight: 500; src: url('${MEDIUM_FONT}'); }
     </style>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0B1220" />
-      <stop offset="0.55" stop-color="#161233" />
-      <stop offset="1" stop-color="#1E1B4B" />
+      <stop offset="0" stop-color="${v.bgColors[0]}" />
+      <stop offset="0.55" stop-color="${v.bgColors[1]}" />
+      <stop offset="1" stop-color="${v.bgColors[2]}" />
     </linearGradient>
     <radialGradient id="accent-glow" cx="82%" cy="18%" r="45%">
-      <stop offset="0" stop-color="#22D3EE" stop-opacity="0.28" />
-      <stop offset="1" stop-color="#22D3EE" stop-opacity="0" />
+      <stop offset="0" stop-color="${v.accentColor}" stop-opacity="0.28" />
+      <stop offset="1" stop-color="${v.accentColor}" stop-opacity="0" />
     </radialGradient>
     <radialGradient id="ob-glow" cx="50%" cy="55%" r="55%">
       <stop offset="0" stop-color="#22D3EE" stop-opacity="0.55" />
@@ -124,26 +137,26 @@ function buildSvg({ headline, subline }) {
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg)" />
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#accent-glow)" />
 
-  <text font-family="Space Grotesk" font-weight="700" font-size="30" fill="#67E8F9" opacity="0.85" letter-spacing="1">
-    <tspan x="${PADDING}" y="120">KI-WORKS · KIWO</tspan>
+  <text font-family="Space Grotesk" font-weight="700" font-size="30" fill="${v.accentColor}" opacity="0.85" letter-spacing="1">
+    <tspan x="${PADDING}" y="120">${escapeXml(v.eyebrow)}</tspan>
   </text>
 
-  <text font-family="Space Grotesk" font-weight="700" fill="#F3F6FB" font-size="${fontSize}">
+  <text font-family="Space Grotesk" font-weight="700" fill="${v.textColor}" font-size="${fontSize}">
     ${headlineTspans}
   </text>
 
-  ${subline ? `<text font-family="Space Grotesk" font-weight="500" fill="#CBD5F5" opacity="0.85" font-size="34">${sublineTspans}</text>` : ''}
+  ${subline ? `<text font-family="Space Grotesk" font-weight="500" fill="${v.textColor}" opacity="0.85" font-size="34">${sublineTspans}</text>` : ''}
 
-  ${orbBuddyMark(WIDTH - 150, HEIGHT - 210, 1.05)}
+  ${v.mascot === 'orb' ? orbBuddyMark(WIDTH - 150, HEIGHT - 210, 1.05) : ''}
 
-  <text font-family="Space Grotesk" font-weight="700" font-size="42" fill="#F3F6FB" opacity="0.92">
-    <tspan x="${PADDING}" y="${HEIGHT - 70}">ki-works.eu</tspan>
+  <text font-family="Space Grotesk" font-weight="700" font-size="42" fill="${v.textColor}" opacity="0.92">
+    <tspan x="${PADDING}" y="${HEIGHT - 70}">${escapeXml(v.domain)}</tspan>
   </text>
 </svg>`;
 }
 
-export async function renderSocialImage({ headline, subline }) {
+export async function renderSocialImage({ headline, subline, visual }) {
   if (!headline) throw new Error('renderSocialImage: headline erforderlich');
-  const svg = buildSvg({ headline, subline });
+  const svg = buildSvg({ headline, subline, visual });
   return sharp(Buffer.from(svg)).png().toBuffer();
 }

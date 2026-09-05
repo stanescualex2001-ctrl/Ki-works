@@ -34,6 +34,17 @@ Alex von ki-works.eu
 Tel. +43 650 9915759
 info@ki-works.eu`,
     seedTopics: ['Verpasster Anruf = verlorene Reservierung', 'Zeitersparnis: 15 Stunden pro Woche'],
+    // Sichtbares Branding für Social-Media-Grafiken (socialGraphic.js) —
+    // je Business eigene Farben/Beschriftung, sonst würde jedes Bild
+    // ki-works-Branding tragen, egal für welches Business erzeugt.
+    visual: {
+      eyebrow: 'KI-WORKS · KIWO',
+      domain: 'ki-works.eu',
+      bgColors: ['#0B1220', '#161233', '#1E1B4B'],
+      accentColor: '#22D3EE',
+      textColor: '#F3F6FB',
+      mascot: 'orb',
+    },
   },
   ledtek: {
     name: 'LEDTEK',
@@ -58,6 +69,16 @@ Alex von LEDTEK
 Tel. +43 650 9915759
 kontakt@ledtek.at`,
     seedTopics: ['LED-Ware in 48h. Ohne Rätselraten.'],
+    // Schwarz/Weiß mit grünem Akzent — abgeleitet von ledtek.at (siehe
+    // CLAUDE.md "Erste Social-Media-Inhalte für LEDTEK und pixelpress").
+    visual: {
+      eyebrow: 'LEDTEK',
+      domain: 'ledtek.at',
+      bgColors: ['#050505', '#0A0A0A', '#101410'],
+      accentColor: '#22C55E',
+      textColor: '#F5F5F5',
+      mascot: 'none',
+    },
   },
   pixelpress: {
     name: 'pixelpress',
@@ -79,6 +100,17 @@ Alex von pixelpress
 Tel. +43 650 9915759
 hallo@pixelpress.at`,
     seedTopics: [],
+    // Dunkles Blau + hellblauer Akzent — mangels eigener Farbvorgabe
+    // gewählt (siehe CLAUDE.md "Erste Social-Media-Inhalte für LEDTEK und
+    // pixelpress", noch nicht vom Nutzer final bestätigt).
+    visual: {
+      eyebrow: 'PIXELPRESS',
+      domain: 'pixelpress.at',
+      bgColors: ['#050A14', '#0B1830', '#0F2544'],
+      accentColor: '#38BDF8',
+      textColor: '#F0F6FF',
+      mascot: 'none',
+    },
   },
 };
 
