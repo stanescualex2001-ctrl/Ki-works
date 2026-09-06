@@ -349,11 +349,23 @@ async function handleAssistantRequest(message, restaurant) {
     assistantOverrides: {
       variableValues: {
         guestContext: context,
+        // "business_*" ist der aktuelle, branchenneutrale Name (Kunden sind
+        // nicht nur Restaurants, z. B. auch Handwerk/Praxen). Führendes ", "
+        // nur bei vorhandener Adresse — basePrompt in vapiAdmin.js hängt
+        // diese Variable direkt an {{business_name}} an, ohne festes Komma,
+        // damit Kunden ohne Adresse (z. B. "Ki Works") nicht mit einem
+        // hängenden Komma enden ("...von Ki Works, .").
+        business_name: restaurant.name || 'unser Unternehmen',
+        business_address: restaurant.address ? `, ${restaurant.address}` : '',
+        // restaurant_name/restaurant_address bewusst zusätzlich mitgeschickt
+        // (identische Werte) — reine Kompatibilität für Kunden, deren bei
+        // Vapi gespeicherter System-Prompt/First-Message noch die alten
+        // Platzhalternamen enthält (erst bei der nächsten Synchronisierung
+        // dieses Kunden aktualisiert). Ohne das würde bei einem noch nicht
+        // resynchten Kunden der Platzhalter im echten Anruf unaufgelöst
+        // bleiben. Kann entfernt werden, sobald alle Kunden mindestens
+        // einmal neu synchronisiert wurden.
         restaurant_name: restaurant.name || 'unser Unternehmen',
-        // Führendes ", " nur bei vorhandener Adresse — basePrompt in
-        // vapiAdmin.js hängt diese Variable direkt an {{restaurant_name}} an,
-        // ohne festes Komma, damit Kunden ohne Adresse (z. B. "Ki Works")
-        // nicht mit einem hängenden Komma enden ("...von Ki Works, .").
         restaurant_address: restaurant.address ? `, ${restaurant.address}` : '',
         knowledge_base: restaurant.knowledge_base || 'Keine Informationen hinterlegt — bei inhaltlichen Fragen bitte auf einen Rückruf verweisen.',
         opening_hours: formatOpeningHours(restaurant.opening_hours),
