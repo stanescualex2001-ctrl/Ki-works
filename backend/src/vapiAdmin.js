@@ -243,13 +243,22 @@ export async function syncVapiAssistant(restaurantId) {
   const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
 
   try {
-    const assistantRes = restaurant.vapi_assistant_id
+    let assistantRes = restaurant.vapi_assistant_id
       ? await fetch(`https://api.vapi.ai/assistant/${restaurant.vapi_assistant_id}`, {
         method: 'PATCH', headers, body: JSON.stringify(body),
       })
       : await fetch('https://api.vapi.ai/assistant', {
         method: 'POST', headers, body: JSON.stringify(body),
       });
+    // Die gespeicherte vapi_assistant_id kann veraltet sein (z. B. der
+    // Assistent wurde manuell im Vapi-Dashboard gelöscht) — PATCH liefert
+    // dann 404 "Assistant not found". Statt dauerhaft zu scheitern, in dem
+    // Fall einmal neu anlegen (POST) statt den alten zu aktualisieren.
+    if (restaurant.vapi_assistant_id && assistantRes.status === 404) {
+      assistantRes = await fetch('https://api.vapi.ai/assistant', {
+        method: 'POST', headers, body: JSON.stringify(body),
+      });
+    }
     const assistantJson = await assistantRes.json();
     const assistantId = assistantJson?.id;
     if (!assistantId) {
