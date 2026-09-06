@@ -45,6 +45,14 @@ for (const method of ['get', 'post', 'patch']) {
 
 const publicRestaurant = ({ password_hash, setup_token, ...rest }) => rest;
 
+// Whitespace entfernen (z. B. "+43 726 223 417" -> "+43726223417") — Vapi
+// selbst speichert Nummern ohne Leerzeichen, sowohl der Nummern-Abgleich in
+// vapiAdmin.js (syncVapiAssistant) als auch die Anruf-Zuordnung in vapi.js
+// (resolveRestaurant) vergleichen exakte Strings. Ohne Normalisierung würde
+// eine im Dashboard mit Leerzeichen eingetragene Nummer (wie überall auf der
+// Website angezeigt) beide Abgleiche stillschweigend scheitern lassen.
+const normalizePhone = (v) => (typeof v === 'string' ? v.replace(/\s+/g, '') : v);
+
 // --- Health -----------------------------------------------------------------
 app.get('/api/health', async (_req, res) => {
   try {
@@ -615,7 +623,7 @@ app.post('/api/restaurants', async (req, res) => {
   const { rows } = await query(
     `INSERT INTO restaurants (name, address, contact_email, contact_phone, vapi_phone_number, agency_id${enabled_roles ? ', enabled_roles' : ''})
      VALUES ($1, $2, $3, $4, $5, $6${enabled_roles ? ', $7' : ''}) RETURNING *`,
-    [name, address || null, contact_email || null, contact_phone || null, vapi_phone_number || null, agencyId,
+    [name, address || null, contact_email || null, contact_phone || null, normalizePhone(vapi_phone_number) || null, agencyId,
       ...(enabled_roles ? [JSON.stringify(enabled_roles)] : [])],
   );
   notifyN8n('restaurant-onboarding', { restaurant: publicRestaurant(rows[0]) });
@@ -638,7 +646,8 @@ app.patch('/api/restaurants/:id', async (req, res) => {
   const vals = [];
   for (const key of allowed) {
     if (key in req.body) {
-      vals.push(req.body[key] === '' ? null : req.body[key]);
+      const raw = req.body[key] === '' ? null : req.body[key];
+      vals.push(key === 'vapi_phone_number' ? normalizePhone(raw) : raw);
       sets.push(`${key} = $${vals.length}`);
     }
   }
