@@ -1220,8 +1220,9 @@ function ContactForm({ restaurant, onDone, onCancel }) {
       }),
     })
       .then(async (r) => {
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
-        onDone();
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+        onDone(body);
       })
       .catch((err) => { setError(err.message); setSaving(false); });
   };
@@ -1451,7 +1452,15 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
         <ContactForm
           restaurant={info(editingContact)}
           onCancel={() => setEditingContact(null)}
-          onDone={() => { setEditingContact(null); onChanged(); }}
+          onDone={(result) => {
+            setEditingContact(null);
+            onChanged();
+            if (result?.vapi) {
+              setInviteMsg(result.vapi.ok
+                ? t('customers.vapiSetupOk') + (result.vapi.warning ? t('customers.vapiSetupWarningHint', { warning: result.vapi.warning }) : '')
+                : t('customers.vapiSetupFailed', { warning: result.vapi.warning }));
+            }
+          }}
         />
       )}
       {editingRoles && (
