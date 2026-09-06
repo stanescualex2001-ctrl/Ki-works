@@ -1822,7 +1822,11 @@ Version auf "Publish" klicken.
   per rsync ausgerollt** (liegt unter `/etc/nginx/`, außerhalb von
   `/opt/ki-works`) — nach dem Push muss die aktualisierte Datei manuell
   auf den Server kopiert werden (siehe Deploy-Hinweis unten). Committet+
-  gepusht.
+  gepusht. **Manuell auf dem Server angewendet (06.09.2026):** aktive Datei
+  war `/etc/nginx/sites-available/ki-works.conf` (per `grep -rl
+  "ki-works.eu" /etc/nginx/` gefunden, da der Pfad nicht dokumentiert war),
+  vor dem Überschreiben gesichert, `nginx -t && systemctl reload nginx`
+  erfolgreich — Sales-Agent-Läufe sollten jetzt nicht mehr am 504 scheitern.
 - **Sales-Mail-Vorschau: volle Breite + feste Signatur (29.08.2026):**
   zwei Nutzer-Funde nach dem ersten echten Sales-Agent-Testlauf (Region
   "Perg Stadt" — Trefferquote für Kontakt-E-Mails deutlich besser, wie
@@ -2066,6 +2070,101 @@ Version auf "Publish" klicken.
   `usage.cache_read_input_tokens` bzw. im Konsolen-Cache-Tab, sobald das
   Widget genutzt wird. Committet+gepusht, auf dem Produktivserver
   ausgerollt (Nutzer-Bestätigung 30.08.2026).
+- **"Kontakt ändern" — drei Folgefehler aus echtem Testbetrieb behoben
+  (06.09.2026):** Beim Umwidmen der Venezia-Telefonnummer auf "Ki Works"
+  fürs Live-Anruf-Banner (siehe oben) deckte echtes Testen drei
+  zusammenhängende Bugs auf. (1) `ContactForm.save()`
+  (`dashboard/src/App.jsx`) ignorierte die Backend-Antwort komplett — ein
+  fehlgeschlagener Vapi-Sync im Hintergrund blieb unsichtbar, es wirkte
+  als sei alles gespeichert. Fix: zeigt jetzt dieselbe Erfolg/Warnung/
+  Fehler-Meldung wie `NewCustomerForm`. (2) Dadurch aufgedeckt:
+  `syncVapiAssistant()` (`backend/src/vapiAdmin.js`) scheiterte dauerhaft,
+  sobald die gespeicherte `vapi_assistant_id` in Vapi nicht mehr existierte
+  (404 "Assistant not found", z. B. nach manuellem Löschen im
+  Vapi-Dashboard) — Fix: bei 404 automatisch auf Neuanlage (POST)
+  zurückfallen statt dauerhaft zu scheitern. (3) Die Telefonnummer wurde
+  mit Leerzeichen gespeichert ("+43 726 223 417", wie auf der Website
+  angezeigt), Vapi speichert/vergleicht Nummern aber ohne Leerzeichen —
+  der Abgleich beim eingehenden Anruf schlug deshalb fehl. Fix: neue
+  `normalizePhone()`-Hilfsfunktion in `server.js` entfernt Leerzeichen
+  beim Speichern. Nebenbei mitgefixt: ein hängendes Komma im System-Prompt
+  bei Kunden ohne Adresse ("...von Ki Works, ." statt "...von Ki Works.")
+  — `restaurant_address`-Variable liefert das führende Komma jetzt nur bei
+  vorhandener Adresse. **Nutzer-Feedback zur Arbeitsweise, gilt weiterhin:**
+  wenn die Antwort auf eine Diagnosefrage den Fehler bereits verrät (hier:
+  "wie hast du die Nummer gespeichert?"), muss der Fehler direkt in
+  derselben Antwort benannt/behoben werden, nicht über mehrere weitere
+  Nachrichten hinweg. Alle vier Fixes committet+gepusht, laut
+  Nutzer-Bestätigung auf dem Produktivserver ausgerollt.
+- **Ki-Works-Sonderbegrüßung, Kontakt-E-Mail-Feld, Formulare direkt unter
+  der Kundenzeile (06.09.2026):** Nutzer fand die First-Message-Begrüßung
+  für "Ki Works" (die Live-Demo-Nummer) unpassend generisch und fragte,
+  warum Prompt/First-Message überhaupt gemeinsamer Code für alle Kunden
+  sind. Antwort/Entscheidung: gemeinsamer Code bleibt Standard (ein Fix
+  wirkt automatisch für alle ~20+ Kunden), aber "Ki Works" bekommt als
+  einziger bekannter Sonderfall einen Code-Override — `vapiAdmin.js` prüft
+  `KIWORKS_OWN_RESTAURANT_ID` (gleiches Muster wie in `webchat.js`) und
+  nutzt dafür eine eigene `OWN_FIRST_MESSAGE` ("Sie sprechen jetzt direkt
+  mit mir — testen Sie live..." statt der generischen Restaurant-Formel).
+  Dabei zusätzlich: `contact_email`-Feld in `ContactForm` ergänzt (Backend
+  unterstützte es schon, nur die Oberfläche fehlte), und alle
+  Bearbeitungsformulare in "Kunden (Betreiber)" (`AccessForm`/`RolesForm`/
+  `PricingTierForm`/`AgencyAssignForm`/`ContactForm`) öffnen jetzt als
+  eigene Tabellenzeile direkt UNTER der jeweiligen Kundenzeile statt als
+  ein Block oberhalb der ganzen Tabelle — Nutzer fand Letzteres verwirrend.
+  Committet+gepusht, auf dem Produktivserver ausgerollt.
+- **Vapi-Platzhalter branchenneutral umbenannt (06.09.2026):** Nutzer
+  bemängelte zu Recht, dass der System-Prompt Kiwo weiterhin als
+  "Telefonassistent von `{{restaurant_name}}{{restaurant_address}}`"
+  beschreibt, obwohl die Plattform seit Phase 1 (10.08.2026)
+  branchenneutral ist. `{{restaurant_name}}`/`{{restaurant_address}}` in
+  `vapiAdmin.js`s Prompt-Vorlagen auf `{{business_name}}`/
+  `{{business_address}}` umbenannt. **Wichtig für die Sicherheit
+  bestehender Kunden:** `vapi.js` sendet weiterhin zusätzlich die alten
+  `restaurant_name`/`restaurant_address`-Schlüssel mit identischen Werten
+  — ohne das hätte jeder Kunde, dessen bei Vapi gespeicherter Text noch
+  die alten Platzhalter enthält (bis zur nächsten Synchronisierung), am
+  Telefon buchstäblich "{{restaurant_name}}" gesagt. Kein Massen-Resync
+  nötig, die neuen Namen zeigen sich automatisch bei der nächsten
+  ohnehin fälligen Synchronisierung eines Kunden. Bewusst NICHT
+  angefasst: `restaurant_name` als SQL-Alias in `server.js`/n8n-Workflow
+  03 (Reservierungserinnerung) — komplett anderer Namensraum, zufällig
+  gleicher Name. Committet+gepusht, auf dem Produktivserver ausgerollt
+  (reiner Backend-Neustart).
+- **Visitenkarte + Info-Blatt für Alex erstellt (06.09.2026):** auf
+  Nutzer-Wunsch ("brauche ich Visitenkarten und eine Broschüre?")
+  Visitenkarte (85×55mm, Vorder-/Rückseite, Orb Buddy mit Antenne +
+  Sprechblasen-Motiv) und ein A4-Infoblatt (Dunkel- und Hell-Variante)
+  im Kiwo-Design erstellt und als PDF übergeben — externe Marketing-Datei,
+  kein Repo-Code (wie bei den LEDTEK/pixelpress-Social-Assets). Technisch
+  wie bei `socialGraphic.js`: HTML/CSS + eingebettete Fonts, per
+  Headless-Chromium zu PDF gerendert. **Zwei Lehren für künftige
+  Print-Dateien:** (1) Die verwendeten Google-Fonts-Dateien waren trotz
+  Einzelschnitt-Download technisch weiterhin Variable Fonts (`fvar`-Tabelle
+  vorhanden) — Chromiums PDF-Export bettet solche Schriften NICHT richtig
+  ein, sondern wandelt Text nur in Umriss-Pfade um (Type3-Fallback), was
+  die Druckerei zu Recht als "Schriftarten nicht eingebettet" ablehnte.
+  Fix: Schriften vorher mit `fontTools.varLib.instancer` in echte statische
+  Schnitte umwandeln. (2) Beschnittzugabe/Sicherheitsbereich: Playwrights
+  `page.pdf()` schreibt nur eine reine `/MediaBox`, keine `/TrimBox`/
+  `/BleedBox` — ohne dieses Feld muss das Druckerei-Upload-Tool raten,
+  welcher Teil der Datei die echte Schnittkante ist, was zu einer falsch
+  positioniert wirkenden Vorschau führen kann. Fix: `/TrimBox`/`/BleedBox`
+  nachträglich per `pikepdf` ergänzen (85×55mm Schnittkante innerhalb der
+  88×58mm-Datei mit 1,5mm Beschnittzugabe pro Seite). **Trotz mehrerer
+  Korrekturrunden (Orb-Buddy-Position/-Größe insgesamt 4x angepasst) blieb
+  die Positionierung im Druckerei-Tool des Nutzers laut dessen Screenshots
+  weiterhin falsch** — eine per `pikepdf` unabhängig gerenderte Kontrolle
+  zeigte hier stets korrekte Platzierung, die Diskrepanz zum Druckerei-Tool
+  blieb ungeklärt. Nutzer hat entnervt nach der PSD-Datei gefragt, um es
+  selbst in Photoshop zu machen — gibt es nicht (kein Photoshop-Ursprung,
+  reines HTML/SVG→PDF). Stattdessen flache 300dpi-PNGs (Vorder-/Rückseite,
+  echte 88×58mm-Maße) übergeben, damit der Nutzer selbst volle Kontrolle
+  über die Positionierung hat. **Offen/ungeklärt für ein künftiges Gespräch:**
+  warum genau das Druckerei-Tool die Datei anders positioniert als jede
+  hier verfügbare unabhängige PDF-Prüfung (poppler, pikepdf) — evtl. beim
+  nächsten Mal nach einer vom Druckerei-Tool selbst exportierten
+  Vorschau-/Proof-Datei fragen, statt nur nach einem Screenshot.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2709,17 +2808,16 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Live-Anruf-Banner (siehe „Bereits erledigt", 06.09.2026): Deploy +
-  manuelle Dashboard-Schritte noch offen.** Reihenfolge jetzt: (1)
-  `landing/`+`dashboard/` deployen (normaler rsync/Build-Ablauf, kein
-  Backend-Neustart nötig), (2) Venezia → "Kontakt ändern" → Vapi-
-  Telefonnummer leeren → speichern, (3) "Ki Works" → "Kontakt ändern" →
-  Vapi-Telefonnummer = +43 726 223 417 → speichern, (4) bei "Ki Works"
-  die Wissensdatenbank fürs Telefon gegenprüfen/ergänzen (Textvorschlag
-  wurde als Datei übergeben), (5) im Vapi-Dashboard (dashboard.vapi.ai)
-  beim "Ki Works"-Assistenten einmal "Publish" klicken. Bis das erledigt
-  ist, zeigt die neue Sektion live eine Nummer, die noch keinem
-  funktionierenden Vapi-Assistenten zugeordnet ist.
+- **Live-Anruf-Banner — bis auf einen Punkt erledigt (06.09.2026):** Deploy
+  von `landing/`+`dashboard/` sowie Venezia-Nummer geleert/"Ki Works"-Nummer
+  auf +43 726 223 417 gesetzt sind laut Nutzer-Bestätigung ("alles erledigt")
+  durch — Nutzer hat dabei auch live im Vapi-Dashboard "ki-works – Ki Works"
+  als Assistent für die Inbound-Nummer ausgewählt. Wissensdatenbank für
+  "Ki Works" mehrfach überarbeitet und final akzeptiert (siehe unten,
+  inkl. Reseller/White-Label-Absatz). **Einzig unbestätigt:** ob im
+  Vapi-Dashboard nach der Nummer-Zuordnung auch tatsächlich auf "Publish"
+  geklickt wurde (bekannte Einschränkung, siehe "Vapi Publish-Problem")
+  — beim nächsten Gespräch nachfragen bzw. bei einem Testanruf verifizieren.
 - **Sales-Mail-Entwurf-Anlage (siehe „Bereits erledigt", 29.08.2026):
   IMAP-Zugangsdaten für info@ki-works.eu noch nicht gesetzt.** Nutzer hat
   Host (`cloud10.helloly.hosting`, Port 993, SSL/TLS) genannt, Passwort
