@@ -152,13 +152,21 @@ const ROLE_BLOCKS = {
   support: { promptFragment: SUPPORT_PROMPT, tools: SUPPORT_TOOLS },
 };
 
+// Sonderfall "Ki Works" (unser eigener Demo-/Web-Chat-Kunde, siehe
+// KIWORKS_OWN_RESTAURANT_ID in webchat.js): bekommt statt der generischen
+// Begrüßung eine eigene, die klarmacht, dass man direkt mit dem echten
+// Kiwo/KI-Works-Agenten spricht (nicht mit einem beliebigen Restaurant-
+// Kunden) — der gemeinsame Prompt-Baustein bleibt für alle anderen Kunden
+// unverändert, damit Bugfixes weiterhin automatisch für alle wirken.
+const OWN_FIRST_MESSAGE = 'Grüß Gott, hier ist Kiwo, der KI-Agent der Plattform KI-Works. Sie sprechen jetzt direkt mit mir — testen Sie live, wie ich am Telefon klinge und arbeite. Wie kann ich Ihnen helfen?';
+
 // Baut den Vapi-Assistenten-Body abhängig davon, welche Rollen der Kunde
 // gebucht hat. Name/Adresse laufen über
 // {{restaurant_name}}/{{restaurant_address}} — dieselben Vapi-Variablen wie
 // {{knowledge_base}}/{{opening_hours}}/{{faq}}, siehe handleAssistantRequest
 // in vapi.js. Nur das "name"-Feld (Anzeigename im Vapi-Konto) braucht den
 // echten Namen.
-function buildAssistantBody({ restaurantName, publicUrl, webhookSecret, enabledRoles, assistantName = 'Kiwo' }) {
+function buildAssistantBody({ restaurantId, restaurantName, publicUrl, webhookSecret, enabledRoles, assistantName = 'Kiwo' }) {
   const roles = normalizeRoles(enabledRoles);
   const orders = roles.includes('orders');
 
@@ -168,9 +176,14 @@ function buildAssistantBody({ restaurantName, publicUrl, webhookSecret, enabledR
     + ' Heutiges Datum: {{now}}.';
   const tools = roles.flatMap((r) => ROLE_BLOCKS[r]?.tools ?? []);
 
+  const ownRestaurantId = process.env.KIWORKS_OWN_RESTAURANT_ID ? Number(process.env.KIWORKS_OWN_RESTAURANT_ID) : null;
+  const isOwnRestaurant = ownRestaurantId != null && Number(restaurantId) === ownRestaurantId;
+
   return {
     name: `ki-works – ${restaurantName}`,
-    firstMessage: `Grüß Gott, hier ist ${assistantName}, der ${roleLabel} von {{restaurant_name}}. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?`,
+    firstMessage: isOwnRestaurant
+      ? OWN_FIRST_MESSAGE
+      : `Grüß Gott, hier ist ${assistantName}, der ${roleLabel} von {{restaurant_name}}. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?`,
     silenceTimeoutSeconds: 60,
     maxDurationSeconds: 1800,
     messagePlan: {
@@ -234,6 +247,7 @@ export async function syncVapiAssistant(restaurantId) {
   if (!restaurant) return { ok: false, warning: `Restaurant ${restaurantId} nicht gefunden.` };
 
   const body = buildAssistantBody({
+    restaurantId: restaurant.id,
     restaurantName: restaurant.name,
     publicUrl,
     webhookSecret,

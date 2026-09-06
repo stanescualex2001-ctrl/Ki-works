@@ -208,6 +208,7 @@
     "title": "Contact pentru „{{name}}”",
     "nameLabel": "Nume",
     "addressLabel": "Adresă",
+    "emailLabel": "E-mail de contact",
     "phoneLabel": "Telefon de contact",
     "numberLabel": "Număr de telefon AI (Vapi)"
   },

@@ -1201,6 +1201,7 @@ function ContactForm({ restaurant, onDone, onCancel }) {
   const { t } = useI18n();
   const [name, setName] = useState(restaurant.name || '');
   const [address, setAddress] = useState(restaurant.address || '');
+  const [contactEmail, setContactEmail] = useState(restaurant.contact_email || '');
   const [contactPhone, setContactPhone] = useState(restaurant.contact_phone || '');
   const [vapiNumber, setVapiNumber] = useState(restaurant.vapi_phone_number || '');
   const [error, setError] = useState(null);
@@ -1215,6 +1216,7 @@ function ContactForm({ restaurant, onDone, onCancel }) {
       body: JSON.stringify({
         name,
         address: address || null,
+        contact_email: contactEmail || null,
         contact_phone: contactPhone || null,
         vapi_phone_number: vapiNumber || null,
       }),
@@ -1235,6 +1237,9 @@ function ContactForm({ restaurant, onDone, onCancel }) {
       </label>
       <label>{t('contactForm.addressLabel')}
         <input value={address} onChange={(e) => setAddress(e.target.value)} />
+      </label>
+      <label>{t('contactForm.emailLabel')}
+        <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
       </label>
       <label>{t('contactForm.phoneLabel')}
         <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
@@ -1441,49 +1446,6 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
           }}
         />
       )}
-      {editing && (
-        <AccessForm
-          restaurant={info(editing)}
-          onCancel={() => setEditing(null)}
-          onDone={() => { setEditing(null); onChanged(); }}
-        />
-      )}
-      {editingContact && (
-        <ContactForm
-          restaurant={info(editingContact)}
-          onCancel={() => setEditingContact(null)}
-          onDone={(result) => {
-            setEditingContact(null);
-            onChanged();
-            if (result?.vapi) {
-              setInviteMsg(result.vapi.ok
-                ? t('customers.vapiSetupOk') + (result.vapi.warning ? t('customers.vapiSetupWarningHint', { warning: result.vapi.warning }) : '')
-                : t('customers.vapiSetupFailed', { warning: result.vapi.warning }));
-            }
-          }}
-        />
-      )}
-      {editingRoles && (
-        <RolesForm
-          restaurant={info(editingRoles)}
-          onCancel={() => setEditingRoles(null)}
-          onDone={() => { setEditingRoles(null); onChanged(); }}
-        />
-      )}
-      {editingTier && (
-        <PricingTierForm
-          restaurant={info(editingTier)}
-          onCancel={() => setEditingTier(null)}
-          onDone={() => { setEditingTier(null); onChanged(); }}
-        />
-      )}
-      {editingAgency && (
-        <AgencyAssignForm
-          restaurant={info(editingAgency)}
-          onCancel={() => setEditingAgency(null)}
-          onDone={() => { setEditingAgency(null); onChanged(); }}
-        />
-      )}
       <div className="table-wrap">
         <table>
           <thead>
@@ -1498,8 +1460,10 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
             {rows.map((d) => {
               const w = weekOf(d.restaurant_id);
               const r = info(d.restaurant_id);
+              const rowId = d.restaurant_id;
               return (
-                <tr key={d.restaurant_id}>
+                <React.Fragment key={rowId}>
+                <tr>
                   <td>
                     {onOpenRestaurant ? (
                       <button className="link-strong" onClick={() => onOpenRestaurant(d.restaurant_id)}>
@@ -1556,6 +1520,57 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
                     )}
                   </td>
                 </tr>
+                {(editing === rowId || editingContact === rowId || editingRoles === rowId
+                  || editingTier === rowId || editingAgency === rowId) && (
+                  <tr className="row-form">
+                    <td colSpan={11}>
+                      {editing === rowId && (
+                        <AccessForm
+                          restaurant={r}
+                          onCancel={() => setEditing(null)}
+                          onDone={() => { setEditing(null); onChanged(); }}
+                        />
+                      )}
+                      {editingContact === rowId && (
+                        <ContactForm
+                          restaurant={r}
+                          onCancel={() => setEditingContact(null)}
+                          onDone={(result) => {
+                            setEditingContact(null);
+                            onChanged();
+                            if (result?.vapi) {
+                              setInviteMsg(result.vapi.ok
+                                ? t('customers.vapiSetupOk') + (result.vapi.warning ? t('customers.vapiSetupWarningHint', { warning: result.vapi.warning }) : '')
+                                : t('customers.vapiSetupFailed', { warning: result.vapi.warning }));
+                            }
+                          }}
+                        />
+                      )}
+                      {editingRoles === rowId && (
+                        <RolesForm
+                          restaurant={r}
+                          onCancel={() => setEditingRoles(null)}
+                          onDone={() => { setEditingRoles(null); onChanged(); }}
+                        />
+                      )}
+                      {editingTier === rowId && (
+                        <PricingTierForm
+                          restaurant={r}
+                          onCancel={() => setEditingTier(null)}
+                          onDone={() => { setEditingTier(null); onChanged(); }}
+                        />
+                      )}
+                      {editingAgency === rowId && (
+                        <AgencyAssignForm
+                          restaurant={r}
+                          onCancel={() => setEditingAgency(null)}
+                          onDone={() => { setEditingAgency(null); onChanged(); }}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                )}
+                </React.Fragment>
               );
             })}
           </tbody>

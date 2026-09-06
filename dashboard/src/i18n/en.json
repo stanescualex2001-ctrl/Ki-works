@@ -208,6 +208,7 @@
     "title": "Contact for “{{name}}”",
     "nameLabel": "Name",
     "addressLabel": "Address",
+    "emailLabel": "Contact email",
     "phoneLabel": "Contact phone",
     "numberLabel": "AI phone number (Vapi)"
   },

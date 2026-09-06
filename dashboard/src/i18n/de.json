@@ -208,6 +208,7 @@
     "title": "Kontakt für „{{name}}\"",
     "nameLabel": "Name",
     "addressLabel": "Adresse",
+    "emailLabel": "Kontakt-E-Mail",
     "phoneLabel": "Kontakt-Telefon",
     "numberLabel": "KI-Telefonnummer (Vapi)"
   },
