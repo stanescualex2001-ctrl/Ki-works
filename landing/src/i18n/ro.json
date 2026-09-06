@@ -180,7 +180,10 @@
     "subtitle": "Fără discurs de vânzări, fără formular — testați live cum sună și reacționează Kiwo. Gratuit, disponibil oricând.",
     "phone": "+43 726 223 417",
     "cta": "Sunați acum",
-    "note": "Apăsați pentru a suna pe mobil"
+    "note": "Apăsați pentru a suna pe mobil",
+    "badge": "LIVE",
+    "compactTitle": "Sunați chiar dvs.",
+    "compactDesc": "O conversație reală cu Kiwo, fără scenariu."
   },
   "demo": {
     "eyebrow": "DE ASCULTAT",

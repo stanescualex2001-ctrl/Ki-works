@@ -180,7 +180,10 @@
     "subtitle": "Kein Verkaufsgespräch, kein Formular — testen Sie live, wie Kiwo klingt und reagiert. Kostenlos, jederzeit erreichbar.",
     "phone": "+43 726 223 417",
     "cta": "Jetzt anrufen",
-    "note": "Direkt anklickbar auf dem Handy"
+    "note": "Direkt anklickbar auf dem Handy",
+    "badge": "LIVE",
+    "compactTitle": "Selbst anrufen",
+    "compactDesc": "Echtes Gespräch mit Kiwo, kein Skript."
   },
   "demo": {
     "eyebrow": "ZUM ANHÖREN",

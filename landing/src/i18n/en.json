@@ -180,7 +180,10 @@
     "subtitle": "No sales pitch, no form — test live how Kiwo sounds and responds. Free, available anytime.",
     "phone": "+43 726 223 417",
     "cta": "Call now",
-    "note": "Tap to call on mobile"
+    "note": "Tap to call on mobile",
+    "badge": "LIVE",
+    "compactTitle": "Call it yourself",
+    "compactDesc": "A real conversation with Kiwo, no script."
   },
   "demo": {
     "eyebrow": "LISTEN IN",

@@ -1351,6 +1351,24 @@ export default function App() {
                 <Mail className="h-3.5 w-3.5" /> {t("ctaSection.button")}
               </a>
             </div>
+            <div className="mt-6 flex justify-center">
+              <a
+                href={`tel:${t("liveCallBanner.phone").replace(/\s+/g, "")}`}
+                className="group inline-flex items-center gap-3 rounded-2xl border border-cyan-400/30 bg-background/40 px-5 py-3 text-left hover:border-cyan-400/60 transition-colors"
+              >
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-2.5 py-1 text-[10px] font-bold tracking-wide text-[#0A0F1D]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#0A0F1D] animate-pulse" />
+                  {t("liveCallBanner.badge")}
+                </span>
+                <span className="flex flex-col">
+                  <span className="text-sm font-semibold">{t("liveCallBanner.compactTitle")}</span>
+                  <span className="text-xs text-foreground/55">{t("liveCallBanner.compactDesc")}</span>
+                </span>
+                <span className="ml-2 text-sm font-semibold text-gradient font-mono tabular-nums">
+                  {t("liveCallBanner.phone")}
+                </span>
+              </a>
+            </div>
           </GlowCard>
         </div>
       </section>
