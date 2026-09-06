@@ -350,7 +350,11 @@ async function handleAssistantRequest(message, restaurant) {
       variableValues: {
         guestContext: context,
         restaurant_name: restaurant.name || 'unser Unternehmen',
-        restaurant_address: restaurant.address || '',
+        // Führendes ", " nur bei vorhandener Adresse — basePrompt in
+        // vapiAdmin.js hängt diese Variable direkt an {{restaurant_name}} an,
+        // ohne festes Komma, damit Kunden ohne Adresse (z. B. "Ki Works")
+        // nicht mit einem hängenden Komma enden ("...von Ki Works, .").
+        restaurant_address: restaurant.address ? `, ${restaurant.address}` : '',
         knowledge_base: restaurant.knowledge_base || 'Keine Informationen hinterlegt — bei inhaltlichen Fragen bitte auf einen Rückruf verweisen.',
         opening_hours: formatOpeningHours(restaurant.opening_hours),
         faq: formatFaq(restaurant.faq),
