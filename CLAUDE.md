@@ -2653,9 +2653,52 @@ Version auf "Publish" klicken.
   erzeugt). Nur Syntax-Check möglich (`node --check`, kein echter
   Testlauf, Standing Rule Nutzungsguthaben). **Committet+gepusht
   (`eba3a6a`), braucht Backend-Neustart** (`salesAgent.js` geändert).
+- **Neue Sektion "Live-Anruf-Banner" im "Live testen"-Bereich (06.09.2026):**
+  Nutzer hat lacopstudio.com (Mitbewerber) als Vergleich gezeigt — deren
+  Startseite hat eine echte anrufbare Demo-Nummer statt nur Audio-Beispiele.
+  Vorher als Artifact-Vorschau gezeigt (2 Varianten), Nutzer wählte
+  Variante A (eigenständige Banner-Sektion, kein zusätzliches Kärtchen).
+  Umgesetzt in `landing/src/App.jsx`: neuer `GlowCard`-Banner direkt vor
+  den 3 bestehenden `DemoCallCard`s — `OrbBuddy` (statisch, ohne
+  `track`-Prop), Headline/Subtext, klickbarer `tel:`-Link im bestehenden
+  Cyan-Violet-Verlauf-CTA-Stil. Neuer i18n-Namespace `liveCallBanner.*`
+  in de/en/ro.json (Rufnummer hartcodiert: **+43 726 223 417**, wie die
+  bestehende Kontakt-Nummer auf der Kontakt-Seite). **Wichtige
+  Architektur-Entscheidung dazu:** keine neue Telefonnummer gekauft —
+  die bestehende Venezia-Nummer wird zur reinen Kiwo-Demo-Nummer
+  umgewidmet (Venezia läuft ohnehin nur mit automatisch generierten
+  `[AUTO-DEMO]`-Daten, kein echter Anrufbetrieb, der gestört würde).
+  Venezia bekommt erst dann eine eigene neue Nummer, wenn sie wirklich
+  als zahlender Kunde live geht. Die Demo selbst bekommt eine **eigene,
+  generische Kiwo-Identität** (nicht "Fake-Venezia") und **erklärt nur/
+  beantwortet Fragen** (Rolle `support`, wie beim bestehenden
+  Web-Chat-Kunden "Ki Works") — legt bewusst KEINE echten Test-
+  Reservierungen/-Bestellungen an, um keinen neuen Rollen-/Tool-Code zu
+  brauchen. Kein Backend-Code nötig — die Nummer-Umwidmung läuft komplett
+  über die bestehende Kunden-Anlage/-Bearbeitung im Dashboard + den
+  automatischen Vapi-Sync. Textvorschlag für die Wissensdatenbank des
+  neuen Demo-Kunden wurde dem Nutzer als Datei übergeben. Build +
+  SSR-Prerender aller 3 Sprachen fehlerfrei, `tel:`-Link-Format per Grep
+  geprüft. **Committet+gepusht, noch NICHT auf dem Produktivserver
+  ausgerollt** (normaler rsync/Build-Ablauf für `landing/`, kein
+  Backend-Neustart nötig) — **und die manuellen Dashboard-Schritte
+  stehen noch aus** (siehe „Offene Punkte"): (1) Venezia-Telefonnummer
+  im Kunden-Dashboard leeren, (2) neuen Kunden "Kiwo Live-Demo" mit
+  Rolle Support und der freigewordenen Nummer +43 726 223 417 anlegen,
+  (3) Wissensdatenbank befüllen, (4) im Vapi-Dashboard einmal "Publish"
+  klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **Live-Anruf-Banner (siehe „Bereits erledigt", 06.09.2026): Deploy +
+  manuelle Dashboard-Schritte noch offen.** Code committet+gepusht, aber
+  (1) noch nicht auf dem Server ausgerollt (normaler `landing/`-Deploy),
+  (2) Venezia-Telefonnummer noch nicht geleert, (3) neuer Kunde
+  "Kiwo Live-Demo" (Rolle Support, Nummer +43 726 223 417) noch nicht
+  angelegt, (4) Wissensdatenbank noch nicht befüllt, (5) kein Vapi-
+  "Publish" geklickt. Bis das erledigt ist, zeigt die neue Sektion live
+  eine Nummer, die noch keinem funktionierenden Vapi-Assistenten
+  zugeordnet ist.
 - **Sales-Mail-Entwurf-Anlage (siehe „Bereits erledigt", 29.08.2026):
   IMAP-Zugangsdaten für info@ki-works.eu noch nicht gesetzt.** Nutzer hat
   Host (`cloud10.helloly.hosting`, Port 993, SSL/TLS) genannt, Passwort
