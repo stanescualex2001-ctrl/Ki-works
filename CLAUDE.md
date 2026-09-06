@@ -2687,18 +2687,39 @@ Version auf "Publish" klicken.
   Rolle Support und der freigewordenen Nummer +43 726 223 417 anlegen,
   (3) Wissensdatenbank befüllen, (4) im Vapi-Dashboard einmal "Publish"
   klicken.
+  **Korrektur (06.09.2026), Nutzer-Screenshot deckte auf:** Schritt (2)
+  war so nicht umsetzbar — die "Kunden (Betreiber)"-Liste bot keine
+  Möglichkeit, die Telefonnummer eines *bestehenden* Kunden zu ändern
+  (das Feld gab es nur im "+ Neuer Kunde"-Formular), und "Kiwo Live-Demo"
+  als neuer Kunde war unnötig, da mit "Ki Works" (bereits vorhandener
+  Kunde für das Web-Chat-Widget, Rolle Support) schon der passende
+  Kandidat existiert. Fix: neue Aktion **"Kontakt ändern"** in der
+  Kundenliste (`dashboard/src/App.jsx`, neue `ContactForm`-Komponente,
+  Felder Name/Adresse/Kontakt-Telefon/Vapi-Telefonnummer) — nutzt
+  `PATCH /api/restaurants/:id`, das diese Felder inkl. automatischem
+  Vapi-Resync bereits unterstützte, nur die Oberfläche fehlte. Sichtbar
+  für Admin UND Agentur (Backend erlaubt Agenturen dieselben Felder für
+  eigene Kunden). Kein manuelles Bearbeiten des Vapi-System-Prompts
+  nötig — der wird automatisch aus Rolle+Wissensdatenbank generiert und
+  würde bei einem manuellen Vapi-Edit beim nächsten Sync ohnehin
+  überschrieben. `dashboard`-Build fehlerfrei, neue i18n-Keys
+  (`contactForm.*`, `customers.changeContact`) in allen 3 Sprachen.
+  **Committet+gepusht (`1aac0ba`), noch NICHT auf dem Produktivserver
+  ausgerollt.**
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
 - **Live-Anruf-Banner (siehe „Bereits erledigt", 06.09.2026): Deploy +
-  manuelle Dashboard-Schritte noch offen.** Code committet+gepusht, aber
-  (1) noch nicht auf dem Server ausgerollt (normaler `landing/`-Deploy),
-  (2) Venezia-Telefonnummer noch nicht geleert, (3) neuer Kunde
-  "Kiwo Live-Demo" (Rolle Support, Nummer +43 726 223 417) noch nicht
-  angelegt, (4) Wissensdatenbank noch nicht befüllt, (5) kein Vapi-
-  "Publish" geklickt. Bis das erledigt ist, zeigt die neue Sektion live
-  eine Nummer, die noch keinem funktionierenden Vapi-Assistenten
-  zugeordnet ist.
+  manuelle Dashboard-Schritte noch offen.** Reihenfolge jetzt: (1)
+  `landing/`+`dashboard/` deployen (normaler rsync/Build-Ablauf, kein
+  Backend-Neustart nötig), (2) Venezia → "Kontakt ändern" → Vapi-
+  Telefonnummer leeren → speichern, (3) "Ki Works" → "Kontakt ändern" →
+  Vapi-Telefonnummer = +43 726 223 417 → speichern, (4) bei "Ki Works"
+  die Wissensdatenbank fürs Telefon gegenprüfen/ergänzen (Textvorschlag
+  wurde als Datei übergeben), (5) im Vapi-Dashboard (dashboard.vapi.ai)
+  beim "Ki Works"-Assistenten einmal "Publish" klicken. Bis das erledigt
+  ist, zeigt die neue Sektion live eine Nummer, die noch keinem
+  funktionierenden Vapi-Assistenten zugeordnet ist.
 - **Sales-Mail-Entwurf-Anlage (siehe „Bereits erledigt", 29.08.2026):
   IMAP-Zugangsdaten für info@ki-works.eu noch nicht gesetzt.** Nutzer hat
   Host (`cloud10.helloly.hosting`, Port 993, SSL/TLS) genannt, Passwort
