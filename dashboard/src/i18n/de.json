@@ -204,6 +204,13 @@
   "rolesForm": {
     "title": "Rollen für „{{name}}\""
   },
+  "contactForm": {
+    "title": "Kontakt für „{{name}}\"",
+    "nameLabel": "Name",
+    "addressLabel": "Adresse",
+    "phoneLabel": "Kontakt-Telefon",
+    "numberLabel": "KI-Telefonnummer (Vapi)"
+  },
   "pricingTier": {
     "none": "– kein Tarif –",
     "solo": "Solo (600 Min. / 99 €)",
@@ -268,6 +275,7 @@
     "markPublished": "✔ Als erledigt markieren",
     "changeAccess": "Zugang ändern",
     "createAccess": "Zugang anlegen",
+    "changeContact": "Kontakt ändern",
     "sendInvite": "Einladung senden",
     "changeRoles": "Rollen ändern",
     "changeTier": "Tarif ändern",

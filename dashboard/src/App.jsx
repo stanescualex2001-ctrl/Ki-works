@@ -1193,6 +1193,63 @@ function AgencyAssignForm({ restaurant, onDone, onCancel }) {
   );
 }
 
+// Formular zum Ändern von Name/Adresse/Telefonnummer eines Bestandskunden
+// (inkl. der tatsächlich am Telefon verwendeten Vapi-Nummer) — löst wie
+// RolesForm eine automatische Vapi-Neusynchronisierung aus, falls sich
+// Name/Adresse/Nummer ändern (siehe PATCH /api/restaurants/:id im Backend).
+function ContactForm({ restaurant, onDone, onCancel }) {
+  const { t } = useI18n();
+  const [name, setName] = useState(restaurant.name || '');
+  const [address, setAddress] = useState(restaurant.address || '');
+  const [contactPhone, setContactPhone] = useState(restaurant.contact_phone || '');
+  const [vapiNumber, setVapiNumber] = useState(restaurant.vapi_phone_number || '');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch(`/api/restaurants/${restaurant.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        address: address || null,
+        contact_phone: contactPhone || null,
+        vapi_phone_number: vapiNumber || null,
+      }),
+    })
+      .then(async (r) => {
+        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+        onDone();
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>{t('contactForm.title', { name: restaurant.name })}</strong>
+      <label>{t('contactForm.nameLabel')}
+        <input required value={name} onChange={(e) => setName(e.target.value)} />
+      </label>
+      <label>{t('contactForm.addressLabel')}
+        <input value={address} onChange={(e) => setAddress(e.target.value)} />
+      </label>
+      <label>{t('contactForm.phoneLabel')}
+        <input value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} />
+      </label>
+      <label>{t('contactForm.numberLabel')}
+        <input value={vapiNumber} onChange={(e) => setVapiNumber(e.target.value)} />
+      </label>
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>{t('common.save')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
+      </div>
+    </form>
+  );
+}
+
 function AccessForm({ restaurant, onDone, onCancel }) {
   const { t } = useI18n();
   const [email, setEmail] = useState(restaurant.login_email || restaurant.contact_email || '');
@@ -1307,6 +1364,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('name-asc');
   const [editing, setEditing] = useState(null);
+  const [editingContact, setEditingContact] = useState(null);
   const [editingRoles, setEditingRoles] = useState(null);
   const [editingTier, setEditingTier] = useState(null);
   const [editingAgency, setEditingAgency] = useState(null);
@@ -1389,6 +1447,13 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
           onDone={() => { setEditing(null); onChanged(); }}
         />
       )}
+      {editingContact && (
+        <ContactForm
+          restaurant={info(editingContact)}
+          onCancel={() => setEditingContact(null)}
+          onDone={() => { setEditingContact(null); onChanged(); }}
+        />
+      )}
       {editingRoles && (
         <RolesForm
           restaurant={info(editingRoles)}
@@ -1460,6 +1525,9 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
                   <td className="lead-actions">
                     <button className="link" onClick={() => setEditing(d.restaurant_id)}>
                       {r.login_email ? t('customers.changeAccess') : t('customers.createAccess')}
+                    </button>
+                    <button className="link" onClick={() => setEditingContact(d.restaurant_id)}>
+                      {t('customers.changeContact')}
                     </button>
                     <button className="link" onClick={() => sendInvite(d.restaurant_id)}>
                       {t('customers.sendInvite')}

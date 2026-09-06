@@ -204,6 +204,13 @@
   "rolesForm": {
     "title": "Roles for “{{name}}”"
   },
+  "contactForm": {
+    "title": "Contact for “{{name}}”",
+    "nameLabel": "Name",
+    "addressLabel": "Address",
+    "phoneLabel": "Contact phone",
+    "numberLabel": "AI phone number (Vapi)"
+  },
   "pricingTier": {
     "none": "– no plan –",
     "solo": "Solo (600 min. / €99)",
@@ -268,6 +275,7 @@
     "markPublished": "✔ Mark as done",
     "changeAccess": "Change access",
     "createAccess": "Create access",
+    "changeContact": "Change contact",
     "sendInvite": "Send invitation",
     "changeRoles": "Change roles",
     "changeTier": "Change plan",
