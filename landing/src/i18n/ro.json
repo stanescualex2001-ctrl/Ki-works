@@ -173,6 +173,15 @@
       }
     }
   },
+  "liveCallBanner": {
+    "eyebrow": "NU DOAR ASCULTAȚI",
+    "headingPrefix": "Sunați-l pur și simplu pe",
+    "headingHighlight": "Kiwo.",
+    "subtitle": "Fără discurs de vânzări, fără formular — testați live cum sună și reacționează Kiwo. Gratuit, disponibil oricând.",
+    "phone": "+43 726 223 417",
+    "cta": "Sunați acum",
+    "note": "Apăsați pentru a suna pe mobil"
+  },
   "demo": {
     "eyebrow": "DE ASCULTAT",
     "headingPrefix": "Conversații exemplu cu",

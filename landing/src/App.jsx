@@ -921,6 +921,35 @@ export default function App() {
             <LiveTest />
           </div>
 
+          <div className="mt-12">
+            <GlowCard tone="cyan" className="p-6 md:p-10">
+              <div className="flex flex-col items-center gap-6 text-center md:flex-row md:gap-8 md:text-left">
+                <OrbBuddy size={96} />
+                <div className="flex-1">
+                  <div className="text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90 inline-flex items-center gap-2">
+                    <PhoneCall className="h-3.5 w-3.5" /> {t("liveCallBanner.eyebrow")}
+                  </div>
+                  <h3 className="mt-3 text-2xl md:text-3xl font-semibold">
+                    {t("liveCallBanner.headingPrefix")}{" "}
+                    <span className="text-gradient">{t("liveCallBanner.headingHighlight")}</span>
+                  </h3>
+                  <p className="mt-3 text-foreground/60 max-w-md text-sm md:text-base mx-auto md:mx-0">
+                    {t("liveCallBanner.subtitle")}
+                  </p>
+                  <div className="mt-5 flex flex-col items-center gap-2 md:flex-row md:gap-4">
+                    <a
+                      href={`tel:${t("liveCallBanner.phone").replace(/\s+/g, "")}`}
+                      className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
+                    >
+                      <PhoneCall className="h-3.5 w-3.5" /> {t("liveCallBanner.cta")} · {t("liveCallBanner.phone")}
+                    </a>
+                    <span className="text-xs text-foreground/50">{t("liveCallBanner.note")}</span>
+                  </div>
+                </div>
+              </div>
+            </GlowCard>
+          </div>
+
           <div className="mt-16 text-center">
             <div className="text-xs font-mono text-violet-600/90 dark:text-violet-300/90 inline-flex items-center gap-2">
               <PhoneCall className="h-3.5 w-3.5" /> {t("demo.eyebrow")}

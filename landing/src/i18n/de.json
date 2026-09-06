@@ -173,6 +173,15 @@
       }
     }
   },
+  "liveCallBanner": {
+    "eyebrow": "NICHT NUR ZUHÖREN",
+    "headingPrefix": "Rufen Sie",
+    "headingHighlight": "Kiwo einfach an.",
+    "subtitle": "Kein Verkaufsgespräch, kein Formular — testen Sie live, wie Kiwo klingt und reagiert. Kostenlos, jederzeit erreichbar.",
+    "phone": "+43 726 223 417",
+    "cta": "Jetzt anrufen",
+    "note": "Direkt anklickbar auf dem Handy"
+  },
   "demo": {
     "eyebrow": "ZUM ANHÖREN",
     "headingPrefix": "Beispiel-Gespräche mit",

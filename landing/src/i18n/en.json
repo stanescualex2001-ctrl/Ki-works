@@ -173,6 +173,15 @@
       }
     }
   },
+  "liveCallBanner": {
+    "eyebrow": "NOT JUST LISTENING",
+    "headingPrefix": "Just call",
+    "headingHighlight": "Kiwo.",
+    "subtitle": "No sales pitch, no form — test live how Kiwo sounds and responds. Free, available anytime.",
+    "phone": "+43 726 223 417",
+    "cta": "Call now",
+    "note": "Tap to call on mobile"
+  },
   "demo": {
     "eyebrow": "LISTEN IN",
     "headingPrefix": "Example conversations with",
