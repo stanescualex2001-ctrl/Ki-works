@@ -2875,8 +2875,7 @@ Version auf "Publish" klicken.
   schlägt eine Freigabe im Dashboard kontrolliert mit Fehlermeldung fehl
   (Entwurf bleibt erhalten, kein Datenverlust).
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
-  Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr); API-Key-Rotation
-  weiterhin ausstehend
+  Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr)
 - Impressum/Datenschutz-Platzhalter noch **rechtlich** prüfen (Technik steht,
   kein Rechtsgutachten); AVV-Verträge fehlen noch. Recherchiert:
   Anthropics AVV (mit SCCs) ist automatisch Teil ihrer Commercial Terms of
@@ -3019,9 +3018,20 @@ Version auf "Publish" klicken.
   - Admin-Login vergleicht Passwort nicht zeitkonstant (`===` statt
     constant-time compare) — kleines Risiko
 
-  Noch nichts davon behoben, nur erfasst. Größere Credential-Rotation
-  (Contabo-Root-Passwort, im Setup im Klartext geteilte API-Keys) bleibt
-  weiterhin zusätzlich offen. **Update (13.08.2026):** Contabo bietet
+  Noch nichts davon behoben, nur erfasst. **Update (08.09.2026): die
+  Credential-Rotation ist erledigt** — Auslöser war ein versehentlich im
+  Chat geteilter Screenshot mit dem originalen Setup-Text (Contabo-
+  Root-Passwort, Anthropic- und Vapi-Key im Klartext). Alle drei rotiert:
+  neuer Anthropic-Key (ohne Ablaufdatum, da der Key statisch in
+  `/etc/ki-works/ki-works.env` liegt und nicht automatisch erneuert wird),
+  neuer Vapi Private-API-Key (bewusst ohne "Allowed Assistants"-
+  Einschränkung gelassen, da das Backend auch künftige, noch nicht
+  existierende Kundenassistenten per API anlegen muss), Contabo-Root-
+  Passwort per "Reset credentials" im Kundencenter neu gesetzt. Beide
+  API-Keys in `/etc/ki-works/ki-works.env` eingetragen,
+  `systemctl restart ki-works-api` sauber ohne Auth-Fehler durchgelaufen
+  (`journalctl` geprüft). SSH-Key-only-Login (statt Passwort) weiterhin
+  offen, siehe Punkt oben. **Update (13.08.2026):** Contabo bietet
   inzwischen eine kostenlose Firewall pro Server an — Nutzer hat während
   einer Sitzung mit der Einrichtung begonnen (empfohlene Regeln: eingehend
   nur 22/TCP, 80/TCP, 443/TCP erlauben, Rest blocken). Ob die Firewall
