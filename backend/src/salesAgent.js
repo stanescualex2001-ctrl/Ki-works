@@ -111,7 +111,11 @@ export async function runSalesAgent({ business, maxCandidates = 5, region } = {}
     ? existing.map((r) => `${r.business_name || '?'} (${r.website || 'Website unbekannt'})`).join('\n')
     : '(noch keine)';
 
-  const client = new Anthropic({ apiKey });
+  // Standard-SDK-Timeout (~10 Min.) reicht bei mehreren Kandidaten mit
+  // tiefer Impressum-/Kontakt-Suche (bis zu 20 web_fetch-Aufrufe) nicht
+  // immer — der Lauf wird dann komplett verworfen, obwohl er im Hintergrund
+  // noch echtes Guthaben verbraucht hätte. Explizit auf 20 Min. angehoben.
+  const client = new Anthropic({ apiKey, timeout: 20 * 60 * 1000 });
   const tools = [
     { type: 'web_search_20260209', name: 'web_search', max_uses: 15 },
     // 20 statt 15: pro Kandidat kommt jetzt zusätzlich das gezielte Nachladen
