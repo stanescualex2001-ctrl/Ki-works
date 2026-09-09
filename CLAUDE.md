@@ -1827,6 +1827,43 @@ Version auf "Publish" klicken.
   "ki-works.eu" /etc/nginx/` gefunden, da der Pfad nicht dokumentiert war),
   vor dem Überschreiben gesichert, `nginx -t && systemctl reload nginx`
   erfolgreich — Sales-Agent-Läufe sollten jetzt nicht mehr am 504 scheitern.
+- **Zweiter, eigenständiger Timeout-Fix für den Sales-Agent gefunden +
+  behoben (08.09.2026) — der 504-Fix vom 29.08. hatte das Problem nur
+  teilweise gelöst:** direkt nach der Credential-Rotation (siehe unten)
+  hat der Nutzer den Sales-Agent zum Testen für pixelpress UND ki-works
+  gestartet — beide Läufe zeigten wieder "Fehler: HTTP 504" **und**
+  laut Nutzer-Beobachtung in der Anthropic-Konsole wurde trotzdem
+  Guthaben abgerechnet (~2€ pro Fehlversuch), ohne dass am Ende ein
+  Entwurf in "Freigaben" landete. Erste Vermutung (Credential-Rotation
+  kaputt) per `journalctl` widerlegt: der neue Anthropic-Key funktioniert
+  einwandfrei. Tatsächliche Ursache per vollständigem Log seit Prozess-
+  start gefunden: `Sales-Agent fehlgeschlagen: Request timed out.` — das
+  ist ein **anderer** Timeout als der 504 vom 29.08. (der betrifft nur
+  die Browser-Verbindung zu nginx). Hier gibt das **Anthropic-SDK selbst**
+  nach seinem Standardwert (~10 Min.) auf, weil die seit 05.09.2026
+  verschärfte, gründlichere E-Mail-Suche (Footer + Impressum + Kontakt-
+  Seite pro Kandidat, bis zu 20 `web_fetch`-Aufrufe) die Läufe auf
+  15-20+ Minuten verlängert hat — länger als der 300s-nginx-Timeout vom
+  29.08. UND länger als das SDK-Standardtimeout. Ergebnis: Websuchen
+  liefen real (daher die Kosten), aber der komplette Lauf wurde am Ende
+  vom SDK verworfen, kein Entwurf entstand. Fix, zweiteilig: (1)
+  `backend/src/salesAgent.js` — `new Anthropic({apiKey})` bekommt jetzt
+  explizit `timeout: 20 * 60 * 1000` (20 Min. statt SDK-Standard); (2)
+  `deploy/nginx/ki-works.conf` — `/api/`-Timeout von 300s auf **1200s**
+  (20 Min.) angehoben, passend zum neuen SDK-Timeout, damit der Browser
+  nicht mehr vorzeitig 504 zeigt, während das Backend noch legitim
+  weiterarbeitet. Nur Syntax-Check möglich (`node --check`, kein echter
+  Testlauf — Nutzer wollte die nächsten Tests bewusst zu einem späteren
+  Zeitpunkt selbst machen, um nicht sofort wieder Guthaben zu riskieren).
+  Committet+gepusht (`6b97869` Code, `f92ce39` nginx), **Nutzer hat beide
+  Deploy-Schritte auf dem Produktivserver ausgeführt** (Backend-Neustart
+  + manuelles Kopieren der nginx-Config nach
+  `/etc/nginx/sites-available/ki-works.conf` + `nginx -t && systemctl
+  reload nginx`) — noch kein erneuter Testlauf zur Bestätigung, dass
+  lange Läufe jetzt tatsächlich durchlaufen (siehe „Offene Punkte").
+  `socialAgent.js` bewusst NICHT angefasst (kein `web_search`/tiefe
+  Website-Suche dort, deutlich kürzere Laufzeit, bisher kein
+  Timeout-Problem beobachtet).
 - **Sales-Mail-Vorschau: volle Breite + feste Signatur (29.08.2026):**
   zwei Nutzer-Funde nach dem ersten echten Sales-Agent-Testlauf (Region
   "Perg Stadt" — Trefferquote für Kontakt-E-Mails deutlich besser, wie
@@ -2862,18 +2899,20 @@ Version auf "Publish" klicken.
   live) und noch keine Agentur-Domain per `deploy/add-agency-domain.sh
   <domain>` eingerichtet; beides erst nötig, sobald eine echte Agentur
   zusagt (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
-- Sales-Agent und Social-Media-Agent: beide auf dem Produktivserver live,
-  aber ein erster echter Testlauf (Websuche bzw. Text-/Bildentwurf) steht
-  bei beiden noch aus — braucht Anthropic-API-Guthaben, laut Nutzer
-  (15.08.2026) aktuell weiterhin nicht ausreichend. Sobald aufgeladen:
-  Business-Dashboard (ki-works.eu-Karte) → "Sales-Agent starten" bzw.
-  "Social-Post erzeugen" testen. Social-Media-Agent zusätzlich: eine
-  echte Veröffentlichung (nicht nur der Text-/Bildentwurf) setzt außerdem
-  die noch offene Meta-App-Einrichtung voraus (siehe
-  „Social-Media-Automatisierung" unten) — ohne `FB_PAGE_ID`/
-  `FB_PAGE_ACCESS_TOKEN`/`IG_BUSINESS_ACCOUNT_ID` in `/etc/ki-works/.env`
-  schlägt eine Freigabe im Dashboard kontrolliert mit Fehlermeldung fehl
-  (Entwurf bleibt erhalten, kein Datenverlust).
+- **Sales-Agent SDK-Timeout-Fix (08.09.2026) noch nicht mit einem echten
+  Lauf bestätigt.** Code (`salesAgent.js`, 20-Min.-SDK-Timeout) + nginx
+  (`/api/`-Timeout 1200s) sind deployed, aber der Nutzer wollte den
+  nächsten Testlauf bewusst erst zu einem späteren Zeitpunkt selbst
+  starten (nach zwei teuren Fehlversuchen direkt nacheinander). Beim
+  nächsten "Sales-Agent starten" (Business-Dashboard) prüfen, ob ein
+  langer Lauf (>10 Min., z. B. bei 5 Kandidaten mit tiefer E-Mail-Suche)
+  jetzt durchläuft statt mit "Request timed out"/504 abzubrechen.
+  Social-Media-Agent zusätzlich: eine echte Veröffentlichung (nicht nur
+  der Text-/Bildentwurf) setzt weiterhin die offene Meta-App-Einrichtung
+  voraus (siehe „Social-Media-Automatisierung" unten) — ohne `FB_PAGE_ID`/
+  `FB_PAGE_ACCESS_TOKEN`/`IG_BUSINESS_ACCOUNT_ID` in `/etc/ki-works/
+  ki-works.env` schlägt eine Freigabe im Dashboard kontrolliert mit
+  Fehlermeldung fehl (Entwurf bleibt erhalten, kein Datenverlust).
 - Anthropic/Vapi-Billing-Guthaben im Auge behalten (Vapi läuft auf
   Pay-as-you-go-Guthaben, Twilio jetzt kein Trial mehr)
 - Impressum/Datenschutz-Platzhalter noch **rechtlich** prüfen (Technik steht,
