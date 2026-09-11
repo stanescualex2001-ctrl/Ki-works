@@ -2205,6 +2205,24 @@ Version auf "Publish" klicken.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
+- **pixelpress.at ↔ ki-works.eu bewusst NICHT öffentlich verknüpfen —
+  ENTSCHIEDEN, kein Vorhaben (11.09.2026):** Nutzer wollte auf pixelpress.at
+  etwas zu ki-works/KI-Projekten präsentieren (z. B. Case-Study mit
+  Live-Demo der Kiwo-Telefon-/Chat-Funktion, um Kunden zu zeigen, dass
+  pixelpress echte KI-Projekte baut). Nach Abwägung des Nachteils dagegen
+  entschieden: ki-works positioniert sich bewusst als eigenständige,
+  neutrale Plattform — das trägt vor allem das Reseller-/Agentur-
+  Partnerprogramm (siehe „White-Label/Agentur-Partner-Programm" oben).
+  Würde öffentlich sichtbar, dass ki-works ein Projekt der
+  Ein-Personen-Agentur pixelpress ist, wirkt das für eine fremde Agentur,
+  die ki-works selbst weiterverkaufen soll, weniger vertrauenswürdig — sie
+  hinge dann sichtbar an der Infrastruktur eines möglichen Mitbewerbers
+  (pixelpress macht ebenfalls Web-/KI-Projekte). Für Restaurant-Endkunden
+  wäre das egal, aber der Nachteil trifft genau den Reseller-Pitch.
+  Nutzer-Entscheidung: **beide bleiben öffentlich getrennt**, keine
+  Case-Study/Verlinkung von ki-works auf pixelpress.at (oder umgekehrt).
+  Nichts umgesetzt, nichts zu tun — nur damit die Idee nicht in einer
+  künftigen Sitzung erneut vorgeschlagen wird.
 - **Automatische Rückmeldung an den Gast:** Aktuell schließt sich der
   "Rückruf gewünscht"-Kreislauf nicht automatisch — der Betrieb trägt die
   Antwort zwar in die FAQ ein, muss den Gast aber selbst zurückrufen, um ihm
