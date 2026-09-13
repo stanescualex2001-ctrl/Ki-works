@@ -1105,7 +1105,7 @@ app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
   try {
     const business = req.body?.business;
     if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
-    const maxCandidates = Number(req.body?.maxCandidates) || 5;
+    const maxCandidates = Number(req.body?.maxCandidates) || 3;
     const region = typeof req.body?.region === 'string' ? req.body.region.trim().slice(0, 200) || undefined : undefined;
     const result = await runSalesAgent({ business, maxCandidates, region });
     res.json(result);

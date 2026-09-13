@@ -97,7 +97,7 @@ function extractJsonArray(text) {
   return parsed;
 }
 
-export async function runSalesAgent({ business, maxCandidates = 5, region } = {}) {
+export async function runSalesAgent({ business, maxCandidates = 3, region } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
   const profile = getBusinessProfile(business);
@@ -114,8 +114,12 @@ export async function runSalesAgent({ business, maxCandidates = 5, region } = {}
   // Standard-SDK-Timeout (~10 Min.) reicht bei mehreren Kandidaten mit
   // tiefer Impressum-/Kontakt-Suche (bis zu 20 web_fetch-Aufrufe) nicht
   // immer — der Lauf wird dann komplett verworfen, obwohl er im Hintergrund
-  // noch echtes Guthaben verbraucht hätte. Explizit auf 20 Min. angehoben.
-  const client = new Anthropic({ apiKey, timeout: 20 * 60 * 1000 });
+  // noch echtes Guthaben verbraucht hätte. Erst auf 20 Min. angehoben
+  // (08.09.2026), reichte bei einem Lauf mit Region "Wien" + 5 Kandidaten
+  // immer noch nicht (13.09.2026, echter Fehlversuch mit realen Kosten) —
+  // jetzt auf 30 Min. angehoben, zusätzlich maxCandidates-Default gesenkt
+  // (siehe unten), damit einzelne Läufe erst gar nicht mehr so lange dauern.
+  const client = new Anthropic({ apiKey, timeout: 30 * 60 * 1000 });
   const tools = [
     { type: 'web_search_20260209', name: 'web_search', max_uses: 15 },
     // 20 statt 15: pro Kandidat kommt jetzt zusätzlich das gezielte Nachladen

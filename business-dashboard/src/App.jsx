@@ -573,7 +573,7 @@ function SalesAgentRunner({ business, onDone }) {
     apiFetch('/api/sales-agent/run', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ business, maxCandidates: 5, region: region.trim() || undefined }),
+      body: JSON.stringify({ business, maxCandidates: 3, region: region.trim() || undefined }),
     })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
