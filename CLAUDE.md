@@ -1864,6 +1864,40 @@ Version auf "Publish" klicken.
   `socialAgent.js` bewusst NICHT angefasst (kein `web_search`/tiefe
   Website-Suche dort, deutlich kürzere Laufzeit, bisher kein
   Timeout-Problem beobachtet).
+- **Dritter Sales-Agent-Timeout-Fix: 20 Min. reichten immer noch nicht,
+  Timeout auf 30 Min. + maxCandidates-Default gesenkt (13.09.2026):**
+  Nutzer hat den Sales-Agent-Fix vom 08.09.2026 zum ersten Mal wirklich
+  getestet (Region "Wien") — wieder "Fehler: Request timed out.", wieder
+  reale Kosten (~2€) ohne Ergebnis, entsprechend frustriert
+  ("2€ für keine Ergebnis !!!!!!!!!!!!"). Erste Vermutung (neuer
+  Bug/kaputte Credential-Rotation) per `journalctl` widerlegt — zwei
+  frühe Log-Abfragen mit `--since "20 minutes ago"`/`"1 hour ago"` zeigten
+  fälschlich "No entries", weil sie zeitlich zu früh kamen (das
+  20-Min.-SDK-Timeout war zum Abfragezeitpunkt real noch nicht erreicht,
+  durch die Chat-Diagnose-Zeit dazwischen verzerrt). Erst `journalctl
+  --since today --no-pager | tail -100` brachte die echte Zeile:
+  `Sales-Agent fehlgeschlagen: Request timed out.` — bestätigt: der Fix
+  vom 08.09.2026 funktioniert exakt wie gebaut (sauberer, geloggter
+  Fehlschlag über das SDK-eigene Timeout, kein mysteriöses Verhalten),
+  aber 20 Minuten reichen für einen Lauf mit Region "Wien" + 5 Kandidaten
+  und der seit 05.09.2026 verschärften, tiefen E-Mail-Suche schlicht
+  nicht immer aus. Kein Code-Bug gefunden — reine Kapazitätsfrage.
+  Kombinierter Fix, vom Nutzer bestätigt: (1) `backend/src/
+  salesAgent.js` — SDK-`timeout` von 20 auf 30 Min. angehoben; (2)
+  `deploy/nginx/ki-works.conf` — `/api/`-Timeout von 1200s auf 1800s
+  (30 Min.), damit der Browser nicht vor dem Backend aufgibt; (3)
+  `maxCandidates`-Default von 5 auf 3 gesenkt (`server.js`-Fallback UND
+  der im Business-Dashboard-Button hartcodierte Wert in
+  `business-dashboard/src/App.jsx`) — kürzere, günstigere Läufe von
+  vornherein, nicht nur mehr Zeit zum Warten. Nur Syntax-/Build-Check
+  möglich (`node --check`, `business-dashboard`-Build fehlerfrei) — kein
+  echter Testlauf (weitere reale Kosten wären nötig). Committet+gepusht
+  (`a5e96c1`), **noch NICHT auf dem Produktivserver ausgerollt** — braucht
+  Backend-Neustart (`salesAgent.js`/`server.js` geändert), normalen
+  `business-dashboard/`-Build, UND das manuelle Kopieren der
+  aktualisierten `deploy/nginx/ki-works.conf` nach
+  `/etc/nginx/sites-available/ki-works.conf` + `nginx -t && systemctl
+  reload nginx` (nginx-Config wird nie automatisch per rsync ausgerollt).
 - **Sales-Mail-Vorschau: volle Breite + feste Signatur (29.08.2026):**
   zwei Nutzer-Funde nach dem ersten echten Sales-Agent-Testlauf (Region
   "Perg Stadt" — Trefferquote für Kontakt-E-Mails deutlich besser, wie
@@ -2917,14 +2951,20 @@ Version auf "Publish" klicken.
   live) und noch keine Agentur-Domain per `deploy/add-agency-domain.sh
   <domain>` eingerichtet; beides erst nötig, sobald eine echte Agentur
   zusagt (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
-- **Sales-Agent SDK-Timeout-Fix (08.09.2026) noch nicht mit einem echten
-  Lauf bestätigt.** Code (`salesAgent.js`, 20-Min.-SDK-Timeout) + nginx
-  (`/api/`-Timeout 1200s) sind deployed, aber der Nutzer wollte den
-  nächsten Testlauf bewusst erst zu einem späteren Zeitpunkt selbst
-  starten (nach zwei teuren Fehlversuchen direkt nacheinander). Beim
-  nächsten "Sales-Agent starten" (Business-Dashboard) prüfen, ob ein
-  langer Lauf (>10 Min., z. B. bei 5 Kandidaten mit tiefer E-Mail-Suche)
-  jetzt durchläuft statt mit "Request timed out"/504 abzubrechen.
+- **Dritter Sales-Agent-Timeout-Fix (13.09.2026, 30 Min. + maxCandidates=3)
+  noch NICHT auf dem Produktivserver ausgerollt.** Committet (`a5e96c1`),
+  braucht Backend-Neustart (`salesAgent.js`/`server.js` geändert),
+  normalen `business-dashboard/`-Build UND manuelles Kopieren der
+  aktualisierten `deploy/nginx/ki-works.conf` nach
+  `/etc/nginx/sites-available/ki-works.conf` + `nginx -t && systemctl
+  reload nginx` — ohne den nginx-Schritt bringt der Rest nichts, da der
+  Browser sonst weiterhin nach 20 Min. (alter nginx-Wert) ein 504 zeigt,
+  während das Backend schon mit dem neuen 30-Min.-Timeout arbeitet. Nach
+  dem Deploy beim nächsten "Sales-Agent starten" prüfen, ob ein langer
+  Lauf jetzt durchläuft statt mit "Request timed out"/504 abzubrechen —
+  der vorherige 20-Min.-Fix vom 08.09.2026 funktionierte technisch
+  korrekt, war für einen Lauf mit Region "Wien" + 5 Kandidaten aber zu
+  kurz (siehe „Bereits erledigt").
   Social-Media-Agent zusätzlich: eine echte Veröffentlichung (nicht nur
   der Text-/Bildentwurf) setzt weiterhin die offene Meta-App-Einrichtung
   voraus (siehe „Social-Media-Automatisierung" unten) — ohne `FB_PAGE_ID`/
