@@ -2396,15 +2396,30 @@ Version auf "Publish" klicken.
   Website-Korrektur, das eigentliche Feature bleibt offen (siehe „Ideen &
   Zukunftsplanung" unten), größte externe Hürde dafür ist die
   Twilio-WhatsApp-Business-Freigabe (Meta-Verifizierung, kann
-  Tage/Wochen dauern) — noch nicht angestoßen. **Dabei aufgefallen, aber
-  bewusst NICHT angefasst (kein Nutzer-Auftrag dafür):** die "Live
-  testen"-Demo-Befehle "Anruf annehmen"/"Termin eintragen" laufen unter
-  der Rolle "Kiwo Office" bzw. erwähnen "CRM"-Protokollierung — Kiwo
-  Office ist technisch nicht gebaut (`ROLE_DEFINITIONS.office.
-  implemented: false`), diese beiden Demos könnten also eine ähnliche
-  Überkorrektur brauchen wie die WhatsApp-Demo. Nur als Fund vermerkt,
-  nicht bewertet oder entschieden. Committet+gepusht, normaler
-  rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
+  Tage/Wochen dauern) — noch nicht angestoßen.
+- **Zwei weitere erfundene Stellen im "Live testen"-Terminal behoben
+  (14.09.2026), direkt im Anschluss an die WhatsApp-Bereinigung
+  gefunden:** (1) die "Anruf annehmen"-Demo (Rolle "Kiwo Reception" —
+  die IST live) endete mit "Ticket #A-2481 erstellt und **im CRM
+  protokolliert**" — kein CRM vorhanden, reale Mechanik ist ein Eintrag
+  in `callback_requests` (Dashboard: "Rückruf gewünscht"). Letzter
+  Demo-Schritt auf "Rückruf-Notiz im Dashboard hinterlegt" korrigiert,
+  alle 3 Sprachen. (2) Die "Termin eintragen"-Demo lief komplett unter
+  Rolle "Kiwo Office" (`ROLE_DEFINITIONS.office.implemented: false`,
+  nur "bald verfügbar") — E-Mail lesen, Kalender prüfen, Einladung
+  verschicken, Erinnerung planen war frei erfunden, keine bloße
+  Detail-Ungenauigkeit wie bei (1), sondern eine komplett nicht
+  existierende Rolle. Komplett ersetzt durch eine echte Reservierungs-
+  Demo unter "Kiwo Orders" (live): Anruf → Verfügbarkeit prüfen →
+  Reservierung anlegen → Bestätigungs-SMS — entspricht 1:1 dem echten
+  `create_reservation`-Ablauf inkl. SMS-Versand (`reservationSms()` in
+  `sms.js`). `commandMeta`-`id`/Icon (`calendar`/`CalendarDays`)
+  unverändert gelassen, nur Rolle/Label/Schritte inhaltlich getauscht.
+  Lokal per `npm run build` + SSR-Prerender + Grep verifiziert (kein
+  "CRM"/"Kiwo Office"-Demo-Rest mehr im HTML, außer der korrekt als
+  "bald verfügbar" markierten Rollen-Bento-Karte selbst). Committet+
+  gepusht (2 Commits), normaler rsync/Build-Ablauf für `landing/`
+  reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
