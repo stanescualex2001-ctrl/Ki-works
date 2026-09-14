@@ -78,7 +78,7 @@
     "speechBubble": "Hi, I'm Kiwo",
     "badgeCall": "Call answered",
     "badgeAppointment": "Appointment booked",
-    "badgeWhatsapp": "WhatsApp replied",
+    "badgeChat": "Chat answered",
     "badgeLead": "Lead qualified"
   },
   "hero": {
@@ -88,7 +88,7 @@
     "titleRest": "– The platform for digital AI employees.",
     "subtitlePrefix": "Meet",
     "subtitleName": "Kiwo",
-    "subtitleSuffix": "– your digital employee for phone, WhatsApp, email and appointment management.",
+    "subtitleSuffix": "– your digital employee for phone, email and appointment management.",
     "ctaPrimary": "Get to know Kiwo",
     "ctaSecondary": "Platform demo",
     "statGdpr": "GDPR · EU hosting",
@@ -174,17 +174,6 @@
           "Reminder scheduled automatically 24h in advance.",
           "Done in 6 sec. ✓"
         ]
-      },
-      "whatsapp": {
-        "role": "Kiwo Support",
-        "label": "Reply to a WhatsApp",
-        "steps": [
-          "New WhatsApp: \"Are you still open today?\"",
-          "Opening hours loaded from the knowledge base.",
-          "Reply drafted in your brand's tone.",
-          "Reply sent · delivery confirmed ✓",
-          "Done in 3 sec. ✓"
-        ]
       }
     }
   },
@@ -264,10 +253,10 @@
     "headingPrefix": "What does",
     "headingHighlight": "Kiwo save",
     "headingSuffix": "you, really?",
-    "subtitle": "Enter your numbers and see instantly how much time and money your digital employee frees up for phone, WhatsApp, email and appointment management — including ROI and payback.",
+    "subtitle": "Enter your numbers and see instantly how much time and money your digital employee frees up for phone, email and appointment management — including ROI and payback.",
     "companyCardTitle": "Your business",
     "fields": {
-      "hours": { "label": "Recurring work per week", "unit": "hrs", "hint": "Phone, WhatsApp, emails, scheduling & reservations." },
+      "hours": { "label": "Recurring work per week", "unit": "hrs", "hint": "Phone, emails, scheduling & reservations." },
       "rate": { "label": "Fully-loaded hourly rate (€)", "hint": "Salary, payroll costs & overhead per hour (industry average: €21)." },
       "missed": { "label": "Missed calls/inquiries per week", "hint": "Outside opening hours, busy line, or left unanswered. Also counts toward the call volume below." },
       "regular": { "label": "Regular calls/inquiries per week", "hint": "Calls & chats Kiwo takes on in addition to the missed ones (reception, orders, support …)." },
@@ -322,7 +311,7 @@
     "subtitle": "Often productive in under a week – no IT project required.",
     "steps": {
       "step1": { "title": "Get in touch", "desc": "You send us a quick message via the contact form, we get back to you." },
-      "step2": { "title": "Joint setup", "desc": "We set up Kiwo for your business and connect your channels (WhatsApp, calendar, phone)." },
+      "step2": { "title": "Joint setup", "desc": "We set up Kiwo for your business and connect your channels (calendar, phone)." },
       "step3": { "title": "Kiwo takes over", "desc": "All roles are active, you keep an eye on everything in the dashboard." }
     }
   },

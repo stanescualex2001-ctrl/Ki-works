@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
-  ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall, MessageCircle,
+  ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
   Workflow, Plug, Layers, Play, Pause, Bell, LayoutDashboard,
   Pencil, Euro, Handshake,
@@ -93,7 +93,7 @@ function KiwoOrb() {
       {[
         { label: t("heroOrb.badgeCall"), top: "6%", left: "4%", tone: "cyan" },
         { label: t("heroOrb.badgeAppointment"), top: "16%", right: "2%", tone: "violet" },
-        { label: t("heroOrb.badgeWhatsapp"), bottom: "16%", left: "0%", tone: "violet" },
+        { label: t("heroOrb.badgeChat"), bottom: "16%", left: "0%", tone: "violet" },
         { label: t("heroOrb.badgeLead"), bottom: "6%", right: "6%", tone: "cyan" },
       ].map((c, i) => (
         <motion.div
@@ -218,7 +218,6 @@ function IndustryCard({ industry, featured = false }) {
 const commandMeta = [
   { id: "call", tone: "violet", icon: PhoneCall },
   { id: "calendar", tone: "cyan", icon: CalendarDays },
-  { id: "whatsapp", tone: "violet", icon: MessageCircle },
 ];
 
 function LiveTest() {

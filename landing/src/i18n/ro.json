@@ -78,7 +78,7 @@
     "speechBubble": "Salut, sunt Kiwo",
     "badgeCall": "Apel preluat",
     "badgeAppointment": "Programare făcută",
-    "badgeWhatsapp": "WhatsApp la care s-a răspuns",
+    "badgeChat": "Chat la care s-a răspuns",
     "badgeLead": "Lead calificat"
   },
   "hero": {
@@ -88,7 +88,7 @@
     "titleRest": "– Platforma pentru angajați digitali AI.",
     "subtitlePrefix": "Faceți cunoștință cu",
     "subtitleName": "Kiwo",
-    "subtitleSuffix": "– angajatul dvs. digital pentru telefon, WhatsApp, e-mail și gestionarea programărilor.",
+    "subtitleSuffix": "– angajatul dvs. digital pentru telefon, e-mail și gestionarea programărilor.",
     "ctaPrimary": "Descoperiți Kiwo",
     "ctaSecondary": "Demo platformă",
     "statGdpr": "RGPD · Găzduire UE",
@@ -174,17 +174,6 @@
           "Reamintire programată automat cu 24h înainte.",
           "Finalizat în 6 sec. ✓"
         ]
-      },
-      "whatsapp": {
-        "role": "Kiwo Support",
-        "label": "Răspunde la un WhatsApp",
-        "steps": [
-          "WhatsApp nou: \"Mai sunteți deschiși azi?\"",
-          "Program de funcționare încărcat din baza de cunoștințe.",
-          "Răspuns formulat în tonul mărcii dvs.",
-          "Răspuns trimis · confirmare de primire ✓",
-          "Finalizat în 3 sec. ✓"
-        ]
       }
     }
   },
@@ -264,10 +253,10 @@
     "headingPrefix": "Cât",
     "headingHighlight": "economisește Kiwo",
     "headingSuffix": "cu adevărat pentru dvs.?",
-    "subtitle": "Introduceți cifrele dvs. și vedeți imediat câți bani și câte ore economisește angajatul dvs. digital pentru telefon, WhatsApp, e-mail și gestionarea programărilor — inclusiv ROI și perioada de amortizare.",
+    "subtitle": "Introduceți cifrele dvs. și vedeți imediat câți bani și câte ore economisește angajatul dvs. digital pentru telefon, e-mail și gestionarea programărilor — inclusiv ROI și perioada de amortizare.",
     "companyCardTitle": "Afacerea dvs.",
     "fields": {
-      "hours": { "label": "Muncă repetitivă pe săptămână", "unit": "ore", "hint": "Telefon, WhatsApp, e-mailuri, programări & rezervări." },
+      "hours": { "label": "Muncă repetitivă pe săptămână", "unit": "ore", "hint": "Telefon, e-mailuri, programări & rezervări." },
       "rate": { "label": "Cost complet pe oră (€)", "hint": "Salariu, contribuții și cheltuieli generale pe oră (medie pe branșă: 21 €)." },
       "missed": { "label": "Apeluri/cereri ratate pe săptămână", "hint": "În afara orelor de program, linie ocupată sau rămase fără răspuns. Se numără și în volumul de apeluri de mai jos." },
       "regular": { "label": "Apeluri/cereri normale pe săptămână", "hint": "Apeluri & chaturi pe care Kiwo le preia în plus față de cele ratate (recepție, comenzi, suport …)." },
@@ -322,7 +311,7 @@
     "subtitle": "Deveniți operațional adesea în mai puțin de o săptămână – fără proiect IT.",
     "steps": {
       "step1": { "title": "Luați legătura", "desc": "Ne scrieți pe scurt prin formularul de contact, vă răspundem." },
-      "step2": { "title": "Configurare comună", "desc": "Configurăm Kiwo pentru afacerea dvs. și conectăm canalele dvs. (WhatsApp, calendar, telefon)." },
+      "step2": { "title": "Configurare comună", "desc": "Configurăm Kiwo pentru afacerea dvs. și conectăm canalele dvs. (calendar, telefon)." },
       "step3": { "title": "Kiwo preia", "desc": "Toate rolurile sunt active, dvs. urmăriți totul din dashboard." }
     }
   },

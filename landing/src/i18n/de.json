@@ -78,7 +78,7 @@
     "speechBubble": "Hi, ich bin Kiwo",
     "badgeCall": "Anruf angenommen",
     "badgeAppointment": "Termin gebucht",
-    "badgeWhatsapp": "WhatsApp beantwortet",
+    "badgeChat": "Chat beantwortet",
     "badgeLead": "Lead qualifiziert"
   },
   "hero": {
@@ -88,7 +88,7 @@
     "titleRest": "– Die Plattform für digitale KI-Mitarbeiter.",
     "subtitlePrefix": "Lernen Sie",
     "subtitleName": "Kiwo",
-    "subtitleSuffix": "kennen – Ihren digitalen Mitarbeiter für Telefon, WhatsApp, E-Mail und Terminverwaltung.",
+    "subtitleSuffix": "kennen – Ihren digitalen Mitarbeiter für Telefon, E-Mail und Terminverwaltung.",
     "ctaPrimary": "Kiwo kennenlernen",
     "ctaSecondary": "Plattform-Demo",
     "statGdpr": "DSGVO · EU-Hosting",
@@ -174,17 +174,6 @@
           "Erinnerung 24h vorher automatisch geplant.",
           "Erledigt in 6 Sek. ✓"
         ]
-      },
-      "whatsapp": {
-        "role": "Kiwo Support",
-        "label": "Beantworte eine WhatsApp",
-        "steps": [
-          "Neue WhatsApp: \"Ist heute noch geöffnet?\"",
-          "Öffnungszeiten aus Knowledge Base geladen.",
-          "Antwort formuliert im Ton Ihrer Marke.",
-          "Antwort gesendet · Empfangsbestätigung ✓",
-          "Erledigt in 3 Sek. ✓"
-        ]
       }
     }
   },
@@ -264,13 +253,13 @@
     "headingPrefix": "Was",
     "headingHighlight": "spart Kiwo",
     "headingSuffix": "Ihnen wirklich?",
-    "subtitle": "Geben Sie Ihre Zahlen ein und sehen Sie sofort, wie viel Zeit und Geld Ihr digitaler Mitarbeiter für Telefon, WhatsApp, E-Mail und Terminverwaltung freisetzt — inklusive ROI und Amortisation.",
+    "subtitle": "Geben Sie Ihre Zahlen ein und sehen Sie sofort, wie viel Zeit und Geld Ihr digitaler Mitarbeiter für Telefon, E-Mail und Terminverwaltung freisetzt — inklusive ROI und Amortisation.",
     "companyCardTitle": "Ihr Unternehmen",
     "fields": {
       "hours": {
         "label": "Wiederkehrende Arbeit pro Woche",
         "unit": "Std",
-        "hint": "Telefon, WhatsApp, E-Mails, Terminvergabe & Reservierungen."
+        "hint": "Telefon, E-Mails, Terminvergabe & Reservierungen."
       },
       "rate": {
         "label": "Stundensatz Vollkosten (€)",
@@ -351,7 +340,7 @@
     "subtitle": "Oft in unter einer Woche produktiv – ohne IT-Projekt.",
     "steps": {
       "step1": { "title": "Kontakt aufnehmen", "desc": "Sie schreiben uns kurz über das Kontaktformular, wir melden uns." },
-      "step2": { "title": "Gemeinsames Setup", "desc": "Wir richten Kiwo für Ihren Betrieb ein und verknüpfen Ihre Kanäle (WhatsApp, Kalender, Telefon)." },
+      "step2": { "title": "Gemeinsames Setup", "desc": "Wir richten Kiwo für Ihren Betrieb ein und verknüpfen Ihre Kanäle (Kalender, Telefon)." },
       "step3": { "title": "Kiwo übernimmt", "desc": "Alle Rollen sind aktiv, Sie behalten alles im Dashboard im Blick." }
     }
   },
