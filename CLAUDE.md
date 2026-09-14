@@ -2374,9 +2374,67 @@ Version auf "Publish" klicken.
   Cleanup nötig) und ergänzt ihn bei `IndustryCard` (hatte bisher gar
   keinen Live-Hinweis). Committet+gepusht, normaler rsync/Build-Ablauf
   für `landing/` reicht (kein Backend-Neustart nötig).
+- **Website-Fund: WhatsApp wurde an 6 Stellen als existierender Kanal
+  behauptet, obwohl nie gebaut (14.09.2026)** — Nutzer fragte nach einem
+  echten Kiwo-WhatsApp-Feature ("kiwo whatsapp. was kann sein?"); bei der
+  Ausarbeitung fiel auf, dass die Seite WhatsApp bereits durchgängig als
+  vorhandenen Kanal darstellte, obwohl technisch nur der Web-Chat real
+  existiert — gleiche Fehlerklasse wie die früher korrigierten
+  Sicherheits-/Integrationsversprechen. Alle 6 Stellen auf Nutzer-
+  Bestätigung entfernt: `roleDesc.support` ("...über WhatsApp und
+  Web-Chat" → nur noch Web-Chat), Hero-Untertitel + Hero-Orb-Badge (Badge
+  umbenannt `badgeWhatsapp`→`badgeChat`, zeigt jetzt "Chat beantwortet" —
+  Web-Chat ist real), kompletter simulierter "Beantworte eine
+  WhatsApp"-Demo-Befehl im "Live testen"-Terminal (`commandMeta` in
+  `landing/src/App.jsx` entfernt, nur noch Anruf + Kalender-Demo,
+  `MessageCircle`-Import dadurch ungenutzt und mitentfernt), ROI-Rechner-
+  Einleitung + Eingabefeld-Hinweis, Kunden-Dashboard-Vorschau-Hinweistext,
+  Onboarding-Sektion ("Kanäle verknüpfen"). Alle 3 Sprachen, i18n-
+  Schlüsselparität weiterhin bestätigt, Build+SSR-Prerender fehlerfrei,
+  per Grep verifiziert (0 WhatsApp-Treffer im gerenderten HTML aller 3
+  Sprachversionen). **Kein neuer Kiwo-WhatsApp-Kanal gebaut** — reine
+  Website-Korrektur, das eigentliche Feature bleibt offen (siehe „Ideen &
+  Zukunftsplanung" unten), größte externe Hürde dafür ist die
+  Twilio-WhatsApp-Business-Freigabe (Meta-Verifizierung, kann
+  Tage/Wochen dauern) — noch nicht angestoßen. **Dabei aufgefallen, aber
+  bewusst NICHT angefasst (kein Nutzer-Auftrag dafür):** die "Live
+  testen"-Demo-Befehle "Anruf annehmen"/"Termin eintragen" laufen unter
+  der Rolle "Kiwo Office" bzw. erwähnen "CRM"-Protokollierung — Kiwo
+  Office ist technisch nicht gebaut (`ROLE_DEFINITIONS.office.
+  implemented: false`), diese beiden Demos könnten also eine ähnliche
+  Überkorrektur brauchen wie die WhatsApp-Demo. Nur als Fund vermerkt,
+  nicht bewertet oder entschieden. Committet+gepusht, normaler
+  rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
+- **Kiwo WhatsApp — Architektur ausgearbeitet, noch nicht gebaut
+  (14.09.2026):** Nutzer-Frage "kiwo whatsapp. was kann sein?" —
+  Konzept: gleiche Claude-Logik wie das bestehende Web-Chat-Widget
+  (`backend/src/webchat.js`, Wissensdatenbank/FAQ, `capture_lead`-Tool),
+  nur über einen anderen Kanal. Twilio (bereits für SMS angebunden,
+  `backend/src/sms.js`) bietet auch WhatsApp Business API über denselben
+  Messages-Endpunkt (`whatsapp:`-Präfix vor der Nummer) — technisch eine
+  kleine Erweiterung, kein neuer Anbieter. **Größter Unterschied zum
+  Web-Chat:** dort hält der Browser den Gesprächsverlauf im Speicher; bei
+  WhatsApp muss das Backend selbst eine Konversationshistorie über
+  Stunden/Tage hinweg vorhalten (neue, kleine DB-Tabelle nötig,
+  Restaurant+Telefonnummer → letzte Nachrichten, Ablauf nach z. B.
+  24 Std. Inaktivität). **Größte Hürde ist nicht Code, sondern extern:**
+  Twilio verlangt eine eigene WhatsApp-Business-Absenderfreigabe inkl.
+  Meta-Business-Verifizierung — kann Tage bis Wochen dauern; Nachrichten,
+  die Kiwo von sich aus schickt (außerhalb 24 Std. nach der letzten
+  Gast-Nachricht), brauchen von Meta vorab genehmigte Vorlagen. Outbound
+  (Kiwo schreibt von sich aus, z. B. Rückruf-Antwort) würde
+  `sendSms()` um eine `sendWhatsapp()`-Variante erweitern (fast 1:1
+  derselbe Code) — verknüpft direkt mit der ebenfalls noch offenen Idee
+  "Automatische Rückmeldung an den Gast" weiter unten. Empfehlung für den
+  Start: Pilot nur für "Ki Works" selbst (gleiches Muster wie beim
+  Web-Chat-Widget), da die externe Freigabe ohnehin zuerst kommen muss.
+  Nur Konzept — nichts gebaut, externe Freigabe noch nicht angestoßen.
+  Direkter Nebenfund bei der Ausarbeitung: die Website behauptete
+  WhatsApp bereits an 6 Stellen als existierenden Kanal — auf
+  Nutzer-Wunsch entfernt, siehe „Bereits erledigt".
 - **pixelpress.at ↔ ki-works.eu bewusst NICHT öffentlich verknüpfen —
   ENTSCHIEDEN, kein Vorhaben (11.09.2026):** Nutzer wollte auf pixelpress.at
   etwas zu ki-works/KI-Projekten präsentieren (z. B. Case-Study mit
