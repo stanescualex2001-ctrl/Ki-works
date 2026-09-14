@@ -165,14 +165,14 @@
         ]
       },
       "calendar": {
-        "role": "Kiwo Office",
-        "label": "Add an appointment",
+        "role": "Kiwo Orders",
+        "label": "Book a reservation",
         "steps": [
-          "Email \"Meeting suggestion Thu 2:00 PM\" recognised.",
-          "Calendar checked: slot Thu 2:00–2:45 PM free.",
-          "Invitation sent to customer and colleague.",
-          "Reminder scheduled automatically 24h in advance.",
-          "Done in 6 sec. ✓"
+          "Call: \"Table for 4 on Friday at 7 PM?\"",
+          "Availability checked: Friday 7:00 PM free.",
+          "Reservation created: 4 guests, Fri 7:00 PM.",
+          "Confirmation SMS sent to the guest ✓",
+          "Done in 8 sec. ✓"
         ]
       }
     }

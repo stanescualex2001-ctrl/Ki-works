@@ -165,14 +165,14 @@
         ]
       },
       "calendar": {
-        "role": "Kiwo Office",
-        "label": "Trage einen Termin ein",
+        "role": "Kiwo Orders",
+        "label": "Buche eine Reservierung",
         "steps": [
-          "E-Mail \"Terminvorschlag Do 14:00\" erkannt.",
-          "Kalender geprüft: Slot Do 14:00–14:45 frei.",
-          "Einladung an Kunde und Kollegin gesendet.",
-          "Erinnerung 24h vorher automatisch geplant.",
-          "Erledigt in 6 Sek. ✓"
+          "Anruf: \"Tisch für 4 Personen am Freitag, 19 Uhr?\"",
+          "Verfügbarkeit geprüft: Freitag 19:00 frei.",
+          "Reservierung angelegt: 4 Personen, Fr. 19:00 Uhr.",
+          "Bestätigungs-SMS an den Gast verschickt ✓",
+          "Erledigt in 8 Sek. ✓"
         ]
       }
     }

@@ -165,14 +165,14 @@
         ]
       },
       "calendar": {
-        "role": "Kiwo Office",
-        "label": "Programează o întâlnire",
+        "role": "Kiwo Orders",
+        "label": "Rezervă o masă",
         "steps": [
-          "E-mail \"Propunere întâlnire joi ora 14:00\" recunoscut.",
-          "Calendar verificat: interval joi 14:00–14:45 liber.",
-          "Invitație trimisă clientului și colegei.",
-          "Reamintire programată automat cu 24h înainte.",
-          "Finalizat în 6 sec. ✓"
+          "Apel: „Masă pentru 4 persoane, vineri la ora 19:00?”",
+          "Disponibilitate verificată: vineri 19:00 liber.",
+          "Rezervare creată: 4 persoane, vineri 19:00.",
+          "SMS de confirmare trimis clientului ✓",
+          "Finalizat în 8 sec. ✓"
         ]
       }
     }
