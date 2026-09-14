@@ -137,6 +137,24 @@ function CallWave() {
   );
 }
 
+// Gleicher Live-Indikator wie im Mega-Menü (StatusMenuLink in Header.jsx)
+// — grüner Puls-Punkt + "live", statt nur eines stillen Text-Tags.
+function LiveOrSoonBadge({ soon }) {
+  const { t } = useI18n();
+  if (soon) {
+    return (
+      <span className="rounded-full px-2.5 py-1 text-[10px] font-mono bg-amber-400/10 text-amber-600 dark:text-amber-300">
+        {t("roleCard.soon")}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-2.5 py-1 text-[10px] font-mono text-emerald-600 dark:text-emerald-300">
+      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 pulse-dot" /> {t("nav.statusLive")}
+    </span>
+  );
+}
+
 function RoleCard({ role, featured = false }) {
   const { t } = useI18n();
   const Icon = role.icon;
@@ -153,13 +171,7 @@ function RoleCard({ role, featured = false }) {
         >
           <Icon className="h-5 w-5" />
         </div>
-        <span
-          className={`rounded-full px-2.5 py-1 text-[10px] font-mono ${
-            soon ? "bg-amber-400/10 text-amber-600 dark:text-amber-300" : "bg-foreground/5 text-foreground/50"
-          }`}
-        >
-          {soon ? t("roleCard.soon") : t(`roleTag.${role.id}`)}
-        </span>
+        <LiveOrSoonBadge soon={soon} />
       </div>
       <h3 className={`mt-4 font-semibold ${featured ? "text-2xl md:text-3xl" : "text-lg"}`}>
         {t(`roles.${role.id}`)}
@@ -189,11 +201,7 @@ function IndustryCard({ industry, featured = false }) {
         >
           <Icon className="h-5 w-5" />
         </div>
-        {soon && (
-          <span className="rounded-full px-2.5 py-1 text-[10px] font-mono bg-amber-400/10 text-amber-600 dark:text-amber-300">
-            {t("roleCard.soon")}
-          </span>
-        )}
+        <LiveOrSoonBadge soon={soon} />
       </div>
       <h3 className={`mt-4 font-semibold ${featured ? "text-2xl md:text-3xl" : "text-lg"}`}>
         {t(`industries.${industry.id}`)}
