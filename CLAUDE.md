@@ -2236,6 +2236,52 @@ Version auf "Publish" klicken.
   hier verfügbare unabhängige PDF-Prüfung (poppler, pikepdf) — evtl. beim
   nächsten Mal nach einer vom Druckerei-Tool selbst exportierten
   Vorschau-/Proof-Datei fragen, statt nur nach einem Screenshot.
+- **Neue Rolle "Terminbuchung" für 4 weitere Branchen live gesetzt
+  (14.09.2026):** Antwort auf die Nutzer-Frage "welche Branchen können wir
+  jetzt live setzen?" — Einschätzung: Support-Rolle (FAQ+Rückruf) passt
+  längst zu jeder Branche (bewiesen bei LEDTEK/pixelpress/Ki Works), echte
+  Terminbuchung fehlte aber, da die bestehende `orders`-Rolle fest an
+  Tisch/Personenanzahl/Speisekarte gekoppelt ist. Auf Nutzer-Entscheidung
+  ("Bauen") neue, branchenneutrale Rolle **`appointments`** gebaut
+  (`backend/src/vapiAdmin.js`, `ROLE_DEFINITIONS`/`ROLE_BLOCKS`) — nutzt
+  bewusst dieselben Tool-Namen/Handler wie bei Restaurants
+  (`create_reservation`/`cancel_reservation`/`reschedule_reservation`,
+  dieselbe `reservations`-Tabelle) mit eigenem, generischem Prompt-Baustein
+  (`APPOINTMENTS_PROMPT`/`APPOINTMENTS_TOOLS`) ohne "Tisch"/"Personen"/
+  Speisekarte — `party_size` ist im Tool-Schema der neuen Rolle gar nicht
+  vorhanden, Kiwo fragt dort also nie danach. Einziger gemeinsamer
+  Code-Punkt angepasst: `backend/src/vapi.js`s `createReservation()`
+  erwähnt "X Personen" in der Sprachausgabe jetzt nur noch, wenn
+  `party_size` tatsächlich vom Modell übergeben wurde (bei Restaurants
+  weiterhin immer der Fall, da dort Pflichtfeld — kein
+  Verhaltensunterschied für Venezia & Co.). `check_availability` bewusst
+  NICHT Teil der neuen Rolle (Wortwahl "noch Plätze frei" passt nicht zu
+  Einzelterminen, hätte eigene Anpassung gebraucht — Terminüberschneidung
+  wird also aktuell nicht geprüft, nur echte Datum/Uhrzeit-Validierung).
+  `dashboard/src/App.jsx`: neue Checkbox bei Kundenanlage/"Rollen ändern"
+  (`ROLE_META`), Kalender/Reservierungen-Tabs jetzt auch für
+  `appointments`-Kunden sichtbar (vorher nur `orders`), der Speisen-
+  Bestellungs-Tab bleibt exklusiv an `orders` gebunden. Landingpage-
+  Mega-Menü (`landing/src/components/Header.jsx`, `industries`-Array):
+  Handwerker/Friseure & Salons/Autowerkstätten/Immobilien von "bald" auf
+  "live" gesetzt. **Bewusst weiterhin "bald" gelassen:** Hotels (braucht
+  Zeitraum/Check-in-Check-out statt einem Zeitpunkt — echter
+  Datenmodell-Umbau, kein reiner Prompt-Job) und Arztpraxen
+  (Gesundheitsdaten = DSGVO-Sonderkategorie Art. 9, sollte vor Live-Gang
+  rechtlich geprüft werden, nicht nur technisch). Das branchenspezifische
+  Feintuning (Wortwahl, Leistungen) läuft bewusst über die vom Kunden
+  selbst gepflegte Wissensdatenbank/FAQ, nicht über eigene Prompt-Varianten
+  pro Branche — gleiches Prinzip wie bei Support. Lokal per `node --check`
+  (beide Backend-Dateien), `dashboard`-Build + i18n-Schlüsselparität (3
+  Sprachen) und `landing`-Build + SSR-Prerender (alle 9 Seiten) fehlerfrei
+  verifiziert — kein echter Testanruf möglich (kein Vapi-Zugriff aus
+  dieser Sandbox). Committet+gepusht (`a789ea9`), **noch NICHT auf dem
+  Produktivserver ausgerollt** — braucht normalen rsync/Build-Ablauf für
+  `dashboard/`+`landing/` plus Backend-Neustart (`vapiAdmin.js`/`vapi.js`
+  geändert). Danach für einen ersten Handwerker/Friseur/Autowerkstatt/
+  Immobilien-Kunden: im Dashboard anlegen mit Rolle "Terminbuchung" statt
+  "Bestellungen & Reservierungen", Wissensdatenbank befüllen, wie gehabt im
+  Vapi-Dashboard einmal "Publish" klicken.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2306,16 +2352,17 @@ Version auf "Publish" klicken.
   Booleans). Weiterhin offen: generische Terminbuchung/Bestellung für
   andere Branchen (Phase 2+), Billing/Nutzungsmessung fehlt komplett,
   Isolationsmodell bleibt shared DB + Zeilen-Trennung (kein DB-pro-Kunde).
-- **Andere Branchen als Restaurants:** Nutzer-Frage, welche Branchen zum
-  bestehenden Muster (Terminbuchung + FAQ + Rückruf) passen würden. Gut
-  passend eingeschätzt: Arztpraxis/Zahnarzt/Physio, Friseur/Kosmetik/Wellness,
-  Handwerker/KFZ-Werkstatt, Hotels (Zimmer- statt Tischreservierung),
-  Anwaltskanzlei/Immobilienmakler (Ersttermin/Besichtigung). Schwieriger:
-  Branchen mit komplexer Logik statt einfachem Terminslot (Online-Shop mit
-  Warenkorb) oder starker Regulierung (Bank/Versicherung). Größter Umbau
-  wäre `create_order` (Bestellung) durch ein generisches `create_appointment`
-  (Termin) zu ergänzen/ersetzen — Rest der Architektur ist schon
-  branchenneutral. Nur Brainstorming, nichts entschieden.
+- **Andere Branchen als Restaurants — Terminbuchung für Handwerker/
+  Friseure/Autowerkstätten/Immobilien inzwischen GEBAUT (14.09.2026, siehe
+  „Bereits erledigt").** Ursprüngliches Brainstorming, was zum Muster
+  Terminbuchung+FAQ+Rückruf passt: Arztpraxis/Zahnarzt/Physio (technisch
+  passend, aber DSGVO-Sonderkategorie-Daten — bewusst weiterhin "bald",
+  nicht live), Friseur/Kosmetik/Wellness ✅, Handwerker/KFZ-Werkstatt ✅,
+  Hotels (Zimmer- statt Tischreservierung — braucht Zeitraum statt
+  Einzeltermin, bewusst weiterhin "bald"), Anwaltskanzlei/
+  Immobilienmakler (Ersttermin/Besichtigung) ✅. Schwieriger bleiben
+  weiterhin: Branchen mit komplexer Logik statt einfachem Terminslot
+  (Online-Shop mit Warenkorb) oder starker Regulierung (Bank/Versicherung).
 - **Mehrsprachigkeit am Telefon (Kiwo selbst) — ENTSCHIEDEN, noch nicht
   gebaut (30.08.2026):** offene Frage vom 19.08.2026 (siehe Verlauf unten)
   jetzt vom Nutzer beantwortet: "Live-Sprachwechsel vergiss es. einplanen
