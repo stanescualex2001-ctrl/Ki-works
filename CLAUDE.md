@@ -2282,6 +2282,67 @@ Version auf "Publish" klicken.
   Immobilien-Kunden: im Dashboard anlegen mit Rolle "Terminbuchung" statt
   "Bestellungen & Reservierungen", Wissensdatenbank befüllen, wie gehabt im
   Vapi-Dashboard einmal "Publish" klicken.
+- **Live-Anruf-Weiterleitung an Menschen — nur während Öffnungszeiten
+  (14.09.2026):** Nutzer-Nachfrage direkt im Anschluss an das Terminbuchungs-
+  Feature: "kann Kiwo nicht wissen, ob außerhalb der Arbeitsstunden, statt
+  Weiterleitung Rückruf anbieten? Und während Arbeitsstunden eine
+  Weiterleitung durchführen?" — löst die lange vorgemerkte, bisher nie
+  gebaute Idee "Live-Weiterleitung an echten Menschen" (siehe „Ideen &
+  Zukunftsplanung") und behebt dabei direkt deren ursprünglich befürchtetes
+  Contra (Weiterleitung ins Leere außerhalb der Servicezeiten). Vorher per
+  Vapi-Doku-Recherche geprüft: Vapi hat einen nativen `transferCall`-
+  Tool-Typ, der die eigentliche Anruf-Weiterleitung komplett selbst
+  übernimmt (kein neuer eigener Webhook-Handler nötig). Ein Ansatz mit
+  per-Anruf dynamischem Hinzufügen/Entfernen des Tools über
+  `assistantOverrides` (nur innerhalb der Öffnungszeiten anbieten) wurde
+  geprüft und **verworfen** — laut einem dokumentierten Nutzerbericht in
+  der Vapi-Community ist das unzuverlässig (Tools bleiben trotz Override
+  teils aktiv, hier hätte das eine "unsichtbare" Weiterleitung außerhalb
+  der Öffnungszeiten bedeutet). Stattdessen: Tool ist immer vorhanden,
+  sobald konfiguriert — Kiwo entscheidet anhand einer im Backend
+  **deterministisch** berechneten Variable, nicht per eigener
+  Zeit-Interpretation der rohen Öffnungszeiten (gleiches Grundprinzip wie
+  bei "keine Reservierung an geschlossenen Tagen", nur mit einer
+  zuverlässigeren, vorberechneten Grundlage). Umgesetzt: neues, per
+  Rückfrage bewusst **eigenständiges** Datenbankfeld
+  `restaurants.transfer_phone_number` (migration-028 — NICHT das
+  bestehende `contact_phone` wiederverwendet, da das nicht zwangsläufig
+  eine während der Öffnungszeiten persönlich erreichbare Nummer ist), leer
+  = Feature inaktiv, Opt-in pro Kunde. `backend/src/vapi.js`: neue
+  Funktion `isCurrentlyOpen(hours)` (Europa/Wien-Zeitzone, nutzt dieselbe
+  `opening_hours`-JSONB-Struktur wie `formatOpeningHours()`), liefert die
+  neue Vapi-Variable `{{business_open_now}}` ("Ja"/"Nein").
+  `backend/src/vapiAdmin.js`: neuer, rollenübergreifender
+  `TRANSFER_PROMPT`-Baustein (unabhängig von `ROLE_BLOCKS`, da "mit einem
+  Menschen sprechen wollen" branchen-/rollenübergreifend vorkommt) +
+  `buildTransferTools()` (natives `transferCall`-Tool mit statischer
+  Zielnummer, plus `request_callback` als Fallback — nur ergänzt, falls
+  nicht ohnehin schon über die `support`-Rolle vorhanden, keine doppelten
+  Tool-Definitionen). Dashboard: neues Feld "Weiterleitungsnummer
+  (optional)" in `ContactForm`, Backend-`PATCH /api/restaurants/:id`
+  akzeptiert `transfer_phone_number` für Admin UND Agentur (gleiche
+  Feldliste wie `vapi_phone_number`), läuft ebenfalls durch
+  `normalizePhone()` (Lehre aus dem "Kontakt ändern"-Fix vom 06.09.2026 —
+  Vapi erwartet Nummern ohne Leerzeichen). Lokal verifiziert:
+  `isCurrentlyOpen()` isoliert mit mehreren Fällen getestet (innerhalb/
+  außerhalb Öffnungszeiten, "closed"-Tag, fehlende Öffnungszeiten — alle
+  korrekt), `node --check` für alle 3 geänderten Backend-Dateien,
+  `dashboard`-Build + i18n-Schlüsselparität (3 Sprachen) fehlerfrei — kein
+  echter Testanruf möglich (kein Vapi-Zugriff aus dieser Sandbox).
+  **Bewusst kein Code-erzwungener Schutz gegen eine Weiterleitung
+  außerhalb der Öffnungszeiten** — das native `transferCall`-Tool läuft
+  komplett bei Vapi, unser Backend bekommt keinen Zwischenschritt zum
+  Abfangen; Kiwo folgt der Prompt-Instruktion + der vorberechneten
+  Variable, kein 100%-technischer Schutz (bewusst akzeptiertes Risiko,
+  siehe Plan-Datei). Ebenfalls bewusst nicht Teil dieses Schritts: kein
+  Fallback, falls unter der Weiterleitungsnummer niemand abhebt (klingelt
+  einfach durch). Committet+gepusht, **noch NICHT auf dem Produktivserver
+  ausgerollt** — braucht Migration `migration-028-transfer-phone.sql`,
+  Backend-Neustart (`vapi.js`/`vapiAdmin.js`/`server.js` geändert) und
+  normalen `dashboard/`-Build. **Erster sinnvoller Test-Kunde: "Ki Works"
+  selbst** (Alex' eigene Nummer als Ziel) für einen risikofreien ersten
+  Testanruf, bevor ein echter Kunde die Funktion bekommt — danach wie
+  gehabt im Vapi-Dashboard einmal "Publish" klicken.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
@@ -2310,18 +2371,12 @@ Version auf "Publish" klicken.
   Gast, sobald die Antwort gespeichert wird). Nutzer fand die Idee einer
   automatischen SMS an den Gast gut, aber bewusst nur vorgemerkt, noch nicht
   gebaut.
-- **Live-Weiterleitung an echten Menschen (auf Gast-Wunsch):** Falls ein Gast
-  während des Anrufs explizit mit einem Menschen sprechen möchte, könnte
-  Kiwo den Anruf live an eine echte Telefonnummer durchstellen (Vapi
-  unterstützt das technisch). Bewusst nur vorgemerkt, noch nicht gebaut.
-  - **Pro:** Sofortige Hilfe statt Warten auf Rückruf; wirkt wie ein
-    "Eskalieren an die Rezeption", bessere Erfahrung bei dringenden/
-    komplexen Anliegen.
-  - **Contra:** Braucht eine im Betrieb durchgehend erreichbare Nummer
-    (während Servicezeiten oft nicht der Fall); hebt niemand ab, kann der
-    Anruf unschön enden; untergräbt teilweise das "Kiwo ist immer erreichbar,
-    auch außerhalb der Öffnungszeiten"-Versprechen, da echte Menschen nicht
-    rund um die Uhr verfügbar sind.
+- **Live-Weiterleitung an echten Menschen — GEBAUT (14.09.2026), siehe
+  „Bereits erledigt".** War hier lange nur vorgemerkt; auf Nutzer-Nachfrage
+  "kann Kiwo nicht wissen, ob außerhalb der Arbeitsstunden ist" jetzt
+  genau mit der ursprünglich befürchteten Contra-Einschränkung gelöst:
+  Live-Transfer nur während der Öffnungszeiten, sonst automatisch
+  Rückruf-Angebot statt unbeantworteter Weiterleitung.
 - **Marken-Idee:** KI-Works = die Plattform, Kiwo = der digitale KI-Mitarbeiter
   (Beispiel-Claim: „KI-Works – Die Plattform für digitale KI-Mitarbeiter" /
   „Kiwo – Dein digitaler Mitarbeiter"). Später denkbar: spezialisierte Kiwo-Rollen
@@ -2479,8 +2534,9 @@ Version auf "Publish" klicken.
     bestehende `leads`-Tabelle/Website-Formular) ruft Kiwo automatisch
     zurück, solange die Kaufabsicht hoch ist — knüpft direkt an
     Bestehendes an, auch für ki-works' eigene Landingpage-Anfragen denkbar
-  - **Live-Agent-Handover**: deckt sich mit der oben stehenden
-    "Live-Weiterleitung an echten Menschen"-Idee (gleiche Sache)
+  - **Live-Agent-Handover**: deckte sich mit der "Live-Weiterleitung an
+    echten Menschen"-Idee — inzwischen gebaut, siehe „Bereits erledigt"
+    (14.09.2026)
   - **Stimm-/Dialekt-Anpassung** je Region (AT/CH) für höhere Akzeptanz bei
     Anrufern
   - **White-Label/Agentur-Partner-Programm**: Plattform an Agenturen/
