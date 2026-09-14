@@ -2343,6 +2343,29 @@ Version auf "Publish" klicken.
   selbst** (Alex' eigene Nummer als Ziel) für einen risikofreien ersten
   Testanruf, bevor ein echter Kunde die Funktion bekommt — danach wie
   gehabt im Vapi-Dashboard einmal "Publish" klicken.
+- **Neue "Ein Kiwo. Viele Branchen."-Sektion auf der Startseite
+  (14.09.2026):** Nutzer zeigte einen Screenshot der bestehenden Rollen-
+  Bento-Sektion ("Ein Kiwo. Viele Rollen.") und fragte, ob es sowas auch
+  für Branchen geben soll — bejaht und direkt umgesetzt (passt zur länger
+  vorgemerkten "Rolle × Branche"-Idee, siehe „Ideen & Zukunftsplanung").
+  Neue Sektion `id="branchen"` in `landing/src/App.jsx`, direkt nach der
+  bestehenden Rollen-Sektion — technisch 1:1 dasselbe Bento-Layout/-Design
+  (neue `IndustryCard`-Komponente analog zu `RoleCard`), nutzt das bereits
+  vorhandene `industries`-Array aus `Header.jsx` (nur um ein `tone`-Feld
+  für die Cyan/Violet-Abwechslung ergänzt) statt eines neuen Datenmodells.
+  Neue Beschreibungstexte pro Branche (`industryDesc.*`) in allen 3
+  Sprachen ergänzt (vorher gab es nur die kurzen Namen aus dem Mega-Menü,
+  keine Sätze) — bewusst ehrlich formuliert entsprechend dem tatsächlichen
+  Funktionsumfang (z. B. Handwerker/Friseure/Autowerkstätten/Immobilien:
+  "Termine automatisch am Telefon", Hotels/Arztpraxen als "bald"
+  weiterhin nur aspirational beschrieben, klar mit "bald verfügbar"-Badge
+  markiert, gleiche Behandlung wie bei den "bald"-Rollen Sales/Office).
+  Mega-Menü-Links für Branchen (außer Restaurants, das weiterhin zu
+  `#live` springt) zeigen jetzt auf die neue Sektion statt auf `#roles`.
+  Lokal per `npm run build` + SSR-Prerender (alle 3 Sprachen) + Grep
+  verifiziert (`id="branchen"`, übersetzte Überschriften in DE/EN/RO
+  jeweils im gerenderten HTML vorhanden). Committet+gepusht, normaler
+  rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
