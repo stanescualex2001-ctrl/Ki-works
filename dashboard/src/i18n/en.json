@@ -211,7 +211,9 @@
     "addressLabel": "Address",
     "emailLabel": "Contact email",
     "phoneLabel": "Contact phone",
-    "numberLabel": "AI phone number (Vapi)"
+    "numberLabel": "AI phone number (Vapi)",
+    "transferPhoneLabel": "Transfer number (optional)",
+    "transferPhonePlaceholder": "Empty = no live transfer"
   },
   "pricingTier": {
     "none": "– no plan –",

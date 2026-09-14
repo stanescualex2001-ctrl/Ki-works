@@ -326,6 +326,35 @@ export function formatOpeningHours(hours) {
   }).join(', ');
 }
 
+// Prüft deterministisch (nicht dem Modell überlassen), ob der Betrieb JETZT
+// (Europa/Wien) laut hinterlegten Öffnungszeiten offen hat — Grundlage für
+// die {{business_open_now}}-Variable, die entscheidet, ob Kiwo eine Live-
+// Weiterleitung anbietet oder stattdessen einen Rückruf (siehe
+// TRANSFER_PROMPT in vapiAdmin.js). Nutzt dieselbe WEEKDAY_LABELS/JSONB-
+// Struktur wie formatOpeningHours() ({"mon":"11:00-22:00", "wed":"closed", ...}).
+export function isCurrentlyOpen(hours) {
+  if (!hours || typeof hours !== 'object') return false;
+  const now = new Date();
+  // "Mon"/"Tue"/... -> "mon"/"tue"/... — passt direkt auf die Schlüssel in
+  // WEEKDAY_LABELS/der opening_hours-JSONB.
+  const weekdayKey = new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/Vienna', weekday: 'short' })
+    .format(now).slice(0, 3).toLowerCase();
+  const todayVal = hours[weekdayKey];
+  if (!todayVal || todayVal === 'closed') return false;
+  const match = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/.exec(todayVal.trim());
+  if (!match) return false;
+  const [, startH, startM, endH, endM] = match.map(Number);
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Europe/Vienna', hour: '2-digit', minute: '2-digit', hour12: false,
+  }).formatToParts(now);
+  const nowH = Number(parts.find((p) => p.type === 'hour')?.value);
+  const nowM = Number(parts.find((p) => p.type === 'minute')?.value);
+  const nowMinutes = nowH * 60 + nowM;
+  const startMinutes = startH * 60 + startM;
+  const endMinutes = endH * 60 + endM;
+  return nowMinutes >= startMinutes && nowMinutes < endMinutes;
+}
+
 // Wandelt die im Dashboard gepflegten FAQ-Einträge [{question, answer}, ...]
 // in lesbaren Text für den Vapi-Systemprompt um.
 export function formatFaq(faq) {
@@ -375,6 +404,10 @@ async function handleAssistantRequest(message, restaurant) {
         knowledge_base: restaurant.knowledge_base || 'Keine Informationen hinterlegt — bei inhaltlichen Fragen bitte auf einen Rückruf verweisen.',
         opening_hours: formatOpeningHours(restaurant.opening_hours),
         faq: formatFaq(restaurant.faq),
+        // Deterministisch vorberechnet statt Kiwo die rohe opening_hours-
+        // Textinterpretation zu überlassen — Grundlage für die
+        // Weiterleitung-oder-Rückruf-Entscheidung, siehe TRANSFER_PROMPT.
+        business_open_now: isCurrentlyOpen(restaurant.opening_hours) ? 'Ja' : 'Nein',
       },
     },
   };

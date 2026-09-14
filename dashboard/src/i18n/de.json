@@ -211,7 +211,9 @@
     "addressLabel": "Adresse",
     "emailLabel": "Kontakt-E-Mail",
     "phoneLabel": "Kontakt-Telefon",
-    "numberLabel": "KI-Telefonnummer (Vapi)"
+    "numberLabel": "KI-Telefonnummer (Vapi)",
+    "transferPhoneLabel": "Weiterleitungsnummer (optional)",
+    "transferPhonePlaceholder": "Leer = keine Live-Weiterleitung"
   },
   "pricingTier": {
     "none": "– kein Tarif –",

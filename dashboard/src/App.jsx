@@ -1205,6 +1205,7 @@ function ContactForm({ restaurant, onDone, onCancel }) {
   const [contactEmail, setContactEmail] = useState(restaurant.contact_email || '');
   const [contactPhone, setContactPhone] = useState(restaurant.contact_phone || '');
   const [vapiNumber, setVapiNumber] = useState(restaurant.vapi_phone_number || '');
+  const [transferPhone, setTransferPhone] = useState(restaurant.transfer_phone_number || '');
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -1220,6 +1221,7 @@ function ContactForm({ restaurant, onDone, onCancel }) {
         contact_email: contactEmail || null,
         contact_phone: contactPhone || null,
         vapi_phone_number: vapiNumber || null,
+        transfer_phone_number: transferPhone || null,
       }),
     })
       .then(async (r) => {
@@ -1247,6 +1249,9 @@ function ContactForm({ restaurant, onDone, onCancel }) {
       </label>
       <label>{t('contactForm.numberLabel')}
         <input value={vapiNumber} onChange={(e) => setVapiNumber(e.target.value)} />
+      </label>
+      <label>{t('contactForm.transferPhoneLabel')}
+        <input value={transferPhone} onChange={(e) => setTransferPhone(e.target.value)} placeholder={t('contactForm.transferPhonePlaceholder')} />
       </label>
       {error && <p className="error">{error}</p>}
       <div className="form-row">

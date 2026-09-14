@@ -211,7 +211,9 @@
     "addressLabel": "Adresă",
     "emailLabel": "E-mail de contact",
     "phoneLabel": "Telefon de contact",
-    "numberLabel": "Număr de telefon AI (Vapi)"
+    "numberLabel": "Număr de telefon AI (Vapi)",
+    "transferPhoneLabel": "Număr de redirecționare (opțional)",
+    "transferPhonePlaceholder": "Gol = fără redirecționare live"
   },
   "pricingTier": {
     "none": "– niciun plan –",

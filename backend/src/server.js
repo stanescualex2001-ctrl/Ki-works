@@ -639,15 +639,15 @@ app.patch('/api/restaurants/:id', async (req, res) => {
   // Interna (agency_id, pricing_tier, vapi_published, vapi_assistant_id)
   // bleiben Admin-only.
   const allowed = isAdmin
-    ? ['name', 'address', 'contact_email', 'contact_phone', 'vapi_phone_number',
+    ? ['name', 'address', 'contact_email', 'contact_phone', 'vapi_phone_number', 'transfer_phone_number',
       'vapi_assistant_id', 'login_email', 'vapi_published', 'pricing_tier', 'agency_id']
-    : ['name', 'address', 'contact_email', 'contact_phone', 'vapi_phone_number', 'login_email'];
+    : ['name', 'address', 'contact_email', 'contact_phone', 'vapi_phone_number', 'transfer_phone_number', 'login_email'];
   const sets = [];
   const vals = [];
   for (const key of allowed) {
     if (key in req.body) {
       const raw = req.body[key] === '' ? null : req.body[key];
-      vals.push(key === 'vapi_phone_number' ? normalizePhone(raw) : raw);
+      vals.push(['vapi_phone_number', 'transfer_phone_number'].includes(key) ? normalizePhone(raw) : raw);
       sets.push(`${key} = $${vals.length}`);
     }
   }

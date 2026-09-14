@@ -226,6 +226,33 @@ const ROLE_BLOCKS = {
 // unverändert, damit Bugfixes weiterhin automatisch für alle wirken.
 const OWN_FIRST_MESSAGE = 'Grüß Gott, hier ist Kiwo, der KI-Agent der Plattform KI-Works. Sie sprechen jetzt direkt mit mir — testen Sie live, wie ich am Telefon klinge und arbeite. Wie kann ich Ihnen helfen?';
 
+// Live-Weiterleitung an einen Menschen — rollenübergreifend (nicht Teil von
+// ROLE_BLOCKS), da "mit einem Menschen sprechen wollen" unabhängig von
+// orders/support/appointments vorkommen kann. Nur aktiv, wenn der Kunde
+// eine Weiterleitungsnummer hinterlegt hat (restaurants.transfer_phone_number,
+// migration-028). {{business_open_now}} wird deterministisch im Backend
+// berechnet (vapi.js, isCurrentlyOpen) statt Kiwo die rohe
+// Öffnungszeiten-Textinterpretation zu überlassen — bewusst kein
+// Code-erzwungener Schutz gegen eine Weiterleitung außerhalb der
+// Öffnungszeiten (das native transferCall-Tool läuft komplett bei Vapi,
+// unser Backend bekommt keinen Zwischenschritt zum Abfangen), Kiwo folgt
+// hier der Prompt-Instruktion — gleiches Vertrauensmodell wie bei "keine
+// Reservierung an geschlossenen Tagen" (siehe ORDERS_PROMPT).
+const TRANSFER_PROMPT = ' Möchte der Anrufer ausdrücklich mit einem Menschen sprechen (nicht nur eine normale Frage, die du selbst beantworten kannst): Prüfe {{business_open_now}}. Ist es "Ja", kündige kurz an ("Ich verbinde Sie jetzt weiter.") und nutze transferCall. Ist es "Nein", erkläre freundlich, dass gerade außerhalb der Öffnungszeiten niemand persönlich erreichbar ist, und biete stattdessen wie gewohnt über request_callback einen Rückruf an (inkl. Nachfrage nach dem gewünschten Kanal SMS/WhatsApp/E-Mail).';
+
+function buildTransferTools(transferPhoneNumber, alreadyHasCallback) {
+  const tools = [
+    {
+      type: 'transferCall',
+      destinations: [
+        { type: 'number', number: transferPhoneNumber, message: 'Ich verbinde Sie jetzt.' },
+      ],
+    },
+  ];
+  if (!alreadyHasCallback) tools.push(...SUPPORT_TOOLS);
+  return tools;
+}
+
 // Baut den Vapi-Assistenten-Body abhängig davon, welche Rollen der Kunde
 // gebucht hat. Name/Adresse laufen über
 // {{business_name}}/{{business_address}} — dieselben Vapi-Variablen wie
@@ -236,16 +263,21 @@ const OWN_FIRST_MESSAGE = 'Grüß Gott, hier ist Kiwo, der KI-Agent der Plattfor
 // Kompatibilität für Kunden, deren gespeicherter Vapi-Text noch nicht neu
 // synchronisiert wurde. Nur das "name"-Feld (Anzeigename im Vapi-Konto)
 // braucht den echten Namen.
-function buildAssistantBody({ restaurantId, restaurantName, publicUrl, webhookSecret, enabledRoles, assistantName = 'Kiwo' }) {
+function buildAssistantBody({
+  restaurantId, restaurantName, publicUrl, webhookSecret, enabledRoles, assistantName = 'Kiwo', transferPhoneNumber = null,
+}) {
   const roles = normalizeRoles(enabledRoles);
   const orders = roles.includes('orders');
   const appointments = roles.includes('appointments');
+  const hasTransfer = !!transferPhoneNumber;
 
   const roleLabel = orders ? 'KI-Reservierungsassistent' : appointments ? 'KI-Terminassistent' : 'digitale Mitarbeiter';
   const systemPrompt = basePrompt(assistantName)
     + roles.map((r) => ROLE_BLOCKS[r]?.promptFragment ?? '').join('')
+    + (hasTransfer ? TRANSFER_PROMPT : '')
     + ' Heutiges Datum: {{now}}.';
   const tools = roles.flatMap((r) => ROLE_BLOCKS[r]?.tools ?? []);
+  if (hasTransfer) tools.push(...buildTransferTools(transferPhoneNumber, roles.includes('support')));
 
   const ownRestaurantId = process.env.KIWORKS_OWN_RESTAURANT_ID ? Number(process.env.KIWORKS_OWN_RESTAURANT_ID) : null;
   const isOwnRestaurant = ownRestaurantId != null && Number(restaurantId) === ownRestaurantId;
@@ -311,6 +343,7 @@ export async function syncVapiAssistant(restaurantId) {
 
   const { rows } = await query(
     `SELECT r.id, r.name, r.vapi_phone_number, r.vapi_assistant_id, r.enabled_roles,
+            r.transfer_phone_number,
             a.branding->>'assistantName' AS assistant_name
      FROM restaurants r LEFT JOIN agencies a ON r.agency_id = a.id
      WHERE r.id = $1`,
@@ -326,6 +359,7 @@ export async function syncVapiAssistant(restaurantId) {
     webhookSecret,
     enabledRoles: restaurant.enabled_roles,
     assistantName: restaurant.assistant_name || 'Kiwo',
+    transferPhoneNumber: restaurant.transfer_phone_number || null,
   });
   const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
 
