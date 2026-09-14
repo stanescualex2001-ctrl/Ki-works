@@ -2364,8 +2364,16 @@ Version auf "Publish" klicken.
   `#live` springt) zeigen jetzt auf die neue Sektion statt auf `#roles`.
   Lokal per `npm run build` + SSR-Prerender (alle 3 Sprachen) + Grep
   verifiziert (`id="branchen"`, übersetzte Überschriften in DE/EN/RO
-  jeweils im gerenderten HTML vorhanden). Committet+gepusht, normaler
-  rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart nötig).
+  jeweils im gerenderten HTML vorhanden). **Auf dem Produktivserver
+  ausgerollt, Nutzer bestätigt "passt so".** Direkt danach Nutzer-Wunsch:
+  Rollen-/Branchen-Karten sollen denselben grünen Live-Punkt ("● live")
+  wie im Mega-Menü zeigen statt nur eines stillen Text-Tags — neue
+  `LiveOrSoonBadge`-Komponente (identisch zu `StatusMenuLink` in
+  `Header.jsx`) ersetzt bei `RoleCard` den bisherigen Kategorie-Tag
+  (`roleTag.*`-Keys bleiben ungenutzt in den i18n-Dateien stehen, kein
+  Cleanup nötig) und ergänzt ihn bei `IndustryCard` (hatte bisher gar
+  keinen Live-Hinweis). Committet+gepusht, normaler rsync/Build-Ablauf
+  für `landing/` reicht (kein Backend-Neustart nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
