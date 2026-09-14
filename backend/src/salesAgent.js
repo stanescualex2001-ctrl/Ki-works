@@ -138,18 +138,39 @@ export async function runSalesAgent({ business, maxCandidates = 3, region } = {}
   // Web-Search-/Web-Fetch-Ergebnisse) erneut voll abgerechnet — automatisches
   // Caching (Top-Level-Feld) liest das ab dem 2. Versuch stattdessen zu 10%
   // des Preises aus dem Cache.
+  // Diagnose-Logging (13./14.09.2026): bisher sah man bei einem Fehlschlag
+  // nur "Request timed out." ohne Kontext, ob wirklich das 30-Min.-SDK-
+  // Timeout erreicht wurde oder ob die Verbindung schon deutlich früher aus
+  // einem anderen Grund abgebrochen ist (z. B. ein Netzwerk-Hop, der eine
+  // lange "stille" Verbindung von sich aus kappt) — nicht unterscheidbar
+  // ohne Laufzeit + echte Fehlerdetails. Jetzt: Laufzeit pro Versuch +
+  // gesamt, sowie name/status/code/cause des Fehlers.
+  const startedAt = Date.now();
   let response;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    response = await client.messages.create({
-      model: MODEL,
-      max_tokens: 8000,
-      cache_control: { type: 'ephemeral' },
-      tools,
-      messages,
-    });
-    if (response.stop_reason !== 'pause_turn') break;
-    messages.push({ role: 'assistant', content: response.content });
+  try {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const attemptStartedAt = Date.now();
+      // eslint-disable-next-line no-await-in-loop
+      response = await client.messages.create({
+        model: MODEL,
+        max_tokens: 8000,
+        cache_control: { type: 'ephemeral' },
+        tools,
+        messages,
+      });
+      const attemptS = ((Date.now() - attemptStartedAt) / 1000).toFixed(1);
+      console.log(`Sales-Agent: Versuch ${attempt + 1} abgeschlossen nach ${attemptS}s (stop_reason: ${response.stop_reason})`);
+      if (response.stop_reason !== 'pause_turn') break;
+      messages.push({ role: 'assistant', content: response.content });
+    }
+  } catch (err) {
+    const totalS = ((Date.now() - startedAt) / 1000).toFixed(1);
+    console.error(
+      `Sales-Agent: Anthropic-Aufruf fehlgeschlagen nach ${totalS}s gesamt — `
+      + `name=${err.name} message=${err.message} status=${err.status ?? 'n/a'} `
+      + `code=${err.code ?? 'n/a'} cause=${err.cause?.message || err.cause || 'n/a'}`,
+    );
+    throw err;
   }
 
   const fullText = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n');
