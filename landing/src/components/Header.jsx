@@ -27,13 +27,13 @@ export const roles = [
 
 /* ---------- Industries (Mega-Menü "Branchen") ---------- */
 export const industries = [
-  { id: "restaurants", icon: UtensilsCrossed, anchor: "#live", status: "live" },
-  { id: "hotels", icon: Hotel, status: "soon" },
-  { id: "handwerker", icon: Wrench, status: "live" },
-  { id: "arztpraxen", icon: Stethoscope, status: "soon" },
-  { id: "friseure", icon: Scissors, status: "live" },
-  { id: "autowerkstaetten", icon: Car, status: "live" },
-  { id: "immobilien", icon: Building2, status: "live" },
+  { id: "restaurants", icon: UtensilsCrossed, tone: "violet", anchor: "#live", status: "live" },
+  { id: "hotels", icon: Hotel, tone: "cyan", status: "soon" },
+  { id: "handwerker", icon: Wrench, tone: "violet", status: "live" },
+  { id: "arztpraxen", icon: Stethoscope, tone: "cyan", status: "soon" },
+  { id: "friseure", icon: Scissors, tone: "violet", status: "live" },
+  { id: "autowerkstaetten", icon: Car, tone: "cyan", status: "live" },
+  { id: "immobilien", icon: Building2, tone: "violet", status: "live" },
 ];
 
 /* ---------- Brand mark: Orbit K (ring + K-monogram, orbiting channel dots) ---------- */
@@ -157,7 +157,7 @@ function SolutionsMenuContent({ onNavigate, stacked = false, homeHref }) {
               key={ind.id}
               icon={ind.icon}
               name={t(`industries.${ind.id}`)}
-              href={`${homeHref}${ind.anchor || "#roles"}`}
+              href={`${homeHref}${ind.anchor || "#branchen"}`}
               status={ind.status}
               iconTone="text-violet-600 dark:text-violet-300"
               onNavigate={onNavigate}

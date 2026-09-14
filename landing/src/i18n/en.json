@@ -126,6 +126,21 @@
   "roleCard": {
     "soon": "coming soon"
   },
+  "industriesSection": {
+    "eyebrow": "// industries_live",
+    "headingPrefix": "One Kiwo.",
+    "headingHighlight": "Many industries.",
+    "subtitle": "Same platform, tailored to your industry. Industries without \"coming soon\" are ready to use today."
+  },
+  "industryDesc": {
+    "restaurants": "Take table reservations and orders automatically by phone, answer guest questions instantly.",
+    "hotels": "Room reservations and guest service around the clock – no front desk needed on the night shift.",
+    "handwerker": "Take appointment requests for repairs and installations automatically instead of missing calls.",
+    "arztpraxen": "Book appointments for treatments – patients can reach the practice even outside opening hours.",
+    "friseure": "Let clients book, reschedule, or cancel appointments automatically by phone, even on weekends.",
+    "autowerkstaetten": "Take workshop appointments and requests directly by phone instead of making customers wait for a callback.",
+    "immobilien": "Let viewing appointments for your listings be scheduled automatically."
+  },
   "liveTest": {
     "eyebrow": "LIVE IN ACTION",
     "headingPrefix": "Try",

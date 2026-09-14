@@ -6,7 +6,7 @@ import {
   Workflow, Plug, Layers, Play, Pause, Bell, LayoutDashboard,
   Pencil, Euro, Handshake,
 } from "lucide-react";
-import { Header, roles } from "./components/Header.jsx";
+import { Header, roles, industries } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
 import { LanguageSuggestionBanner } from "./components/LanguageSuggestionBanner.jsx";
 import { CookieBanner } from "./components/CookieBanner.jsx";
@@ -168,6 +168,39 @@ function RoleCard({ role, featured = false }) {
         {t(`roleDesc.${role.id}`)}
       </p>
       {role.id === "reception" && featured && <CallWave />}
+    </GlowCard>
+  );
+}
+
+function IndustryCard({ industry, featured = false }) {
+  const { t } = useI18n();
+  const Icon = industry.icon;
+  const soon = industry.status === "soon";
+  const tone = industry.tone || "cyan";
+  return (
+    <GlowCard tone={tone} className={`p-6 h-full ${featured ? "md:p-8" : ""} ${soon ? "opacity-60" : ""}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+            tone === "cyan"
+              ? "bg-cyan-400/10 text-cyan-600 dark:text-cyan-300 ring-1 ring-cyan-400/20"
+              : "bg-violet-400/10 text-violet-600 dark:text-violet-300 ring-1 ring-violet-400/20"
+          }`}
+        >
+          <Icon className="h-5 w-5" />
+        </div>
+        {soon && (
+          <span className="rounded-full px-2.5 py-1 text-[10px] font-mono bg-amber-400/10 text-amber-600 dark:text-amber-300">
+            {t("roleCard.soon")}
+          </span>
+        )}
+      </div>
+      <h3 className={`mt-4 font-semibold ${featured ? "text-2xl md:text-3xl" : "text-lg"}`}>
+        {t(`industries.${industry.id}`)}
+      </h3>
+      <p className={`mt-2 text-foreground/60 leading-relaxed ${featured ? "text-base" : "text-sm"}`}>
+        {t(`industryDesc.${industry.id}`)}
+      </p>
     </GlowCard>
   );
 }
@@ -897,6 +930,37 @@ export default function App() {
             {roles.slice(1).map((r) => (
               <div key={r.id}>
                 <RoleCard role={r} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Industries Bento */}
+      <section id="branchen" className="relative z-10">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-6 md:py-24">
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+            <div>
+              <div className="text-xs font-mono text-cyan-600/90 dark:text-cyan-300/90 flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 pulse-dot" />
+                {t("industriesSection.eyebrow")}
+              </div>
+              <h2 className="mt-2 text-3xl md:text-4xl font-semibold">
+                {t("industriesSection.headingPrefix")} <span className="text-gradient">{t("industriesSection.headingHighlight")}</span>
+              </h2>
+            </div>
+            <p className="max-w-md text-sm text-foreground/55">
+              {t("industriesSection.subtitle")}
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-4 md:grid-cols-3 md:grid-rows-2">
+            <div className="md:col-span-2 md:row-span-1">
+              <IndustryCard industry={industries[0]} featured />
+            </div>
+            {industries.slice(1).map((ind) => (
+              <div key={ind.id}>
+                <IndustryCard industry={ind} />
               </div>
             ))}
           </div>

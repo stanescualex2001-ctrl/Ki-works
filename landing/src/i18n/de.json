@@ -126,6 +126,21 @@
   "roleCard": {
     "soon": "bald verfügbar"
   },
+  "industriesSection": {
+    "eyebrow": "// branchen_einsatz",
+    "headingPrefix": "Ein Kiwo.",
+    "headingHighlight": "Viele Branchen.",
+    "subtitle": "Dieselbe Plattform, angepasst an Ihre Branche. Branchen ohne \"bald verfügbar\" sind schon heute einsatzbereit."
+  },
+  "industryDesc": {
+    "restaurants": "Tischreservierungen und Bestellungen automatisch am Telefon aufnehmen, Gästefragen sofort beantworten.",
+    "hotels": "Zimmerreservierungen und Gästeservice rund um die Uhr – ohne Rezeption in der Nachtschicht.",
+    "handwerker": "Terminanfragen für Reparaturen und Montagen automatisch entgegennehmen, statt Anrufe zu verpassen.",
+    "arztpraxen": "Terminvereinbarung für Behandlungen – Patienten erreichen die Praxis auch außerhalb der Öffnungszeiten.",
+    "friseure": "Termine buchen, verschieben oder stornieren lassen – automatisch am Telefon, auch am Wochenende.",
+    "autowerkstaetten": "Werkstatttermine und Anliegen direkt am Telefon aufnehmen, statt Kunden auf den Rückruf warten zu lassen.",
+    "immobilien": "Besichtigungstermine für Ihre Objekte automatisch vereinbaren lassen."
+  },
   "liveTest": {
     "eyebrow": "LIVE-EINSATZ",
     "headingPrefix": "Testen Sie",

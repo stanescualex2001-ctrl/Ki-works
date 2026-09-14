@@ -126,6 +126,21 @@
   "roleCard": {
     "soon": "în curând"
   },
+  "industriesSection": {
+    "eyebrow": "// domenii_active",
+    "headingPrefix": "Un Kiwo.",
+    "headingHighlight": "Multe domenii.",
+    "subtitle": "Aceeași platformă, adaptată domeniului dvs. Domeniile fără eticheta „în curând” sunt deja disponibile."
+  },
+  "industryDesc": {
+    "restaurants": "Preia rezervări de masă și comenzi automat la telefon, răspunde imediat la întrebările clienților.",
+    "hotels": "Rezervări de camere și servicii pentru oaspeți non-stop – fără recepție în tura de noapte.",
+    "handwerker": "Preia cereri de programare pentru reparații și montaje automat, în loc să piardă apeluri.",
+    "arztpraxen": "Programează pacienți pentru tratamente – aceștia pot contacta cabinetul chiar și în afara programului.",
+    "friseure": "Permite clienților să facă, mute sau anuleze programări automat la telefon, chiar și în weekend.",
+    "autowerkstaetten": "Preia programări și solicitări pentru atelier direct la telefon, fără să lase clienții să aștepte un apel de revenire.",
+    "immobilien": "Programează automat vizionări pentru proprietățile dvs."
+  },
   "liveTest": {
     "eyebrow": "ÎN ACȚIUNE",
     "headingPrefix": "Testați",
