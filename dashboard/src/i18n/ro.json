@@ -197,6 +197,7 @@
   "roles": {
     "orders": "Comenzi & rezervări",
     "support": "Suport & rechemări",
+    "appointments": "Programări",
     "sales": "Vânzări",
     "office": "Birou",
     "comingSoon": " (disponibil în curând)"

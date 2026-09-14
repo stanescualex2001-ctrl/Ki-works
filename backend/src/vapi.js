@@ -61,8 +61,13 @@ async function createReservation(restaurant, args, callerNumber) {
     sendSms(reservation.customer_phone, reservationSms(reservation, restaurant.name))
       .catch((err) => console.error('SMS failed:', err.message));
   }
+  // party_size wird nur erwähnt, wenn das Modell es tatsächlich übergeben hat
+  // (bei der generischen Terminbuchung, siehe APPOINTMENTS_TOOLS in
+  // vapiAdmin.js, ist das Feld gar nicht im Tool-Schema — Kiwo fragt dort
+  // nie danach, es wird nur intern mit dem DB-Default 2 befüllt).
+  const partySizeText = args.party_size ? `, ${reservation.party_size} Personen` : '';
   return {
-    result: `Reservierung bestätigt für ${reservation.customer_name}, ${reservation.party_size} Personen am ${reservedAt.toLocaleString('de-AT', { timeZone: 'Europe/Vienna' })}. [reservation_id: ${reservation.id}]`,
+    result: `Reservierung bestätigt für ${reservation.customer_name}${partySizeText} am ${reservedAt.toLocaleString('de-AT', { timeZone: 'Europe/Vienna' })}. [reservation_id: ${reservation.id}]`,
   };
 }
 

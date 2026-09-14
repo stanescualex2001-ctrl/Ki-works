@@ -1051,6 +1051,7 @@ function Recommendations({ restaurantId }) {
 const ROLE_META = [
   { id: 'orders', implemented: true },
   { id: 'support', implemented: true },
+  { id: 'appointments', implemented: true },
   { id: 'sales', implemented: false },
   { id: 'office', implemented: false },
 ];
@@ -2524,16 +2525,21 @@ export default function App() {
   }
 
   const current = restaurants?.find((r) => String(r.id) === String(restaurantId));
-  // Kalender/Reservierungen/Bestellungen nur zeigen, wenn die orders-Rolle
-  // aktiv ist — sonst sehen Support-only-Kunden (z. B. LEDTEK, pixelpress)
-  // dauerhaft leere Tabs. Ohne geladene Daten/enabled_roles (Altbestand)
-  // bewusst weiter anzeigen, damit sich bestehende Kunden nicht ändern.
+  // Kalender/Reservierungen nur zeigen, wenn orders- oder appointments-Rolle
+  // aktiv ist (beide legen Zeilen in derselben reservations-Tabelle an) —
+  // sonst sehen Support-only-Kunden (z. B. LEDTEK, pixelpress) dauerhaft
+  // leere Tabs. Der Bestellungs-Tab (Speisen) bleibt exklusiv an orders
+  // gebunden, da appointments-Kunden keine Speisebestellungen haben. Ohne
+  // geladene Daten/enabled_roles (Altbestand) bewusst weiter anzeigen,
+  // damit sich bestehende Kunden nicht ändern.
   const ordersRoleActive = !current?.enabled_roles || current.enabled_roles.includes('orders');
+  const appointmentsRoleActive = !!current?.enabled_roles?.includes('appointments');
   const nav = NAV.filter((item) => {
     if (item.agencyOnly) return isAgencyUser;
     if (item.adminOnly && !isAdmin && !(item.agencyOk && isAgencyUser)) return false;
     if (isAgencyUser && !item.agencyOk) return false;
-    if (['calendar', 'reservations', 'orders'].includes(item.id) && !ordersRoleActive) return false;
+    if (['calendar', 'reservations'].includes(item.id) && !ordersRoleActive && !appointmentsRoleActive) return false;
+    if (item.id === 'orders' && !ordersRoleActive) return false;
     return true;
   });
   const noPicker = ['customers', 'branding', 'agencies', 'leads', 'system'].includes(view);

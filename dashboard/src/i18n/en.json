@@ -197,6 +197,7 @@
   "roles": {
     "orders": "Orders & reservations",
     "support": "Support & callbacks",
+    "appointments": "Appointment booking",
     "sales": "Sales",
     "office": "Office",
     "comingSoon": " (coming soon)"

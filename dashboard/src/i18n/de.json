@@ -197,6 +197,7 @@
   "roles": {
     "orders": "Bestellungen & Reservierungen",
     "support": "Support & Rückruf",
+    "appointments": "Terminbuchung",
     "sales": "Sales",
     "office": "Office",
     "comingSoon": " (bald verfügbar)"

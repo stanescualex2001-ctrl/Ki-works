@@ -29,11 +29,11 @@ export const roles = [
 export const industries = [
   { id: "restaurants", icon: UtensilsCrossed, anchor: "#live", status: "live" },
   { id: "hotels", icon: Hotel, status: "soon" },
-  { id: "handwerker", icon: Wrench, status: "soon" },
+  { id: "handwerker", icon: Wrench, status: "live" },
   { id: "arztpraxen", icon: Stethoscope, status: "soon" },
-  { id: "friseure", icon: Scissors, status: "soon" },
-  { id: "autowerkstaetten", icon: Car, status: "soon" },
-  { id: "immobilien", icon: Building2, status: "soon" },
+  { id: "friseure", icon: Scissors, status: "live" },
+  { id: "autowerkstaetten", icon: Car, status: "live" },
+  { id: "immobilien", icon: Building2, status: "live" },
 ];
 
 /* ---------- Brand mark: Orbit K (ring + K-monogram, orbiting channel dots) ---------- */
