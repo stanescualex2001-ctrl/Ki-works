@@ -78,6 +78,17 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   oder `dashboard/` neu bauen), die passenden copy-paste-fertigen Befehle
   direkt in derselben Antwort mitgeben — ohne dass der Nutzer extra danach
   fragen muss.
+- **Versionierung (seit 16.09.2026):** `version` in den 4 `package.json`
+  (`backend/`, `landing/`, `dashboard/`, `business-dashboard/`) startet bei
+  **1.0.0** (Nutzer-Entscheidung: soll den bereits gebauten Umfang
+  widerspiegeln, nicht bei 0.1.0 hängen bleiben). Danach bei jeder
+  spürbaren neuen Funktion/Verbesserung die **Minor-Version** in allen 4
+  Dateien gemeinsam hochzählen (1.1.0, 1.2.0, 1.3.0, ...) — zeigt laufende
+  Weiterentwicklung der Plattform. Ein größerer Sprung (2.0.0) ist für
+  einen echten Meilenstein wie eine neue Kiwo-Rolle (Sales/Office) oder
+  einen größeren Architekturumbau gedacht, kein festes Datum. Kleinere
+  Bugfixes/Textkorrekturen ohne neue Funktion brauchen keinen Versions-
+  sprung.
 
 ## Bereits erledigt (nicht mehr offen)
 
