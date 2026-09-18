@@ -2434,6 +2434,34 @@ Version auf "Publish" klicken.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
+- **Urgency-Erzeugung für ki-works.eu + automatisches Billing —
+  Brainstorming (18.09.2026):** Nutzer-Frage "wie können wir urgency für
+  kiwo/ki-works generieren?" — zwei Hebel besprochen, beide nur vorgemerkt,
+  nichts umgesetzt: (1) **Kapazitäts-Knappheit** (echte Begrenzung durch
+  aktuell manuelle Einrichtung, z. B. "nur X neue Kunden/Monat" oder ein
+  Kiwo pro Branche/Ort) als ehrlichere Alternative zu erfundener
+  Verknappung; (2) **Preisgarantie**, vom Nutzer präzisiert auf **1 Jahr
+  fixer Preis** als Einstiegs-Anreiz — sollte auf der Preise-Seite
+  kommuniziert werden, sobald entschieden (aktuelle Marge ~40-49%
+  federt das ab). Nutzer wollte danach zusätzlich **Self-Service**
+  durchdenken (Kunde bestellt/bezahlt selbst, ohne dass Alex jeden Schritt
+  manuell macht) — dafür fehlt bisher (a) jede Zahlungs-/Abo-Integration
+  und (b) wäre das bekannte Vapi-"Publish"-Problem ein echter Blocker
+  (neue Assistenten brauchen weiterhin einen manuellen Klick im
+  Vapi-Dashboard, siehe „Vapi Publish-Problem" in den Offenen Punkten) —
+  müsste vor einem echten Self-Service-Bestell-Flow gelöst sein, sonst
+  bliebe ein frisch zahlender Kunde erstmal ohne funktionierenden
+  Telefonagenten. Auf Nachfrage zum Billing-Anbieter empfohlen: kein
+  reiner IBAN-Vergleich, sondern ein Zahlungsanbieter mit
+  **SEPA-Lastschrift-Unterstützung** (gewohntes Verfahren bei
+  AT/DE-B2B-Kunden) plus Kreditkarte als Alternative — **Stripe**
+  (Abo-Verwaltung, USt.-Handling, SEPA+Karte in einem, aber etwas teurer)
+  vs. **GoCardless** (günstiger, reiner SEPA-Spezialist ohne
+  Kreditkarten-Support) als zwei Kandidaten genannt, noch keine
+  Entscheidung. Hängt inhaltlich mit dem länger offenen Punkt "kein
+  Preismodell/Billing pro Kunde" (siehe „Admin-Dashboard überarbeiten"
+  weiter unten) zusammen — bisher nirgends im Projekt eine
+  Zahlungs-Integration vorhanden.
 - **Kiwo WhatsApp — Architektur ausgearbeitet, noch nicht gebaut
   (14.09.2026):** Nutzer-Frage "kiwo whatsapp. was kann sein?" —
   Konzept: gleiche Claude-Logik wie das bestehende Web-Chat-Widget
