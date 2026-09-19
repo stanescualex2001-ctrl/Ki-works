@@ -2431,6 +2431,34 @@ Version auf "Publish" klicken.
   "bald verfügbar" markierten Rollen-Bento-Karte selbst). Committet+
   gepusht (2 Commits), normaler rsync/Build-Ablauf für `landing/`
   reicht (kein Backend-Neustart nötig).
+- **Web-Chat-Hinweis auf Kontakt-Seite + "Live testen"-Sektion, zum
+  klickbaren Banner ausgebaut (18.–19.09.2026):** Auslöser: Recherche zu
+  getperspective.ai (adaptive Formular-Alternative) führte zur Erkenntnis,
+  dass Kiwos Chat-Widget zwar auf der Kontakt-Seite mitläuft (über
+  `PageShell`), dort aber nirgends erwähnt wird — nur die leicht zu
+  übersehende schwebende Bubble. Erster Schritt: kurzer Texthinweis auf
+  Kontakt-Seite und (nach Nutzer-Wunsch) zusätzlich am Ende der
+  "Live testen"-Sektion ergänzt. **Nutzer-Feedback ("sehr klein, leicht
+  zu verpassen"):** vor der Umsetzung 3 Design-Varianten (Glow-Banner/
+  Verlauf-Pille/markierter Streifen) als Artifact-Vorschau gezeigt,
+  Nutzer wählte **Variante A (Glow-Banner)** und fragte, ob ein Klick
+  darauf den Chat direkt öffnen kann. Umgesetzt: `ChatWidget.jsx`
+  exportiert jetzt `OPEN_CHAT_EVENT` (Custom Event, öffnet die Bubble
+  per `window.dispatchEvent`, gleiches Muster wie das bestehende
+  `COOKIE_BANNER_VISIBILITY_EVENT`) — der Hinweis in `App.jsx`
+  ("Live testen") und `Kontakt.jsx` ist jetzt ein anklickbarer Banner
+  (Verlauf-Badge-Icon, Titel + Kurzbeschreibung, Cyan-Violet-Design wie
+  das bestehende Anruf-Banner) statt reinem Text. **Nachbesserung:**
+  Nutzer merkte an, dass die Ortsangabe "unten rechts am Bildschirm" im
+  Beschreibungstext überflüssig ist, seit der Klick den Chat direkt
+  öffnet (Bubble-Standort ist für die Handlung irrelevant) — Text auf
+  "Chatten Sie direkt mit Kiwo." gekürzt, alle 3 Sprachen. Lokal per
+  `npm run build` + SSR-Prerender + Grep verifiziert (übersetzter Text
+  in DE/EN/RO im gerenderten HTML, `kiworks-open-chat`-Event-String im
+  geteilten Chunk bestätigt, den `kontakt.html` mitlädt — kein separates
+  Event nötig). 4 Commits, **auf dem Produktivserver ausgerollt**
+  (Nutzer-Bestätigung nach jedem Schritt), normaler rsync/Build-Ablauf
+  für `landing/`, kein Backend-Neustart/keine Migration nötig.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
