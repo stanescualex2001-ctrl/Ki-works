@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mail, Phone, Send, Check, MessageCircle } from "lucide-react";
 import { PageShell } from "../components/PageShell.jsx";
+import { OPEN_CHAT_EVENT } from "../components/ChatWidget.jsx";
 import { useI18n } from "../i18n/index.jsx";
 
 function ContactForm() {
@@ -144,10 +145,19 @@ export default function Kontakt() {
           </a>
         </div>
 
-        <p className="mt-5 flex items-center gap-2 text-xs text-foreground/45">
-          <MessageCircle className="h-3.5 w-3.5 shrink-0 text-cyan-500 dark:text-cyan-300" />
-          {t("kontakt.chatHint")}
-        </p>
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
+          className="group mt-5 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 text-left transition hover:border-cyan-400/30 sm:p-5"
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] transition group-hover:scale-105">
+            <MessageCircle className="h-4 w-4" />
+          </span>
+          <span>
+            <span className="block text-sm font-semibold">{t("kontakt.chatHintTitle")}</span>
+            <span className="mt-0.5 block text-xs text-foreground/60">{t("kontakt.chatHint")}</span>
+          </span>
+        </button>
 
         <ContactForm />
       </div>

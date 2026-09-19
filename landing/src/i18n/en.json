@@ -152,7 +152,8 @@
     "stateReady": "ready",
     "workingLine": "Kiwo is working",
     "placeholder": "› Choose a command above to try Kiwo live.",
-    "chatHint": "Or chat directly with Kiwo — bottom right.",
+    "chatHintTitle": "Prefer writing over calling?",
+    "chatHint": "Chat directly with Kiwo — bottom right of the screen.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -364,7 +365,8 @@
     "intro": "Questions about Kiwo or the KI-Works platform? Send us a message — we'll get back to you.",
     "emailLabel": "Email",
     "phoneLabel": "Phone",
-    "chatHint": "Have a quick, specific question? Chat directly with Kiwo (bottom right).",
+    "chatHintTitle": "Have a specific question?",
+    "chatHint": "Chat directly with Kiwo — bottom right of the screen.",
     "form": {
       "heading": "Write a message",
       "name": "Name*",

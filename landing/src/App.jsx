@@ -11,7 +11,7 @@ import { Footer } from "./components/Footer.jsx";
 import { LanguageSuggestionBanner } from "./components/LanguageSuggestionBanner.jsx";
 import { CookieBanner } from "./components/CookieBanner.jsx";
 import { OrbBuddy } from "./components/OrbBuddy.jsx";
-import { ChatWidget } from "./components/ChatWidget.jsx";
+import { ChatWidget, OPEN_CHAT_EVENT } from "./components/ChatWidget.jsx";
 import { useI18n, DEFAULT_LOCALE } from "./i18n/index.jsx";
 
 /* ============================================================
@@ -1038,10 +1038,19 @@ export default function App() {
             ))}
           </div>
 
-          <p className="mt-8 flex items-center justify-center gap-2 text-xs text-foreground/45">
-            <MessageCircle className="h-3.5 w-3.5 shrink-0 text-cyan-500 dark:text-cyan-300" />
-            {t("liveTest.chatHint")}
-          </p>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
+            className="group mt-8 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 text-left transition hover:border-cyan-400/30 sm:p-5"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] transition group-hover:scale-105">
+              <MessageCircle className="h-4 w-4" />
+            </span>
+            <span>
+              <span className="block text-sm font-semibold">{t("liveTest.chatHintTitle")}</span>
+              <span className="mt-0.5 block text-xs text-foreground/60">{t("liveTest.chatHint")}</span>
+            </span>
+          </button>
         </div>
       </section>
 

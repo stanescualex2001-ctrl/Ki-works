@@ -152,7 +152,8 @@
     "stateReady": "bereit",
     "workingLine": "Kiwo arbeitet",
     "placeholder": "› Wähle einen Befehl oben, um Kiwo live zu testen.",
-    "chatHint": "Oder chatten Sie direkt mit Kiwo — unten rechts.",
+    "chatHintTitle": "Lieber schreiben statt anrufen?",
+    "chatHint": "Chatten Sie direkt mit Kiwo — unten rechts am Bildschirm.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -393,7 +394,8 @@
     "intro": "Fragen zu Kiwo oder der KI-Works Plattform? Schreiben Sie uns eine Nachricht — wir melden uns gerne bei Ihnen.",
     "emailLabel": "E-Mail",
     "phoneLabel": "Telefon",
-    "chatHint": "Für eine schnelle, individuelle Frage: Chatten Sie direkt mit Kiwo (unten rechts).",
+    "chatHintTitle": "Individuelle Frage?",
+    "chatHint": "Chatten Sie direkt mit Kiwo — unten rechts am Bildschirm.",
     "form": {
       "heading": "Nachricht schreiben",
       "name": "Name*",

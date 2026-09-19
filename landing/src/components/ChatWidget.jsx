@@ -4,6 +4,12 @@ import { useI18n } from "../i18n/index.jsx";
 import { OrbBuddy } from "./OrbBuddy.jsx";
 import { COOKIE_BANNER_VISIBILITY_EVENT } from "./CookieBanner.jsx";
 
+// Erlaubt anderen Komponenten (z. B. dem Chat-Hinweis-Banner in der
+// "Live testen"-Sektion oder auf der Kontakt-Seite), die Bubble ohne
+// direkten Zugriff auf ihren State zu öffnen — gleiches Event-Muster wie
+// COOKIE_BANNER_VISIBILITY_EVENT.
+export const OPEN_CHAT_EVENT = "kiworks-open-chat";
+
 // Pilot: nur ki-works.eu selbst (same-origin, keine restaurantId nötig —
 // der Server nutzt seinen hinterlegten Standard-Betrieb, siehe
 // backend/src/server.js POST /api/public/webchat). Gesprächsverlauf lebt
@@ -25,6 +31,14 @@ export function ChatWidget() {
     }
     window.addEventListener(COOKIE_BANNER_VISIBILITY_EVENT, onBannerVisibility);
     return () => window.removeEventListener(COOKIE_BANNER_VISIBILITY_EVENT, onBannerVisibility);
+  }, []);
+
+  useEffect(() => {
+    function onOpenRequest() {
+      setOpen(true);
+    }
+    window.addEventListener(OPEN_CHAT_EVENT, onOpenRequest);
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, onOpenRequest);
   }, []);
 
   useEffect(() => {

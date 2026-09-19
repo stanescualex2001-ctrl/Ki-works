@@ -152,7 +152,8 @@
     "stateReady": "pregătit",
     "workingLine": "Kiwo lucrează",
     "placeholder": "› Alegeți o comandă mai sus pentru a testa Kiwo live.",
-    "chatHint": "Sau discutați direct cu Kiwo — dreapta jos.",
+    "chatHintTitle": "Preferați să scrieți în loc să sunați?",
+    "chatHint": "Discutați direct cu Kiwo — dreapta jos pe ecran.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -364,7 +365,8 @@
     "intro": "Aveți întrebări despre Kiwo sau platforma KI-Works? Trimiteți-ne un mesaj — vă răspundem cu plăcere.",
     "emailLabel": "E-mail",
     "phoneLabel": "Telefon",
-    "chatHint": "Aveți o întrebare rapidă și specifică? Discutați direct cu Kiwo (dreapta jos).",
+    "chatHintTitle": "Aveți o întrebare specifică?",
+    "chatHint": "Discutați direct cu Kiwo — dreapta jos pe ecran.",
     "form": {
       "heading": "Scrieți un mesaj",
       "name": "Nume*",
