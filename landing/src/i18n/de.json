@@ -392,6 +392,7 @@
     "intro": "Fragen zu Kiwo oder der KI-Works Plattform? Schreiben Sie uns eine Nachricht — wir melden uns gerne bei Ihnen.",
     "emailLabel": "E-Mail",
     "phoneLabel": "Telefon",
+    "chatHint": "Für eine schnelle, individuelle Frage: Chatten Sie direkt mit Kiwo (unten rechts).",
     "form": {
       "heading": "Nachricht schreiben",
       "name": "Name*",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, Send, Check } from "lucide-react";
+import { Mail, Phone, Send, Check, MessageCircle } from "lucide-react";
 import { PageShell } from "../components/PageShell.jsx";
 import { useI18n } from "../i18n/index.jsx";
 
@@ -143,6 +143,11 @@ export default function Kontakt() {
             </div>
           </a>
         </div>
+
+        <p className="mt-5 flex items-center gap-2 text-xs text-foreground/45">
+          <MessageCircle className="h-3.5 w-3.5 shrink-0 text-cyan-500 dark:text-cyan-300" />
+          {t("kontakt.chatHint")}
+        </p>
 
         <ContactForm />
       </div>
