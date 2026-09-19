@@ -4,7 +4,7 @@ import {
   ArrowRight, Sparkles, Bot, Zap, Shield, PhoneCall,
   Mail, CalendarDays, TrendingUp, Check, Cpu,
   Workflow, Plug, Layers, Play, Pause, Bell, LayoutDashboard,
-  Pencil, Euro, Handshake,
+  Pencil, Euro, Handshake, MessageCircle,
 } from "lucide-react";
 import { Header, roles, industries } from "./components/Header.jsx";
 import { Footer } from "./components/Footer.jsx";
@@ -1037,6 +1037,11 @@ export default function App() {
               <DemoCallCard key={call.id} call={call} />
             ))}
           </div>
+
+          <p className="mt-8 flex items-center justify-center gap-2 text-xs text-foreground/45">
+            <MessageCircle className="h-3.5 w-3.5 shrink-0 text-cyan-500 dark:text-cyan-300" />
+            {t("liveTest.chatHint")}
+          </p>
         </div>
       </section>
 

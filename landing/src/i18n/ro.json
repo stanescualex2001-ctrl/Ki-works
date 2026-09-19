@@ -152,6 +152,7 @@
     "stateReady": "pregătit",
     "workingLine": "Kiwo lucrează",
     "placeholder": "› Alegeți o comandă mai sus pentru a testa Kiwo live.",
+    "chatHint": "Sau discutați direct cu Kiwo — dreapta jos.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",

@@ -152,6 +152,7 @@
     "stateReady": "ready",
     "workingLine": "Kiwo is working",
     "placeholder": "› Choose a command above to try Kiwo live.",
+    "chatHint": "Or chat directly with Kiwo — bottom right.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
