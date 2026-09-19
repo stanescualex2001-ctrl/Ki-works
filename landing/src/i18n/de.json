@@ -153,7 +153,7 @@
     "workingLine": "Kiwo arbeitet",
     "placeholder": "› Wähle einen Befehl oben, um Kiwo live zu testen.",
     "chatHintTitle": "Lieber schreiben statt anrufen?",
-    "chatHint": "Chatten Sie direkt mit Kiwo — unten rechts am Bildschirm.",
+    "chatHint": "Chatten Sie direkt mit Kiwo.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -395,7 +395,7 @@
     "emailLabel": "E-Mail",
     "phoneLabel": "Telefon",
     "chatHintTitle": "Individuelle Frage?",
-    "chatHint": "Chatten Sie direkt mit Kiwo — unten rechts am Bildschirm.",
+    "chatHint": "Chatten Sie direkt mit Kiwo.",
     "form": {
       "heading": "Nachricht schreiben",
       "name": "Name*",

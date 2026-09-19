@@ -153,7 +153,7 @@
     "workingLine": "Kiwo lucrează",
     "placeholder": "› Alegeți o comandă mai sus pentru a testa Kiwo live.",
     "chatHintTitle": "Preferați să scrieți în loc să sunați?",
-    "chatHint": "Discutați direct cu Kiwo — dreapta jos pe ecran.",
+    "chatHint": "Discutați direct cu Kiwo.",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -366,7 +366,7 @@
     "emailLabel": "E-mail",
     "phoneLabel": "Telefon",
     "chatHintTitle": "Aveți o întrebare specifică?",
-    "chatHint": "Discutați direct cu Kiwo — dreapta jos pe ecran.",
+    "chatHint": "Discutați direct cu Kiwo.",
     "form": {
       "heading": "Scrieți un mesaj",
       "name": "Nume*",
