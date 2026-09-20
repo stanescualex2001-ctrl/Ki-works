@@ -89,6 +89,15 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   einen größeren Architekturumbau gedacht, kein festes Datum. Kleinere
   Bugfixes/Textkorrekturen ohne neue Funktion brauchen keinen Versions-
   sprung.
+- **Selbst wie ein UX-Designer denken, nicht nur wie ein Coder
+  (20.09.2026):** Bei UI-Änderungen (Platzierung, Größe/Auffälligkeit,
+  Gruppierung zusammengehöriger Elemente) selbst vorab prüfen, ob die
+  Umsetzung wirklich gut aussieht/sinnvoll sitzt — nicht nur wortwörtlich
+  umsetzen und auf Nutzer-Korrektur warten (Beispiel: der neue
+  Chat-Hinweis wurde zunächst zu klein UND an die falsche Stelle
+  gesetzt, beides musste der Nutzer nachträglich anstoßen, hätte aber
+  von Anfang an mitbedacht werden können). Gilt besonders für
+  `landing/` (sichtbare Marketing-Seite).
 
 ## Bereits erledigt (nicht mehr offen)
 
