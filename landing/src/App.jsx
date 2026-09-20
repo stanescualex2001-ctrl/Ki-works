@@ -1019,6 +1019,20 @@ export default function App() {
                 </div>
               </div>
             </GlowCard>
+
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
+              className="group mt-4 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 text-left transition hover:border-cyan-400/30 sm:p-5"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] transition group-hover:scale-105">
+                <MessageCircle className="h-4 w-4" />
+              </span>
+              <span>
+                <span className="block text-sm font-semibold">{t("liveTest.chatHintTitle")}</span>
+                <span className="mt-0.5 block text-xs text-foreground/60">{t("liveTest.chatHint")}</span>
+              </span>
+            </button>
           </div>
 
           <div className="mt-16 text-center">
@@ -1037,20 +1051,6 @@ export default function App() {
               <DemoCallCard key={call.id} call={call} />
             ))}
           </div>
-
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
-            className="group mt-8 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 text-left transition hover:border-cyan-400/30 sm:p-5"
-          >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] transition group-hover:scale-105">
-              <MessageCircle className="h-4 w-4" />
-            </span>
-            <span>
-              <span className="block text-sm font-semibold">{t("liveTest.chatHintTitle")}</span>
-              <span className="mt-0.5 block text-xs text-foreground/60">{t("liveTest.chatHint")}</span>
-            </span>
-          </button>
         </div>
       </section>
 
