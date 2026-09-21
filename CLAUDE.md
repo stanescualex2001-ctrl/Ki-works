@@ -98,6 +98,14 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   gesetzt, beides musste der Nutzer nachträglich anstoßen, hätte aber
   von Anfang an mitbedacht werden können). Gilt besonders für
   `landing/` (sichtbare Marketing-Seite).
+- **Bei grundlegenden/strukturellen Änderungen (nicht bei kleinen
+  Text-/Style-Fixes) zuerst ein Artifact-Prototyp, dann erst echter Code
+  (20.09.2026, ROI-Rechner-Umbau):** Nutzer hat nach einem direkt in den
+  echten Code geschriebenen (und bereits gepushten) Fix explizit
+  zurückgewiesen: "zuerst Prototyp für testen !!!". Gilt vor allem für
+  Rechenlogik/Formeln und größere UI-Umbauten auf `landing/` — bei
+  offensichtlich risikoarmen, rein kosmetischen Änderungen (z. B. Text
+  größer machen) ist ein Prototyp-Umweg nicht nötig.
 
 ## Bereits erledigt (nicht mehr offen)
 
@@ -2468,6 +2476,63 @@ Version auf "Publish" klicken.
   Event nötig). 4 Commits, **auf dem Produktivserver ausgerollt**
   (Nutzer-Bestätigung nach jedem Schritt), normaler rsync/Build-Ablauf
   für `landing/`, kein Backend-Neustart/keine Migration nötig.
+- **ROI-Rechner grundlegend neu gebaut — vom 8-Felder-Rechner (13.08.2026)
+  zum ausschließlich telefonatbasierten Ein-Regler-Rechner (20.09.2026):**
+  Nutzer fand den bestehenden 8-Felder-Rechner "sehr cool, aber zu
+  kompliziert" — mehrere Nachbesserungsrunden folgten, bei denen jeweils
+  neue Logikfehler auffielen (typisches Muster: jede Vereinfachung deckte
+  den nächsten Widerspruch auf). Ablauf: (1) erste Vereinfachung auf 2
+  Felder (verpasste Anrufe + Ø Kontaktwert), Annahmen wie Stundensatz/
+  Rettungsquote/Marge fix hinterlegt (`ROI_ASSUMPTIONS`); (2) Nutzer fand
+  per Screenshot einen Widerspruch: das automatisch empfohlene Paket
+  zeigte trotz "★ Bestes Netto" eine Zusatzkosten-Warnung — Erklär-Hinweis
+  ergänzt; (3) Nutzer meldete, dass die anklickbare manuelle Paket-Auswahl
+  nach Eingabe-Änderungen "hängen blieb" (große Zahl zeigte ein anderes
+  Paket als das mit "★ Bestes Netto" markierte) — Nutzer verlangte
+  explizit **"Rechner neu erfinden"**; (4) kompletter Neuentwurf: 3-Karten-
+  Vergleichsraster (Solo/Team/Scale nebeneinander, anklickbar) ersatzlos
+  entfernt — die vollständige Vergleichsansicht existiert bereits separat
+  in der Preise-Sektion weiter unten, hier reicht eine einzige Antwort
+  ("mit dem {Paket}-Paket ({Preis} €/Mo.)" direkt unter der Netto-Zahl,
+  seit der letzten Nachbesserung als auffälliges Cyan-Badge statt
+  kleinem Text); (5) Nutzer-Test deckte auf, dass Scale bei keiner
+  Eingabe-Kombination je empfohlen werden konnte (Slider-Maximum 50
+  verpasste Anrufe + feste Annahme 30 reguläre Anrufe ergab rechnerisch
+  nie genug Minutenbedarf, um Team zu schlagen) — Slider-Maximum auf 150
+  angehoben; (6) Nutzer fand einen zweiten Logikfehler: bei niedrigem
+  Anrufvolumen, aber hohem frei getipptem Kontaktwert (z. B. 10 Anrufe ×
+  1.000 €) zeigte der Rechner "9.000 € Netto", empfahl aber trotzdem nur
+  Solo, weil das Paket rein vom Anrufvolumen abhängt — auf Nutzer-
+  Entscheidung ("Kontaktwert-Feld ganz entfernen") das Feld komplett
+  gestrichen; (7) das hätte die Zeitersparnis aber zu einer reinen
+  Konstante gemacht (unabhängig vom einzigen verbliebenen Regler) —
+  stattdessen die Zeitersparnis direkt an die Anrufe gekoppelt: `(30
+  reguläre + verpasste Anrufe/Woche) × Ø 4 Min. × 21 €/Std.`; (8) Nutzer
+  wies zurecht darauf hin, dass die bis dahin verwendete "15 Std./Woche
+  allgemeine Arbeit (Telefon, E-Mail, Terminvergabe)"-Annahme nicht zum
+  tatsächlich verkauften Produkt passt ("wir verkaufen Tel KI... nicht
+  E-Mails und andere") — Annahme ersatzlos gestrichen, die komplette
+  Zeitersparnis kommt jetzt ausschließlich aus Telefonaten, von Hand
+  nachrechenbar (Übersicht zeigt Basis-Zeitersparnis aus den 30 fixen
+  regulären Anrufen und die Zusatz-Zeitersparnis aus den eigenen
+  geretteten Anrufen getrennt); (9) Slider-Minimum von 0 auf 1 angehoben
+  ("0 verpasste Anrufe soll nicht existieren"). **Endzustand:** ein
+  einziges Eingabefeld (verpasste Anrufe/Woche, 1–150), keine
+  Kartenraster-Vergleichsansicht, keine manuelle Auswahl, keine
+  spekulativen Euro-Werte — Paket-Empfehlung und Netto-Zahl stammen aus
+  derselben Berechnung und können sich strukturell nicht mehr
+  widersprechen. **Arbeitsweise, die sich in dieser Sitzung bewährt hat
+  und beibehalten werden sollte:** jede grundlegende Änderung zuerst als
+  interaktiver Artifact-Prototyp gezeigt (`ChatGPT`-artiges Muster wie
+  beim Chat-Hinweis-Banner) — Nutzer hat einmal explizit eingefordert,
+  dass das **immer zuerst** passiert, bevor echter Code angefasst wird
+  ("zuerst Prototyp für testen !!!"), ein Fall, in dem direkt in den
+  echten Code geschrieben wurde, wurde vom Nutzer klar zurückgewiesen.
+  `pricingTiers`-Preise/-Minuten (Solo 99€/600Min, Team 249€/1.500Min,
+  Scale 499€/3.500Min) unverändert. Committet+gepusht (5 Commits:
+  `9e6ba44`, `c8ad189`, `3f2b22d`, `0296126`, `59e3ea6`),
+  **auf dem Produktivserver ausgerollt (Nutzer-Bestätigung 20.09.2026)**,
+  normaler rsync/Build-Ablauf für `landing/`, kein Backend-Neustart nötig.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
