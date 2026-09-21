@@ -473,11 +473,13 @@ function IntegrationsMarquee() {
 /* ---------- ROI ---------- */
 const LOCALE_INTL = { de: "de-DE", en: "en-US", ro: "ro-RO" };
 const OVERAGE_RATE = 0.20;
-// Fixe Annahmen für den vereinfachten Rechner (typische Werte für kleine
-// Betriebe) — ersetzen die früheren, einzeln einstellbaren Felder
-// hours/rate/regular/duration/rescue/margin. Nutzer geben nur noch
-// verpasste Anrufe + Kontaktwert ein, siehe roi.assumptionsNote.
-const ROI_ASSUMPTIONS = { hours: 15, rate: 21, regular: 30, duration: 4, rescue: 60, margin: 30 };
+// Fixe Annahmen für den vereinfachten Rechner — ausschließlich
+// telefonatbezogen (kein Kiwo-Feature für E-Mail/Termine, daher keine
+// Zeitersparnis dafür beansprucht). "regular" = reguläre Anrufe/Woche,
+// die das Team ohnehin schon selbst beantwortet und die Kiwo zusätzlich
+// zu den verpassten Anrufen übernimmt. Nutzer gibt nur noch verpasste
+// Anrufe/Woche ein, siehe roi.assumptionsNote.
+const ROI_ASSUMPTIONS = { rate: 21, regular: 30, duration: 4 };
 
 function RoiSlider({ label, hint, value, onChange, min, max, step = 1, format }) {
   const fmt = format || ((v) => v);
@@ -505,64 +507,20 @@ function RoiSlider({ label, hint, value, onChange, min, max, step = 1, format })
   );
 }
 
-function RoiNumberField({ label, hint, value, onChange, min, max, step = 1 }) {
-  // Eigener Text-Zustand statt value={value} direkt zu binden: sonst wird
-  // beim Löschen der letzten Ziffer sofort Number('') -> 0 gesetzt, der
-  // Zustand ändert sich dadurch nicht (0 -> 0), React rendert nicht neu und
-  // das Feld "klebt" bei 0 fest — neue Ziffern landen dahinter (z. B. "0220").
-  const [raw, setRaw] = useState(String(value));
-
-  function handleChange(e) {
-    const next = e.target.value;
-    setRaw(next);
-    if (next === "" || next === "-") return;
-    const parsed = Number(next);
-    if (!Number.isNaN(parsed)) onChange(Math.min(max, Math.max(min, parsed)));
-  }
-
-  function handleBlur() {
-    const parsed = Number(raw);
-    const clamped = Number.isNaN(parsed) || raw === "" || raw === "-"
-      ? value
-      : Math.min(max, Math.max(min, parsed));
-    setRaw(String(clamped));
-    if (clamped !== value) onChange(clamped);
-  }
-
-  return (
-    <div className="mb-5">
-      <label className="block text-sm font-medium">{label}</label>
-      <input
-        type="number"
-        min={min}
-        max={max}
-        step={step}
-        value={raw}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        className="mt-2 w-full rounded-lg border border-foreground/10 bg-foreground/[0.03] px-3 py-2 text-sm text-foreground outline-none transition focus:border-violet-400/40"
-      />
-      {hint && <p className="mt-1.5 text-xs text-foreground/45 leading-relaxed">{hint}</p>}
-    </div>
-  );
-}
-
 function ROICalc() {
   const { t, locale } = useI18n();
   const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const fmt = (n) => Math.round(n).toLocaleString(intlLocale);
 
   const [missed, setMissed] = useState(10);
-  const [value, setValue] = useState(80);
 
   const calc = useMemo(() => {
-    const { hours, rate, regular, duration, rescue, margin } = ROI_ASSUMPTIONS;
-    const hoursMonth = hours * 4.33;
-    const timeValue = hoursMonth * rate;
-    const rescuedCount = missed * 4.33 * (rescue / 100);
-    const extraRevenue = rescuedCount * value;
-    const extraProfit = extraRevenue * (margin / 100);
-    const totalBenefit = timeValue + extraProfit;
+    const { rate, regular, duration } = ROI_ASSUMPTIONS;
+    const regularHoursMonth = regular * 4.33 * (duration / 60);
+    const baseTimeValue = regularHoursMonth * rate;
+    const missedHoursMonth = missed * 4.33 * (duration / 60);
+    const callTimeValue = missedHoursMonth * rate;
+    const totalBenefit = baseTimeValue + callTimeValue;
     const minutesNeeded = (missed + regular) * 4.33 * duration;
 
     const perTier = pricingTiers.map((tier) => {
@@ -584,9 +542,9 @@ function ROICalc() {
     const yearTotal = activeTier.net * 11;
 
     return {
-      timeValue, extraProfit, activeTier, roiPct, payback, yearTotal,
+      baseTimeValue, callTimeValue, activeTier, roiPct, payback, yearTotal,
     };
-  }, [missed, value]);
+  }, [missed]);
 
   const { activeTier } = calc;
 
@@ -629,11 +587,7 @@ function ROICalc() {
         <div className="mt-5">
           <RoiSlider
             label={t("roi.fields.missed.label")} hint={t("roi.fields.missed.hint")}
-            value={missed} onChange={setMissed} min={0} max={150}
-          />
-          <RoiNumberField
-            label={t("roi.fields.value.label")} hint={t("roi.fields.value.hint")}
-            value={value} onChange={setValue} min={0} max={2000} step={5}
+            value={missed} onChange={setMissed} min={1} max={150}
           />
         </div>
         <p className="mt-1 text-xs text-foreground/45 leading-relaxed">{t("roi.assumptionsNote")}</p>
@@ -654,11 +608,11 @@ function ROICalc() {
         <div className="mt-4 divide-y divide-foreground/10 text-sm">
           <div className="flex items-center justify-between py-2.5">
             <span className="text-foreground/60">{t("roi.breakdown.timeValueRow")}</span>
-            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.timeValue)} €</span>
+            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.baseTimeValue)} €</span>
           </div>
           <div className="flex items-center justify-between py-2.5">
-            <span className="text-foreground/60">{t("roi.breakdown.extraProfitRow")}</span>
-            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.extraProfit)} €</span>
+            <span className="text-foreground/60">{t("roi.breakdown.callTimeRow")}</span>
+            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.callTimeValue)} €</span>
           </div>
           <div className="flex items-center justify-between py-2.5">
             <span className="text-foreground/60">{t("roi.breakdown.totalCostRow")}</span>

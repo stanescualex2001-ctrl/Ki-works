@@ -255,17 +255,13 @@
     "headingPrefix": "Was",
     "headingHighlight": "spart Kiwo",
     "headingSuffix": "Ihnen wirklich?",
-    "subtitle": "Zwei Zahlen reichen: Wie viele Anrufe verpassen Sie pro Woche, und was ist Ihnen ein gewonnener Kontakt wert? Den Rest übernimmt eine realistische Standardannahme.",
+    "subtitle": "Eine Zahl reicht: Wie viele Anrufe verpassen Sie pro Woche? Der Rest übernimmt eine realistische Standardannahme — ausschließlich rund ums Telefonieren.",
     "companyCardTitle": "Ihre Zahlen",
-    "assumptionsNote": "Basiert zusätzlich auf typischen Werten für kleine Betriebe: 15 Std./Woche wiederkehrende Arbeit, 21 €/Std. Vollkosten, 30 reguläre Anrufe/Woche, Ø 4 Min. Gesprächsdauer, 60 % Rettungsquote, 30 % Marge auf Zusatzumsatz.",
+    "assumptionsNote": "Basiert zusätzlich auf typischen Werten für kleine Betriebe, ausschließlich rund ums Telefonieren: 30 reguläre Anrufe/Woche (die Kiwo zusätzlich zu Ihren verpassten Anrufen übernimmt), Ø 4 Min. Gesprächsdauer, 21 €/Std. Vollkosten.",
     "fields": {
       "missed": {
         "label": "Verpasste Anrufe/Anfragen pro Woche",
         "hint": "Außerhalb der Öffnungszeiten, besetzt oder unbeantwortet liegen geblieben."
-      },
-      "value": {
-        "label": "Ø Wert pro gewonnenem Kontakt (€)",
-        "hint": "Umsatz aus Bestellung, Reservierung oder Auftrag."
       }
     },
     "results": {
@@ -280,8 +276,8 @@
     },
     "breakdown": {
       "title": "Übersicht / Monat",
-      "timeValueRow": "Wert der Zeitersparnis",
-      "extraProfitRow": "Zusatzgewinn aus geretteten Kontakten",
+      "timeValueRow": "Zeitersparnis: 30 reguläre Anrufe/Woche (Annahme)",
+      "callTimeRow": "Zeitersparnis: Ihre geretteten Anrufe",
       "totalCostRow": "Kiwo-Kosten gesamt",
       "netRow": "Netto-Ergebnis",
       "yearNote": "Jährlich (12 Monate, 1. Monat kostenlos): {{amount}}.",

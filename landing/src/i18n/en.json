@@ -255,12 +255,11 @@
     "headingPrefix": "What does",
     "headingHighlight": "Kiwo save",
     "headingSuffix": "you, really?",
-    "subtitle": "Two numbers are all it takes: how many calls do you miss per week, and what's a won contact worth to you? The rest runs on a realistic default assumption.",
+    "subtitle": "One number is all it takes: how many calls do you miss per week? The rest runs on a realistic default assumption — entirely about phone calls.",
     "companyCardTitle": "Your numbers",
-    "assumptionsNote": "Also based on typical values for small businesses: 15 hrs/week of recurring work, €21/hr fully-loaded cost, 30 regular calls/week, avg. 4 min. call duration, 60% rescue rate, 30% margin on extra revenue.",
+    "assumptionsNote": "Also based on typical values for small businesses, entirely about phone calls: 30 regular calls/week (which Kiwo takes on in addition to your missed calls), avg. 4 min. call duration, €21/hr fully-loaded cost.",
     "fields": {
-      "missed": { "label": "Missed calls/inquiries per week", "hint": "Outside opening hours, busy line, or left unanswered." },
-      "value": { "label": "Avg. value per won contact (€)", "hint": "Revenue from an order, reservation, or job." }
+      "missed": { "label": "Missed calls/inquiries per week", "hint": "Outside opening hours, busy line, or left unanswered." }
     },
     "results": {
       "heroLabel": "Estimated net benefit",
@@ -274,8 +273,8 @@
     },
     "breakdown": {
       "title": "Overview / month",
-      "timeValueRow": "Value of time saved",
-      "extraProfitRow": "Extra profit from rescued contacts",
+      "timeValueRow": "Time saved: 30 regular calls/week (assumption)",
+      "callTimeRow": "Time saved: your rescued calls",
       "totalCostRow": "Total Kiwo cost",
       "netRow": "Net result",
       "yearNote": "Annually (12 months, 1st month free): {{amount}}.",

@@ -255,12 +255,11 @@
     "headingPrefix": "Cât",
     "headingHighlight": "economisește Kiwo",
     "headingSuffix": "cu adevărat pentru dvs.?",
-    "subtitle": "Sunt suficiente două cifre: câte apeluri pierdeți pe săptămână și cât valorează pentru dvs. un contact câștigat? Restul se bazează pe o ipoteză standard realistă.",
+    "subtitle": "O singură cifră este suficientă: câte apeluri pierdeți pe săptămână? Restul se bazează pe o ipoteză standard realistă — exclusiv legată de telefonie.",
     "companyCardTitle": "Cifrele dvs.",
-    "assumptionsNote": "Se bazează de asemenea pe valori tipice pentru afaceri mici: 15 ore/săptămână muncă recurentă, 21 €/oră cost total, 30 apeluri obișnuite/săptămână, durată medie a apelului 4 min., rată de recuperare 60 %, marjă 30 % la venitul suplimentar.",
+    "assumptionsNote": "Se bazează de asemenea pe valori tipice pentru afaceri mici, exclusiv legate de telefonie: 30 apeluri obișnuite/săptămână (pe care Kiwo le preia în plus față de apelurile ratate), durată medie a apelului 4 min., 21 €/oră cost total.",
     "fields": {
-      "missed": { "label": "Apeluri/cereri ratate pe săptămână", "hint": "În afara orelor de program, linie ocupată sau rămase fără răspuns." },
-      "value": { "label": "Valoare medie per contact câștigat (€)", "hint": "Venit dintr-o comandă, rezervare sau lucrare." }
+      "missed": { "label": "Apeluri/cereri ratate pe săptămână", "hint": "În afara orelor de program, linie ocupată sau rămase fără răspuns." }
     },
     "results": {
       "heroLabel": "Beneficiu net estimat",
@@ -274,8 +273,8 @@
     },
     "breakdown": {
       "title": "Prezentare generală / lună",
-      "timeValueRow": "Valoarea timpului economisit",
-      "extraProfitRow": "Profit suplimentar din contactele recuperate",
+      "timeValueRow": "Timp economisit: 30 apeluri obișnuite/săptămână (ipoteză)",
+      "callTimeRow": "Timp economisit: apelurile dvs. recuperate",
       "totalCostRow": "Cost total Kiwo",
       "netRow": "Rezultat net",
       "yearNote": "Anual (12 luni, prima lună gratuită): {{amount}}.",
