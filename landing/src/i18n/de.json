@@ -268,19 +268,9 @@
         "hint": "Umsatz aus Bestellung, Reservierung oder Auftrag."
       }
     },
-    "tierCard": {
-      "title": "Kiwo-Paket",
-      "minutesNeededLabel": "benötigt:",
-      "minutesUnit": "Min./Mo.",
-      "fits": "reicht ✓",
-      "overage": "+{{cost}} € Zusatzkosten",
-      "netLabel": "Netto: {{value}} /Mo.",
-      "recommended": "★ Bestes Netto",
-      "overageStillBestHint": "Auch mit Zusatzkosten bleibt {{tier}} am günstigsten — die Ersparnis gegenüber einem größeren Paket ist höher als die Mehrkosten."
-    },
     "results": {
       "heroLabel": "Geschätzter Netto-Nutzen",
-      "heroSubPositive": "nach Abzug der Kiwo-Kosten ({{tier}})",
+      "heroSubPositive": "mit dem {{tier}}-Paket ({{price}} €/Mo.)",
       "heroSubNegative": "Kiwo-Kosten übersteigen aktuell den Nutzen",
       "roiLabel": "ROI",
       "paybackLabel": "Amortisation",

@@ -262,19 +262,9 @@
       "missed": { "label": "Apeluri/cereri ratate pe săptămână", "hint": "În afara orelor de program, linie ocupată sau rămase fără răspuns." },
       "value": { "label": "Valoare medie per contact câștigat (€)", "hint": "Venit dintr-o comandă, rezervare sau lucrare." }
     },
-    "tierCard": {
-      "title": "Pachet Kiwo",
-      "minutesNeededLabel": "necesar:",
-      "minutesUnit": "min/lună",
-      "fits": "se încadrează ✓",
-      "overage": "+{{cost}} € costuri suplimentare",
-      "netLabel": "Net: {{value}} /lună",
-      "recommended": "★ Cel mai bun rezultat net",
-      "overageStillBestHint": "Chiar și cu costuri suplimentare, {{tier}} rămâne cel mai ieftin — economia față de un pachet mai mare depășește costurile suplimentare."
-    },
     "results": {
       "heroLabel": "Beneficiu net estimat",
-      "heroSubPositive": "după deducerea costurilor Kiwo ({{tier}})",
+      "heroSubPositive": "cu pachetul {{tier}} ({{price}} €/lună)",
       "heroSubNegative": "Costurile Kiwo depășesc momentan beneficiul",
       "roiLabel": "ROI",
       "paybackLabel": "Amortizare",

@@ -262,19 +262,9 @@
       "missed": { "label": "Missed calls/inquiries per week", "hint": "Outside opening hours, busy line, or left unanswered." },
       "value": { "label": "Avg. value per won contact (€)", "hint": "Revenue from an order, reservation, or job." }
     },
-    "tierCard": {
-      "title": "Kiwo plan",
-      "minutesNeededLabel": "needed:",
-      "minutesUnit": "min/mo",
-      "fits": "fits ✓",
-      "overage": "+€{{cost}} extra cost",
-      "netLabel": "Net: {{value}} /mo",
-      "recommended": "★ Best net result",
-      "overageStillBestHint": "Even with extra costs, {{tier}} stays the cheapest — the savings vs. a bigger plan outweigh the overage."
-    },
     "results": {
       "heroLabel": "Estimated net benefit",
-      "heroSubPositive": "after deducting Kiwo's cost ({{tier}})",
+      "heroSubPositive": "with the {{tier}} plan (€{{price}}/mo)",
       "heroSubNegative": "Kiwo's cost currently exceeds the benefit",
       "roiLabel": "ROI",
       "paybackLabel": "Payback",

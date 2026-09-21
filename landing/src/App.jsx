@@ -517,12 +517,16 @@ function RoiNumberField({ label, hint, value, onChange, min, max, step = 1 }) {
     setRaw(next);
     if (next === "" || next === "-") return;
     const parsed = Number(next);
-    if (!Number.isNaN(parsed)) onChange(parsed);
+    if (!Number.isNaN(parsed)) onChange(Math.min(max, Math.max(min, parsed)));
   }
 
   function handleBlur() {
     const parsed = Number(raw);
-    setRaw(Number.isNaN(parsed) || raw === "" || raw === "-" ? String(value) : String(parsed));
+    const clamped = Number.isNaN(parsed) || raw === "" || raw === "-"
+      ? value
+      : Math.min(max, Math.max(min, parsed));
+    setRaw(String(clamped));
+    if (clamped !== value) onChange(clamped);
   }
 
   return (
@@ -580,8 +584,7 @@ function ROICalc() {
     const yearTotal = activeTier.net * 11;
 
     return {
-      timeValue, extraProfit,
-      minutesNeeded, perTier, bestTier, activeTier, roiPct, payback, yearTotal,
+      timeValue, extraProfit, activeTier, roiPct, payback, yearTotal,
     };
   }, [missed, value]);
 
@@ -595,7 +598,7 @@ function ROICalc() {
       </div>
       <div className="mt-1 text-xs text-foreground/50">
         {calc.activeTier.net >= 0
-          ? t("roi.results.heroSubPositive", { tier: activeTier.name })
+          ? t("roi.results.heroSubPositive", { tier: activeTier.name, price: activeTier.price })
           : t("roi.results.heroSubNegative")}
       </div>
       <div className="mt-5 grid grid-cols-2 gap-3">
@@ -626,7 +629,7 @@ function ROICalc() {
         <div className="mt-5">
           <RoiSlider
             label={t("roi.fields.missed.label")} hint={t("roi.fields.missed.hint")}
-            value={missed} onChange={setMissed} min={0} max={50}
+            value={missed} onChange={setMissed} min={0} max={150}
           />
           <RoiNumberField
             label={t("roi.fields.value.label")} hint={t("roi.fields.value.hint")}
@@ -638,54 +641,7 @@ function ROICalc() {
 
       <GlowCard tone="cyan" className="p-6 md:p-7 text-center">
         {heroContent}
-      </GlowCard>
-
-      <GlowCard tone="cyan" className="p-6 md:p-7">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.tierCard.title")}</h3>
-          <span className="text-xs text-foreground/60">
-            {t("roi.tierCard.minutesNeededLabel")}{" "}
-            <span className="font-mono font-semibold text-cyan-600 dark:text-cyan-300">
-              {fmt(calc.minutesNeeded)} {t("roi.tierCard.minutesUnit")}
-            </span>
-          </span>
-        </div>
-        <div className="mt-5 grid grid-cols-3 gap-2.5">
-          {calc.perTier.map((tier) => {
-            const isRecommended = tier.name === calc.bestTier.name;
-            return (
-              <div
-                key={tier.name}
-                className={`relative rounded-xl border p-3 text-center ${
-                  isRecommended
-                    ? "border-cyan-400 bg-cyan-400/10"
-                    : "border-foreground/10 bg-foreground/[0.02]"
-                }`}
-              >
-                {isRecommended && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-cyan-400 px-2 py-0.5 text-[9px] font-bold text-[#06110c]">
-                    {t("roi.tierCard.recommended")}
-                  </span>
-                )}
-                <div className="text-sm font-bold">{tier.name}</div>
-                <div className="font-mono text-sm text-cyan-600 dark:text-cyan-300">{tier.price} €</div>
-                <div className="text-[11px] text-foreground/45">{fmt(tier.minutes)} {t("roi.tierCard.minutesUnit")}</div>
-                <div className={`mt-1.5 text-[10px] font-bold font-mono ${tier.fits ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-400"}`}>
-                  {tier.fits ? t("roi.tierCard.fits") : t("roi.tierCard.overage", { cost: fmt(tier.overageCost) })}
-                </div>
-                <div className="mt-1 text-[10px] text-foreground/40">
-                  {t("roi.tierCard.netLabel", { value: (tier.net >= 0 ? "+" : "−") + fmt(Math.abs(tier.net)) + " €" })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        {calc.bestTier.overageCost > 0 && (
-          <p className="mt-3 text-xs text-cyan-700 dark:text-cyan-300">
-            {t("roi.tierCard.overageStillBestHint", { tier: calc.bestTier.name })}
-          </p>
-        )}
-        <p className="mt-4 text-[11px] text-foreground/40">
+        <p className="mt-5 text-[11px] text-foreground/40">
           {t("pricing.footnote")}{" "}
           <a href="/kontakt.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
             {t("pricing.footnoteCta")}
