@@ -255,17 +255,12 @@
     "headingPrefix": "What does",
     "headingHighlight": "Kiwo save",
     "headingSuffix": "you, really?",
-    "subtitle": "Enter your numbers and see instantly how much time and money your digital employee frees up for phone, email and appointment management — including ROI and payback.",
-    "companyCardTitle": "Your business",
+    "subtitle": "Two numbers are all it takes: how many calls do you miss per week, and what's a won contact worth to you? The rest runs on a realistic default assumption.",
+    "companyCardTitle": "Your numbers",
+    "assumptionsNote": "Also based on typical values for small businesses: 15 hrs/week of recurring work, €21/hr fully-loaded cost, 30 regular calls/week, avg. 4 min. call duration, 60% rescue rate, 30% margin on extra revenue.",
     "fields": {
-      "hours": { "label": "Recurring work per week", "unit": "hrs", "hint": "Phone, emails, scheduling & reservations." },
-      "rate": { "label": "Fully-loaded hourly rate (€)", "hint": "Salary, payroll costs & overhead per hour (industry average: €21)." },
-      "missed": { "label": "Missed calls/inquiries per week", "hint": "Outside opening hours, busy line, or left unanswered. Also counts toward the call volume below." },
-      "regular": { "label": "Regular calls/inquiries per week", "hint": "Calls & chats Kiwo takes on in addition to the missed ones (reception, orders, support …)." },
-      "duration": { "label": "Avg. call duration", "unit": "min", "hint": "Determines how many call minutes are needed per month — and which plan really fits." },
-      "value": { "label": "Avg. value per won contact (€)", "hint": "Revenue from an order, reservation, or job." },
-      "rescue": { "label": "Rescue rate with Kiwo", "hint": "Share of otherwise lost inquiries that Kiwo catches and closes." },
-      "margin": { "label": "Margin on extra revenue", "hint": "Only this share of the extra revenue stays as real profit." }
+      "missed": { "label": "Missed calls/inquiries per week", "hint": "Outside opening hours, busy line, or left unanswered." },
+      "value": { "label": "Avg. value per won contact (€)", "hint": "Revenue from an order, reservation, or job." }
     },
     "tierCard": {
       "title": "Kiwo plan",
@@ -288,21 +283,13 @@
       "paybackMonths": "{{n}} months"
     },
     "breakdown": {
-      "title": "Breakdown / month",
-      "section1": "1. Time savings — regardless of the rescue rate",
-      "timeSavedRow": "Time saved (hrs/mo)",
+      "title": "Overview / month",
       "timeValueRow": "Value of time saved",
-      "section2": "2. Extra revenue — only if rescue rate > 0%",
-      "rescuedCountRow": "Rescued contacts (count/mo)",
-      "extraRevenueRow": "Extra revenue from rescued contacts",
-      "extraProfitRow": "Of which profit (margin)",
-      "section3": "3. Cost & result",
-      "planCostRow": "Plan cost ({{plan}})",
-      "overageRow": "Extra minutes ({{mins}} min × €0.20)",
+      "extraProfitRow": "Extra profit from rescued contacts",
       "totalCostRow": "Total Kiwo cost",
-      "netRow": "Net result (1 + 2 − 3)",
+      "netRow": "Net result",
       "yearNote": "Annually (12 months, 1st month free): {{amount}}.",
-      "disclaimer": "Basis: hourly rate, rescue rate and margin are all freely adjustable. Non-binding estimate based on your inputs — no guarantee."
+      "disclaimer": "Non-binding estimate based on your inputs and typical values for small businesses — no guarantee."
     },
     "cta": { "choosePlan": "Choose plan", "requestDemo": "Request a demo" }
   },

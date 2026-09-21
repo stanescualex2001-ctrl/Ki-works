@@ -255,42 +255,17 @@
     "headingPrefix": "Was",
     "headingHighlight": "spart Kiwo",
     "headingSuffix": "Ihnen wirklich?",
-    "subtitle": "Geben Sie Ihre Zahlen ein und sehen Sie sofort, wie viel Zeit und Geld Ihr digitaler Mitarbeiter für Telefon, E-Mail und Terminverwaltung freisetzt — inklusive ROI und Amortisation.",
-    "companyCardTitle": "Ihr Unternehmen",
+    "subtitle": "Zwei Zahlen reichen: Wie viele Anrufe verpassen Sie pro Woche, und was ist Ihnen ein gewonnener Kontakt wert? Den Rest übernimmt eine realistische Standardannahme.",
+    "companyCardTitle": "Ihre Zahlen",
+    "assumptionsNote": "Basiert zusätzlich auf typischen Werten für kleine Betriebe: 15 Std./Woche wiederkehrende Arbeit, 21 €/Std. Vollkosten, 30 reguläre Anrufe/Woche, Ø 4 Min. Gesprächsdauer, 60 % Rettungsquote, 30 % Marge auf Zusatzumsatz.",
     "fields": {
-      "hours": {
-        "label": "Wiederkehrende Arbeit pro Woche",
-        "unit": "Std",
-        "hint": "Telefon, E-Mails, Terminvergabe & Reservierungen."
-      },
-      "rate": {
-        "label": "Stundensatz Vollkosten (€)",
-        "hint": "Gehalt, Lohnnebenkosten & Overhead pro Stunde (Branchenschnitt: 21 €)."
-      },
       "missed": {
         "label": "Verpasste Anrufe/Anfragen pro Woche",
-        "hint": "Außerhalb der Öffnungszeiten, besetzt oder unbeantwortet liegen geblieben. Zählt auch zum Gesprächsvolumen unten."
-      },
-      "regular": {
-        "label": "Reguläre Anrufe/Anfragen pro Woche",
-        "hint": "Anrufe & Chats, die Kiwo zusätzlich zu den verpassten übernimmt (Reception, Orders, Support …)."
-      },
-      "duration": {
-        "label": "Ø Gesprächsdauer",
-        "unit": "Min.",
-        "hint": "Bestimmt, wie viele Gesprächsminuten pro Monat gebraucht werden — und damit, welches Paket wirklich passt."
+        "hint": "Außerhalb der Öffnungszeiten, besetzt oder unbeantwortet liegen geblieben."
       },
       "value": {
         "label": "Ø Wert pro gewonnenem Kontakt (€)",
         "hint": "Umsatz aus Bestellung, Reservierung oder Auftrag."
-      },
-      "rescue": {
-        "label": "Rettungsquote durch Kiwo",
-        "hint": "Anteil der sonst verlorenen Anfragen, die Kiwo abfängt und abschließt."
-      },
-      "margin": {
-        "label": "Marge auf Zusatzumsatz",
-        "hint": "Nur dieser Anteil des Zusatzumsatzes bleibt als echter Gewinn."
       }
     },
     "tierCard": {
@@ -314,21 +289,13 @@
       "paybackMonths": "{{n}} Monate"
     },
     "breakdown": {
-      "title": "Aufschlüsselung / Monat",
-      "section1": "1. Zeitersparnis — unabhängig von der Rettungsquote",
-      "timeSavedRow": "Zeitersparnis (Std./Mo.)",
+      "title": "Übersicht / Monat",
       "timeValueRow": "Wert der Zeitersparnis",
-      "section2": "2. Zusatzumsatz — nur wenn Rettungsquote > 0 %",
-      "rescuedCountRow": "Gerettete Kontakte (Anzahl/Mo.)",
-      "extraRevenueRow": "Zusatzumsatz aus geretteten Kontakten",
-      "extraProfitRow": "Davon Gewinn (Marge)",
-      "section3": "3. Kosten & Ergebnis",
-      "planCostRow": "Paketpreis ({{plan}})",
-      "overageRow": "Zusatzminuten ({{mins}} Min. × 0,20 €)",
+      "extraProfitRow": "Zusatzgewinn aus geretteten Kontakten",
       "totalCostRow": "Kiwo-Kosten gesamt",
-      "netRow": "Netto-Ergebnis (1 + 2 − 3)",
+      "netRow": "Netto-Ergebnis",
       "yearNote": "Jährlich (12 Monate, 1. Monat kostenlos): {{amount}}.",
-      "disclaimer": "Berechnungsgrundlage: Stundensatz, Rettungsquote und Marge sind frei einstellbar. Unverbindliche Schätzung auf Basis Ihrer Eingaben — keine Garantie."
+      "disclaimer": "Unverbindliche Schätzung auf Basis Ihrer Eingaben und typischer Werte für kleine Betriebe — keine Garantie."
     },
     "cta": {
       "choosePlan": "Paket wählen",

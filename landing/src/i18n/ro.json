@@ -255,17 +255,12 @@
     "headingPrefix": "Cât",
     "headingHighlight": "economisește Kiwo",
     "headingSuffix": "cu adevărat pentru dvs.?",
-    "subtitle": "Introduceți cifrele dvs. și vedeți imediat câți bani și câte ore economisește angajatul dvs. digital pentru telefon, e-mail și gestionarea programărilor — inclusiv ROI și perioada de amortizare.",
-    "companyCardTitle": "Afacerea dvs.",
+    "subtitle": "Sunt suficiente două cifre: câte apeluri pierdeți pe săptămână și cât valorează pentru dvs. un contact câștigat? Restul se bazează pe o ipoteză standard realistă.",
+    "companyCardTitle": "Cifrele dvs.",
+    "assumptionsNote": "Se bazează de asemenea pe valori tipice pentru afaceri mici: 15 ore/săptămână muncă recurentă, 21 €/oră cost total, 30 apeluri obișnuite/săptămână, durată medie a apelului 4 min., rată de recuperare 60 %, marjă 30 % la venitul suplimentar.",
     "fields": {
-      "hours": { "label": "Muncă repetitivă pe săptămână", "unit": "ore", "hint": "Telefon, e-mailuri, programări & rezervări." },
-      "rate": { "label": "Cost complet pe oră (€)", "hint": "Salariu, contribuții și cheltuieli generale pe oră (medie pe branșă: 21 €)." },
-      "missed": { "label": "Apeluri/cereri ratate pe săptămână", "hint": "În afara orelor de program, linie ocupată sau rămase fără răspuns. Se numără și în volumul de apeluri de mai jos." },
-      "regular": { "label": "Apeluri/cereri normale pe săptămână", "hint": "Apeluri & chaturi pe care Kiwo le preia în plus față de cele ratate (recepție, comenzi, suport …)." },
-      "duration": { "label": "Durata medie a apelului", "unit": "min", "hint": "Determină câte minute de convorbire sunt necesare pe lună — și ce pachet se potrivește cu adevărat." },
-      "value": { "label": "Valoare medie per contact câștigat (€)", "hint": "Venit dintr-o comandă, rezervare sau lucrare." },
-      "rescue": { "label": "Rata de recuperare prin Kiwo", "hint": "Procentul din cererile altfel pierdute pe care Kiwo le recuperează și finalizează." },
-      "margin": { "label": "Marja pe venitul suplimentar", "hint": "Doar acest procent din venitul suplimentar rămâne profit real." }
+      "missed": { "label": "Apeluri/cereri ratate pe săptămână", "hint": "În afara orelor de program, linie ocupată sau rămase fără răspuns." },
+      "value": { "label": "Valoare medie per contact câștigat (€)", "hint": "Venit dintr-o comandă, rezervare sau lucrare." }
     },
     "tierCard": {
       "title": "Pachet Kiwo",
@@ -288,21 +283,13 @@
       "paybackMonths": "{{n}} luni"
     },
     "breakdown": {
-      "title": "Detaliere / lună",
-      "section1": "1. Economie de timp — independent de rata de recuperare",
-      "timeSavedRow": "Timp economisit (ore/lună)",
+      "title": "Prezentare generală / lună",
       "timeValueRow": "Valoarea timpului economisit",
-      "section2": "2. Venit suplimentar — doar dacă rata de recuperare > 0%",
-      "rescuedCountRow": "Contacte recuperate (numărul/lună)",
-      "extraRevenueRow": "Venit suplimentar din contactele recuperate",
-      "extraProfitRow": "Din care profit (marjă)",
-      "section3": "3. Costuri & rezultat",
-      "planCostRow": "Cost pachet ({{plan}})",
-      "overageRow": "Minute suplimentare ({{mins}} min × 0,20 €)",
+      "extraProfitRow": "Profit suplimentar din contactele recuperate",
       "totalCostRow": "Cost total Kiwo",
-      "netRow": "Rezultat net (1 + 2 − 3)",
+      "netRow": "Rezultat net",
       "yearNote": "Anual (12 luni, prima lună gratuită): {{amount}}.",
-      "disclaimer": "Bază de calcul: costul pe oră, rata de recuperare și marja pot fi ajustate liber. Estimare neangajantă pe baza datelor introduse — fără garanție."
+      "disclaimer": "Estimare neangajantă pe baza datelor introduse și a unor valori tipice pentru afaceri mici — fără garanție."
     },
     "cta": { "choosePlan": "Alegeți pachetul", "requestDemo": "Solicitați o demonstrație" }
   },

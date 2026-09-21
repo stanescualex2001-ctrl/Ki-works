@@ -473,6 +473,11 @@ function IntegrationsMarquee() {
 /* ---------- ROI ---------- */
 const LOCALE_INTL = { de: "de-DE", en: "en-US", ro: "ro-RO" };
 const OVERAGE_RATE = 0.20;
+// Fixe Annahmen für den vereinfachten Rechner (typische Werte für kleine
+// Betriebe) — ersetzen die früheren, einzeln einstellbaren Felder
+// hours/rate/regular/duration/rescue/margin. Nutzer geben nur noch
+// verpasste Anrufe + Kontaktwert ein, siehe roi.assumptionsNote.
+const ROI_ASSUMPTIONS = { hours: 15, rate: 21, regular: 30, duration: 4, rescue: 60, margin: 30 };
 
 function RoiSlider({ label, hint, value, onChange, min, max, step = 1, format }) {
   const fmt = format || ((v) => v);
@@ -543,17 +548,12 @@ function ROICalc() {
   const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
   const fmt = (n) => Math.round(n).toLocaleString(intlLocale);
 
-  const [hours, setHours] = useState(15);
-  const [rate, setRate] = useState(21);
   const [missed, setMissed] = useState(10);
-  const [regular, setRegular] = useState(30);
-  const [duration, setDuration] = useState(4);
   const [value, setValue] = useState(80);
-  const [rescue, setRescue] = useState(60);
-  const [margin, setMargin] = useState(30);
   const [manualTier, setManualTier] = useState(null);
 
   const calc = useMemo(() => {
+    const { hours, rate, regular, duration, rescue, margin } = ROI_ASSUMPTIONS;
     const hoursMonth = hours * 4.33;
     const timeValue = hoursMonth * rate;
     const rescuedCount = missed * 4.33 * (rescue / 100);
@@ -582,10 +582,10 @@ function ROICalc() {
     const switchHintDiff = manualTier && activeTier.name !== bestTier.name ? Math.round(bestTier.net - activeTier.net) : null;
 
     return {
-      hoursMonth, timeValue, rescuedCount, extraRevenue, extraProfit, totalBenefit,
+      timeValue, extraProfit,
       minutesNeeded, perTier, bestTier, activeTier, roiPct, payback, yearTotal, switchHintDiff,
     };
-  }, [hours, rate, missed, regular, duration, value, rescue, margin, manualTier]);
+  }, [missed, value, manualTier]);
 
   const { activeTier } = calc;
 
@@ -622,185 +622,123 @@ function ROICalc() {
   );
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
-      {/* Nur Mobile: Ergebnis zuerst zeigen, bevor die Eingabefelder kommen
-          — ab lg: steht die Box ohnehin schon direkt neben den Eingaben. */}
-      <GlowCard tone="cyan" className="p-6 md:p-7 text-center lg:hidden">
+    <div className="mx-auto max-w-xl space-y-6">
+      <GlowCard tone="violet" className="p-6 md:p-7">
+        <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.companyCardTitle")}</h3>
+        <div className="mt-5">
+          <RoiSlider
+            label={t("roi.fields.missed.label")} hint={t("roi.fields.missed.hint")}
+            value={missed} onChange={setMissed} min={0} max={50}
+          />
+          <RoiNumberField
+            label={t("roi.fields.value.label")} hint={t("roi.fields.value.hint")}
+            value={value} onChange={setValue} min={0} max={2000} step={5}
+          />
+        </div>
+        <p className="mt-1 text-xs text-foreground/45 leading-relaxed">{t("roi.assumptionsNote")}</p>
+      </GlowCard>
+
+      <GlowCard tone="cyan" className="p-6 md:p-7 text-center">
         {heroContent}
       </GlowCard>
 
-      <div className="space-y-6">
-        <GlowCard tone="violet" className="p-6 md:p-7">
-          <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.companyCardTitle")}</h3>
-          <div className="mt-5">
-            <RoiSlider
-              label={t("roi.fields.hours.label")} hint={t("roi.fields.hours.hint")}
-              value={hours} onChange={setHours} min={2} max={40}
-              format={(v) => `${v} ${t("roi.fields.hours.unit")}`}
-            />
-            <RoiNumberField
-              label={t("roi.fields.rate.label")} hint={t("roi.fields.rate.hint")}
-              value={rate} onChange={setRate} min={10} max={80}
-            />
-            <RoiSlider
-              label={t("roi.fields.missed.label")} hint={t("roi.fields.missed.hint")}
-              value={missed} onChange={setMissed} min={0} max={50}
-            />
-            <RoiSlider
-              label={t("roi.fields.regular.label")} hint={t("roi.fields.regular.hint")}
-              value={regular} onChange={setRegular} min={0} max={150} step={5}
-            />
-            <RoiSlider
-              label={t("roi.fields.duration.label")} hint={t("roi.fields.duration.hint")}
-              value={duration} onChange={setDuration} min={1} max={10} step={0.5}
-              format={(v) => `${v} ${t("roi.fields.duration.unit")}`}
-            />
-            <RoiNumberField
-              label={t("roi.fields.value.label")} hint={t("roi.fields.value.hint")}
-              value={value} onChange={setValue} min={0} max={2000} step={5}
-            />
-            <RoiSlider
-              label={t("roi.fields.rescue.label")} hint={t("roi.fields.rescue.hint")}
-              value={rescue} onChange={setRescue} min={0} max={90} step={5}
-              format={(v) => `${v} %`}
-            />
-            <RoiSlider
-              label={t("roi.fields.margin.label")} hint={t("roi.fields.margin.hint")}
-              value={margin} onChange={setMargin} min={5} max={80} step={5}
-              format={(v) => `${v} %`}
-            />
-          </div>
-        </GlowCard>
+      <GlowCard tone="cyan" className="p-6 md:p-7">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.tierCard.title")}</h3>
+          <span className="text-xs text-foreground/60">
+            {t("roi.tierCard.minutesNeededLabel")}{" "}
+            <span className="font-mono font-semibold text-cyan-600 dark:text-cyan-300">
+              {fmt(calc.minutesNeeded)} {t("roi.tierCard.minutesUnit")}
+            </span>
+          </span>
+        </div>
+        <div className="mt-5 grid grid-cols-3 gap-2.5">
+          {calc.perTier.map((tier) => {
+            const isActive = tier.name === activeTier.name;
+            const isRecommended = tier.name === calc.bestTier.name;
+            return (
+              <button
+                key={tier.name}
+                type="button"
+                onClick={() => setManualTier(tier.name)}
+                className={`relative rounded-xl border p-3 text-center transition ${
+                  isActive
+                    ? "border-cyan-400 bg-cyan-400/10"
+                    : "border-foreground/10 bg-foreground/[0.02] hover:border-cyan-400/40"
+                }`}
+              >
+                {isRecommended && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-cyan-400 px-2 py-0.5 text-[9px] font-bold text-[#06110c]">
+                    {t("roi.tierCard.recommended")}
+                  </span>
+                )}
+                <div className="text-sm font-bold">{tier.name}</div>
+                <div className="font-mono text-sm text-cyan-600 dark:text-cyan-300">{tier.price} €</div>
+                <div className="text-[11px] text-foreground/45">{fmt(tier.minutes)} {t("roi.tierCard.minutesUnit")}</div>
+                <div className={`mt-1.5 text-[10px] font-bold font-mono ${tier.fits ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-400"}`}>
+                  {tier.fits ? t("roi.tierCard.fits") : t("roi.tierCard.overage", { cost: fmt(tier.overageCost) })}
+                </div>
+                <div className="mt-1 text-[10px] text-foreground/40">
+                  {t("roi.tierCard.netLabel", { value: (tier.net >= 0 ? "+" : "−") + fmt(Math.abs(tier.net)) + " €" })}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        {calc.switchHintDiff !== null && calc.switchHintDiff > 0 && (
+          <p className="mt-3 text-xs text-amber-600 dark:text-amber-400">
+            {t("roi.tierCard.switchHint", { tier: calc.bestTier.name, diff: fmt(calc.switchHintDiff) })}
+          </p>
+        )}
+        <p className="mt-4 text-[11px] text-foreground/40">
+          {t("pricing.footnote")}{" "}
+          <a href="/kontakt.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
+            {t("pricing.footnoteCta")}
+          </a>.
+        </p>
+      </GlowCard>
 
-        <GlowCard tone="cyan" className="p-6 md:p-7">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.tierCard.title")}</h3>
-            <span className="text-xs text-foreground/60">
-              {t("roi.tierCard.minutesNeededLabel")}{" "}
-              <span className="font-mono font-semibold text-cyan-600 dark:text-cyan-300">
-                {fmt(calc.minutesNeeded)} {t("roi.tierCard.minutesUnit")}
-              </span>
+      <GlowCard tone="violet" className="p-6 md:p-7">
+        <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.breakdown.title")}</h3>
+        <div className="mt-4 divide-y divide-foreground/10 text-sm">
+          <div className="flex items-center justify-between py-2.5">
+            <span className="text-foreground/60">{t("roi.breakdown.timeValueRow")}</span>
+            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.timeValue)} €</span>
+          </div>
+          <div className="flex items-center justify-between py-2.5">
+            <span className="text-foreground/60">{t("roi.breakdown.extraProfitRow")}</span>
+            <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.extraProfit)} €</span>
+          </div>
+          <div className="flex items-center justify-between py-2.5">
+            <span className="text-foreground/60">{t("roi.breakdown.totalCostRow")}</span>
+            <span className="font-mono font-semibold text-red-500">−{fmt(activeTier.cost)} €</span>
+          </div>
+          <div className="flex items-center justify-between border-t border-violet-400/30 py-3 text-base font-semibold">
+            <span>{t("roi.breakdown.netRow")}</span>
+            <span className={`font-mono ${activeTier.net >= 0 ? "text-emerald-600 dark:text-emerald-300" : "text-red-500"}`}>
+              {(activeTier.net >= 0 ? "" : "−") + fmt(Math.abs(activeTier.net))} €
             </span>
           </div>
-          <div className="mt-5 grid grid-cols-3 gap-2.5">
-            {calc.perTier.map((tier) => {
-              const isActive = tier.name === activeTier.name;
-              const isRecommended = tier.name === calc.bestTier.name;
-              return (
-                <button
-                  key={tier.name}
-                  type="button"
-                  onClick={() => setManualTier(tier.name)}
-                  className={`relative rounded-xl border p-3 text-center transition ${
-                    isActive
-                      ? "border-cyan-400 bg-cyan-400/10"
-                      : "border-foreground/10 bg-foreground/[0.02] hover:border-cyan-400/40"
-                  }`}
-                >
-                  {isRecommended && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-cyan-400 px-2 py-0.5 text-[9px] font-bold text-[#06110c]">
-                      {t("roi.tierCard.recommended")}
-                    </span>
-                  )}
-                  <div className="text-sm font-bold">{tier.name}</div>
-                  <div className="font-mono text-sm text-cyan-600 dark:text-cyan-300">{tier.price} €</div>
-                  <div className="text-[11px] text-foreground/45">{fmt(tier.minutes)} {t("roi.tierCard.minutesUnit")}</div>
-                  <div className={`mt-1.5 text-[10px] font-bold font-mono ${tier.fits ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-400"}`}>
-                    {tier.fits ? t("roi.tierCard.fits") : t("roi.tierCard.overage", { cost: fmt(tier.overageCost) })}
-                  </div>
-                  <div className="mt-1 text-[10px] text-foreground/40">
-                    {t("roi.tierCard.netLabel", { value: (tier.net >= 0 ? "+" : "−") + fmt(Math.abs(tier.net)) + " €" })}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-          {calc.switchHintDiff !== null && calc.switchHintDiff > 0 && (
-            <p className="mt-3 text-xs text-amber-600 dark:text-amber-400">
-              {t("roi.tierCard.switchHint", { tier: calc.bestTier.name, diff: fmt(calc.switchHintDiff) })}
-            </p>
-          )}
-          <p className="mt-4 text-[11px] text-foreground/40">
-            {t("pricing.footnote")}{" "}
-            <a href="/kontakt.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
-              {t("pricing.footnoteCta")}
-            </a>.
-          </p>
-        </GlowCard>
-      </div>
-
-      <div className="space-y-6">
-        <GlowCard tone="cyan" className="hidden p-6 md:p-7 text-center lg:block">
-          {heroContent}
-        </GlowCard>
-
-        <GlowCard tone="violet" className="p-6 md:p-7">
-          <h3 className="text-xs font-mono uppercase tracking-wide text-foreground/45">{t("roi.breakdown.title")}</h3>
-          <div className="mt-4 divide-y divide-foreground/10 text-sm">
-            <div className="pb-1.5 pt-3 text-[11px] font-mono uppercase tracking-wide text-violet-600 dark:text-violet-300">{t("roi.breakdown.section1")}</div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.timeSavedRow")}</span>
-              <span className="font-mono">{fmt(calc.hoursMonth)} {t("roi.fields.hours.unit")}</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.timeValueRow")}</span>
-              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.timeValue)} €</span>
-            </div>
-
-            <div className="pb-1.5 pt-3 text-[11px] font-mono uppercase tracking-wide text-violet-600 dark:text-violet-300">{t("roi.breakdown.section2")}</div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.rescuedCountRow")}</span>
-              <span className="font-mono">{fmt(calc.rescuedCount)}</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.extraRevenueRow")}</span>
-              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.extraRevenue)} €</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.extraProfitRow")}</span>
-              <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-300">+{fmt(calc.extraProfit)} €</span>
-            </div>
-
-            <div className="pb-1.5 pt-3 text-[11px] font-mono uppercase tracking-wide text-violet-600 dark:text-violet-300">{t("roi.breakdown.section3")}</div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.planCostRow", { plan: activeTier.name })}</span>
-              <span className="font-mono font-semibold text-red-500">−{fmt(activeTier.price)} €</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.overageRow", { mins: fmt(activeTier.overageMinutes) })}</span>
-              <span className="font-mono font-semibold text-red-500">−{fmt(activeTier.overageCost)} €</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="text-foreground/60">{t("roi.breakdown.totalCostRow")}</span>
-              <span className="font-mono font-semibold text-red-500">−{fmt(activeTier.cost)} €</span>
-            </div>
-            <div className="flex items-center justify-between border-t border-violet-400/30 py-3 text-base font-semibold">
-              <span>{t("roi.breakdown.netRow")}</span>
-              <span className={`font-mono ${activeTier.net >= 0 ? "text-emerald-600 dark:text-emerald-300" : "text-red-500"}`}>
-                {(activeTier.net >= 0 ? "" : "−") + fmt(Math.abs(activeTier.net))} €
-              </span>
-            </div>
-          </div>
-          <p className="mt-4 text-[11px] text-foreground/40">
-            {t("roi.breakdown.yearNote", { amount: fmt(calc.yearTotal) + " €" })}
-          </p>
-          <p className="mt-1.5 text-[11px] text-foreground/40">{t("roi.breakdown.disclaimer")}</p>
-        </GlowCard>
-
-        <div className="flex flex-wrap gap-3">
-          <a
-            href="#preise"
-            className="flex-1 min-w-[9rem] rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-center text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
-          >
-            {t("roi.cta.choosePlan")}
-          </a>
-          <a
-            href="/kontakt.html"
-            className="flex-1 min-w-[9rem] rounded-full border border-foreground/15 px-5 py-3 text-center text-sm font-medium text-foreground/80 transition hover:border-foreground/30"
-          >
-            {t("roi.cta.requestDemo")}
-          </a>
         </div>
+        <p className="mt-4 text-[11px] text-foreground/40">
+          {t("roi.breakdown.yearNote", { amount: fmt(calc.yearTotal) + " €" })}
+        </p>
+        <p className="mt-1.5 text-[11px] text-foreground/40">{t("roi.breakdown.disclaimer")}</p>
+      </GlowCard>
+
+      <div className="flex flex-wrap gap-3">
+        <a
+          href="#preise"
+          className="flex-1 min-w-[9rem] rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-center text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
+        >
+          {t("roi.cta.choosePlan")}
+        </a>
+        <a
+          href="/kontakt.html"
+          className="flex-1 min-w-[9rem] rounded-full border border-foreground/15 px-5 py-3 text-center text-sm font-medium text-foreground/80 transition hover:border-foreground/30"
+        >
+          {t("roi.cta.requestDemo")}
+        </a>
       </div>
     </div>
   );
