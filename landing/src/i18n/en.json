@@ -345,6 +345,7 @@
     "chatHint": "Chat directly with Kiwo.",
     "form": {
       "heading": "Write a message",
+      "planLabel": "Interested in (optional)",
       "name": "Name*",
       "business": "Business",
       "email": "Email*",

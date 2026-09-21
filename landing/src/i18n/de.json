@@ -351,6 +351,7 @@
     "chatHint": "Chatten Sie direkt mit Kiwo.",
     "form": {
       "heading": "Nachricht schreiben",
+      "planLabel": "Interessiert an (optional)",
       "name": "Name*",
       "business": "Betrieb",
       "email": "E-Mail*",

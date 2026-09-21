@@ -345,6 +345,7 @@
     "chatHint": "Discutați direct cu Kiwo.",
     "form": {
       "heading": "Scrieți un mesaj",
+      "planLabel": "Interesat de (opțional)",
       "name": "Nume*",
       "business": "Companie",
       "email": "E-mail*",

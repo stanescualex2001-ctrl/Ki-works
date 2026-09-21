@@ -4,9 +4,16 @@ import { PageShell } from "../components/PageShell.jsx";
 import { OPEN_CHAT_EVENT } from "../components/ChatWidget.jsx";
 import { useI18n } from "../i18n/index.jsx";
 
+const PLAN_OPTIONS = ["Solo", "Team", "Scale", "Custom"];
+
 function ContactForm() {
   const { t } = useI18n();
   const [form, setForm] = useState({ name: "", business: "", email: "", phone: "", message: "" });
+  const [plan, setPlan] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const q = new URLSearchParams(window.location.search).get("plan");
+    return PLAN_OPTIONS.find((p) => p.toLowerCase() === q) || null;
+  });
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState("idle"); // idle | sending | done | error
   const [error, setError] = useState(null);
@@ -17,10 +24,11 @@ function ContactForm() {
     e.preventDefault();
     setStatus("sending");
     setError(null);
+    const body = plan ? { ...form, message: `[Paket: ${plan}] ${form.message}` } : form;
     fetch("/api/public/interest", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(body),
     })
       .then(async (r) => {
         if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || t("kontakt.form.genericError"));
@@ -52,6 +60,26 @@ function ContactForm() {
   return (
     <form onSubmit={submit} className="glass mt-10 rounded-2xl p-6 md:p-8">
       <h2 className="text-lg font-semibold">{t("kontakt.form.heading")}</h2>
+      <div className="mt-5">
+        <span className="text-xs text-foreground/45">{t("kontakt.form.planLabel")}</span>
+        <div className="mt-1.5 flex flex-wrap gap-2">
+          {PLAN_OPTIONS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPlan(plan === p ? null : p)}
+              className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                plan === p
+                  ? "border-cyan-400 bg-cyan-400/10 text-cyan-700 dark:text-cyan-300"
+                  : "border-foreground/10 text-foreground/60 hover:border-cyan-400/40"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <label className="text-xs text-foreground/45 sm:col-span-1">
           {t("kontakt.form.name")}
