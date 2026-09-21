@@ -554,10 +554,14 @@ function ROICalc() {
       <div className={`mt-2 text-4xl font-bold tabular-nums ${calc.activeTier.net >= 0 ? "text-gradient" : "text-red-500"}`}>
         {(calc.activeTier.net >= 0 ? "" : "−") + fmt(Math.abs(calc.activeTier.net))} € /Mo.
       </div>
-      <div className="mt-1 text-xs text-foreground/50">
-        {calc.activeTier.net >= 0
-          ? t("roi.results.heroSubPositive", { tier: activeTier.name, price: activeTier.price })
-          : t("roi.results.heroSubNegative")}
+      <div className="mt-3">
+        {calc.activeTier.net >= 0 ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-sm sm:text-base font-semibold text-cyan-700 dark:text-cyan-300">
+            {t("roi.results.heroSubPositive", { tier: activeTier.name, price: activeTier.price })}
+          </span>
+        ) : (
+          <span className="text-sm text-foreground/60">{t("roi.results.heroSubNegative")}</span>
+        )}
       </div>
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-foreground/10 bg-foreground/[0.03] p-3">
