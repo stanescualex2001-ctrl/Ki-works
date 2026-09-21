@@ -46,7 +46,9 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 
 ## Standing Rules (immer befolgen)
 
-- Antworten **kurz und präzis** halten (Token sparen).
+- Antworten **kurz und präzis** halten (Token sparen) — ohne unnötige
+  Erklärungen; falls Erklärungen gewünscht sind, fragt der Nutzer gezielt
+  danach.
 - **Vor** Code-Änderungen erst mit dem Nutzer abstimmen, außer explizit anders
   gewünscht.
 - **Nie committen/pushen ohne explizite Aufforderung** des Nutzers — außer
@@ -2533,6 +2535,15 @@ Version auf "Publish" klicken.
   `9e6ba44`, `c8ad189`, `3f2b22d`, `0296126`, `59e3ea6`),
   **auf dem Produktivserver ausgerollt (Nutzer-Bestätigung 20.09.2026)**,
   normaler rsync/Build-Ablauf für `landing/`, kein Backend-Neustart nötig.
+- **Kontaktformular: Paket-Auswahl ergänzt (21.09.2026):** Nutzer-Fund —
+  "Jetzt kostenlos testen"-Buttons führten zum Kontaktformular ohne
+  Paket-Info. Formular hat jetzt Solo/Team/Scale/Custom-Chips (optional,
+  `Kontakt.jsx`), vorausgewählt per `?plan=`-Link-Parameter. Alle
+  Preise-CTAs sowie Custom-Karte/Fußnoten übergeben ihr jeweiliges Paket.
+  Kein Backend-/DB-Umbau — Paket wird beim Senden dem Nachrichtentext
+  vorangestellt (`[Paket: Team] ...`). Committet+gepusht (`f73b454`),
+  normaler rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart
+  nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
