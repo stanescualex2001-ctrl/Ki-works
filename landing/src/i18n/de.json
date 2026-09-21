@@ -276,7 +276,7 @@
       "overage": "+{{cost}} € Zusatzkosten",
       "netLabel": "Netto: {{value}} /Mo.",
       "recommended": "★ Bestes Netto",
-      "switchHint": "{{tier}} würde Ihnen {{diff}} € /Mo. mehr Netto-Ergebnis bringen — oben klicken zum Wechseln."
+      "overageStillBestHint": "Auch mit Zusatzkosten bleibt {{tier}} am günstigsten — die Ersparnis gegenüber einem größeren Paket ist höher als die Mehrkosten."
     },
     "results": {
       "heroLabel": "Geschätzter Netto-Nutzen",

@@ -270,7 +270,7 @@
       "overage": "+{{cost}} € costuri suplimentare",
       "netLabel": "Net: {{value}} /lună",
       "recommended": "★ Cel mai bun rezultat net",
-      "switchHint": "{{tier}} v-ar aduce {{diff}} € /lună rezultat net în plus — faceți clic mai sus pentru a schimba."
+      "overageStillBestHint": "Chiar și cu costuri suplimentare, {{tier}} rămâne cel mai ieftin — economia față de un pachet mai mare depășește costurile suplimentare."
     },
     "results": {
       "heroLabel": "Beneficiu net estimat",

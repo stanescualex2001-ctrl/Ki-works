@@ -550,7 +550,6 @@ function ROICalc() {
 
   const [missed, setMissed] = useState(10);
   const [value, setValue] = useState(80);
-  const [manualTier, setManualTier] = useState(null);
 
   const calc = useMemo(() => {
     const { hours, rate, regular, duration, rescue, margin } = ROI_ASSUMPTIONS;
@@ -570,7 +569,7 @@ function ROICalc() {
       return { ...tier, overageMinutes, overageCost, cost, net, fits: minutesNeeded <= tier.minutes };
     });
     const bestTier = perTier.reduce((a, b) => (b.net > a.net ? b : a));
-    const activeTier = (manualTier && perTier.find((p) => p.name === manualTier)) || bestTier;
+    const activeTier = bestTier;
 
     const roiPct = activeTier.cost > 0 ? (activeTier.net / activeTier.cost) * 100 : 0;
     let payback;
@@ -579,13 +578,12 @@ function ROICalc() {
     else payback = { type: "months", value: Math.round((activeTier.cost / totalBenefit) * 10) / 10 };
 
     const yearTotal = activeTier.net * 11;
-    const switchHintDiff = manualTier && activeTier.name !== bestTier.name ? Math.round(bestTier.net - activeTier.net) : null;
 
     return {
       timeValue, extraProfit,
-      minutesNeeded, perTier, bestTier, activeTier, roiPct, payback, yearTotal, switchHintDiff,
+      minutesNeeded, perTier, bestTier, activeTier, roiPct, payback, yearTotal,
     };
-  }, [missed, value, manualTier]);
+  }, [missed, value]);
 
   const { activeTier } = calc;
 
@@ -654,17 +652,14 @@ function ROICalc() {
         </div>
         <div className="mt-5 grid grid-cols-3 gap-2.5">
           {calc.perTier.map((tier) => {
-            const isActive = tier.name === activeTier.name;
             const isRecommended = tier.name === calc.bestTier.name;
             return (
-              <button
+              <div
                 key={tier.name}
-                type="button"
-                onClick={() => setManualTier(tier.name)}
-                className={`relative rounded-xl border p-3 text-center transition ${
-                  isActive
+                className={`relative rounded-xl border p-3 text-center ${
+                  isRecommended
                     ? "border-cyan-400 bg-cyan-400/10"
-                    : "border-foreground/10 bg-foreground/[0.02] hover:border-cyan-400/40"
+                    : "border-foreground/10 bg-foreground/[0.02]"
                 }`}
               >
                 {isRecommended && (
@@ -681,13 +676,13 @@ function ROICalc() {
                 <div className="mt-1 text-[10px] text-foreground/40">
                   {t("roi.tierCard.netLabel", { value: (tier.net >= 0 ? "+" : "−") + fmt(Math.abs(tier.net)) + " €" })}
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
-        {calc.switchHintDiff !== null && calc.switchHintDiff > 0 && (
-          <p className="mt-3 text-xs text-amber-600 dark:text-amber-400">
-            {t("roi.tierCard.switchHint", { tier: calc.bestTier.name, diff: fmt(calc.switchHintDiff) })}
+        {calc.bestTier.overageCost > 0 && (
+          <p className="mt-3 text-xs text-cyan-700 dark:text-cyan-300">
+            {t("roi.tierCard.overageStillBestHint", { tier: calc.bestTier.name })}
           </p>
         )}
         <p className="mt-4 text-[11px] text-foreground/40">

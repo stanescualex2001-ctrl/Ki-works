@@ -270,7 +270,7 @@
       "overage": "+€{{cost}} extra cost",
       "netLabel": "Net: {{value}} /mo",
       "recommended": "★ Best net result",
-      "switchHint": "{{tier}} would give you €{{diff}} /mo more net result — click above to switch."
+      "overageStillBestHint": "Even with extra costs, {{tier}} stays the cheapest — the savings vs. a bigger plan outweigh the overage."
     },
     "results": {
       "heroLabel": "Estimated net benefit",
