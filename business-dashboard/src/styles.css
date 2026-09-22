@@ -330,7 +330,7 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
 .role-chip.role-chip-soon { background: rgba(var(--overlay-rgb),0.04); color: var(--muted); }
 
 .topic-chip {
-  padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem;
+  padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.9rem;
   background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
   cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
