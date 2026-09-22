@@ -15,11 +15,12 @@ export const BUSINESS_PROFILES = {
 (Telefon nimmt Reservierungen/Bestellungen entgegen, beantwortet FAQ, rund
 um die Uhr erreichbar, auch am Ruhetag). Test-Referenz: Venezia,
 Marktplatz 10, Schwertberg. Zielgruppe: Restaurants/Gasthäuser in
-Oberösterreich. Hauptangebot: 1 Monat kostenlos testen. Tonalität: klar,
+Österreich, Deutschland und Rumänien. Hauptangebot: 1 Monat kostenlos
+testen. Tonalität: klar,
 konkret, keine Buzzword-Übertreibung, deutschsprachig (AT).`,
     productPitch: `Erwähne kurz den Nutzen (Telefon rund um die Uhr,
 Reservierungen automatisch entgegennehmen) und den ersten Monat kostenlos.`,
-    targetProfileDefault: 'Schwertberg / Mühlviertel / Oberösterreich',
+    targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'Restaurants, Gasthäuser, Cafés und kleine Hotels',
     qualificationCriteria: `Ein guter Kandidat:
 - ist ein Restaurant/Gasthaus/Café/kleines Hotel mit Telefonnummer und
@@ -55,7 +56,7 @@ keine Spielereien, deutschsprachig (AT).`,
     productPitch: `Erwähne kurz den Nutzen: schnelle Lieferung (48h),
 verlässliches LED-Sortiment für laufende Projekte, keine langen
 Wartezeiten wie bei Großhändlern.`,
-    targetProfileDefault: 'Oberösterreich',
+    targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'Elektrobetriebe, Bauunternehmen und Einzelhändler mit Ladenbau-Bedarf',
     qualificationCriteria: `Ein guter Kandidat:
 - ist ein Elektro-/Bau-/Handwerksbetrieb oder Einzelhändler mit
@@ -88,7 +89,7 @@ Templates von der Stange, auf Wunsch mit modernen KI-Features. Tonalität:
 locker, direkt, kein Buzzword-Bingo, deutschsprachig (AT).`,
     productPitch: `Erwähne kurz den Nutzen: klare, strukturierte Website
 statt Template von der Stange, moderne KI-Features auf Wunsch.`,
-    targetProfileDefault: 'Oberösterreich',
+    targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'lokale Betriebe mit veralteter oder fehlender Website',
     qualificationCriteria: `Ein guter Kandidat:
 - hat eine sichtbar veraltete, nicht mobiloptimierte oder ganz fehlende
@@ -136,7 +137,7 @@ Branding/eigene Preise, kein Entwicklungsaufwand, wiederkehrende
 Einnahmen), lade konkret zur Live-Demo (+43 726 223 417) und zu einem
 kurzen 10-Minuten-Gespräch ein, falls Potenzial für ihre Bestandskunden
 besteht. Verlinke auf ki-works.eu/partner.html für Details.`,
-    targetProfileDefault: 'Österreich',
+    targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'Werbeagenturen, Webagenturen und IT-Systemhäuser mit Bestandskunden aus KMU-Branchen (Gastronomie, Handwerk, Einzelhandel, Dienstleister)',
     qualificationCriteria: `Ein guter Kandidat:
 - ist eine Werbe-/Web-/Digitalagentur oder ein IT-Systemhaus mit mehreren
