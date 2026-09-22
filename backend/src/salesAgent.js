@@ -102,6 +102,26 @@ export async function runSalesAgent({ business, maxCandidates = 3, region } = {}
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
   const profile = getBusinessProfile(business);
 
+  try {
+    return await runSalesAgentInner({ business, maxCandidates, region, apiKey, profile });
+  } catch (err) {
+    // Bisher verschwand ein Fehlschlag (Timeout, ungültige JSON-Antwort,
+    // DB-Fehler) spurlos — nur console.error, kein Audit-Log-Eintrag.
+    // Dadurch war ein Lauf, der reales Guthaben verbraucht (Websuchen
+    // laufen ja schon), aber am Ende scheitert, im Dashboard nicht mehr
+    // auffindbar. logAction ist selbst fehlerfest (siehe auditLog.js).
+    await logAction({
+      business,
+      source: 'sales_agent',
+      action: 'error',
+      summary: `Sales-Agent-Lauf fehlgeschlagen: ${err.message}`,
+      details: { error: err.message, maxCandidates, region: region || profile.targetProfileDefault },
+    });
+    throw err;
+  }
+}
+
+async function runSalesAgentInner({ business, maxCandidates, region, apiKey, profile }) {
   const { rows: existing } = await query(
     `SELECT payload->>'business_name' AS business_name, payload->>'website' AS website
      FROM pending_actions WHERE role = 'sales' AND business = $1`,

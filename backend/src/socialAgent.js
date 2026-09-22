@@ -80,6 +80,25 @@ export async function runSocialAgent({ business, assetsDir, topic }) {
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
   if (!assetsDir) throw new Error('runSocialAgent: assetsDir erforderlich');
   const profile = getBusinessProfile(business);
+
+  try {
+    return await runSocialAgentInner({ business, assetsDir, topic, apiKey, profile });
+  } catch (err) {
+    // Gleicher Fix wie bei runSalesAgent: ein Fehlschlag verschwand bisher
+    // spurlos (nur console.error) — jetzt landet er auch bei Misserfolg im
+    // Audit-Log, damit reales, verbrauchtes Guthaben nachvollziehbar bleibt.
+    await logAction({
+      business,
+      source: 'social_agent',
+      action: 'error',
+      summary: `Social-Agent-Lauf fehlgeschlagen: ${err.message}`,
+      details: { error: err.message, topic: topic || null },
+    });
+    throw err;
+  }
+}
+
+async function runSocialAgentInner({ business, assetsDir, topic, apiKey, profile }) {
   const excludeList = await getUsedTopics(business, profile);
 
   const client = new Anthropic({ apiKey });
