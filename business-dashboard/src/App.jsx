@@ -612,9 +612,33 @@ function SalesAgentRunner({ business, onDone }) {
 }
 
 function SocialAgentRunner({ business, onDone }) {
+  const [topic, setTopic] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setSuggestions([]);
+    setSuggestionsLoading(true);
+    apiFetch(`/api/social-agent/suggestions?business=${encodeURIComponent(business)}`)
+      .then(async (r) => {
+        const d = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
+        if (!cancelled) setSuggestions(Array.isArray(d.suggestions) ? d.suggestions : []);
+      })
+      .catch(() => {
+        if (!cancelled) setSuggestions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSuggestionsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [business]);
 
   const run = () => {
     setLoading(true);
@@ -623,7 +647,7 @@ function SocialAgentRunner({ business, onDone }) {
     apiFetch('/api/social-agent/run', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ business }),
+      body: JSON.stringify({ business, topic: topic.trim() || undefined }),
     })
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
@@ -637,6 +661,31 @@ function SocialAgentRunner({ business, onDone }) {
 
   return (
     <div className="sales-agent-box">
+      <div className="pending-detail-field" style={{ margin: '0 0 0.6rem' }}>
+        <div className="pending-detail-label">Thema / Fokus (optional)</div>
+        <input
+          type="text"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder="Leer lassen, damit Claude selbst ein Thema wählt"
+          disabled={loading}
+        />
+        {!suggestionsLoading && suggestions.length > 0 && (
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.4rem' }}>
+            {suggestions.map((s, i) => (
+              <button
+                key={i}
+                type="button"
+                className="topic-chip"
+                disabled={loading}
+                onClick={() => setTopic(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       <button className="primary" disabled={loading} onClick={run}>
         {loading ? 'Claude entwirft Post…' : 'Social-Post erzeugen'}
       </button>

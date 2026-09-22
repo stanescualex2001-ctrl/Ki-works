@@ -1,7 +1,7 @@
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const MODEL = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
 
-async function ask(system, user, maxTokens = 512) {
+export async function ask(system, user, maxTokens = 512) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) return null;
   const res = await fetch(API_URL, {

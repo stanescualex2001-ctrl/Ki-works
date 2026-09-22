@@ -9,7 +9,7 @@ import { notifyN8n } from './n8n.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
-import { runSocialAgent } from './socialAgent.js';
+import { runSocialAgent, getSocialTrendSuggestions } from './socialAgent.js';
 import { createSalesDraft } from './mailDraft.js';
 import { BUSINESS_PROFILES } from './businessProfiles.js';
 import { runWebchatTurn } from './webchat.js';
@@ -1088,10 +1088,26 @@ app.post('/api/social-agent/run', adminOnly, async (req, res) => {
   try {
     const business = req.body?.business;
     if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
-    const action = await runSocialAgent({ business, assetsDir: SOCIAL_ASSETS_DIR });
+    const topic = typeof req.body?.topic === 'string' ? req.body.topic.trim().slice(0, 200) || undefined : undefined;
+    const action = await runSocialAgent({ business, assetsDir: SOCIAL_ASSETS_DIR, topic });
     res.json(action);
   } catch (err) {
     console.error('Social-Agent fehlgeschlagen:', err.message);
+    res.status(502).json({ error: err.message });
+  }
+});
+
+// Dynamische Themenvorschläge (3 Stück) für die "Thema/Fokus"-Eingabe im
+// Business-Dashboard — kurzer, günstiger Claude-Aufruf pro Kartenöffnung,
+// business-spezifisch statt statisch (siehe socialAgent.js).
+app.get('/api/social-agent/suggestions', adminOnly, async (req, res) => {
+  try {
+    const business = req.query?.business;
+    if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
+    const suggestions = await getSocialTrendSuggestions(business);
+    res.json({ suggestions });
+  } catch (err) {
+    console.error('Trend-Vorschläge fehlgeschlagen:', err.message);
     res.status(502).json({ error: err.message });
   }
 });

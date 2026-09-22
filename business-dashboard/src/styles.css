@@ -275,6 +275,10 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
   font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em;
   color: var(--muted); margin-bottom: 0.2rem;
 }
+.pending-detail-field input[type="text"] {
+  width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel); color: var(--text); font: inherit;
+}
 .pending-detail-mono {
   font-family: var(--font-mono); font-size: 0.85rem; white-space: pre-wrap; word-break: break-word;
 }
@@ -324,6 +328,14 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
   background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
 }
 .role-chip.role-chip-soon { background: rgba(var(--overlay-rgb),0.04); color: var(--muted); }
+
+.topic-chip {
+  padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem;
+  background: var(--accent-soft); color: var(--accent); border: 1px solid transparent;
+  cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.topic-chip:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px -8px rgba(34,211,238,0.4); }
+.topic-chip:disabled { opacity: 0.5; cursor: default; }
 .back-link { margin-bottom: 1rem; }
 
 /* ---- Login ---- */
