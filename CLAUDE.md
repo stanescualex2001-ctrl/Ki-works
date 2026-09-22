@@ -3256,6 +3256,30 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
+- **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — Diagnose läuft
+  (22.09.2026):** Nutzer meldete 403 Forbidden beim Aufruf von
+  ki-works.eu über Mobilfunkdaten (WLAN/von hier aus per curl: 200 OK).
+  Ursache identifiziert: die aktiven nginx-Serverblöcke für
+  `ki-works.eu`/`n8n.ki-works.eu` hatten nur IPv4-`listen`-Direktiven —
+  IPv6-Requests (häufig bei Mobilfunknetzen) landeten dadurch im
+  nginx-Default-Server (einzige Instanz mit IPv6-Listener auf Port 80),
+  der `/var/www/html` ohne Index ausliefert → 403. Fix: `listen [::]:80`/
+  `listen [::]:443 ssl` in allen 4 Serverblöcken ergänzt
+  (`deploy/nginx/ki-works.conf` + `deploy/install.sh`-Bootstrap,
+  Commit `166c908`, committet+gepusht). Auf dem Server direkt per `sed`
+  nachgezogen (zwei Anläufe nötig — erster sed-Lauf hat versehentlich
+  jede `listen`-Zeile doppelt eingefügt, per `awk`-Dedup bereinigt,
+  `nginx -t` danach wieder erfolgreich, reload durchgeführt). **Trotzdem
+  meldete der Nutzer nach dem Reload weiterhin "Forbidden" im
+  Mobilfunknetz** — Diagnose war beim letzten Stand noch nicht
+  abgeschlossen (nächster Schritt: `getent ahosts ki-works.eu` +
+  Live-Mitschnitt von `/var/log/nginx/access.log` während eines echten
+  Reloads auf dem Handy, um die tatsächliche Request-IP/den Pfad zu
+  sehen). Falls die IPv6-Theorie nicht die (alleinige) Ursache ist: als
+  Nächstes den zwischenzeitlich (13.08.2026) begonnenen, nie als fertig
+  bestätigten Contabo-Cloud-Firewall-Regelsatz prüfen (Kundencenter, nicht
+  SSH) sowie einen möglichen Mobilfunk-Provider-/DNS-seitigen Block.
+
 - **Live-Anruf-Banner — bis auf einen Punkt erledigt (06.09.2026):** Deploy
   von `landing/`+`dashboard/` sowie Venezia-Nummer geleert/"Ki Works"-Nummer
   auf +43 726 223 417 gesetzt sind laut Nutzer-Bestätigung ("alles erledigt")
