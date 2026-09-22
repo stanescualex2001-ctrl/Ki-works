@@ -166,6 +166,7 @@ log "nginx vorläufig ohne SSL konfigurieren (Bootstrap für Certbot)"
 cat > /etc/nginx/sites-available/ki-works.conf <<EOF
 server {
     listen 80;
+    listen [::]:80;
     server_name $DOMAIN www.$DOMAIN;
     root $APP_DIR/landing/dist;
     index index.html;
@@ -189,6 +190,7 @@ server {
 }
 server {
     listen 80;
+    listen [::]:80;
     server_name n8n.$DOMAIN;
     location / {
         proxy_pass http://127.0.0.1:5678;
