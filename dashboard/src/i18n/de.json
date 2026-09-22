@@ -225,6 +225,15 @@
     "title": "Preistarif für „{{name}}\"",
     "tierLabel": "Tarif"
   },
+  "language": {
+    "de": "Deutsch",
+    "en": "Englisch",
+    "ro": "Rumänisch"
+  },
+  "languageForm": {
+    "title": "Sprache für „{{name}}\"",
+    "languageLabel": "Telefon-Sprache"
+  },
   "agencyAssignForm": {
     "title": "Agentur für „{{name}}\"",
     "agencyLabel": "Agentur",
@@ -283,6 +292,7 @@
     "sendInvite": "Einladung senden",
     "changeRoles": "Rollen ändern",
     "changeTier": "Tarif ändern",
+    "changeLanguage": "Sprache ändern",
     "changeAgency": "Agentur ändern"
   },
   "agencies": {

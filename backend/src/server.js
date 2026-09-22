@@ -4,7 +4,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
-import { syncVapiAssistant } from './vapiAdmin.js';
+import { syncVapiAssistant, syncDemoSquad } from './vapiAdmin.js';
 import { notifyN8n } from './n8n.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
@@ -12,6 +12,7 @@ import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent, getSocialTrendSuggestions } from './socialAgent.js';
 import { createSalesDraft } from './mailDraft.js';
 import { BUSINESS_PROFILES } from './businessProfiles.js';
+import { LANGUAGE_OPTIONS } from './voiceOptions.js';
 import { startRun, finishRun, failRun, getRunStatus } from './agentRunStatus.js';
 import { runWebchatTurn } from './webchat.js';
 import { logAction } from './auditLog.js';
@@ -663,6 +664,16 @@ app.patch('/api/restaurants/:id', async (req, res) => {
     vals.push(JSON.stringify(req.body.enabled_roles || []));
     sets.push(`enabled_roles = $${vals.length}`);
   }
+  // Sprache liegt verschachtelt in settings.voice.language (JSONB), braucht
+  // deshalb einen eigenen Zweig statt der flachen allowed-Liste oben — für
+  // Admin UND Agentur zugänglich (weniger sensibel als pricing_tier/
+  // agency_id). jsonb_set mergt nur den 'voice'-Schlüssel, andere
+  // settings-Inhalte bleiben unangetastet.
+  if ('language' in req.body && Object.keys(LANGUAGE_OPTIONS).includes(req.body.language)) {
+    vals.push(JSON.stringify({ language: req.body.language }));
+    sets.push(`settings = jsonb_set(COALESCE(settings, '{}'::jsonb), '{voice}',
+      COALESCE(settings->'voice', '{}'::jsonb) || $${vals.length}::jsonb, true)`);
+  }
   if (req.body.password) {
     vals.push(hashPassword(req.body.password));
     sets.push(`password_hash = $${vals.length}`);
@@ -677,7 +688,7 @@ app.patch('/api/restaurants/:id', async (req, res) => {
   // Änderung gleich mit-synchronisieren, statt manuell setup-vapi.sh
   // nachzuziehen.
   let vapi;
-  if (['name', 'address', 'vapi_phone_number', 'enabled_roles', 'agency_id'].some((key) => key in req.body)) {
+  if (['name', 'address', 'vapi_phone_number', 'enabled_roles', 'agency_id', 'language'].some((key) => key in req.body)) {
     vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
     const { rows: updated } = await query('SELECT * FROM restaurants WHERE id = $1', [rows[0].id]);
     return res.json({ ...publicRestaurant(updated[0]), vapi });
@@ -690,6 +701,17 @@ app.patch('/api/restaurants/:id', async (req, res) => {
 // gleichzeitige Feldänderung.
 app.post('/api/restaurants/:id/sync-vapi', adminOnly, async (req, res) => {
   const vapi = await syncVapiAssistant(req.params.id);
+  const { rows } = await query('SELECT * FROM restaurants WHERE id = $1', [req.params.id]);
+  if (!rows[0]) return res.status(404).json({ error: 'not found' });
+  res.json({ ...publicRestaurant(rows[0]), vapi });
+});
+
+// Legt/aktualisiert das Vapi-Squad für die öffentliche Demo-Nummer
+// (Sprachauswahl DE/EN/RO statt einem einzelnen Assistenten) — manueller
+// Admin-Trigger, kein automatischer Aufruf. Gedacht für den "Ki Works"-
+// Demo-Kunden, funktioniert aber generisch für jedes Restaurant.
+app.post('/api/restaurants/:id/sync-demo-squad', adminOnly, async (req, res) => {
+  const vapi = await syncDemoSquad(req.params.id);
   const { rows } = await query('SELECT * FROM restaurants WHERE id = $1', [req.params.id]);
   if (!rows[0]) return res.status(404).json({ error: 'not found' });
   res.json({ ...publicRestaurant(rows[0]), vapi });

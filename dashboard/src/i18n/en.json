@@ -225,6 +225,15 @@
     "title": "Pricing plan for “{{name}}”",
     "tierLabel": "Plan"
   },
+  "language": {
+    "de": "German",
+    "en": "English",
+    "ro": "Romanian"
+  },
+  "languageForm": {
+    "title": "Language for “{{name}}”",
+    "languageLabel": "Phone language"
+  },
   "agencyAssignForm": {
     "title": "Agency for “{{name}}”",
     "agencyLabel": "Agency",
@@ -283,6 +292,7 @@
     "sendInvite": "Send invitation",
     "changeRoles": "Change roles",
     "changeTier": "Change plan",
+    "changeLanguage": "Change language",
     "changeAgency": "Change agency"
   },
   "agencies": {

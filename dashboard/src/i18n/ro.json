@@ -225,6 +225,15 @@
     "title": "Plan tarifar pentru „{{name}}”",
     "tierLabel": "Plan"
   },
+  "language": {
+    "de": "Germană",
+    "en": "Engleză",
+    "ro": "Română"
+  },
+  "languageForm": {
+    "title": "Limbă pentru „{{name}}”",
+    "languageLabel": "Limba la telefon"
+  },
   "agencyAssignForm": {
     "title": "Agenție pentru „{{name}}”",
     "agencyLabel": "Agenție",
@@ -283,6 +292,7 @@
     "sendInvite": "Trimite invitație",
     "changeRoles": "Schimbă rolurile",
     "changeTier": "Schimbă planul",
+    "changeLanguage": "Schimbă limba",
     "changeAgency": "Schimbă agenția"
   },
   "agencies": {

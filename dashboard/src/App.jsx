@@ -206,6 +206,15 @@ function usePricingTierOptions() {
   );
 }
 
+const LANGUAGE_KEYS = ['de', 'en', 'ro'];
+function useLanguageOptions() {
+  const { t } = useI18n();
+  return useMemo(
+    () => LANGUAGE_KEYS.map((k) => ({ value: k, label: t(`language.${k}`) })),
+    [t],
+  );
+}
+
 // ---------------------------------------------------------------- auth utils
 const loadAuth = () => {
   try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || null; } catch { return null; }
@@ -1154,6 +1163,46 @@ function PricingTierForm({ restaurant, onDone, onCancel }) {
   );
 }
 
+function LanguageForm({ restaurant, onDone, onCancel }) {
+  const { t } = useI18n();
+  const languageOptions = useLanguageOptions();
+  const [language, setLanguage] = useState(restaurant.settings?.voice?.language || 'de');
+  const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const save = (e) => {
+    e.preventDefault();
+    setSaving(true);
+    apiFetch(`/api/restaurants/${restaurant.id}`, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ language }),
+    })
+      .then(async (r) => {
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(body.error || `HTTP ${r.status}`);
+        onDone(body);
+      })
+      .catch((err) => { setError(err.message); setSaving(false); });
+  };
+
+  return (
+    <form className="access-form" onSubmit={save}>
+      <strong>{t('languageForm.title', { name: restaurant.name })}</strong>
+      <label>{t('languageForm.languageLabel')}
+        <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+          {languageOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
+      </label>
+      {error && <p className="error">{error}</p>}
+      <div className="form-row">
+        <button className="primary" type="submit" disabled={saving}>{t('common.save')}</button>
+        <button type="button" className="link" onClick={onCancel}>{t('common.cancel')}</button>
+      </div>
+    </form>
+  );
+}
+
 function AgencyAssignForm({ restaurant, onDone, onCancel }) {
   const { t } = useI18n();
   const { data: agencies } = useFetch('/api/agencies');
@@ -1379,6 +1428,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
   const [editingContact, setEditingContact] = useState(null);
   const [editingRoles, setEditingRoles] = useState(null);
   const [editingTier, setEditingTier] = useState(null);
+  const [editingLanguage, setEditingLanguage] = useState(null);
   const [editingAgency, setEditingAgency] = useState(null);
   const [adding, setAdding] = useState(false);
   const [inviteMsg, setInviteMsg] = useState(null);
@@ -1519,6 +1569,9 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
                         <button className="link" onClick={() => setEditingTier(d.restaurant_id)}>
                           {t('customers.changeTier')}
                         </button>
+                        <button className="link" onClick={() => setEditingLanguage(d.restaurant_id)}>
+                          {t('customers.changeLanguage')}
+                        </button>
                         <button className="link" onClick={() => setEditingAgency(d.restaurant_id)}>
                           {t('customers.changeAgency')}
                         </button>
@@ -1527,7 +1580,7 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
                   </td>
                 </tr>
                 {(editing === rowId || editingContact === rowId || editingRoles === rowId
-                  || editingTier === rowId || editingAgency === rowId) && (
+                  || editingTier === rowId || editingLanguage === rowId || editingAgency === rowId) && (
                   <tr className="row-form">
                     <td colSpan={11}>
                       {editing === rowId && (
@@ -1564,6 +1617,21 @@ function Customers({ refreshKey, onChanged, onOpenRestaurant, isAgencyUser }) {
                           restaurant={r}
                           onCancel={() => setEditingTier(null)}
                           onDone={() => { setEditingTier(null); onChanged(); }}
+                        />
+                      )}
+                      {editingLanguage === rowId && (
+                        <LanguageForm
+                          restaurant={r}
+                          onCancel={() => setEditingLanguage(null)}
+                          onDone={(result) => {
+                            setEditingLanguage(null);
+                            onChanged();
+                            if (result?.vapi) {
+                              setInviteMsg(result.vapi.ok
+                                ? t('customers.vapiSetupOk') + (result.vapi.warning ? t('customers.vapiSetupWarningHint', { warning: result.vapi.warning }) : '')
+                                : t('customers.vapiSetupFailed', { warning: result.vapi.warning }));
+                            }
+                          }}
                         />
                       )}
                       {editingAgency === rowId && (

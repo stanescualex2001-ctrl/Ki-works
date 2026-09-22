@@ -25,12 +25,12 @@ function parseGuestDatetime(str) {
 async function resolveRestaurant(phoneNumber) {
   if (phoneNumber) {
     const r = await query(
-      'SELECT id, name, address, contact_email, vapi_assistant_id, knowledge_base, opening_hours, faq FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
+      'SELECT id, name, address, contact_email, vapi_assistant_id, knowledge_base, opening_hours, faq, settings FROM restaurants WHERE vapi_phone_number = $1 LIMIT 1',
       [phoneNumber],
     );
     if (r.rows[0]) return r.rows[0];
   }
-  const r = await query('SELECT id, name, address, contact_email, vapi_assistant_id, knowledge_base, opening_hours, faq FROM restaurants ORDER BY id LIMIT 1');
+  const r = await query('SELECT id, name, address, contact_email, vapi_assistant_id, knowledge_base, opening_hours, faq, settings FROM restaurants ORDER BY id LIMIT 1');
   return r.rows[0] || null;
 }
 
@@ -365,6 +365,37 @@ export function formatFaq(faq) {
     .join(' | ');
 }
 
+function buildVariableValues(context, restaurant) {
+  return {
+    guestContext: context,
+    // "business_*" ist der aktuelle, branchenneutrale Name (Kunden sind
+    // nicht nur Restaurants, z. B. auch Handwerk/Praxen). Führendes ", "
+    // nur bei vorhandener Adresse — basePrompt in vapiAdmin.js hängt
+    // diese Variable direkt an {{business_name}} an, ohne festes Komma,
+    // damit Kunden ohne Adresse (z. B. "Ki Works") nicht mit einem
+    // hängenden Komma enden ("...von Ki Works, .").
+    business_name: restaurant.name || 'unser Unternehmen',
+    business_address: restaurant.address ? `, ${restaurant.address}` : '',
+    // restaurant_name/restaurant_address bewusst zusätzlich mitgeschickt
+    // (identische Werte) — reine Kompatibilität für Kunden, deren bei
+    // Vapi gespeicherter System-Prompt/First-Message noch die alten
+    // Platzhalternamen enthält (erst bei der nächsten Synchronisierung
+    // dieses Kunden aktualisiert). Ohne das würde bei einem noch nicht
+    // resynchten Kunden der Platzhalter im echten Anruf unaufgelöst
+    // bleiben. Kann entfernt werden, sobald alle Kunden mindestens
+    // einmal neu synchronisiert wurden.
+    restaurant_name: restaurant.name || 'unser Unternehmen',
+    restaurant_address: restaurant.address ? `, ${restaurant.address}` : '',
+    knowledge_base: restaurant.knowledge_base || 'Keine Informationen hinterlegt — bei inhaltlichen Fragen bitte auf einen Rückruf verweisen.',
+    opening_hours: formatOpeningHours(restaurant.opening_hours),
+    faq: formatFaq(restaurant.faq),
+    // Deterministisch vorberechnet statt Kiwo die rohe opening_hours-
+    // Textinterpretation zu überlassen — Grundlage für die
+    // Weiterleitung-oder-Rückruf-Entscheidung, siehe TRANSFER_PROMPT.
+    business_open_now: isCurrentlyOpen(restaurant.opening_hours) ? 'Ja' : 'Nein',
+  };
+}
+
 // Vapi fragt hier an, welcher Assistent den Anruf übernehmen soll —
 // wir antworten mit dem Assistenten des Restaurants plus Gast-Kontext.
 async function handleAssistantRequest(message, restaurant) {
@@ -375,40 +406,30 @@ async function handleAssistantRequest(message, restaurant) {
   } catch (err) {
     console.error('guestContext failed:', err.message);
   }
+
+  // Demo-Nummer-Sprachauswahl (Teil B, Squad statt einzelnem Assistenten):
+  // nur aktiv, wenn per syncDemoSquad() bereits eine Squad-ID hinterlegt
+  // wurde (settings.squadId) — sonst unverändertes Einzel-Assistent-
+  // Verhalten. squadOverrides ist ANALOG zu assistantOverrides angenommen
+  // (Vapi-Doku nennt das Feld, exakte Struktur bei Rollout gegen die
+  // Live-API prüfen, siehe CLAUDE.md/Plan).
+  const squadId = restaurant?.settings?.squadId;
+  if (squadId) {
+    return {
+      squadId,
+      squadOverrides: {
+        variableValues: buildVariableValues(context, restaurant),
+      },
+    };
+  }
+
   if (!restaurant?.vapi_assistant_id) {
     return { error: 'Kein Assistent für dieses Restaurant konfiguriert.' };
   }
   return {
     assistantId: restaurant.vapi_assistant_id,
     assistantOverrides: {
-      variableValues: {
-        guestContext: context,
-        // "business_*" ist der aktuelle, branchenneutrale Name (Kunden sind
-        // nicht nur Restaurants, z. B. auch Handwerk/Praxen). Führendes ", "
-        // nur bei vorhandener Adresse — basePrompt in vapiAdmin.js hängt
-        // diese Variable direkt an {{business_name}} an, ohne festes Komma,
-        // damit Kunden ohne Adresse (z. B. "Ki Works") nicht mit einem
-        // hängenden Komma enden ("...von Ki Works, .").
-        business_name: restaurant.name || 'unser Unternehmen',
-        business_address: restaurant.address ? `, ${restaurant.address}` : '',
-        // restaurant_name/restaurant_address bewusst zusätzlich mitgeschickt
-        // (identische Werte) — reine Kompatibilität für Kunden, deren bei
-        // Vapi gespeicherter System-Prompt/First-Message noch die alten
-        // Platzhalternamen enthält (erst bei der nächsten Synchronisierung
-        // dieses Kunden aktualisiert). Ohne das würde bei einem noch nicht
-        // resynchten Kunden der Platzhalter im echten Anruf unaufgelöst
-        // bleiben. Kann entfernt werden, sobald alle Kunden mindestens
-        // einmal neu synchronisiert wurden.
-        restaurant_name: restaurant.name || 'unser Unternehmen',
-        restaurant_address: restaurant.address ? `, ${restaurant.address}` : '',
-        knowledge_base: restaurant.knowledge_base || 'Keine Informationen hinterlegt — bei inhaltlichen Fragen bitte auf einen Rückruf verweisen.',
-        opening_hours: formatOpeningHours(restaurant.opening_hours),
-        faq: formatFaq(restaurant.faq),
-        // Deterministisch vorberechnet statt Kiwo die rohe opening_hours-
-        // Textinterpretation zu überlassen — Grundlage für die
-        // Weiterleitung-oder-Rückruf-Entscheidung, siehe TRANSFER_PROMPT.
-        business_open_now: isCurrentlyOpen(restaurant.opening_hours) ? 'Ja' : 'Nein',
-      },
+      variableValues: buildVariableValues(context, restaurant),
     },
   };
 }

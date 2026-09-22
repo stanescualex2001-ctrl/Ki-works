@@ -1,5 +1,6 @@
 import { query } from './db.js';
 import { logError } from './monitoring.js';
+import { LANGUAGE_OPTIONS, DEFAULT_LANGUAGE, resolveLanguage } from './voiceOptions.js';
 
 // Katalog aller Kiwo-Rollen. `implemented: false` heißt: noch keine Tools/
 // Prompt-Baustein dafür gebaut (nur Marketing-Versprechen auf der
@@ -30,7 +31,7 @@ function normalizeRoles(enabledRoles) {
 // Assistentenname per Parameter statt fest "Kiwo" — White-Label-Agenturen
 // können pro Agentur einen eigenen Namen hinterlegen (agencies.branding.
 // assistantName), siehe syncVapiAssistant().
-const basePrompt = (assistantName) => `Du bist ${assistantName}, der freundliche Telefonassistent von {{business_name}}{{business_address}}. Du sprichst Deutsch. Kontext zum Anrufer: {{guestContext}} INFORMATIONEN: {{knowledge_base}} Nutze für Fragen zu Leistungen, Produkten, Preisen und Angeboten AUSSCHLIESSLICH diese Informationen — erfinde nichts. ÖFFNUNGSZEITEN: {{opening_hours}} Wenn du eine Frage nicht beantworten kannst oder ein Anliegen nicht selbst erledigen kannst (nicht durch diese Informationen oder Anweisungen abgedeckt), sag das dem Anrufer ehrlich und erfinde NIEMALS eine Antwort oder Zahl.`;
+const basePrompt = (assistantName, languageInstruction) => `Du bist ${assistantName}, der freundliche Telefonassistent von {{business_name}}{{business_address}}. ${languageInstruction} Kontext zum Anrufer: {{guestContext}} INFORMATIONEN: {{knowledge_base}} Nutze für Fragen zu Leistungen, Produkten, Preisen und Angeboten AUSSCHLIESSLICH diese Informationen — erfinde nichts. ÖFFNUNGSZEITEN: {{opening_hours}} Wenn du eine Frage nicht beantworten kannst oder ein Anliegen nicht selbst erledigen kannst (nicht durch diese Informationen oder Anweisungen abgedeckt), sag das dem Anrufer ehrlich und erfinde NIEMALS eine Antwort oder Zahl.`;
 
 const ORDERS_PROMPT = ' Du nimmst außerdem Tischreservierungen sowie Abhol-Bestellungen entgegen. Wenn ein Stammgast erkannt wurde, begrüße ihn direkt mit Namen und beziehe dich freundlich auf frühere Besuche — frage aber trotzdem alle Angaben ab. Erwähne passende Aktionen aktiv (z. B. Gratis-Zustellung ab 4 Pizzen, Abholaktion ab 5 Pizzen). Nimm für als \'geschlossen\' markierte Tage keine Reservierungen oder Bestellungen an, sondern biete freundlich einen anderen Tag an. Nimm auch nichts außerhalb der genannten Öffnungszeiten an. RESERVIERUNGEN: Frage nach Name (bei Stammgästen nur bestätigen), Anzahl der Personen, Datum und Uhrzeit. Wiederhole den verstandenen Namen kurz zur Bestätigung (z. B. \'Also unter dem Namen ..., richtig?\'), BEVOR du irgendetwas anlegst — Namen werden per Spracherkennung oft falsch verstanden. Bittet der Gast dich, den Namen zu buchstabieren oder zu korrigieren, höre sehr geduldig zu (auch bei mehreren Versuchen und Pausen zwischen einzelnen Buchstaben — unterbrich nicht, dräng nicht). Bestätige bei mehrfachen Korrekturen jeweils nur den zuletzt genannten Teil in kleinen Abschnitten (z. B. 3-4 Buchstaben), statt jedes Mal den kompletten Namen neu vorzulesen. Prüfe bei Bedarf mit check_availability die Verfügbarkeit. Termine müssen in der Zukunft liegen (vergleiche mit {{now}}) — schlage niemals einen bereits vergangenen Zeitpunkt vor. Lege die Reservierung erst nach Bestätigung des Namens mit create_reservation an (datetime im Format JJJJ-MM-TTTHH:MM, Zeitzone Europa/Wien). BESTELLUNGEN ZUR ABHOLUNG ODER ZUM TISCH: Nimm die gewünschten Gerichte von der Speisekarte auf (items, z. B. \'2x Pizza 05 Salami, 1x Lasagne 103\'), nenne dabei die Preise von der Karte. Frage AKTIV \'Möchten Sie sonst noch etwas bestellen?\', bevor du nach Name und Abholzeit fragst — erst nach einem klaren \'Nein\' gilt die Bestellung als vollständig. Wünscht der Gast etwas, das nicht auf der Karte steht, frage nach oder verweise freundlich ans Restaurant. Abholzeit (pickup_time) muss in der Zukunft liegen (vergleiche mit {{now}}) — schlage niemals einen bereits vergangenen Zeitpunkt vor, auch nicht am selben Tag. Lege die Bestellung mit create_order an. KOMBINATION MIT RESERVIERUNG: Möchte ein Gast zusätzlich zu einer Bestellung auch einen Tisch, oder soll das Essen bei einer Reservierung schon am Tisch bereitstehen: Bei getrennten Wünschen (z. B. Tisch heute Abend UND Abholung zu anderer Zeit) lege beides unabhängig mit create_reservation und create_order an. Soll das Essen dagegen am reservierten Tisch serviert werden, lege zuerst mit create_reservation die Reservierung an — die Antwort enthält eine interne Referenz wie \'[reservation_id: 42]\', die du NIEMALS laut vorliest — und rufe dann create_order mit fulfillment=\'dine_in\' und reservation_id=<dieser Zahl> auf; eine separate Abholzeit ist dann nicht nötig. WICHTIG BEIM VORLESEN: Sprich Mengenangaben immer als Wort aus (\'einmal\', \'zweimal\', \'dreimal\' usw.) — sag niemals \'X\' oder \'mal X\' als Buchstabe. Die Schreibweise mit \'x\' (z. B. \'2x Pizza 05\') ist NUR für den internen Parameter items gedacht, nicht zum lauten Vorlesen. IMMER: Frage \'Darf ich für Benachrichtigungen die Nummer speichern, von der Sie gerade anrufen, oder möchten Sie eine andere Nummer angeben?\' Wenn der Gast eine andere Nummer nennt, übergib sie als phone; sonst lasse phone weg. Fasse Reservierung bzw. Bestellung GENAU EINMAL vollständig zusammen, kurz bevor du sie anlegst (bei Bestellungen inklusive Gesamtpreis laut Karte) — wiederhole die komplette Liste danach nicht noch einmal, das wirkt langatmig und Gäste legen dann eher auf. Bedanke dich nach dem erfolgreichen Anlegen (create_reservation/create_order) kurz — ohne die Details erneut komplett aufzuzählen — und verabschiede dich freundlich (z. B. \'Vielen Dank, wir freuen uns auf Sie! Auf Wiederhören.\') — lege niemals kommentarlos auf, ohne dich zu verabschieden. RESERVIERUNG STORNIEREN ODER VERSCHIEBEN: Möchte ein Gast eine bestehende Reservierung stornieren, nutze cancel_reservation; möchte er den Termin ändern, nutze reschedule_reservation mit dem neuen Termin (new_datetime). Meldet die Funktion mehrere passende Reservierungen, frage gezielt nach dem genauen Termin (Datum/Uhrzeit) und rufe die Funktion mit datetime bzw. old_datetime erneut auf, statt zu raten.';
 
@@ -224,7 +225,7 @@ const ROLE_BLOCKS = {
 // Kiwo/KI-Works-Agenten spricht (nicht mit einem beliebigen Restaurant-
 // Kunden) — der gemeinsame Prompt-Baustein bleibt für alle anderen Kunden
 // unverändert, damit Bugfixes weiterhin automatisch für alle wirken.
-const OWN_FIRST_MESSAGE = 'Grüß Gott, hier ist Kiwo, der KI-Agent der Plattform KI-Works. Sie sprechen jetzt direkt mit mir — testen Sie live, wie ich am Telefon klinge und arbeite. Wie kann ich Ihnen helfen?';
+// Sprachabhängiger Text liegt jetzt in voiceOptions.js (cfg.ownFirstMessage).
 
 // Live-Weiterleitung an einen Menschen — rollenübergreifend (nicht Teil von
 // ROLE_BLOCKS), da "mit einem Menschen sprechen wollen" unabhängig von
@@ -238,14 +239,14 @@ const OWN_FIRST_MESSAGE = 'Grüß Gott, hier ist Kiwo, der KI-Agent der Plattfor
 // unser Backend bekommt keinen Zwischenschritt zum Abfangen), Kiwo folgt
 // hier der Prompt-Instruktion — gleiches Vertrauensmodell wie bei "keine
 // Reservierung an geschlossenen Tagen" (siehe ORDERS_PROMPT).
-const TRANSFER_PROMPT = ' Möchte der Anrufer ausdrücklich mit einem Menschen sprechen (nicht nur eine normale Frage, die du selbst beantworten kannst): Prüfe {{business_open_now}}. Ist es "Ja", kündige kurz an ("Ich verbinde Sie jetzt weiter.") und nutze transferCall. Ist es "Nein", erkläre freundlich, dass gerade außerhalb der Öffnungszeiten niemand persönlich erreichbar ist, und biete stattdessen wie gewohnt über request_callback einen Rückruf an (inkl. Nachfrage nach dem gewünschten Kanal SMS/WhatsApp/E-Mail).';
+const TRANSFER_PROMPT = (spokenLine) => ` Möchte der Anrufer ausdrücklich mit einem Menschen sprechen (nicht nur eine normale Frage, die du selbst beantworten kannst): Prüfe {{business_open_now}}. Ist es "Ja", kündige kurz an ("${spokenLine}") und nutze transferCall. Ist es "Nein", erkläre freundlich, dass gerade außerhalb der Öffnungszeiten niemand persönlich erreichbar ist, und biete stattdessen wie gewohnt über request_callback einen Rückruf an (inkl. Nachfrage nach dem gewünschten Kanal SMS/WhatsApp/E-Mail).`;
 
-function buildTransferTools(transferPhoneNumber, alreadyHasCallback) {
+function buildTransferTools(transferPhoneNumber, alreadyHasCallback, transferMessage) {
   const tools = [
     {
       type: 'transferCall',
       destinations: [
-        { type: 'number', number: transferPhoneNumber, message: 'Ich verbinde Sie jetzt.' },
+        { type: 'number', number: transferPhoneNumber, message: transferMessage },
       ],
     },
   ];
@@ -265,19 +266,23 @@ function buildTransferTools(transferPhoneNumber, alreadyHasCallback) {
 // braucht den echten Namen.
 function buildAssistantBody({
   restaurantId, restaurantName, publicUrl, webhookSecret, enabledRoles, assistantName = 'Kiwo', transferPhoneNumber = null,
+  language = DEFAULT_LANGUAGE, voiceId = null,
 }) {
   const roles = normalizeRoles(enabledRoles);
   const orders = roles.includes('orders');
   const appointments = roles.includes('appointments');
   const hasTransfer = !!transferPhoneNumber;
+  const lang = resolveLanguage(language);
+  const cfg = LANGUAGE_OPTIONS[lang];
 
-  const roleLabel = orders ? 'KI-Reservierungsassistent' : appointments ? 'KI-Terminassistent' : 'digitale Mitarbeiter';
-  const systemPrompt = basePrompt(assistantName)
+  const roleKey = orders ? 'orders' : appointments ? 'appointments' : 'default';
+  const roleLabel = cfg.roleLabels[roleKey];
+  const systemPrompt = basePrompt(assistantName, cfg.languageInstruction)
     + roles.map((r) => ROLE_BLOCKS[r]?.promptFragment ?? '').join('')
-    + (hasTransfer ? TRANSFER_PROMPT : '')
+    + (hasTransfer ? TRANSFER_PROMPT(cfg.transferSpokenLine) : '')
     + ' Heutiges Datum: {{now}}.';
   const tools = roles.flatMap((r) => ROLE_BLOCKS[r]?.tools ?? []);
-  if (hasTransfer) tools.push(...buildTransferTools(transferPhoneNumber, roles.includes('support')));
+  if (hasTransfer) tools.push(...buildTransferTools(transferPhoneNumber, roles.includes('support'), cfg.transferMessage));
 
   const ownRestaurantId = process.env.KIWORKS_OWN_RESTAURANT_ID ? Number(process.env.KIWORKS_OWN_RESTAURANT_ID) : null;
   const isOwnRestaurant = ownRestaurantId != null && Number(restaurantId) === ownRestaurantId;
@@ -285,12 +290,12 @@ function buildAssistantBody({
   return {
     name: `ki-works – ${restaurantName}`,
     firstMessage: isOwnRestaurant
-      ? OWN_FIRST_MESSAGE
-      : `Grüß Gott, hier ist ${assistantName}, der ${roleLabel} von {{business_name}}. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?`,
+      ? cfg.ownFirstMessage
+      : cfg.firstMessage(assistantName, roleLabel),
     silenceTimeoutSeconds: 60,
     maxDurationSeconds: 1800,
     messagePlan: {
-      idleMessages: ['Sind Sie noch da? Kann ich Ihnen noch weiterhelfen?'],
+      idleMessages: [cfg.idleMessage],
       idleMessageMaxSpokenCount: 2,
       idleTimeoutSeconds: 15,
     },
@@ -301,17 +306,13 @@ function buildAssistantBody({
         do: [
           {
             type: 'say',
-            exact: orders
-              ? 'Kurzer Hinweis: In etwa 5 Minuten muss ich das Gespräch aus technischen Gründen automatisch beenden. Falls Ihre Reservierung oder Bestellung noch nicht abgeschlossen ist, sagen Sie mir jetzt bitte schnell die restlichen Angaben, damit ich sie noch rechtzeitig speichern kann.'
-              : appointments
-              ? 'Kurzer Hinweis: In etwa 5 Minuten muss ich das Gespräch aus technischen Gründen automatisch beenden. Falls Ihr Termin noch nicht abgeschlossen ist, sagen Sie mir jetzt bitte schnell die restlichen Angaben, damit ich ihn noch rechtzeitig speichern kann.'
-              : 'Kurzer Hinweis: In etwa 5 Minuten muss ich das Gespräch aus technischen Gründen automatisch beenden. Bitte nennen Sie mir jetzt kurz Ihr Anliegen, damit ich es noch rechtzeitig weiterleiten kann.',
+            exact: cfg.timeElapsedMessages[roleKey],
           },
         ],
       },
     ],
-    transcriber: { provider: 'deepgram', model: 'nova-2', language: 'de' },
-    voice: { provider: 'azure', voiceId: 'de-AT-IngridNeural', speed: 1.05 },
+    transcriber: { provider: 'deepgram', model: 'nova-2', language: cfg.transcriberLanguage },
+    voice: { provider: 'azure', voiceId: voiceId || cfg.voiceId, speed: 1.05 },
     model: {
       provider: 'anthropic',
       model: 'claude-haiku-4-5-20251001',
@@ -344,6 +345,8 @@ export async function syncVapiAssistant(restaurantId) {
   const { rows } = await query(
     `SELECT r.id, r.name, r.vapi_phone_number, r.vapi_assistant_id, r.enabled_roles,
             r.transfer_phone_number,
+            r.settings->'voice'->>'language' AS language,
+            r.settings->'voice'->>'voiceId' AS voice_id,
             a.branding->>'assistantName' AS assistant_name
      FROM restaurants r LEFT JOIN agencies a ON r.agency_id = a.id
      WHERE r.id = $1`,
@@ -360,6 +363,8 @@ export async function syncVapiAssistant(restaurantId) {
     enabledRoles: restaurant.enabled_roles,
     assistantName: restaurant.assistant_name || 'Kiwo',
     transferPhoneNumber: restaurant.transfer_phone_number || null,
+    language: restaurant.language || DEFAULT_LANGUAGE,
+    voiceId: restaurant.voice_id || null,
   });
   const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
 
@@ -419,5 +424,150 @@ export async function syncVapiAssistant(restaurantId) {
   } catch (err) {
     await logError('vapi-sync', err);
     return { ok: false, warning: 'Vapi-Synchronisierung fehlgeschlagen (siehe Error-Log).' };
+  }
+}
+
+// Auswahl-Assistent für die Demo-Nummer (Teil B, Squad statt einzelnem
+// Assistenten): kurze, sprachneutrale Begrüßung + handoff-Tool zu einem
+// der 3 Sprach-Assistenten. Tool-Struktur (`type: 'handoff'`,
+// `destinations: [...]`) folgt bewusst demselben Muster wie das bereits
+// bestehende `transferCall`-Tool (buildTransferTools) — Vapis Doku war an
+// dieser Stelle nicht ganz konsistent zwischen zwei Unterseiten, dieses
+// Muster war die im übrigen Code bereits bewährte Variante. Vor dem ersten
+// echten Einsatz gegen Vapis aktuelle Squads/Handoff-API-Referenz prüfen
+// (siehe CLAUDE.md/Plan-Notiz zu diesem Feature).
+const LANGUAGE_SELECT_FIRST_MESSAGE = 'Hallo, für Deutsch sagen Sie "Deutsch" — for English say "English" — pentru română spuneți "română".';
+
+function buildLanguageSelectBody({ publicUrl, webhookSecret, destinations }) {
+  return {
+    name: 'ki-works – Kiwo Demo Sprachauswahl',
+    firstMessage: LANGUAGE_SELECT_FIRST_MESSAGE,
+    silenceTimeoutSeconds: 20,
+    maxDurationSeconds: 45,
+    transcriber: { provider: 'deepgram', model: 'nova-2', language: 'de' },
+    voice: { provider: 'azure', voiceId: 'de-AT-IngridNeural', speed: 1.0 },
+    model: {
+      provider: 'anthropic',
+      model: 'claude-haiku-4-5-20251001',
+      messages: [{
+        role: 'system',
+        content: 'Du bist eine kurze Sprachauswahl für Kiwo. Frage nach der gewünschten Sprache (Deutsch/English/Română) und nutze SOFORT das handoff-Tool zur passenden Sprache, sobald der Anrufer sie genannt hat — führe kein weiteres Gespräch, stelle keine Rückfragen.',
+      }],
+      tools: [{ type: 'handoff', destinations }],
+    },
+    server: { url: `${publicUrl}/api/webhooks/vapi`, secret: webhookSecret },
+    serverMessages: ['tool-calls', 'end-of-call-report'],
+  };
+}
+
+// Legt/aktualisiert das Vapi-Squad für die öffentliche Demo-Nummer an:
+// 1 Auswahl-Assistent + 3 Sprach-Assistenten (DE/EN/RO), gebaut mit
+// derselben buildAssistantBody() wie echte Kunden (Teil A) — keine
+// doppelte Prompt-Logik. Speichert die IDs in restaurants.settings, damit
+// handleAssistantRequest() (vapi.js) künftige Anrufe an das Squad statt
+// an einen einzelnen Assistenten weiterreicht. Manueller Admin-Trigger
+// (POST /api/restaurants/:id/sync-demo-squad), läuft nicht automatisch.
+export async function syncDemoSquad(restaurantId) {
+  const apiKey = process.env.VAPI_API_KEY;
+  if (!apiKey) return { ok: false, warning: 'VAPI_API_KEY nicht konfiguriert.' };
+  const publicUrl = process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu';
+  const webhookSecret = process.env.VAPI_WEBHOOK_SECRET;
+  const headers = { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+
+  const { rows } = await query(
+    'SELECT id, name, enabled_roles, transfer_phone_number, settings FROM restaurants WHERE id = $1',
+    [restaurantId],
+  );
+  const restaurant = rows[0];
+  if (!restaurant) return { ok: false, warning: `Restaurant ${restaurantId} nicht gefunden.` };
+
+  try {
+    const existingLanguageIds = restaurant.settings?.demoLanguageAssistantIds || {};
+    const languageAssistantIds = {};
+    for (const lang of Object.keys(LANGUAGE_OPTIONS)) {
+      const body = buildAssistantBody({
+        restaurantId: restaurant.id,
+        restaurantName: restaurant.name,
+        publicUrl,
+        webhookSecret,
+        enabledRoles: restaurant.enabled_roles,
+        assistantName: 'Kiwo',
+        transferPhoneNumber: restaurant.transfer_phone_number || null,
+        language: lang,
+      });
+      body.name = `ki-works – Kiwo Demo (${lang.toUpperCase()})`;
+      const existingId = existingLanguageIds[lang];
+      // eslint-disable-next-line no-await-in-loop
+      let res = existingId
+        ? await fetch(`https://api.vapi.ai/assistant/${existingId}`, { method: 'PATCH', headers, body: JSON.stringify(body) })
+        : await fetch('https://api.vapi.ai/assistant', { method: 'POST', headers, body: JSON.stringify(body) });
+      if (existingId && res.status === 404) {
+        // eslint-disable-next-line no-await-in-loop
+        res = await fetch('https://api.vapi.ai/assistant', { method: 'POST', headers, body: JSON.stringify(body) });
+      }
+      // eslint-disable-next-line no-await-in-loop
+      const json = await res.json();
+      if (!json?.id) {
+        await logError('vapi-demo-squad', new Error(`Sprach-Assistent (${lang}) konnte nicht angelegt werden: ${JSON.stringify(json)}`));
+        return { ok: false, warning: `Sprach-Assistent (${lang}) fehlgeschlagen.` };
+      }
+      languageAssistantIds[lang] = json.id;
+    }
+
+    const destinations = Object.entries(languageAssistantIds).map(([lang, id]) => ({
+      type: 'assistant',
+      assistantName: `ki-works – Kiwo Demo (${lang.toUpperCase()})`,
+      assistantId: id,
+      description: LANGUAGE_OPTIONS[lang].handoffDescription,
+    }));
+    const selectBody = buildLanguageSelectBody({ publicUrl, webhookSecret, destinations });
+    const existingSelectId = restaurant.settings?.demoSelectAssistantId;
+    let selectRes = existingSelectId
+      ? await fetch(`https://api.vapi.ai/assistant/${existingSelectId}`, { method: 'PATCH', headers, body: JSON.stringify(selectBody) })
+      : await fetch('https://api.vapi.ai/assistant', { method: 'POST', headers, body: JSON.stringify(selectBody) });
+    if (existingSelectId && selectRes.status === 404) {
+      selectRes = await fetch('https://api.vapi.ai/assistant', { method: 'POST', headers, body: JSON.stringify(selectBody) });
+    }
+    const selectJson = await selectRes.json();
+    if (!selectJson?.id) {
+      await logError('vapi-demo-squad', new Error(`Auswahl-Assistent konnte nicht angelegt werden: ${JSON.stringify(selectJson)}`));
+      return { ok: false, warning: 'Auswahl-Assistent fehlgeschlagen.' };
+    }
+
+    const squadBody = {
+      name: 'ki-works – Kiwo Demo Sprachauswahl',
+      members: [
+        { assistantId: selectJson.id },
+        ...Object.values(languageAssistantIds).map((id) => ({ assistantId: id })),
+      ],
+    };
+    const existingSquadId = restaurant.settings?.squadId;
+    let squadRes = existingSquadId
+      ? await fetch(`https://api.vapi.ai/squad/${existingSquadId}`, { method: 'PATCH', headers, body: JSON.stringify(squadBody) })
+      : await fetch('https://api.vapi.ai/squad', { method: 'POST', headers, body: JSON.stringify(squadBody) });
+    if (existingSquadId && squadRes.status === 404) {
+      squadRes = await fetch('https://api.vapi.ai/squad', { method: 'POST', headers, body: JSON.stringify(squadBody) });
+    }
+    const squadJson = await squadRes.json();
+    if (!squadJson?.id) {
+      await logError('vapi-demo-squad', new Error(`Squad konnte nicht angelegt werden: ${JSON.stringify(squadJson)}`));
+      return { ok: false, warning: 'Squad konnte nicht angelegt werden.' };
+    }
+
+    await query(
+      `UPDATE restaurants SET settings = jsonb_set(jsonb_set(jsonb_set(COALESCE(settings, '{}'::jsonb),
+        '{squadId}', $1::jsonb, true),
+        '{demoLanguageAssistantIds}', $2::jsonb, true),
+        '{demoSelectAssistantId}', $3::jsonb, true)
+       WHERE id = $4`,
+      [JSON.stringify(squadJson.id), JSON.stringify(languageAssistantIds), JSON.stringify(selectJson.id), restaurantId],
+    );
+
+    return {
+      ok: true, squadId: squadJson.id, languageAssistantIds, selectAssistantId: selectJson.id,
+    };
+  } catch (err) {
+    await logError('vapi-demo-squad', err);
+    return { ok: false, warning: 'Demo-Squad-Synchronisierung fehlgeschlagen (siehe Error-Log).' };
   }
 }
