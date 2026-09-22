@@ -611,14 +611,39 @@ function SalesAgentRunner({ business, onDone }) {
   );
 }
 
+// Vorschläge kosten einen echten Claude-Aufruf (siehe "Trends generieren"-
+// Button) — bleiben deshalb im Browser gespeichert (pro Business), damit
+// ein Refresh oder ein Wechsel zu einer anderen Karte und zurück sie nicht
+// verwirft und einen neuen Aufruf erzwingt.
+const socialSuggestionsKey = (business) => `kiworks-social-suggestions-${business}`;
+const loadStoredSuggestions = (business) => {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(socialSuggestionsKey(business)));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+const saveStoredSuggestions = (business, suggestions) => {
+  try {
+    localStorage.setItem(socialSuggestionsKey(business), JSON.stringify(suggestions));
+  } catch {
+    /* localStorage kann in manchen Kontexten blockiert sein, dann geht der Vorschlag beim nächsten Laden verloren */
+  }
+};
+
 function SocialAgentRunner({ business, onDone }) {
   const [topic, setTopic] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState(() => loadStoredSuggestions(business));
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setSuggestions(loadStoredSuggestions(business));
+  }, [business]);
 
   const loadSuggestions = () => {
     setSuggestionsLoading(true);
@@ -627,7 +652,9 @@ function SocialAgentRunner({ business, onDone }) {
       .then(async (r) => {
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        setSuggestions(Array.isArray(d.suggestions) ? d.suggestions : []);
+        const list = Array.isArray(d.suggestions) ? d.suggestions : [];
+        setSuggestions(list);
+        saveStoredSuggestions(business, list);
       })
       .catch((err) => setSuggestionsError(err.message))
       .finally(() => setSuggestionsLoading(false));
