@@ -410,9 +410,8 @@ async function handleAssistantRequest(message, restaurant) {
   // Demo-Nummer-Sprachauswahl (Teil B, Squad statt einzelnem Assistenten):
   // nur aktiv, wenn per syncDemoSquad() bereits eine Squad-ID hinterlegt
   // wurde (settings.squadId) — sonst unverändertes Einzel-Assistent-
-  // Verhalten. squadOverrides ist ANALOG zu assistantOverrides angenommen
-  // (Vapi-Doku nennt das Feld, exakte Struktur bei Rollout gegen die
-  // Live-API prüfen, siehe CLAUDE.md/Plan).
+  // Verhalten. squadId/squadOverrides sind 22.09.2026 gegen Vapis echtes
+  // OpenAPI-Schema bestätigt (ServerMessageResponseAssistantRequest).
   const squadId = restaurant?.settings?.squadId;
   if (squadId) {
     return {

@@ -2579,11 +2579,17 @@ Version auf "Publish" klicken.
   `assistantId: null` trägt und die Zuordnung komplett über diesen
   Webhook läuft — keine Änderung an der Nummer nötig). Manueller
   Admin-Trigger `POST /api/restaurants/:id/sync-demo-squad`, keine
-  automatische Aktivierung. **Ausdrücklich unverifiziert:** die exakte
-  Vapi-Squads/Handoff-API-Struktur (Doku war zwischen zwei Unterseiten
-  uneinheitlich) — vor dem ersten echten Einsatz nochmal gegen
-  `docs.vapi.ai/squads`/`docs.vapi.ai/squads/handoff` prüfen, siehe
-  „Offene Punkte".
+  automatische Aktivierung. **API-Struktur nachträglich verifiziert
+  (22.09.2026):** direkt gegen Vapis echtes OpenAPI-Schema geprüft
+  (`curl api.vapi.ai/api-json` — die Doku-Webseiten waren uneinheitlich,
+  das rohe Schema war eindeutig). Bestätigt: `POST /squad` mit
+  `{name, members: [{assistantId}, ...]}`, das `handoff`-Tool
+  (`CreateHandoffToolDTO`, `type: 'handoff'`, `destinations:
+  [{type:'assistant', assistantId, assistantName, description}]`) als
+  normaler `model.tools`-Eintrag (exakt das bereits verwendete Muster),
+  sowie `squadId`/`squadOverrides` als offizielle Felder der
+  `assistant-request`-Webhook-Antwort. Kein Code-Fix nötig — Teil B ist
+  strukturell korrekt.
   Verifiziert: `node --check` für alle 5 geänderten/neuen Backend-
   Dateien, `dashboard`-Build + i18n-Schlüsselparität (344 Keys, 3
   Sprachen) fehlerfrei. **Kein echter Testanruf/Vapi-Sync möglich ohne
@@ -3293,18 +3299,15 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Mehrsprachigkeit am Telefon (22.09.2026) — noch nicht ausgerollt/
-  getestet.** Deploy fehlt (siehe „Bereits erledigt"). Nach dem Deploy:
-  (1) Teil A an einem Testkunden (z. B. "Ki Works") auf Englisch/
-  Rumänisch umstellen und anrufen, prüfen ob Stimme/Verständnis/
-  Antwortsprache passen. (2) Teil B: vor `sync-demo-squad`-Aufruf die
-  Vapi-Squads/Handoff-API-Struktur in `syncDemoSquad()`
-  (`backend/src/vapiAdmin.js`) gegen `docs.vapi.ai/squads`/
-  `docs.vapi.ai/squads/handoff` verifizieren (Doku war beim Bauen
-  zwischen zwei Unterseiten uneinheitlich, exakte Feldnamen nicht
-  abschließend bestätigt) — dann erst für die Demo-Nummer aktivieren.
-  Wie immer nach jeder Vapi-Sync-Änderung: im Vapi-Dashboard manuell
-  "Publish" klicken.
+- **Mehrsprachigkeit am Telefon — Teil A ausgerollt & vom Nutzer
+  bestätigt (22.09.2026), Teil B (Demo-Squad) noch nicht aktiviert.**
+  API-Struktur für Teil B mittlerweile gegen Vapis echtes OpenAPI-Schema
+  verifiziert (siehe „Bereits erledigt") — kein technisches Risiko mehr
+  bekannt, aber noch kein echter `sync-demo-squad`-Aufruf gemacht. Vor
+  Aktivierung für die Demo-Nummer: einmal auslösen, Ergebnis prüfen
+  (4 neue Assistenten + 1 Squad in Vapi sichtbar?), testanrufen (DE/EN/RO
+  durchspielen), danach wie immer im Vapi-Dashboard manuell "Publish"
+  für die neuen Assistenten klicken.
 
 - **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — Diagnose läuft
   (22.09.2026):** Nutzer meldete 403 Forbidden beim Aufruf von

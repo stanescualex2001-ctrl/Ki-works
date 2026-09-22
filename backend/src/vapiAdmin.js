@@ -430,12 +430,10 @@ export async function syncVapiAssistant(restaurantId) {
 // Auswahl-Assistent für die Demo-Nummer (Teil B, Squad statt einzelnem
 // Assistenten): kurze, sprachneutrale Begrüßung + handoff-Tool zu einem
 // der 3 Sprach-Assistenten. Tool-Struktur (`type: 'handoff'`,
-// `destinations: [...]`) folgt bewusst demselben Muster wie das bereits
-// bestehende `transferCall`-Tool (buildTransferTools) — Vapis Doku war an
-// dieser Stelle nicht ganz konsistent zwischen zwei Unterseiten, dieses
-// Muster war die im übrigen Code bereits bewährte Variante. Vor dem ersten
-// echten Einsatz gegen Vapis aktuelle Squads/Handoff-API-Referenz prüfen
-// (siehe CLAUDE.md/Plan-Notiz zu diesem Feature).
+// `destinations: [...]`) folgt demselben Muster wie das bereits
+// bestehende `transferCall`-Tool (buildTransferTools) — 22.09.2026 direkt
+// gegen Vapis echtes OpenAPI-Schema geprüft (api.vapi.ai/api-json,
+// CreateHandoffToolDTO/HandoffDestinationAssistant), stimmt exakt überein.
 const LANGUAGE_SELECT_FIRST_MESSAGE = 'Hallo, für Deutsch sagen Sie "Deutsch" — for English say "English" — pentru română spuneți "română".';
 
 function buildLanguageSelectBody({ publicUrl, webhookSecret, destinations }) {
