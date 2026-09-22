@@ -12,6 +12,7 @@ import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent, getSocialTrendSuggestions } from './socialAgent.js';
 import { createSalesDraft } from './mailDraft.js';
 import { BUSINESS_PROFILES } from './businessProfiles.js';
+import { startRun, finishRun, failRun, getRunStatus } from './agentRunStatus.js';
 import { runWebchatTurn } from './webchat.js';
 import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
@@ -33,6 +34,13 @@ app.use(authMiddleware);
 const SOCIAL_ASSETS_DIR = path.join(process.cwd(), 'public', 'social-assets');
 fs.mkdirSync(SOCIAL_ASSETS_DIR, { recursive: true });
 app.use('/api/public/social-assets', express.static(SOCIAL_ASSETS_DIR, { maxAge: '1d' }));
+
+// Businesses, deren Sales-Freigaben Entwürfe im echten Postfach
+// info@ki-works.eu anlegen dürfen (IMAP) — 'reseller' nutzt dasselbe
+// Postfach wie 'ki-works' selbst (identischer Absender, nur andere
+// Zielgruppe). Alle anderen Businesses (LEDTEK/pixelpress) bekommen nur
+// den Text zum manuellen Kopieren, da sie ein anderes/kein Postfach haben.
+const OWN_MAILBOX_BUSINESSES = ['ki-works', 'reseller'];
 
 // Async-Fehler aus Routen landen im Error-Handler statt die Anfrage hängen zu lassen.
 for (const method of ['get', 'post', 'patch']) {
@@ -980,7 +988,7 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
   // Business-Check würde eine LEDTEK-/pixelpress-Freigabe versehentlich
   // versuchen, auf KI-Works' eigenem Postfach/Facebook-Auftritt zu landen.
   if (status === 'approved' && action.role === 'sales' && action.kind === 'outreach_email') {
-    if (action.business !== 'ki-works') {
+    if (!OWN_MAILBOX_BUSINESSES.includes(action.business)) {
       mailDraftWarning = 'Kein Postfach für dieses Business konfiguriert — Text bitte manuell kopieren.';
     } else if (payload.contact_email) {
       try {
@@ -1085,16 +1093,30 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
 // pending_actions-Entwurf an (role 'social', kind 'post') — Veröffentlichung
 // erst nach Freigabe im Dashboard (siehe PATCH oben).
 app.post('/api/social-agent/run', adminOnly, async (req, res) => {
+  const business = req.body?.business;
+  if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
+  const key = `social:${business}`;
+  if (!startRun(key)) return res.status(409).json({ error: 'Social-Agent läuft für dieses Business bereits' });
   try {
-    const business = req.body?.business;
-    if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
     const topic = typeof req.body?.topic === 'string' ? req.body.topic.trim().slice(0, 200) || undefined : undefined;
     const action = await runSocialAgent({ business, assetsDir: SOCIAL_ASSETS_DIR, topic });
+    finishRun(key, action);
     res.json(action);
   } catch (err) {
     console.error('Social-Agent fehlgeschlagen:', err.message);
+    failRun(key, err.message);
     res.status(502).json({ error: err.message });
   }
+});
+
+// Aktueller Lauf-Status (idle/running/done/error) für die Oberfläche —
+// erlaubt, einen noch laufenden Agenten nach einem Kartenwechsel oder
+// Seiten-Refresh wiederzufinden statt "vergessen" zu wirken (siehe
+// agentRunStatus.js).
+app.get('/api/social-agent/status', adminOnly, (req, res) => {
+  const business = req.query?.business;
+  if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
+  res.json(getRunStatus(`social:${business}`));
 });
 
 // Dynamische Themenvorschläge (3 Stück) für die "Thema/Fokus"-Eingabe im
@@ -1118,17 +1140,27 @@ app.get('/api/social-agent/suggestions', adminOnly, async (req, res) => {
 // durch die Websuchen spürbar länger, der Button im Dashboard zeigt
 // währenddessen einen Ladezustand.
 app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
+  const business = req.body?.business;
+  if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
+  const key = `sales:${business}`;
+  if (!startRun(key)) return res.status(409).json({ error: 'Sales-Agent läuft für dieses Business bereits' });
   try {
-    const business = req.body?.business;
-    if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
     const maxCandidates = Number(req.body?.maxCandidates) || 3;
     const region = typeof req.body?.region === 'string' ? req.body.region.trim().slice(0, 200) || undefined : undefined;
     const result = await runSalesAgent({ business, maxCandidates, region });
+    finishRun(key, result);
     res.json(result);
   } catch (err) {
     console.error('Sales-Agent fehlgeschlagen:', err.message);
+    failRun(key, err.message);
     res.status(502).json({ error: err.message });
   }
+});
+
+app.get('/api/sales-agent/status', adminOnly, (req, res) => {
+  const business = req.query?.business;
+  if (!BUSINESS_PROFILES[business]) return res.status(400).json({ error: 'unbekanntes business' });
+  res.json(getRunStatus(`sales:${business}`));
 });
 
 // Vapis Aufnahme-URLs sind zeitlich befristet signiert (laufen nach einiger

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useId } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useId } from 'react';
 import { getStoredTheme, applyTheme } from './theme.js';
 
 /* ---------- Light/Dark-Umschalter ---------- */
@@ -540,6 +540,7 @@ const BUSINESSES = [
   { id: 'pixelpress', name: 'pixelpress.at', tag: 'Webdesign · locker' },
   { id: 'memcore', name: 'Memcore', tag: 'Perg · Linz · Wien' },
   { id: 'ki-works', name: 'ki-works.eu', tag: 'Plattform · Restaurants' },
+  { id: 'reseller', name: 'Agenturen (White-Label)', tag: 'Partner-Akquise · AT' },
 ];
 
 function BusinessGrid({ onOpen }) {
@@ -560,30 +561,92 @@ function BusinessGrid({ onOpen }) {
   );
 }
 
-function SalesAgentRunner({ business, onDone }) {
-  const [region, setRegion] = useState('');
+// Verfolgt einen Sales-/Social-Agent-Lauf serverseitig (agentRunStatus.js)
+// statt nur im lokalen Komponenten-State — ein Kartenwechsel oder ein
+// Seiten-Refresh "vergisst" den laufenden Agenten dadurch nicht mehr, und
+// ein zweiter Start-Klick während ein Lauf noch aktiv ist (409 vom
+// Backend) schaltet auf Mitverfolgen statt einen teuren Doppel-Lauf
+// auszulösen.
+function useAgentRun(kind, business, onDone) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const intervalRef = useRef(null);
 
-  const run = () => {
+  const checkStatus = useCallback((notifyDone) => {
+    apiFetch(`/api/${kind}-agent/status?business=${encodeURIComponent(business)}`)
+      .then((r) => r.json())
+      .then((s) => {
+        if (s.status === 'running') {
+          setLoading(true);
+          if (!intervalRef.current) {
+            intervalRef.current = setInterval(() => checkStatus(true), 8000);
+          }
+        } else {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+          }
+          setLoading(false);
+          if (s.status === 'done') {
+            setResult(s.result);
+            setError(null);
+            if (notifyDone) onDone();
+          } else if (s.status === 'error') {
+            setError(s.error);
+          }
+        }
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kind, business]);
+
+  useEffect(() => {
+    setResult(null);
+    setError(null);
+    checkStatus(false);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [business, checkStatus]);
+
+  const start = (body) => {
     setLoading(true);
     setError(null);
     setResult(null);
-    apiFetch('/api/sales-agent/run', {
+    apiFetch(`/api/${kind}-agent/run`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ business, maxCandidates: 3, region: region.trim() || undefined }),
+      body: JSON.stringify(body),
     })
       .then(async (r) => {
+        if (r.status === 409) {
+          checkStatus(true);
+          return;
+        }
         const d = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
         setResult(d);
+        setLoading(false);
         onDone();
       })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
   };
+
+  return { loading, result, error, start };
+}
+
+function SalesAgentRunner({ business, onDone }) {
+  const [region, setRegion] = useState('');
+  const { loading, result, error, start } = useAgentRun('sales', business, onDone);
+
+  const run = () => start({ business, maxCandidates: 3, region: region.trim() || undefined });
 
   return (
     <div className="sales-agent-box">
@@ -637,9 +700,7 @@ function SocialAgentRunner({ business, onDone }) {
   const [suggestions, setSuggestions] = useState(() => loadStoredSuggestions(business));
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const { loading, result, error, start } = useAgentRun('social', business, onDone);
 
   useEffect(() => {
     setSuggestions(loadStoredSuggestions(business));
@@ -660,24 +721,7 @@ function SocialAgentRunner({ business, onDone }) {
       .finally(() => setSuggestionsLoading(false));
   };
 
-  const run = () => {
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    apiFetch('/api/social-agent/run', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ business, topic: topic.trim() || undefined }),
-    })
-      .then(async (r) => {
-        const d = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(d.error || `HTTP ${r.status}`);
-        setResult(d);
-        onDone();
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  };
+  const run = () => start({ business, topic: topic.trim() || undefined });
 
   return (
     <div className="sales-agent-box">
@@ -876,7 +920,7 @@ function BusinessAuditLog({ businessId, refreshKey }) {
 // Profil in backend/src/businessProfiles.js haben (siehe dortige Registry).
 // Neues Business bekommt Agenten-Buttons einfach durch Eintrag in beiden
 // Listen — kein weiterer Code-Umbau hier nötig.
-const AGENT_ENABLED_BUSINESSES = ['ki-works', 'ledtek', 'pixelpress'];
+const AGENT_ENABLED_BUSINESSES = ['ki-works', 'ledtek', 'pixelpress', 'reseller'];
 
 function BusinessDetail({ business, onBack, onAgentDone, refreshKey }) {
   const agentsEnabled = AGENT_ENABLED_BUSINESSES.includes(business.id);

@@ -112,6 +112,57 @@ hallo@pixelpress.at`,
       mascot: 'none',
     },
   },
+  // Kein eigenes Unternehmen, sondern ki-works' eigene Akquise von
+  // White-Label-Partner-Agenturen (Kaltansprache) — separat von der
+  // bereits bestehenden "Agenturen"-Verwaltung im Kunden-Dashboard, die
+  // Partner verwaltet, die bereits zugesagt haben (siehe CLAUDE.md
+  // "Agentur-Self-Service"). Nutzt dieselbe Registry, weil derselbe
+  // Sales-/Social-Agent-Mechanismus, nur andere Zielgruppe/Pitch.
+  reseller: {
+    name: 'ki-works.eu Partnerprogramm',
+    brandBrief: `ki-works.eu betreibt eine fertige Plattform für KI-
+Telefonassistenten (Kiwo) und bietet Agenturen ein White-Label-
+Partnerprogramm: die Plattform läuft unter der eigenen Domain/Marke der
+Agentur, mit deren eigenen Preisen — Endkunden sehen zu keinem Zeitpunkt
+"ki-works". Die Agentur bekommt dadurch ein sofort verkaufbares Produkt
+für ihre Bestandskunden (z. B. Gastronomie, Handwerk, Dienstleistung)
+ohne eigenen Entwicklungsaufwand — wiederkehrende monatliche Einnahmen
+statt Einzelprojekte. Kostenlose Live-Demo zum sofort Ausprobieren:
++43 726 223 417 anrufen und mit dem digitalen Mitarbeiter "Kiwo"
+sprechen. Details: ki-works.eu/partner.html. Tonalität: professionell,
+auf Augenhöhe (Agentur zu Agentur), kein Massenmail-Ton.`,
+    productPitch: `Erwähne kurz den Kernnutzen für die Agentur (eigenes
+Branding/eigene Preise, kein Entwicklungsaufwand, wiederkehrende
+Einnahmen), lade konkret zur Live-Demo (+43 726 223 417) und zu einem
+kurzen 10-Minuten-Gespräch ein, falls Potenzial für ihre Bestandskunden
+besteht. Verlinke auf ki-works.eu/partner.html für Details.`,
+    targetProfileDefault: 'Österreich',
+    targetKind: 'Werbeagenturen, Webagenturen und IT-Systemhäuser mit Bestandskunden aus KMU-Branchen (Gastronomie, Handwerk, Einzelhandel, Dienstleister)',
+    qualificationCriteria: `Ein guter Kandidat:
+- ist eine Werbe-/Web-/Digitalagentur oder ein IT-Systemhaus mit mehreren
+  Bestandskunden aus KMU-Branchen, die von Telefonerreichbarkeit/
+  Terminvergabe profitieren würden
+- bietet aktuell KEIN eigenes, konkurrierendes KI-Telefon-/Voice-Produkt an
+- hat einen echten, vertrauenswürdigen Online-Auftritt (Impressum,
+  Referenzen, aktive Website)
+Kein Kandidat: Einzelperson ohne Agenturstruktur, Agentur mit
+offensichtlich eigenem KI-Voice-Produkt (Konkurrent statt Partner).`,
+    signature: `Freundliche Grüße
+Alex von ki-works.eu
+Tel. +43 650 9915759
+info@ki-works.eu`,
+    seedTopics: [],
+    // Identisch zu ki-works — ist derselbe Absender, nur andere
+    // Zielgruppe (Agenturen statt Restaurants).
+    visual: {
+      eyebrow: 'KI-WORKS · PARTNER',
+      domain: 'ki-works.eu/partner',
+      bgColors: ['#0B1220', '#161233', '#1E1B4B'],
+      accentColor: '#22D3EE',
+      textColor: '#F3F6FB',
+      mascot: 'orb',
+    },
+  },
 };
 
 export function getBusinessProfile(business) {
