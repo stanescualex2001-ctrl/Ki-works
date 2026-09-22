@@ -2535,6 +2535,63 @@ Version auf "Publish" klicken.
   `9e6ba44`, `c8ad189`, `3f2b22d`, `0296126`, `59e3ea6`),
   **auf dem Produktivserver ausgerollt (Nutzer-Bestätigung 20.09.2026)**,
   normaler rsync/Build-Ablauf für `landing/`, kein Backend-Neustart nötig.
+- **Mehrsprachigkeit am Telefon (DE/EN/RO) gebaut — Teil A (pro Kunde)
+  + Teil B (Demo-Nummer-Squad) (22.09.2026):** löst die seit 30.08.2026
+  eingeplante, bis dahin nicht umgesetzte Idee ein. Auslöser: Nutzer
+  wollte den Sales-Agent auch auf Deutschland/Rumänien ausweiten und
+  fragte direkt nach, ob Kiwo Rumänisch am Telefon kann — Recherche
+  bestätigte, dass Deepgram Nova-2/3 Rumänisch als feste (nicht
+  Auto-Erkennungs-)Sprache unterstützt, kein Blocker mehr.
+  **Teil A:** neue Registry `backend/src/voiceOptions.js`
+  (`LANGUAGE_OPTIONS.de/en/ro` — Azure-Stimme, Deepgram-Sprache, eine an
+  den weiterhin deutschen LLM-Instruktionstext angehängte
+  Sprachanweisung, plus alle wörtlich vorgelesenen Strings ECHT übersetzt:
+  First-Message, Idle-Message, 5-Minuten-Warnung, beide Transfer-Ansagen
+  — nur der LLM-Instruktionstext selbst bleibt Deutsch, um keine 3-fache
+  Übersetzungspflege/Drift zu bekommen). `analysisPlan.summaryPrompt`
+  (Anruf-Zusammenfassung) bleibt bewusst fix Deutsch (interne
+  Dashboard-Ansicht). `buildAssistantBody`/`syncVapiAssistant`
+  (`vapiAdmin.js`) parametrisiert, Sprache liegt in der bis dahin
+  komplett ungenutzten `restaurants.settings`-JSONB-Spalte
+  (`settings.voice.language`) — keine neue Migration. `PATCH
+  /api/restaurants/:id` akzeptiert jetzt `language` (Admin UND Agentur),
+  löst automatisch einen Vapi-Resync aus. Neues "Sprache ändern"-Formular
+  im Kunden-Dashboard (`LanguageForm`, `dashboard/src/App.jsx`, 1:1
+  `PricingTierForm`-Muster). **Wichtig geprüft:** Deutsch/Default-Fall
+  erzeugt exakt denselben Vapi-Payload wie vorher (Grep nach
+  verbliebenen deutschen Literalen in `vapiAdmin.js` nach dem Umbau
+  ergab keine Treffer mehr) — kein bestehender Kunde ändert sich
+  unbeabsichtigt.
+  **Teil B (Demo-Nummer +43 726 223 417):** da Vapis alte "Workflows"-
+  Funktion (hätte das offizielle Beispiel für sowas geliefert) seit
+  18.08.2026 abgeschaltet ist, stattdessen auf Vapis aktuelle **Squads**-
+  Funktion gebaut. Neue Funktion `syncDemoSquad()` (`vapiAdmin.js`): legt
+  1 Sprachauswahl-Assistent ("Für Deutsch sagen Sie 'Deutsch' — for
+  English say 'English' — pentru română spuneți 'română'.") + 3
+  Sprach-Assistenten (DE/EN/RO, gebaut mit derselben `buildAssistantBody`
+  wie Teil A) an, verbunden per Vapis `handoff`-Tool (gleiches
+  Tool-Struktur-Muster wie das bestehende `transferCall`-Tool). IDs
+  landen in `restaurants.settings` (`squadId`,
+  `demoLanguageAssistantIds`, `demoSelectAssistantId`).
+  `handleAssistantRequest()` (`vapi.js`) liefert bei hinterlegter
+  `squadId` ein Squad statt eines einzelnen Assistenten zurück (nutzt
+  aus, dass die Telefonnummer selbst laut bestehendem Code ohnehin
+  `assistantId: null` trägt und die Zuordnung komplett über diesen
+  Webhook läuft — keine Änderung an der Nummer nötig). Manueller
+  Admin-Trigger `POST /api/restaurants/:id/sync-demo-squad`, keine
+  automatische Aktivierung. **Ausdrücklich unverifiziert:** die exakte
+  Vapi-Squads/Handoff-API-Struktur (Doku war zwischen zwei Unterseiten
+  uneinheitlich) — vor dem ersten echten Einsatz nochmal gegen
+  `docs.vapi.ai/squads`/`docs.vapi.ai/squads/handoff` prüfen, siehe
+  „Offene Punkte".
+  Verifiziert: `node --check` für alle 5 geänderten/neuen Backend-
+  Dateien, `dashboard`-Build + i18n-Schlüsselparität (344 Keys, 3
+  Sprachen) fehlerfrei. **Kein echter Testanruf/Vapi-Sync möglich ohne
+  reales Guthaben** (Standing Rule) — weder Teil A noch Teil B wurden
+  live gegen Vapi getestet. Committet+gepusht (`b7d4b01`), **noch NICHT
+  auf dem Produktivserver ausgerollt** — braucht Backend-Neustart
+  (`server.js`/`vapi.js`/`vapiAdmin.js`/`voiceOptions.js` geändert) plus
+  normalen `dashboard/`-Build, keine Migration.
 - **Kontaktformular: Paket-Auswahl ergänzt (21.09.2026):** Nutzer-Fund —
   "Jetzt kostenlos testen"-Buttons führten zum Kontaktformular ohne
   Paket-Info. Formular hat jetzt Solo/Team/Scale/Custom-Chips (optional,
@@ -2674,30 +2731,10 @@ Version auf "Publish" klicken.
   Immobilienmakler (Ersttermin/Besichtigung) ✅. Schwieriger bleiben
   weiterhin: Branchen mit komplexer Logik statt einfachem Terminslot
   (Online-Shop mit Warenkorb) oder starker Regulierung (Bank/Versicherung).
-- **Mehrsprachigkeit am Telefon (Kiwo selbst) — ENTSCHIEDEN, noch nicht
-  gebaut (30.08.2026):** offene Frage vom 19.08.2026 (siehe Verlauf unten)
-  jetzt vom Nutzer beantwortet: "Live-Sprachwechsel vergiss es. einplanen
-  für später. Kunde soll Stimme und Sprache wählen. Und später auch
-  wechseln kann." — bestätigt damit genau den am 19.08. vorgeschlagenen
-  Ansatz (feste, pro Kunde wählbare Sprache statt Live-Umschaltung
-  innerhalb eines Anrufs). **Nur eingeplant, keine Umsetzung jetzt.**
-  Architektur-Einschätzung: `restaurants.settings` (bestehende JSONB-
-  Spalte, aktuell ungenutzt) ist der passende Ort für
-  `settings.voice = {language, voiceId, displayName}` — keine neue
-  Migration nötig; der bestehende Vapi-Resync-Mechanismus (greift schon
-  bei Rollen-/Tarif-Änderungen) deckt "später wechseln" automatisch mit
-  ab. Sprachwechsel betrifft 3 Ebenen: `voice` (Azure-TTS), `transcriber.
-  language` (Deepgram-Erkennung, muss zur Stimme passen) und den System-
-  Prompt selbst (Empfehlung: keine Volltext-Übersetzung wie bei der
-  Website, sondern eine Prompt-Instruktion "antworte nur auf [Sprache]"
-  — Claude kann das zuverlässig selbst). Empfehlung: mit einer
-  **kuratierten Kurzliste** starten (3-4 Sprachen × 2-3 getestete
-  Stimmen mit Hörbeispiel, per bestehender `edge-tts`-Pipeline
-  vorproduzierbar) statt aller 140+ Azure-Sprachen roh anzubieten —
-  Qualitätskontrolle wichtiger als Breite. Detaillierter Grobplan
-  (Registry-Datei `backend/src/voiceOptions.js`, betroffene Endpunkte/
-  Dashboard-Sektion) steht im Plan-Scratchfile, noch nicht in Code
-  überführt.
+- **Mehrsprachigkeit am Telefon — GEBAUT (22.09.2026), siehe „Bereits
+  erledigt".** War hier lange nur eingeplant; Nutzer hat nach Klärung der
+  Deepgram-Rumänisch-Frage (kein Blocker, siehe Vorgeschichte unten) den
+  Bau direkt beauftragt.
   **Vorgeschichte (19.08.2026):** Nutzer-Frage "spricht kiwo de en und ro
   schon? Vielleicht in gleiche Gespräch?" — Recherche ergab einen harten
   technischen Blocker gegen Live-Sprachwechsel *innerhalb* eines Anrufs:
@@ -3255,6 +3292,19 @@ Version auf "Publish" klicken.
   ausgerollt.**
 
 ## Offene Punkte (Stand zuletzt bekannt)
+
+- **Mehrsprachigkeit am Telefon (22.09.2026) — noch nicht ausgerollt/
+  getestet.** Deploy fehlt (siehe „Bereits erledigt"). Nach dem Deploy:
+  (1) Teil A an einem Testkunden (z. B. "Ki Works") auf Englisch/
+  Rumänisch umstellen und anrufen, prüfen ob Stimme/Verständnis/
+  Antwortsprache passen. (2) Teil B: vor `sync-demo-squad`-Aufruf die
+  Vapi-Squads/Handoff-API-Struktur in `syncDemoSquad()`
+  (`backend/src/vapiAdmin.js`) gegen `docs.vapi.ai/squads`/
+  `docs.vapi.ai/squads/handoff` verifizieren (Doku war beim Bauen
+  zwischen zwei Unterseiten uneinheitlich, exakte Feldnamen nicht
+  abschließend bestätigt) — dann erst für die Demo-Nummer aktivieren.
+  Wie immer nach jeder Vapi-Sync-Änderung: im Vapi-Dashboard manuell
+  "Publish" klicken.
 
 - **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — Diagnose läuft
   (22.09.2026):** Nutzer meldete 403 Forbidden beim Aufruf von
