@@ -3299,39 +3299,57 @@ Version auf "Publish" klicken.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
-- **Mehrsprachigkeit am Telefon — Teil A ausgerollt & vom Nutzer
-  bestätigt (22.09.2026), Teil B (Demo-Squad) noch nicht aktiviert.**
-  API-Struktur für Teil B mittlerweile gegen Vapis echtes OpenAPI-Schema
-  verifiziert (siehe „Bereits erledigt") — kein technisches Risiko mehr
-  bekannt, aber noch kein echter `sync-demo-squad`-Aufruf gemacht. Vor
-  Aktivierung für die Demo-Nummer: einmal auslösen, Ergebnis prüfen
-  (4 neue Assistenten + 1 Squad in Vapi sichtbar?), testanrufen (DE/EN/RO
-  durchspielen), danach wie immer im Vapi-Dashboard manuell "Publish"
-  für die neuen Assistenten klicken.
+- **Mehrsprachigkeit am Telefon — Teil A + Teil B ausgerollt und live
+  getestet (22.–23.09.2026), rumänische Stimme muss noch nachgebessert
+  werden.** Teil B: `sync-demo-squad` wurde ausgelöst, 4 neue
+  Vapi-Assistenten + 1 Squad erfolgreich angelegt (Squad
+  `59c5e394-b533-45a1-a360-b44b22e8927c`, Sprachauswahl-Assistent
+  `a10ce7d9-9427-446c-b0c4-bc0f24486582`, DE `c13524ad-b345-4ea7-ad36-
+  f1cfe05cab80`, EN `844e26a9-b06b-42ed-9e02-dde7efa43d83`, RO
+  `952176e2-17c2-43e8-921e-fa036cef474e`), im Vapi-Dashboard "Publish"
+  geklickt. **Echter Testanruf auf Rumänisch durchgeführt — Ergebnis:
+  Stimme (Azure `ro-RO-AlinaNeural`) klingt unnatürlich/roboterhaft UND
+  spricht falsch aus.** Deutsch/Englisch davon nicht betroffen. Als Fix
+  recherchiert und geplant (noch NICHT im Code umgesetzt): Umstieg nur
+  für Rumänisch von Azure auf **ElevenLabs** (`voice: {provider: '11labs',
+  model: 'eleven_multilingual_v2'}`, Struktur gegen Vapis echtes
+  OpenAPI-Schema verifiziert, läuft ohne eigenen ElevenLabs-Account direkt
+  über Vapi, Mehrkosten nur ca. 0,015–0,024 €/Min.). Vorgeschlagene
+  Start-Stimme: **"Ana-Maria" (`ieyDbsg4D73NUao7PAUt`)** — laut
+  ElevenLabs-Beschreibung "perfect for customer support", Alternative
+  falls das nicht überzeugt: "Eva" (`mSQ52FoQiuRydZA1FOpg`). Änderung
+  betrifft `backend/src/voiceOptions.js` (`LANGUAGE_OPTIONS.ro`) +
+  `backend/src/vapiAdmin.js` (`buildAssistantBody`s bisher hardcodierter
+  `provider: 'azure'` muss provider-bewusst werden) — wirkt dann
+  automatisch auch auf den RO-Assistenten im Demo-Squad (Teil B), da
+  beide dieselbe Funktion nutzen. **Noch nicht umgesetzt/committet**,
+  Session wurde durch die parallele „Forbidden"-Diagnose unterbrochen.
 
-- **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — Diagnose läuft
-  (22.09.2026):** Nutzer meldete 403 Forbidden beim Aufruf von
-  ki-works.eu über Mobilfunkdaten (WLAN/von hier aus per curl: 200 OK).
-  Ursache identifiziert: die aktiven nginx-Serverblöcke für
-  `ki-works.eu`/`n8n.ki-works.eu` hatten nur IPv4-`listen`-Direktiven —
-  IPv6-Requests (häufig bei Mobilfunknetzen) landeten dadurch im
-  nginx-Default-Server (einzige Instanz mit IPv6-Listener auf Port 80),
-  der `/var/www/html` ohne Index ausliefert → 403. Fix: `listen [::]:80`/
-  `listen [::]:443 ssl` in allen 4 Serverblöcken ergänzt
-  (`deploy/nginx/ki-works.conf` + `deploy/install.sh`-Bootstrap,
-  Commit `166c908`, committet+gepusht). Auf dem Server direkt per `sed`
-  nachgezogen (zwei Anläufe nötig — erster sed-Lauf hat versehentlich
-  jede `listen`-Zeile doppelt eingefügt, per `awk`-Dedup bereinigt,
-  `nginx -t` danach wieder erfolgreich, reload durchgeführt). **Trotzdem
-  meldete der Nutzer nach dem Reload weiterhin "Forbidden" im
-  Mobilfunknetz** — Diagnose war beim letzten Stand noch nicht
-  abgeschlossen (nächster Schritt: `getent ahosts ki-works.eu` +
-  Live-Mitschnitt von `/var/log/nginx/access.log` während eines echten
-  Reloads auf dem Handy, um die tatsächliche Request-IP/den Pfad zu
-  sehen). Falls die IPv6-Theorie nicht die (alleinige) Ursache ist: als
-  Nächstes den zwischenzeitlich (13.08.2026) begonnenen, nie als fertig
-  bestätigten Contabo-Cloud-Firewall-Regelsatz prüfen (Kundencenter, nicht
-  SSH) sowie einen möglichen Mobilfunk-Provider-/DNS-seitigen Block.
+- **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — nginx UND Contabo-
+  Firewall als Ursache ausgeschlossen, weiterhin ungeklärt (23.09.2026):**
+  Nutzer meldete 403 Forbidden beim Aufruf von ki-works.eu über
+  Mobilfunkdaten (WLAN/von hier aus per curl: 200 OK). Erste Theorie
+  (fehlende IPv6-`listen`-Direktiven, siehe `166c908`) auf dem Server
+  nachgezogen, brachte aber laut Nutzer **keine Besserung** — weiterhin
+  "Forbidden". Zwei gezielte Tests haben die Ursache seither eingegrenzt:
+  (1) Live-Mitschnitt von `/var/log/nginx/*.log` während eines echten
+  Handy-Reloads zeigte **keinerlei 403-Zeile** für den fraglichen
+  Zeitpunkt — die blockierende Antwort erreicht unseren nginx-Prozess
+  offenbar gar nicht. (2) Der Nutzer hat die tatsächliche Fehlerseite auf
+  dem Handy geprüft: reines weißes "403 Forbidden" **ohne** die für
+  nginx-Fehlerseiten typische "nginx"-Kennung am Fußende — bestätigt,
+  dass die Blockade nicht von unserem Server kommt. Die zwischenzeitlich
+  geprüfte Contabo-Cloud-Firewall (siehe „Bereits erledigt", jetzt
+  korrekt konfiguriert+zugewiesen) war zum Zeitpunkt des Tests noch gar
+  nicht zugewiesen (0 VPS/VDS) — kann also ebenfalls nicht die
+  ursprüngliche Ursache gewesen sein. **Aktuelle Arbeitshypothese:**
+  Mobilfunk-Provider-seitiger Jugendschutz-/Content-Filter, der neue/
+  unkategorisierte Domains standardmäßig blockt (typisches Muster für
+  ein unbranded, reines "403 Forbidden"). **Nächste Schritte, noch nicht
+  durchgeführt:** (a) beim Mobilfunkanbieter des betroffenen Handys
+  prüfen/anrufen, ob ein Jugendschutzfilter aktiv ist, (b) ki-works.eu auf
+  einer anderen SIM/einem Hotspot testen, um zu bestätigen, dass es
+  wirklich anbieterspezifisch ist und nicht doch am Server liegt.
 
 - **Live-Anruf-Banner — bis auf einen Punkt erledigt (06.09.2026):** Deploy
   von `landing/`+`dashboard/` sowie Venezia-Nummer geleert/"Ki Works"-Nummer
@@ -3564,13 +3582,19 @@ Version auf "Publish" klicken.
   API-Keys in `/etc/ki-works/ki-works.env` eingetragen,
   `systemctl restart ki-works-api` sauber ohne Auth-Fehler durchgelaufen
   (`journalctl` geprüft). SSH-Key-only-Login (statt Passwort) weiterhin
-  offen, siehe Punkt oben. **Update (13.08.2026):** Contabo bietet
-  inzwischen eine kostenlose Firewall pro Server an — Nutzer hat während
-  einer Sitzung mit der Einrichtung begonnen (empfohlene Regeln: eingehend
-  nur 22/TCP, 80/TCP, 443/TCP erlauben, Rest blocken). Ob die Firewall
-  fertig eingerichtet und dem Server zugewiesen wurde, ist von hier aus
-  nicht prüfbar (kein SSH-Zugriff) — beim nächsten Gespräch nachfragen,
-  falls nicht von selbst erwähnt.
+  offen, siehe Punkt oben. **Update (23.09.2026): Contabo Cloud-Firewall
+  fertig eingerichtet.** Die am 13.08.2026 begonnene, seither nie
+  zugewiesene Firewall "ki-works-server" (Contabo-Kundencenter, nicht
+  SSH) war bis dahin inaktiv (0 zugewiesene VPS/VDS) — beim Prüfen der
+  „Forbidden"-Diagnose (siehe „Offene Punkte") aufgefallen und direkt
+  fertiggestellt: alle drei Erlauben-Regeln (HTTPS/HTTP/SSH) laufen jetzt
+  auf Quelle "Any" (IPv4 **und** IPv6 — wichtig, sonst hätte die Aktivierung
+  jeglichen IPv6-Zugriff gekappt, inkl. der gerade erst gefixten
+  Mobilfunk-IPv6-Erreichbarkeit), alles andere wird per Default-Regel
+  gedroppt. Firewall dem Server `vmi3419465` (213.199.42.208) zugewiesen
+  und aktiv. **War NICHT die Ursache des weiterhin offenen
+  Forbidden-Problems** (war zum Zeitpunkt des Auftretens ja inaktiv),
+  schließt aber eine reale, lange offene Sicherheitslücke.
 - **Preise-Fußnote "zzgl. USt." — Rechtsform/USt.-Status ungeklärt
   (23.08.2026, Nutzer-Frage noch offen):** Nutzer wies darauf hin, dass
   die Preise-Fußnote "Alle Preise zzgl. USt." voraussetzt, dass ki-works
