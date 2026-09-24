@@ -3300,30 +3300,28 @@ Version auf "Publish" klicken.
 ## Offene Punkte (Stand zuletzt bekannt)
 
 - **Mehrsprachigkeit am Telefon — Teil A + Teil B ausgerollt und live
-  getestet (22.–23.09.2026), rumänische Stimme muss noch nachgebessert
-  werden.** Teil B: `sync-demo-squad` wurde ausgelöst, 4 neue
+  getestet (22.–23.09.2026), rumänische Stimme final bei Azure/Alina
+  belassen.** Teil B: `sync-demo-squad` wurde ausgelöst, 4 neue
   Vapi-Assistenten + 1 Squad erfolgreich angelegt (Squad
   `59c5e394-b533-45a1-a360-b44b22e8927c`, Sprachauswahl-Assistent
   `a10ce7d9-9427-446c-b0c4-bc0f24486582`, DE `c13524ad-b345-4ea7-ad36-
   f1cfe05cab80`, EN `844e26a9-b06b-42ed-9e02-dde7efa43d83`, RO
   `952176e2-17c2-43e8-921e-fa036cef474e`), im Vapi-Dashboard "Publish"
-  geklickt. **Echter Testanruf auf Rumänisch durchgeführt — Ergebnis:
-  Stimme (Azure `ro-RO-AlinaNeural`) klingt unnatürlich/roboterhaft UND
-  spricht falsch aus.** Deutsch/Englisch davon nicht betroffen. Als Fix
-  recherchiert und geplant (noch NICHT im Code umgesetzt): Umstieg nur
-  für Rumänisch von Azure auf **ElevenLabs** (`voice: {provider: '11labs',
-  model: 'eleven_multilingual_v2'}`, Struktur gegen Vapis echtes
-  OpenAPI-Schema verifiziert, läuft ohne eigenen ElevenLabs-Account direkt
-  über Vapi, Mehrkosten nur ca. 0,015–0,024 €/Min.). Vorgeschlagene
-  Start-Stimme: **"Ana-Maria" (`ieyDbsg4D73NUao7PAUt`)** — laut
-  ElevenLabs-Beschreibung "perfect for customer support", Alternative
-  falls das nicht überzeugt: "Eva" (`mSQ52FoQiuRydZA1FOpg`). Änderung
-  betrifft `backend/src/voiceOptions.js` (`LANGUAGE_OPTIONS.ro`) +
-  `backend/src/vapiAdmin.js` (`buildAssistantBody`s bisher hardcodierter
-  `provider: 'azure'` muss provider-bewusst werden) — wirkt dann
-  automatisch auch auf den RO-Assistenten im Demo-Squad (Teil B), da
-  beide dieselbe Funktion nutzen. **Noch nicht umgesetzt/committet**,
-  Session wurde durch die parallele „Forbidden"-Diagnose unterbrochen.
+  geklickt. Erster Testanruf auf Rumänisch fand die Stimme (Azure
+  `ro-RO-AlinaNeural`) unnatürlich/roboterhaft + falsch ausgesprochen —
+  daraufhin direkt im Vapi-Editor mehrere ElevenLabs-Alternativen
+  probegehört ("Ana-Maria" `ieyDbsg4D73NUao7PAUt` abgelehnt, "Eva"
+  `mSQ52FoQiuRydZA1FOpg`/"Liviu Mihai" `Q1khAM9K4Mi6p5TK0ueC` vorgeschlagen
+  aber nie final bestätigt). **Nach weiteren Tests Nutzer-Entscheidung:
+  bei Azure/Alina bleiben** — passt für den RO-Assistenten. Kein
+  Code-Fix nötig, `voiceOptions.js`/`vapiAdmin.js` bleiben unverändert.
+  **Weiterhin klein und separat offen:** die Sprachauswahl-Begrüßung
+  selbst (`buildLanguageSelectBody()`, ein Assistent liest den ganzen
+  dreisprachigen Satz "Für Deutsch... — for English... — pentru
+  română...") läuft komplett auf der deutschen Azure-Stimme (Ingrid) —
+  der rumänische Teilsatz darin klingt dadurch mit deutschem Akzent.
+  Niedrige Priorität (nur ein kurzer Begrüßungssatz, nicht das
+  eigentliche Gespräch), bisher nicht angegangen.
 
 - **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — nginx UND Contabo-
   Firewall als Ursache ausgeschlossen, weiterhin ungeklärt (23.09.2026):**
