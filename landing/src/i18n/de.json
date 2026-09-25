@@ -84,11 +84,11 @@
   "hero": {
     "badgeStatus": "Plattform online",
     "badgeVersion": "v1.0 · EU",
-    "titleBrand": "KI-Works",
-    "titleRest": "– Die Plattform für digitale KI-Mitarbeiter.",
-    "subtitlePrefix": "Lernen Sie",
+    "titleBrand": "Mehr Freiheit",
+    "titleRest": "für Ihr Geschäft — Kiwo übernimmt, was Sie aufhält.",
+    "subtitlePrefix": "Ihr digitaler Mitarbeiter",
     "subtitleName": "Kiwo",
-    "subtitleSuffix": "kennen – Ihren digitalen Mitarbeiter für Telefon, E-Mail und Terminverwaltung.",
+    "subtitleSuffix": "erledigt die Arbeit, die sonst liegen bleibt — damit Sie sich auf das konzentrieren können, was wirklich zählt.",
     "ctaPrimary": "Kiwo kennenlernen",
     "ctaSecondary": "Plattform-Demo",
     "statGdpr": "DSGVO · EU-Hosting",
@@ -337,8 +337,8 @@
     "cta": "Partnerprogramm entdecken"
   },
   "ctaSection": {
-    "headingPrefix": "Bereit für Ihren",
-    "headingHighlight": "digitalen Mitarbeiter?",
+    "headingPrefix": "Bereit für",
+    "headingHighlight": "mehr Freiheit?",
     "subtitle": "Starten Sie mit einem kostenlosen Piloten – Kontakt aufnehmen, gemeinsames Setup, Kiwo übernimmt.",
     "button": "Demo anfragen"
   },

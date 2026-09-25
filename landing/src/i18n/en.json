@@ -84,11 +84,11 @@
   "hero": {
     "badgeStatus": "Platform online",
     "badgeVersion": "v1.0 · EU",
-    "titleBrand": "KI-Works",
-    "titleRest": "– The platform for digital AI employees.",
-    "subtitlePrefix": "Meet",
+    "titleBrand": "More freedom",
+    "titleRest": "for your business — Kiwo takes on what's holding you back.",
+    "subtitlePrefix": "Your digital employee",
     "subtitleName": "Kiwo",
-    "subtitleSuffix": "– your digital employee for phone, email and appointment management.",
+    "subtitleSuffix": "handles the work that would otherwise pile up — so you can focus on what really matters.",
     "ctaPrimary": "Get to know Kiwo",
     "ctaSecondary": "Platform demo",
     "statGdpr": "GDPR · EU hosting",
@@ -331,8 +331,8 @@
     "cta": "Explore the partner program"
   },
   "ctaSection": {
-    "headingPrefix": "Ready for your",
-    "headingHighlight": "digital employee?",
+    "headingPrefix": "Ready for",
+    "headingHighlight": "more freedom?",
     "subtitle": "Start with a free pilot – get in touch, joint setup, Kiwo takes over.",
     "button": "Request a demo"
   },

@@ -84,11 +84,11 @@
   "hero": {
     "badgeStatus": "Platformă online",
     "badgeVersion": "v1.0 · UE",
-    "titleBrand": "KI-Works",
-    "titleRest": "– Platforma pentru angajați digitali AI.",
-    "subtitlePrefix": "Faceți cunoștință cu",
+    "titleBrand": "Mai multă libertate",
+    "titleRest": "pentru afacerea dumneavoastră — Kiwo preia ce vă reține.",
+    "subtitlePrefix": "Angajatul dumneavoastră digital",
     "subtitleName": "Kiwo",
-    "subtitleSuffix": "– angajatul dvs. digital pentru telefon, e-mail și gestionarea programărilor.",
+    "subtitleSuffix": "se ocupă de munca ce altfel rămâne neterminată — ca dumneavoastră să vă puteți concentra pe ce contează cu adevărat.",
     "ctaPrimary": "Descoperiți Kiwo",
     "ctaSecondary": "Demo platformă",
     "statGdpr": "RGPD · Găzduire UE",
@@ -332,7 +332,7 @@
   },
   "ctaSection": {
     "headingPrefix": "Sunteți pregătit pentru",
-    "headingHighlight": "angajatul dvs. digital?",
+    "headingHighlight": "mai multă libertate?",
     "subtitle": "Începeți cu un pilot gratuit – luați legătura, configurare comună, Kiwo preia.",
     "button": "Solicitați un demo"
   },
