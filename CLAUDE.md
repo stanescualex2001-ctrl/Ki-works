@@ -2607,6 +2607,28 @@ Version auf "Publish" klicken.
   vorangestellt (`[Paket: Team] ...`). Committet+gepusht (`f73b454`),
   normaler rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart
   nötig).
+- **Positionierung geschärft: Nutzen/Freiheit statt Produktmerkmale
+  (25.09.2026):** Nutzer-Einwand als Marketing-Frage: "Wir sollten nicht
+  Kiwo verkaufen, sondern Kiwo löst Probleme und gibt Freiheit und
+  Klarheit." Nach kurzem Brainstorming (Hero-Headline war bis dahin rein
+  produkt-/mechanismus-framed: "KI-Works – Die Plattform für digitale
+  KI-Mitarbeiter") gemeinsam neue Hero-Headline/-Subtitle sowie finale
+  CTA-Überschrift entwickelt, bewusst rollen-neutral formuliert (nicht nur
+  Telefon, passend zur Plattform-Positionierung). Neu: Hero-Headline
+  "Mehr Freiheit für Ihr Geschäft — Kiwo übernimmt, was Sie aufhält."
+  (`hero.titleBrand`/`titleRest`), Subtitle "Ihr digitaler Mitarbeiter
+  Kiwo erledigt die Arbeit, die sonst liegen bleibt — damit Sie sich auf
+  das konzentrieren können, was wirklich zählt." (`hero.subtitlePrefix`/
+  `subtitleName`/`subtitleSuffix`), finale CTA-Überschrift "Bereit für
+  mehr Freiheit?" (`ctaSection.headingPrefix`/`headingHighlight`) — in
+  allen 3 Sprachen (`landing/src/i18n/de/en/ro.json`), reine Textänderung
+  ohne Struktur-/Komponentenumbau. Preise-Sektion und Onboarding-Schritte
+  bewusst unangetastet gelassen (dort zählt weiterhin Konkretheit/
+  Vertrauen mehr als Emotion). Build + SSR-Prerender aller 3 Sprachen
+  fehlerfrei, per Grep verifiziert. Committet+gepusht (`6e8479d`), **auf
+  dem Produktivserver ausgerollt (Nutzer-Bestätigung 25.09.2026)**,
+  normaler rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart
+  nötig).
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
