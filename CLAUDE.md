@@ -3318,6 +3318,51 @@ Version auf "Publish" klicken.
   (`contactForm.*`, `customers.changeContact`) in allen 3 Sprachen.
   **Committet+gepusht (`1aac0ba`), noch NICHT auf dem Produktivserver
   ausgerollt.**
+- **Root Cause des "Forbidden"-Mobilfunk-Rätsels gefunden + SSL-Zertifikat
+  verlängert + Mail-Spam-Bug gefixt (26.09.2026):** Auslöser war eine
+  wiederholte "ki-works System-Alarm: ssl"-Mail (10x an 2 Tagen) —
+  Diagnose per `journalctl -u ki-works-api` zeigte zwei getrennte Dinge.
+  (1) **Echte, berechtigte Warnung:** das SSL-Zertifikat hatte nur noch
+  8-10 Tage Gültigkeit (Ablauf 04.10.2026), obwohl der Certbot-Timer
+  planmäßig 2x täglich lief. `certbot renew --dry-run` zeigte die
+  eigentliche Ursache: Let's Encrypts Validierung schlug über **IPv6**
+  fehl (404 auf die Challenge-Datei). Per DNS-Check von hier aus (`dig`
+  nicht installiert, `getent ahostsv6`/Node `dns.resolve6` als
+  Alternative genutzt) und `ip -6 addr show` auf dem Server verglichen:
+  der **AAAA-Eintrag von `ki-works.eu` zeigte auf `2a13:6602:1::10`**
+  (die IPv6 des alten Hosting-Panel-Servers bei helloly.hosting, wo die
+  DNS-Zone liegt), während der Contabo-Server tatsächlich
+  `2a02:c207:2341:9465::1` ist — beim Umzug der eigentlichen Website auf
+  Contabo wurde nur der A-Eintrag (IPv4) aktualisiert, der AAAA-Eintrag
+  der nackten Domain nie. **Das erklärt vermutlich auch das seit
+  23.09.2026 offene "Forbidden"-Mobilfunk-Rätsel** (IPv6-bevorzugende
+  Mobilfunknetze landeten auf dem falschen Server) — nginx und die
+  Contabo-Firewall waren wie dokumentiert nie die Ursache. Alle anderen
+  AAAA-Einträge der Zone (ftp/whm/webmail/cpanel/cpcontacts/cpcalendars/
+  webdisk/ipv6.ki-works.eu sowie die komplette `ledtek.at.ki-works.eu`/
+  `pixelpress.at.ki-works.eu`-Housekeeping) zeigen bewusst weiterhin auf
+  den Hosting-Panel-Server — das ist korrekt so (E-Mail/Webdisk/
+  Panel-Zugang laufen dort), nur der eine AAAA-Eintrag der Domain selbst
+  war falsch. Nutzer hat den AAAA-Eintrag im helloly.hosting-Kundencenter
+  auf `2a02:c207:2341:9465::1` korrigiert, `certbot renew` lief danach
+  erfolgreich durch ("Congratulations, all renewals succeeded"), nginx
+  automatisch neu geladen. **Mobilfunk-Test nach dem Fix vom Nutzer noch
+  nicht rückgemeldet** (siehe „Offene Punkte"). (2) **Warum 10 Mails statt
+  max. 4 in 2 Tagen (6h-Abklingzeit):** Bug in `alertIfProblem()`
+  (`backend/src/monitoring.js`) — die Abklingzeit wurde bisher bei jedem
+  `check.ok !== false` gelöscht, also auch bei `ok: null` (Check konnte
+  kein eindeutiges Ergebnis liefern, z. B. durch den oben beschriebenen
+  IPv6-Fehlschlag). Jeder solche unklare Zwischen-Check hat die
+  Abklingzeit lautlos zurückgesetzt, der nächste reguläre Fehlschlag hat
+  dann sofort wieder alarmiert statt bis 6h zu warten — belegt im
+  Vergleich zum "Kein aktuelles Backup"-Alarm im selben Log, der die 6h
+  sauber eingehalten hat. Fix: Abklingzeit nur noch bei echtem
+  `check.ok === true` löschen (`else` → `else if (check.ok === true)`).
+  `node --check` fehlerfrei. Committet+gepusht (`0962617`), **noch NICHT
+  auf dem Produktivserver ausgerollt** — braucht nur `npm install
+  --omit=dev` (keine neue Abhängigkeit, also eigentlich nur den normalen
+  Backend-Deploy-Schritt) + `systemctl restart ki-works-api`, keine
+  Migration.
 
 ## Offene Punkte (Stand zuletzt bekannt)
 
@@ -3345,31 +3390,13 @@ Version auf "Publish" klicken.
   Niedrige Priorität (nur ein kurzer Begrüßungssatz, nicht das
   eigentliche Gespräch), bisher nicht angegangen.
 
-- **ki-works.eu zeigt "Forbidden" im Mobilfunknetz — nginx UND Contabo-
-  Firewall als Ursache ausgeschlossen, weiterhin ungeklärt (23.09.2026):**
-  Nutzer meldete 403 Forbidden beim Aufruf von ki-works.eu über
-  Mobilfunkdaten (WLAN/von hier aus per curl: 200 OK). Erste Theorie
-  (fehlende IPv6-`listen`-Direktiven, siehe `166c908`) auf dem Server
-  nachgezogen, brachte aber laut Nutzer **keine Besserung** — weiterhin
-  "Forbidden". Zwei gezielte Tests haben die Ursache seither eingegrenzt:
-  (1) Live-Mitschnitt von `/var/log/nginx/*.log` während eines echten
-  Handy-Reloads zeigte **keinerlei 403-Zeile** für den fraglichen
-  Zeitpunkt — die blockierende Antwort erreicht unseren nginx-Prozess
-  offenbar gar nicht. (2) Der Nutzer hat die tatsächliche Fehlerseite auf
-  dem Handy geprüft: reines weißes "403 Forbidden" **ohne** die für
-  nginx-Fehlerseiten typische "nginx"-Kennung am Fußende — bestätigt,
-  dass die Blockade nicht von unserem Server kommt. Die zwischenzeitlich
-  geprüfte Contabo-Cloud-Firewall (siehe „Bereits erledigt", jetzt
-  korrekt konfiguriert+zugewiesen) war zum Zeitpunkt des Tests noch gar
-  nicht zugewiesen (0 VPS/VDS) — kann also ebenfalls nicht die
-  ursprüngliche Ursache gewesen sein. **Aktuelle Arbeitshypothese:**
-  Mobilfunk-Provider-seitiger Jugendschutz-/Content-Filter, der neue/
-  unkategorisierte Domains standardmäßig blockt (typisches Muster für
-  ein unbranded, reines "403 Forbidden"). **Nächste Schritte, noch nicht
-  durchgeführt:** (a) beim Mobilfunkanbieter des betroffenen Handys
-  prüfen/anrufen, ob ein Jugendschutzfilter aktiv ist, (b) ki-works.eu auf
-  einer anderen SIM/einem Hotspot testen, um zu bestätigen, dass es
-  wirklich anbieterspezifisch ist und nicht doch am Server liegt.
+- **"Forbidden"-Mobilfunk-Test nach dem AAAA-Fix noch ausstehend
+  (26.09.2026):** die vermutliche Ursache (falscher AAAA-Eintrag für
+  ki-works.eu, siehe „Bereits erledigt") ist behoben — Nutzer sollte
+  ki-works.eu nochmal auf demselben Handy/Mobilfunknetz testen, das
+  vorher "Forbidden" zeigte, um das final zu bestätigen. Falls das
+  Problem doch weiterbesteht, war die Arbeitshypothese (Mobilfunk-
+  Provider-Filter) nicht korrekt und es braucht eine neue Diagnose.
 
 - **Live-Anruf-Banner — bis auf einen Punkt erledigt (06.09.2026):** Deploy
   von `landing/`+`dashboard/` sowie Venezia-Nummer geleert/"Ki Works"-Nummer
