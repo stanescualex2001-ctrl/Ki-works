@@ -115,6 +115,10 @@ export async function getSystemStatus() {
 
 // Alarmiert per E-Mail (über n8n) höchstens einmal pro Problem und Abklingzeit,
 // damit bei einem andauernden Problem nicht alle 15 Minuten eine Mail kommt.
+// Wichtig: die Abklingzeit nur bei einem echten ok:true löschen, nicht bei
+// ok:null (Check konnte kein eindeutiges Ergebnis liefern, z. B. kurzer
+// Netzwerk-Hänger) — sonst hebt ein einzelner unklarer Check die Abklingzeit
+// lautlos auf und der nächste reguläre Fehlschlag spammt sofort erneut.
 async function alertIfProblem(name, check, describe) {
   if (check.ok === false) {
     const last = alertedAt[name];
@@ -124,7 +128,7 @@ async function alertIfProblem(name, check, describe) {
       await logError('health-check', new Error(detail), 'warn');
       notifyN8n('system-alarm', { check: name, detail });
     }
-  } else {
+  } else if (check.ok === true) {
     delete alertedAt[name];
   }
 }
