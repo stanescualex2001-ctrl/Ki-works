@@ -3391,12 +3391,13 @@ Version auf "Publish" klicken.
   eigentliche Gespräch), bisher nicht angegangen.
 
 - **"Forbidden"-Mobilfunk-Test nach dem AAAA-Fix noch ausstehend
-  (26.09.2026):** die vermutliche Ursache (falscher AAAA-Eintrag für
-  ki-works.eu, siehe „Bereits erledigt") ist behoben — Nutzer sollte
-  ki-works.eu nochmal auf demselben Handy/Mobilfunknetz testen, das
-  vorher "Forbidden" zeigte, um das final zu bestätigen. Falls das
-  Problem doch weiterbesteht, war die Arbeitshypothese (Mobilfunk-
-  Provider-Filter) nicht korrekt und es braucht eine neue Diagnose.
+  (26.09.2026, Test für Montag 28.09. angekündigt):** die vermutliche
+  Ursache (falscher AAAA-Eintrag für ki-works.eu, siehe „Bereits
+  erledigt") ist behoben — Nutzer testet ki-works.eu am Montag nochmal
+  auf demselben Handy/Mobilfunknetz, das vorher "Forbidden" zeigte, um
+  das final zu bestätigen. Falls das Problem doch weiterbesteht, war die
+  Arbeitshypothese (Mobilfunk-Provider-Filter) nicht korrekt und es
+  braucht eine neue Diagnose.
 
 - **Live-Anruf-Banner — bis auf einen Punkt erledigt (06.09.2026):** Deploy
   von `landing/`+`dashboard/` sowie Venezia-Nummer geleert/"Ki Works"-Nummer
