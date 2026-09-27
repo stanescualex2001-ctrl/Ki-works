@@ -177,9 +177,13 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
   try {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const attemptStartedAt = Date.now();
+      // max_tokens 8000→16000 (27.09.2026): ein Lauf mit 3 Kandidaten +
+      // vollständigen Mail-Texten/Begründungen hat stop_reason:max_tokens
+      // erreicht (Antwort mitten im JSON abgeschnitten, "keine verwertbare
+      // JSON-Antwort erhalten") — mehr Puffer für vollständige Antworten.
       const stream = client.messages.stream({
         model: MODEL,
-        max_tokens: 8000,
+        max_tokens: 16000,
         cache_control: { type: 'ephemeral' },
         tools,
         messages,
