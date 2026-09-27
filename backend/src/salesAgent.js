@@ -158,26 +158,34 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
   // Web-Search-/Web-Fetch-Ergebnisse) erneut voll abgerechnet — automatisches
   // Caching (Top-Level-Feld) liest das ab dem 2. Versuch stattdessen zu 10%
   // des Preises aus dem Cache.
-  // Diagnose-Logging (13./14.09.2026): bisher sah man bei einem Fehlschlag
-  // nur "Request timed out." ohne Kontext, ob wirklich das 30-Min.-SDK-
-  // Timeout erreicht wurde oder ob die Verbindung schon deutlich früher aus
-  // einem anderen Grund abgebrochen ist (z. B. ein Netzwerk-Hop, der eine
-  // lange "stille" Verbindung von sich aus kappt) — nicht unterscheidbar
-  // ohne Laufzeit + echte Fehlerdetails. Jetzt: Laufzeit pro Versuch +
-  // gesamt, sowie name/status/code/cause des Fehlers.
+  // Diagnose-Logging (13./14.09.2026) deckte am 27.09.2026 den echten Root
+  // Cause auf: zwei Fehlschläge (vor UND nach dem 30-Min.-Timeout-Deploy)
+  // brachen beide nach exakt ~900s (15 Min.) ab, mit status/code/cause
+  // durchgehend "n/a" — kein echter Fehler von Anthropic, sondern eine
+  // Zwischenstation im Netzwerk, die eine lange Verbindung ohne Datenfluss
+  // von sich aus kappt. `client.messages.create()` sendet bei einem langen
+  // Tool-Use-Lauf (viele Websuchen) minutenlang gar keine Bytes, bis am
+  // Ende die komplette Antwort auf einmal kommt — genau das Muster, vor
+  // dem Anthropics eigene Doku für lange Anfragen warnt. Fix: Streaming
+  // (`client.messages.stream()`) statt einer einzelnen großen Antwort —
+  // die Verbindung bekommt durchgehend Daten (inkl. Anthropics eigener
+  // Keep-Alive-Ping-Events), wird also nicht mehr als "still" erkannt.
+  // `.finalMessage()` liefert am Ende dasselbe Message-Objekt wie
+  // `create()` vorher — der Rest der Logik bleibt unverändert.
   const startedAt = Date.now();
   let response;
   try {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const attemptStartedAt = Date.now();
-      // eslint-disable-next-line no-await-in-loop
-      response = await client.messages.create({
+      const stream = client.messages.stream({
         model: MODEL,
         max_tokens: 8000,
         cache_control: { type: 'ephemeral' },
         tools,
         messages,
       });
+      // eslint-disable-next-line no-await-in-loop
+      response = await stream.finalMessage();
       const attemptS = ((Date.now() - attemptStartedAt) / 1000).toFixed(1);
       console.log(`Sales-Agent: Versuch ${attempt + 1} abgeschlossen nach ${attemptS}s (stop_reason: ${response.stop_reason})`);
       if (response.stop_reason !== 'pause_turn') break;
