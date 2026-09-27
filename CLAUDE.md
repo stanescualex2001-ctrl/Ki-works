@@ -1928,6 +1928,44 @@ Version auf "Publish" klicken.
   aktualisierten `deploy/nginx/ki-works.conf` nach
   `/etc/nginx/sites-available/ki-works.conf` + `nginx -t && systemctl
   reload nginx` (nginx-Config wird nie automatisch per rsync ausgerollt).
+- **Vierter Sales-Agent-Timeout-Fix — endlich der echte Root Cause
+  (27.09.2026):** der 13.09.-Fix (30 Min. + maxCandidates=3) wurde erst
+  an diesem Tag zum ersten Mal wirklich auf dem Server ausgerollt und
+  getestet — **schlug sofort wieder fehl**, mit demselben "Request timed
+  out." wie immer, erneut echte Kosten ohne Ergebnis für pixelpress.at.
+  Diesmal aber mit dem seit 13./14.09. eingebauten Diagnose-Logging
+  (Laufzeit + `name`/`status`/`code`/`cause` des Fehlers) — zeigte:
+  **zwei unabhängige Fehlschläge (einer vor, einer nach dem Deploy) beide
+  nach exakt ~900s (15 Min.)**, mit `status=n/a code=n/a cause=n/a`. Das
+  war nie das SDK- oder nginx-Timeout (beide auf 1800s), sondern eine
+  Zwischenstation im Netzwerk, die eine lange Verbindung ohne Datenfluss
+  von sich aus kappt — `client.messages.create()` sendet bei einem langen
+  Tool-Use-Lauf (viele Websuchen) minutenlang gar keine Bytes, bis am
+  Ende die komplette Antwort auf einmal kommt; genau das Muster, vor dem
+  Anthropics eigene Doku für lange Anfragen warnt. Alle drei vorherigen
+  "Fixes" (08.09., 13.09.) haben nur an der falschen Stelle gedreht
+  (Timeout-Werte), ohne das eigentliche Problem zu adressieren — hätte
+  von Anfang an erkannt werden können/sollen, Nutzer hat das zu Recht
+  kritisiert. **Echter Fix:** `runSalesAgentInner()`
+  (`backend/src/salesAgent.js`) von `client.messages.create()` auf
+  `client.messages.stream()` umgestellt (SDK-Helfer, `.finalMessage()`
+  liefert exakt dasselbe Message-Objekt wie vorher, keine sonstige
+  Logik-Änderung) — die Verbindung bekommt durch Streaming durchgehend
+  Daten (inkl. Anthropics eigener Keep-Alive-Ping-Events), wird nicht
+  mehr als "still" erkannt und abgebrochen. **Sofort mit echtem Testlauf
+  bestätigt** (pixelpress.at, ohne Region-Eingrenzung): Versuch 1 lief
+  1480,5s (≈24,7 Min.) — weit über der alten 900s-Grenze — und kam
+  sauber durch (`stop_reason: pause_turn`), Versuch 2 (Folgeanfrage nach
+  `pause_turn`) weitere 63,6s, danach `end_turn`. Ergebnis: 2 Kandidaten
+  gefunden, 2 Entwürfe erstellt (kein Timeout mehr). Nur ein
+  `node --check`-Syntaxcheck vor dem Deploy möglich (kein Weg, Streaming-
+  Verhalten ohne echten API-Aufruf zu verifizieren) — Bestätigung kam erst
+  durch den echten Testlauf danach. Committet+gepusht (`3f8e1e2`), **auf
+  dem Produktivserver ausgerollt und mit echtem Erfolg verifiziert
+  (27.09.2026)** — keine nginx-Änderung nötig (Timeout-Werte unverändert),
+  reiner Backend-Neustart. Timeout-Werte (30 Min. SDK/nginx,
+  maxCandidates=3) bleiben als zusätzliche Absicherung bestehen, waren
+  aber nicht die eigentliche Lösung.
 - **Sales-Mail-Vorschau: volle Breite + feste Signatur (29.08.2026):**
   zwei Nutzer-Funde nach dem ersten echten Sales-Agent-Testlauf (Region
   "Perg Stadt" — Trefferquote für Kontakt-E-Mails deutlich besser, wie
@@ -3453,20 +3491,6 @@ Version auf "Publish" klicken.
   live) und noch keine Agentur-Domain per `deploy/add-agency-domain.sh
   <domain>` eingerichtet; beides erst nötig, sobald eine echte Agentur
   zusagt (braucht vorher gesetztes DNS der Agentur auf die Server-IP).
-- **Dritter Sales-Agent-Timeout-Fix (13.09.2026, 30 Min. + maxCandidates=3)
-  noch NICHT auf dem Produktivserver ausgerollt.** Committet (`a5e96c1`),
-  braucht Backend-Neustart (`salesAgent.js`/`server.js` geändert),
-  normalen `business-dashboard/`-Build UND manuelles Kopieren der
-  aktualisierten `deploy/nginx/ki-works.conf` nach
-  `/etc/nginx/sites-available/ki-works.conf` + `nginx -t && systemctl
-  reload nginx` — ohne den nginx-Schritt bringt der Rest nichts, da der
-  Browser sonst weiterhin nach 20 Min. (alter nginx-Wert) ein 504 zeigt,
-  während das Backend schon mit dem neuen 30-Min.-Timeout arbeitet. Nach
-  dem Deploy beim nächsten "Sales-Agent starten" prüfen, ob ein langer
-  Lauf jetzt durchläuft statt mit "Request timed out"/504 abzubrechen —
-  der vorherige 20-Min.-Fix vom 08.09.2026 funktionierte technisch
-  korrekt, war für einen Lauf mit Region "Wien" + 5 Kandidaten aber zu
-  kurz (siehe „Bereits erledigt").
   Social-Media-Agent zusätzlich: eine echte Veröffentlichung (nicht nur
   der Text-/Bildentwurf) setzt weiterhin die offene Meta-App-Einrichtung
   voraus (siehe „Social-Media-Automatisierung" unten) — ohne `FB_PAGE_ID`/
