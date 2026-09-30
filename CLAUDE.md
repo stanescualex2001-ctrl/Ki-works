@@ -2684,6 +2684,29 @@ Version auf "Publish" klicken.
   dem Produktivserver ausgerollt (Nutzer-Bestätigung 25.09.2026)**,
   normaler rsync/Build-Ablauf für `landing/` reicht (kein Backend-Neustart
   nötig).
+- **Backup lief seit Tagen nicht mehr + Alarm-Mails 4x/Tag statt 1x
+  (30.09.2026):** Nutzer meldete per Screenshot ("Gemeinsamer Postfach")
+  wiederholte "ki-works System-Alarm: backup"-Mails im 6-Stunden-Takt.
+  Zwei getrennte Fixes: (1) **Root Cause per `journalctl` gefunden:**
+  `deploy/backup-db.sh` hat die Env-Datei zusätzlich per eigenem `source
+  /etc/ki-works/ki-works.env` geladen — die Datei wird aber bereits über
+  `EnvironmentFile=` in der systemd-Unit (`ki-works-backup.service`) mit
+  Root-Rechten geladen, bevor auf `User=kiworks` gewechselt wird; das
+  zusätzliche `source` im Skript lief dann schon als `kiworks` und durfte
+  die root-only lesbare Datei nicht mehr öffnen ("Permission denied") —
+  das Backup ist dadurch seit mindestens 3 Tagen bei jedem Lauf sofort
+  abgebrochen, bevor `pg_dump` überhaupt startete. Fix: redundante
+  `source`-Zeile in `deploy/backup-db.sh` entfernt (Variablen kommen
+  bereits über `EnvironmentFile=` in den Prozess). (2) **Cooldown erhöht:**
+  der "Kein aktuelles Backup"-Alarm hat wie designt alle 6 Stunden erneut
+  gefeuert, solange das Problem bestand (`ALERT_COOLDOWN_MS` in
+  `backend/src/monitoring.js`) — auf Nutzer-Wunsch ("besser jede 12 oder
+  24 Stunden") auf 24 Stunden erhöht, gilt einheitlich für alle
+  System-Alarme (DB/n8n/Disk/SSL/Backup). Beide Fixes committet+gepusht
+  (`99377d3`, `f1f86e8`) und **auf dem Produktivserver ausgerollt + live
+  verifiziert (30.09.2026):** manueller `systemctl start
+  ki-works-backup.service` lief mit `status=0/SUCCESS` durch, neue Datei
+  `kiworks-2026-09-30-0914.sql.gz` im Backup-Verzeichnis bestätigt.
 
 ## Ideen & Zukunftsplanung (noch NICHT entschieden/gebaut, nur vormerken)
 
