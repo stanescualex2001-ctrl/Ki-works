@@ -4,7 +4,7 @@ import { query } from './db.js';
 import { notifyN8n } from './n8n.js';
 
 const BACKUP_DIR = process.env.BACKUP_DIR || '/var/backups/ki-works';
-const ALERT_COOLDOWN_MS = 6 * 60 * 60 * 1000;
+const ALERT_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 const alertedAt = {};
 
 export async function logError(source, err, level = 'error') {
