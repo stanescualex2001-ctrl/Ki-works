@@ -1966,6 +1966,23 @@ Version auf "Publish" klicken.
   reiner Backend-Neustart. Timeout-Werte (30 Min. SDK/nginx,
   maxCandidates=3) bleiben als zusätzliche Absicherung bestehen, waren
   aber nicht die eigentliche Lösung.
+- **Fünfter Sales-Agent-Fix: max_tokens 8000→16000, neue Fehlerart nach
+  dem Streaming-Fix (27.09.2026):** direkt im Anschluss an den Streaming-
+  Fix ein weiterer echter Testlauf (ki-works.eu) — diesmal **kein
+  Timeout mehr** (Bestätigung, dass Streaming hält), aber neuer Fehler
+  "Sales-Agent: keine verwertbare JSON-Antwort erhalten".
+  `journalctl`-Log zeigte `stop_reason: max_tokens` — die Antwort riss
+  bei 3 Kandidaten mit vollständigen Mail-Texten/Begründungen mitten im
+  JSON ab, `extractJsonArray()` fand kein schließendes `]`/```` ``` ````
+  mehr. Im selben Log außerdem zwei sauber durchgelaufene Läufe
+  (`end_turn` nach 298,6s bzw. 63,6s) — weiterer Beleg, dass der
+  Streaming-Fix funktioniert. Fix: `max_tokens` in
+  `backend/src/salesAgent.js` von 8000 auf 16000 angehoben (genug Puffer
+  für 3 vollständige Kandidaten-Mails). Nur `node --check` möglich vor
+  dem Deploy. Committet+gepusht (`16f38e3`), **auf dem Produktivserver
+  ausgerollt (27.09.2026)** — reiner Backend-Neustart, keine nginx-
+  Änderung. **Erneuter Testlauf nach diesem Deploy noch nicht
+  zurückgemeldet** (siehe „Offene Punkte").
 - **Sales-Mail-Vorschau: volle Breite + feste Signatur (29.08.2026):**
   zwei Nutzer-Funde nach dem ersten echten Sales-Agent-Testlauf (Region
   "Perg Stadt" — Trefferquote für Kontakt-E-Mails deutlich besser, wie
