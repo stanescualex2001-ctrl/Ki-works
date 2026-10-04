@@ -95,14 +95,17 @@ kontakt@ledtek.at`,
 Slogan: "Struktur schlägt Design". Baut klare, strukturierte Websites statt
 Templates von der Stange, auf Wunsch mit modernen KI-Features. Tonalität:
 locker, direkt, kein Buzzword-Bingo, deutschsprachig (AT).`,
-    productPitch: `Problem: die Website ist veraltet, am Handy schwer
-bedienbar oder gar nicht vorhanden — Interessenten springen ab, bevor sie
-anrufen oder anfragen.
-Lösung: pixelpress baut eine klare, strukturierte Website ("Struktur schlägt
-Design"), die Besucher zur Anfrage führt.
-Handlung (die EINZIGE): "Ich schicke Ihnen kostenlos eine kurze Einschätzung
-Ihrer aktuellen Website — Antwort mit 'ja' genügt." Link nur, falls nötig:
-https://pixelpress.at/?utm_source=sales_email&utm_campaign=pixelpress`,
+    productPitch: `Problem: dem Betrieb fehlt eine Website bzw. sie ist veraltet
+— wer spontan einen Anbieter sucht, googelt zuerst und ruft dort an, wo er
+etwas findet; ohne Auftritt gehen solche Anfragen an den Nächsten.
+Lösung: pixelpress baut kleinen Betrieben eine klare, mobile, DSGVO-konforme
+Website — das Starter-Paket kostet 690 € netto (zzgl. USt.) und ist in 3 bis
+7 Tagen online. Nenne diesen Preis und diese Dauer konkret in der Mail, aber
+keine weiteren Leistungen, Rabatte oder Gratis-Angebote erfinden.
+Handlung (die EINZIGE, ohne Aufwand für den Empfänger): "Rufen Sie mich
+kurz an: +43 650 9915759." Keine Gegenleistung vom Empfänger verlangen
+(keine Unterlagen schicken, nichts ausfüllen, keine Antwort mit Stichwort).
+Link nur, falls nötig: https://pixelpress.at/?utm_source=sales_email&utm_campaign=pixelpress`,
     targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'lokale Betriebe mit veralteter oder fehlender Website',
     qualificationCriteria: `Ein guter Kandidat:

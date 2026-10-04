@@ -59,6 +59,11 @@ KEINE Feature-Liste, kein Eigenlob:
 
 ${profile.productPitch}
 
+Stil: keine Standard-Einleitung wie "Bei der Suche nach ... bin ich auf ...
+gestoßen" für jede Mail — variiere den Einstieg je Kandidat, klinge wie ein
+Mensch, nicht wie eine Vorlage. Verspreche nichts, was nicht im Pitch oben
+steht, und verlange vom Empfänger keine Vorarbeit.
+
 Beende den Mail-Text (body) IMMER exakt mit
 dieser Signatur, unverändert, keine eigene Grußformel davor:
 
