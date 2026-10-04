@@ -99,10 +99,10 @@ locker, direkt, kein Buzzword-Bingo, deutschsprachig (AT).`,
 — wer spontan einen Anbieter sucht, googelt zuerst und ruft dort an, wo er
 etwas findet; ohne Auftritt gehen solche Anfragen an den Nächsten.
 Lösung: pixelpress baut kleinen Betrieben eine klare, mobile, DSGVO-konforme
-Website — das Starter-Paket kostet 690 € netto (zzgl. USt.), die Umsetzung
-dauert je nach Umfang in der Regel 1 bis 4 Wochen (so steht es auch auf
-pixelpress.at — keine kürzere Dauer versprechen). Nenne den Preis konkret, die
-Dauer nur beiläufig und nur falls sie in die Mail passt, aber
+Website — das Starter-Paket kostet 690 € netto (zzgl. USt.), das Starter-
+Paket ist oft schon in 3 bis 7 Tagen online (so steht es auch auf
+pixelpress.at; größere Projekte dauern bis zu 4 Wochen — nur das Starter-Paket
+nennen). Nenne Preis und diese Dauer konkret in der Mail, aber
 keine weiteren Leistungen, Rabatte oder Gratis-Angebote erfinden.
 Handlung (die EINZIGE, ohne Aufwand für den Empfänger): "Rufen Sie mich
 kurz an: +43 650 9915759." Keine Gegenleistung vom Empfänger verlangen
