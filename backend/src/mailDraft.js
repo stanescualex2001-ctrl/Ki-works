@@ -10,13 +10,29 @@ import nodemailer from 'nodemailer';
 // erste vorhandene Treffer wird verwendet.
 const DRAFT_FOLDER_CANDIDATES = ['Drafts', 'Entwürfe', 'INBOX.Drafts', 'INBOX.Entwürfe'];
 
-export async function createSalesDraft({ to, subject, text }) {
-  const host = process.env.KIWORKS_MAIL_IMAP_HOST;
-  const port = Number(process.env.KIWORKS_MAIL_IMAP_PORT || 993);
-  const user = process.env.KIWORKS_MAIL_IMAP_USER;
-  const pass = process.env.KIWORKS_MAIL_IMAP_PASSWORD;
+// Env-Präfix pro Business: jedes Business hat sein eigenes Postfach
+// (<PREFIX>_MAIL_IMAP_HOST/_PORT/_USER/_PASSWORD). 'reseller' nutzt dasselbe
+// Postfach wie ki-works. Neues Business = ein Eintrag hier + Env-Variablen.
+const MAILBOX_ENV_PREFIX = {
+  'ki-works': 'KIWORKS',
+  reseller: 'KIWORKS',
+  ledtek: 'LEDTEK',
+  pixelpress: 'PIXELPRESS',
+};
+
+export function hasMailbox(business) {
+  return Boolean(MAILBOX_ENV_PREFIX[business]);
+}
+
+export async function createSalesDraft({ business = 'ki-works', to, subject, text }) {
+  const prefix = MAILBOX_ENV_PREFIX[business];
+  if (!prefix) throw new Error(`Kein Postfach für Business "${business}" vorgesehen`);
+  const host = process.env[`${prefix}_MAIL_IMAP_HOST`];
+  const port = Number(process.env[`${prefix}_MAIL_IMAP_PORT`] || 993);
+  const user = process.env[`${prefix}_MAIL_IMAP_USER`];
+  const pass = process.env[`${prefix}_MAIL_IMAP_PASSWORD`];
   if (!host || !user || !pass) {
-    throw new Error('KIWORKS_MAIL_IMAP_HOST/_USER/_PASSWORD nicht gesetzt');
+    throw new Error(`${prefix}_MAIL_IMAP_HOST/_USER/_PASSWORD nicht gesetzt`);
   }
 
   const { message } = await nodemailer.createTransport({ streamTransport: true, buffer: true }).sendMail({

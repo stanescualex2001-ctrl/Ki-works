@@ -10,7 +10,7 @@ import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
 import { runSocialAgent, getSocialTrendSuggestions } from './socialAgent.js';
-import { createSalesDraft } from './mailDraft.js';
+import { createSalesDraft, hasMailbox } from './mailDraft.js';
 import { BUSINESS_PROFILES } from './businessProfiles.js';
 import { LANGUAGE_OPTIONS } from './voiceOptions.js';
 import { startRun, finishRun, failRun, getRunStatus } from './agentRunStatus.js';
@@ -35,13 +35,6 @@ app.use(authMiddleware);
 const SOCIAL_ASSETS_DIR = path.join(process.cwd(), 'public', 'social-assets');
 fs.mkdirSync(SOCIAL_ASSETS_DIR, { recursive: true });
 app.use('/api/public/social-assets', express.static(SOCIAL_ASSETS_DIR, { maxAge: '1d' }));
-
-// Businesses, deren Sales-Freigaben Entwürfe im echten Postfach
-// info@ki-works.eu anlegen dürfen (IMAP) — 'reseller' nutzt dasselbe
-// Postfach wie 'ki-works' selbst (identischer Absender, nur andere
-// Zielgruppe). Alle anderen Businesses (LEDTEK/pixelpress) bekommen nur
-// den Text zum manuellen Kopieren, da sie ein anderes/kein Postfach haben.
-const OWN_MAILBOX_BUSINESSES = ['ki-works', 'reseller'];
 
 // Async-Fehler aus Routen landen im Error-Handler statt die Anfrage hängen zu lassen.
 for (const method of ['get', 'post', 'patch']) {
@@ -1010,11 +1003,11 @@ app.patch('/api/pending-actions/:id', async (req, res) => {
   // Business-Check würde eine LEDTEK-/pixelpress-Freigabe versehentlich
   // versuchen, auf KI-Works' eigenem Postfach/Facebook-Auftritt zu landen.
   if (status === 'approved' && action.role === 'sales' && action.kind === 'outreach_email') {
-    if (!OWN_MAILBOX_BUSINESSES.includes(action.business)) {
+    if (!hasMailbox(action.business)) {
       mailDraftWarning = 'Kein Postfach für dieses Business konfiguriert — Text bitte manuell kopieren.';
     } else if (payload.contact_email) {
       try {
-        await createSalesDraft({ to: payload.contact_email, subject: payload.subject, text: payload.body });
+        await createSalesDraft({ business: action.business, to: payload.contact_email, subject: payload.subject, text: payload.body });
         payload = { ...payload, draftCreated: true };
       } catch (err) {
         mailDraftWarning = `Entwurf konnte nicht angelegt werden: ${err.message}`;
