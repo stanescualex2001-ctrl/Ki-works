@@ -18,8 +18,13 @@ Marktplatz 10, Schwertberg. Zielgruppe: Restaurants/Gasthäuser in
 Österreich, Deutschland und Rumänien. Hauptangebot: 1 Monat kostenlos
 testen. Tonalität: klar,
 konkret, keine Buzzword-Übertreibung, deutschsprachig (AT).`,
-    productPitch: `Erwähne kurz den Nutzen (Telefon rund um die Uhr,
-Reservierungen automatisch entgegennehmen) und den ersten Monat kostenlos.`,
+    productPitch: `Problem: zur Stoßzeit klingelt das Telefon, niemand hat
+eine Hand frei, jeder verpasste Anruf ist oft eine verlorene Reservierung.
+Lösung: Kiwo nimmt Anrufe rund um die Uhr an, bucht Reservierungen/
+Bestellungen und schickt dem Betrieb die Details sofort per E-Mail.
+Handlung (die EINZIGE): "Rufen Sie +43 726 223 417 an und hören Sie selbst,
+wie Kiwo klingt (2 Minuten)." Optional ein Halbsatz: erster Monat kostenlos.
+Link nur, falls nötig: https://ki-works.eu/?utm_source=sales_email&utm_campaign=ki-works`,
     targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'Restaurants, Gasthäuser, Cafés und kleine Hotels',
     qualificationCriteria: `Ein guter Kandidat:
@@ -53,9 +58,12 @@ info@ki-works.eu`,
 Handwerk, Gewerbe und Bauunternehmen — schneller Versand (48h-Versprechen),
 klares Sortiment ohne Rätselraten. Tonalität: nüchtern-technisch, B2B,
 keine Spielereien, deutschsprachig (AT).`,
-    productPitch: `Erwähne kurz den Nutzen: schnelle Lieferung (48h),
-verlässliches LED-Sortiment für laufende Projekte, keine langen
-Wartezeiten wie bei Großhändlern.`,
+    productPitch: `Problem: Baustelle oder Projekt steht, weil die bestellte
+LED-Ware nicht rechtzeitig kommt oder Angebote wochenlang dauern.
+Lösung: LEDTEK liefert geprüfte LED-Ware aus einem klaren Sortiment in 48h.
+Handlung (die EINZIGE): "Schicken Sie uns Ihre nächste Anfrage, Sie bekommen
+innerhalb eines Werktags ein Angebot." Link nur, falls nötig:
+https://ledtek.at/?utm_source=sales_email&utm_campaign=ledtek`,
     targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'Elektrobetriebe, Bauunternehmen und Einzelhändler mit Ladenbau-Bedarf',
     qualificationCriteria: `Ein guter Kandidat:
@@ -87,8 +95,14 @@ kontakt@ledtek.at`,
 Slogan: "Struktur schlägt Design". Baut klare, strukturierte Websites statt
 Templates von der Stange, auf Wunsch mit modernen KI-Features. Tonalität:
 locker, direkt, kein Buzzword-Bingo, deutschsprachig (AT).`,
-    productPitch: `Erwähne kurz den Nutzen: klare, strukturierte Website
-statt Template von der Stange, moderne KI-Features auf Wunsch.`,
+    productPitch: `Problem: die Website ist veraltet, am Handy schwer
+bedienbar oder gar nicht vorhanden — Interessenten springen ab, bevor sie
+anrufen oder anfragen.
+Lösung: pixelpress baut eine klare, strukturierte Website ("Struktur schlägt
+Design"), die Besucher zur Anfrage führt.
+Handlung (die EINZIGE): "Ich schicke Ihnen kostenlos eine kurze Einschätzung
+Ihrer aktuellen Website — Antwort mit 'ja' genügt." Link nur, falls nötig:
+https://pixelpress.at/?utm_source=sales_email&utm_campaign=pixelpress`,
     targetProfileDefault: 'Österreich, Deutschland und Rumänien',
     targetKind: 'lokale Betriebe mit veralteter oder fehlender Website',
     qualificationCriteria: `Ein guter Kandidat:

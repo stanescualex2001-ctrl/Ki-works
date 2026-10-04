@@ -43,11 +43,23 @@ suche einen anderen. Eine falsche Behauptung in einer Akquise-Mail über
 den Empfänger selbst ist schädlicher als ein verpasster Kandidat.
 
 Entwirf für jeden verbleibenden, wirklich qualifizierten Kandidaten eine
-kurze, individuelle Akquise-Mail
-auf Deutsch (Betreff + Text), die konkret auf etwas von der Website/dem
-Online-Auftritt des Betriebs Bezug nimmt (z. B. fehlende Online-Reservierung,
-Öffnungszeiten, eine echte Bewertung) — kein Massenmail-Ton, keine generische
-Anrede. ${profile.productPitch} Beende den Mail-Text (body) IMMER exakt mit
+kurze, individuelle Akquise-Mail auf Deutsch (Betreff + Text), die konkret auf
+etwas von der Website/dem Online-Auftritt des Betriebs Bezug nimmt (z. B.
+fehlende Online-Reservierung, Öffnungszeiten, eine echte Bewertung) — kein
+Massenmail-Ton, keine generische Anrede.
+
+PFLICHT-AUFBAU (Problem → Lösung → eine Handlung), maximal ca. 90 Wörter,
+KEINE Feature-Liste, kein Eigenlob:
+1. Betreff: eine Frage zum konkreten Problem des Empfängers (kein
+   Firmenname/Produktname im Betreff, keine Werbe-Floskeln).
+2. Ein Satz mit echtem, überprüfbarem Bezug zum Betrieb.
+3. Das Problem aus Sicht des Empfängers in 1-2 Sätzen (was kostet es ihn?).
+4. Die Lösung in 1-2 Sätzen, ohne Fachbegriffe.
+5. Genau EINE einfache Handlung (siehe unten), keine zweite Option.
+
+${profile.productPitch}
+
+Beende den Mail-Text (body) IMMER exakt mit
 dieser Signatur, unverändert, keine eigene Grußformel davor:
 
 ${profile.signature}
