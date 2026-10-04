@@ -158,6 +158,7 @@ export async function runSalesAgent({ business, maxCandidates = 3, region } = {}
         error: err.message, maxCandidates, region: region || profile.targetProfileDefault,
         // Bezahlte Rohantwort nicht verlieren, falls nur das Parsen scheiterte.
         ...(err.rawText ? { rawText: err.rawText.slice(0, 20000) } : {}),
+        ...(err.usage ? { usage: err.usage } : {}),
       },
     });
     throw err;
@@ -217,6 +218,9 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
   // `create()` vorher — der Rest der Logik bleibt unverändert.
   const startedAt = Date.now();
   let response;
+  // Token-Verbrauch über alle Versuche (inkl. Cache-Lese-/Schreib-Tokens),
+  // damit sichtbar wird, ob Prompt-Caching wirklich greift und was ein Lauf kostet.
+  const usage = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
   try {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const attemptStartedAt = Date.now();
@@ -233,6 +237,10 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
       });
       // eslint-disable-next-line no-await-in-loop
       response = await stream.finalMessage();
+      usage.input += response.usage?.input_tokens || 0;
+      usage.output += response.usage?.output_tokens || 0;
+      usage.cacheRead += response.usage?.cache_read_input_tokens || 0;
+      usage.cacheWrite += response.usage?.cache_creation_input_tokens || 0;
       const attemptS = ((Date.now() - attemptStartedAt) / 1000).toFixed(1);
       console.log(`Sales-Agent: Versuch ${attempt + 1} abgeschlossen nach ${attemptS}s (stop_reason: ${response.stop_reason})`);
       if (response.stop_reason !== 'pause_turn') break;
@@ -249,7 +257,14 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
   }
 
   const fullText = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n');
-  const candidates = extractJsonArray(fullText);
+  console.log(`Sales-Agent: Tokens input=${usage.input} output=${usage.output} cacheRead=${usage.cacheRead} cacheWrite=${usage.cacheWrite}`);
+  let candidates;
+  try {
+    candidates = extractJsonArray(fullText);
+  } catch (err) {
+    err.usage = usage;
+    throw err;
+  }
 
   let drafted = 0;
   let skipped = 0;
@@ -280,7 +295,7 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
     source: 'sales_agent',
     action: 'run',
     summary: `Sales-Agent-Lauf: ${candidates.length} Kandidaten gefunden, ${drafted} Entwürfe erstellt`,
-    details: { found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault },
+    details: { found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault, usage },
   });
 
   return { found: candidates.length, drafted, skipped };
