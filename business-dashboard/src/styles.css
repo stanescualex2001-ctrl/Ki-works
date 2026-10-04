@@ -277,7 +277,12 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
 }
 .pending-detail-field select {
   width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
-  background: var(--panel); color: var(--text); font: inherit;
+  background-color: var(--panel-solid); color: var(--text); font: inherit;
+}
+/* Dropdown-Liste: Browser zeichnen sie nicht mit dem transparenten Feld-Hintergrund,
+   sondern weiß — im Dark Mode wäre die helle Schrift darauf unlesbar. */
+.pending-detail-field select option {
+  background-color: var(--panel-solid); color: var(--text);
 }
 .pending-detail-field input[type="text"] {
   width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
