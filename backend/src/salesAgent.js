@@ -84,11 +84,18 @@ dieser Signatur, unverändert, keine eigene Grußformel davor:
 ${profile.signature}
 
 WICHTIG — Kontakt-E-Mail-Suche (sparsam, Kosten!): lade pro Kandidat
-HÖCHSTENS diese drei Seiten per web_fetch, keine weiteren Unterseiten
+HÖCHSTENS diese Seiten per web_fetch, keine weiteren Unterseiten
 (keine Speisekarte, kein Blog, keine "Über uns"-Seite):
 1. Startseite (Kontext für die Mail; achte auch auf eine E-Mail im Footer).
 2. Impressum (in AT/DE gesetzlich Pflicht, enthält meist die E-Mail).
 3. Kontakt-Seite — nur falls das Impressum keine E-Mail enthielt.
+4. Hat der Betrieb KEINE eigene Website: suche gezielt nach einer E-Mail im
+   öffentlichen Eintrag (Google-Business-/Facebook-Seite "Info"/"Über uns",
+   Branchenverzeichnis wie firmen.wko.at oder herold.at) — dort stehen oft
+   E-Mail und Telefon.
+Die E-Mail steht meist im Footer oder am Ende des Impressums: lies die Seite
+bis zum Ende, achte auf Schreibweisen wie "name(at)firma.at" oder
+"name [at] firma.at" und gib die Adresse normal geschrieben (mit @) zurück.
 Setze contact_email nur dann auf null, wenn nach diesen Seiten wirklich
 keine Adresse sichtbar ist (z. B. nur ein Kontaktformular) — das soll die
 Ausnahme sein, nicht der Normalfall. Weitere Seiten zu laden ist nicht
@@ -203,12 +210,14 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
   const client = new Anthropic({ apiKey, timeout: 30 * 60 * 1000 });
   const tools = [
     // Kostenbremse (04.10.2026): Limits skalieren mit der Kandidatenzahl —
-    // pro Kandidat höchstens 3 Seitenabrufe (Startseite, Impressum, Kontakt)
-    // und ca. 3 Suchen, statt der früheren festen 15/20.
+    // pro Kandidat höchstens 4 Seitenabrufe (Startseite, Impressum, Kontakt,
+    // 1 Reserve) und 4 Suchen, statt der früheren festen 15/20.
+    // max_content_tokens 4000: Impressum/Footer stehen am SEITENENDE — bei 2000
+    // wurde abgeschnitten, bevor die E-Mail kam (Testlauf: 0 von 3 Adressen).
     { type: 'web_search_20260209', name: 'web_search', max_uses: Math.max(8, maxCandidates * 4) },
     // max_content_tokens begrenzt, wie viel Text pro abgerufener Seite in
     // den Kontext wandert (Impressum-/Kontaktseiten sind kurz).
-    { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: maxCandidates * 3, max_content_tokens: 2000 },
+    { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: maxCandidates * 4, max_content_tokens: 4000 },
   ];
   const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region, profile, industry) }];
 
