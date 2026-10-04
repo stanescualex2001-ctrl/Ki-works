@@ -11,30 +11,110 @@ export const BUSINESS_PROFILES = {
   'ki-works': {
     name: 'ki-works.eu',
     brandBrief: `ki-works.eu ist eine Plattform für digitale KI-Mitarbeiter
-("Kiwo"). Aktuell live: Kiwo Reception/Orders/Support für Restaurants
-(Telefon nimmt Reservierungen/Bestellungen entgegen, beantwortet FAQ, rund
-um die Uhr erreichbar, auch am Ruhetag). Test-Referenz: Venezia,
-Marktplatz 10, Schwertberg. Zielgruppe: Restaurants/Gasthäuser in
-Österreich, Deutschland und Rumänien. Hauptangebot: 1 Monat kostenlos
-testen. Tonalität: klar,
+("Kiwo"). Aktuell live: Kiwo geht ans Telefon, nimmt Anrufe rund um die Uhr
+an, beantwortet häufige Fragen (FAQ), nimmt Reservierungen/Bestellungen bzw.
+Termine auf und schickt dem Betrieb die Details sofort per E-Mail; kann der
+Agent etwas nicht beantworten, wird ein Rückruf notiert. Branchen live:
+Restaurants, Handwerker, Friseure/Kosmetik, KFZ-Werkstätten, Immobilien.
+Test-Referenz: Venezia, Marktplatz 10, Schwertberg. Zielgruppe: Betriebe in
+Österreich, Deutschland und Rumänien, die vom Telefon leben und oft keine
+Hand frei haben. Hauptangebot: 1 Monat kostenlos testen. Tonalität: klar,
 konkret, keine Buzzword-Übertreibung, deutschsprachig (AT).`,
-    productPitch: `Problem: zur Stoßzeit klingelt das Telefon, niemand hat
-eine Hand frei, jeder verpasste Anruf ist oft eine verlorene Reservierung.
-Lösung: Kiwo nimmt Anrufe rund um die Uhr an, bucht Reservierungen/
-Bestellungen und schickt dem Betrieb die Details sofort per E-Mail.
+    productPitch: `Kernproblem (in jeder Branche gleich): das Telefon klingelt,
+der Inhaber hat gerade keine Hand frei — jeder verpasste Anruf ist ein
+verlorener Auftrag/Termin/Gast. Nutze das Branchen-Beispiel aus dem
+Branchen-Block unten (nicht erfinden).
+Lösung: Kiwo nimmt Anrufe rund um die Uhr an, notiert Anliegen bzw.
+Termin/Reservierung und schickt dem Betrieb die Details sofort per E-Mail.
 Handlung (die EINZIGE): "Rufen Sie +43 726 223 417 an und hören Sie selbst,
 wie Kiwo klingt (2 Minuten)." Optional ein Halbsatz: erster Monat kostenlos.
 Link nur, falls nötig: https://ki-works.eu/?utm_source=sales_email&utm_campaign=ki-works`,
     targetProfileDefault: 'Österreich, Deutschland und Rumänien',
-    targetKind: 'Restaurants, Gasthäuser, Cafés und kleine Hotels',
+    targetKind: 'Betriebe, die vom Telefon leben (Restaurants, Handwerker, Friseure, KFZ-Werkstätten, Immobilienmakler)',
     qualificationCriteria: `Ein guter Kandidat:
-- ist ein Restaurant/Gasthaus/Café/kleines Hotel mit Telefonnummer und
-  Website ODER zumindest einem öffentlichen Google-Business-/
+- ist ein aktiver Betrieb aus einer der Branchen im Branchen-Block unten, mit
+  Telefonnummer und Website ODER zumindest einem öffentlichen Google-Business-/
   Social-Media-Eintrag
 - liegt im Zielgebiet (siehe oben)
-- hat erkennbar Bedarf an besserer telefonischer Erreichbarkeit (z. B. keine
-  Online-Reservierung, Hinweise auf Personalmangel, Bewertungen die
-  "schwer erreichbar" erwähnen)`,
+- ist vermutlich oft beschäftigt/vor Ort und hat erkennbar Bedarf an besserer
+  telefonischer Erreichbarkeit (z. B. nur Telefonnummer ohne Online-Buchung,
+  Öffnungszeiten, Hinweise auf kleines Team, Bewertungen die "schwer
+  erreichbar" erwähnen)`,
+    // Branchen für gezielte Sales-Läufe (Dropdown im Business-Dashboard).
+    // Ohne Auswahl verteilt der Agent die Kandidaten auf mehrere Branchen.
+    // `mailExample` ist reine STILVORLAGE (Aufbau/Länge/Ton), nicht kopieren.
+    // Nur Funktionen nennen, die live sind (kein Hotel/Arztpraxis: "bald").
+    industries: [
+      {
+        key: 'handwerker',
+        name: 'Handwerker (Installateur, Elektriker, Tischler …)',
+        targetKind: 'Handwerksbetriebe (Installateure, Elektriker, Tischler, Maler, Dachdecker)',
+        problem: 'Auf dem Dach oder in der Werkstatt geht niemand ans Telefon — der Auftrag geht an den Nächsten.',
+        mailExample: `Betreff: Wer geht ans Telefon, wenn Sie auf dem Dach stehen?
+
+Guten Tag Herr Huber,
+Installateure werden meist gesucht, wenn es dringend ist — und wer dann nicht abhebt, verliert den Auftrag an den Nächsten in der Liste.
+Kiwo nimmt Ihre Anrufe rund um die Uhr an, notiert das Anliegen und schickt Ihnen die Details sofort per E-Mail.
+Rufen Sie +43 726 223 417 an und hören Sie selbst, wie Kiwo klingt (2 Minuten).`,
+      },
+      {
+        key: 'friseur',
+        name: 'Friseure, Kosmetik, Nagelstudios',
+        targetKind: 'Friseursalons, Kosmetik- und Nagelstudios',
+        problem: 'Hände im Haar oder in der Behandlung — das Telefon klingelt, der Termin geht verloren.',
+        mailExample: `Betreff: Hände im Haar, Telefon klingelt?
+
+Guten Tag Frau Maier,
+wer mitten in einer Behandlung steckt, kann nicht ans Telefon — und viele Kundinnen versuchen es dann nicht ein zweites Mal.
+Kiwo nimmt Terminwünsche rund um die Uhr entgegen und schickt Ihnen die Details sofort per E-Mail.
+Rufen Sie +43 726 223 417 an und hören Sie selbst, wie Kiwo klingt (2 Minuten).`,
+      },
+      {
+        key: 'werkstatt',
+        name: 'KFZ-Werkstätten',
+        targetKind: 'KFZ-Werkstätten und Autohäuser mit Werkstatt',
+        problem: 'Während der Reparatur kommen Anrufe — Terminanfragen und Rückfragen bleiben liegen.',
+        mailExample: `Betreff: Wer hebt ab, während Sie unter dem Auto liegen?
+
+Guten Tag Herr Gruber,
+in einer Werkstatt klingelt das Telefon meist genau dann, wenn alle Hände gebraucht werden — Terminanfragen gehen so an die nächste Werkstatt.
+Kiwo nimmt Anrufe rund um die Uhr an, notiert Anliegen und Terminwunsch und schickt Ihnen die Details per E-Mail.
+Rufen Sie +43 726 223 417 an und hören Sie selbst, wie Kiwo klingt (2 Minuten).`,
+      },
+      {
+        key: 'restaurant',
+        name: 'Restaurants, Gasthäuser, Cafés',
+        targetKind: 'Restaurants, Gasthäuser und Cafés',
+        problem: 'Zur Stoßzeit klingelt das Telefon, niemand hat eine Hand frei — die Reservierung geht verloren.',
+        mailExample: `Betreff: Wie viele Reservierungen gehen zur Stoßzeit verloren?
+
+Guten Tag Herr Wagner,
+wenn das Haus voll ist, klingelt das Telefon meist genau dann, wenn niemand abheben kann — und die Reservierung geht woanders hin.
+Kiwo nimmt Reservierungen und Bestellungen rund um die Uhr entgegen und schickt Ihnen die Details sofort per E-Mail.
+Rufen Sie +43 726 223 417 an und hören Sie selbst, wie Kiwo klingt (2 Minuten).`,
+      },
+      {
+        key: 'immobilien',
+        name: 'Immobilienmakler',
+        targetKind: 'Immobilienmakler und Hausverwaltungen',
+        problem: 'Ein Interessent ruft an, während Sie bei einer Besichtigung sind — niemand hebt ab.',
+        mailExample: `Betreff: Wer nimmt den Anruf an, während Sie bei einer Besichtigung sind?
+
+Guten Tag Frau Berger,
+ein Interessent ruft meist genau einmal an — und wer nicht abhebt, verliert die Anfrage oft an den nächsten Makler.
+Kiwo nimmt Anrufe rund um die Uhr an, notiert Anliegen und Terminwunsch und schickt Ihnen die Details per E-Mail.
+Rufen Sie +43 726 223 417 an und hören Sie selbst, wie Kiwo klingt (2 Minuten).`,
+      },
+    ],
+    // Themenreihe "Das Telefon klingelt, aber ..." für den Social-Agent
+    // (je Branche ein Post) — erscheinen als Chips unter "Thema/Fokus".
+    topicSeries: [
+      'Das Telefon klingelt, aber … ich stehe auf dem Dach',
+      'Das Telefon klingelt, aber … meine Hände sind im Haar',
+      'Das Telefon klingelt, aber … ich liege unter dem Auto',
+      'Das Telefon klingelt, aber … die Küche ist voll',
+      'Das Telefon klingelt, aber … ich bin bei einer Besichtigung',
+    ],
     signature: `Freundliche Grüße
 Alex von ki-works.eu
 Tel. +43 650 9915759

@@ -1,5 +1,18 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **ki-works Sales-/Social-Agent mehrbranchig (04.10.2026):** ki-works-Profil
+  (`backend/src/businessProfiles.js`) hat jetzt `industries` (Handwerker,
+  Friseure, KFZ-Werkstätten, Restaurants, Immobilien; je Problem-Beispiel +
+  Stilvorlage-Beispielmail) und `topicSeries` ("Das Telefon klingelt, aber …").
+  Sales-Agent: optionale Branchenwahl im Business-Dashboard (Dropdown), ohne
+  Auswahl Mix aus allen Branchen; Pitch einheitlich Problem → Lösung → Demo-
+  Nummer +43 726 223 417. Neuer Endpunkt `GET /api/business-config`. Social:
+  Themenreihe als feste Chips (kein KI-Aufruf). Zusätzlich 04.10.: JSON-Parse-
+  Fix (Steuerzeichen), Token-/Cache-Verbrauch im Aktivitätsprotokoll,
+  Kostenbremse (Suchen/Seitenabrufe skalieren mit Kandidaten), pixelpress-
+  Pitch mit echtem Starter-Angebot (690 € netto, oft 3-7 Tage), IMAP-
+  Postfach pro Business (`LEDTEK_`/`PIXELPRESS_MAIL_IMAP_*`). Versionen 1.1.0.
+
 
 - Kiwo-Name im Telefonagenten + auf der Landingpage
 - Reservierung stornieren/verschieben (telefonisch)

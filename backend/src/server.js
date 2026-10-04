@@ -1162,7 +1162,8 @@ app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
   try {
     const maxCandidates = Number(req.body?.maxCandidates) || 3;
     const region = typeof req.body?.region === 'string' ? req.body.region.trim().slice(0, 200) || undefined : undefined;
-    const result = await runSalesAgent({ business, maxCandidates, region });
+    const industry = typeof req.body?.industry === 'string' ? req.body.industry.trim().slice(0, 50) || undefined : undefined;
+    const result = await runSalesAgent({ business, maxCandidates, region, industry });
     finishRun(key, result);
     res.json(result);
   } catch (err) {
@@ -1170,6 +1171,17 @@ app.post('/api/sales-agent/run', adminOnly, async (req, res) => {
     failRun(key, err.message);
     res.status(502).json({ error: err.message });
   }
+});
+
+// Konfiguration pro Business fürs Dashboard: wählbare Branchen (Sales-Agent)
+// und feste Themenreihe (Social-Agent) — reine Registry-Daten, kein Claude-Aufruf.
+app.get('/api/business-config', adminOnly, (req, res) => {
+  const profile = BUSINESS_PROFILES[req.query?.business];
+  if (!profile) return res.status(400).json({ error: 'unbekanntes business' });
+  res.json({
+    industries: (profile.industries || []).map((i) => ({ key: i.key, name: i.name })),
+    topicSeries: profile.topicSeries || [],
+  });
 });
 
 app.get('/api/sales-agent/status', adminOnly, (req, res) => {

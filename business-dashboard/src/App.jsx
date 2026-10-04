@@ -644,9 +644,14 @@ function useAgentRun(kind, business, onDone) {
 
 function SalesAgentRunner({ business, onDone }) {
   const [region, setRegion] = useState('');
+  const [industry, setIndustry] = useState('');
+  const { data: config } = useFetch(`/api/business-config?business=${encodeURIComponent(business)}`);
+  const industries = config?.industries || [];
   const { loading, result, error, start } = useAgentRun('sales', business, onDone);
 
-  const run = () => start({ business, maxCandidates: 3, region: region.trim() || undefined });
+  const run = () => start({
+    business, maxCandidates: 3, region: region.trim() || undefined, industry: industry || undefined,
+  });
 
   return (
     <div className="sales-agent-box">
@@ -660,6 +665,15 @@ function SalesAgentRunner({ business, onDone }) {
           disabled={loading}
         />
       </div>
+      {industries.length > 0 && (
+        <div className="pending-detail-field" style={{ margin: '0 0 0.6rem' }}>
+          <div className="pending-detail-label">Branche (optional)</div>
+          <select value={industry} onChange={(e) => setIndustry(e.target.value)} disabled={loading}>
+            <option value="">Mix aus allen Branchen</option>
+            {industries.map((i) => <option key={i.key} value={i.key}>{i.name}</option>)}
+          </select>
+        </div>
+      )}
       <button className="primary" disabled={loading} onClick={run}>
         {loading ? 'Claude recherchiert…' : 'Sales-Agent starten'}
       </button>
@@ -701,6 +715,8 @@ function SocialAgentRunner({ business, onDone }) {
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState(null);
   const { loading, result, error, start } = useAgentRun('social', business, onDone);
+  const { data: config } = useFetch(`/api/business-config?business=${encodeURIComponent(business)}`);
+  const topicSeries = config?.topicSeries || [];
 
   useEffect(() => {
     setSuggestions(loadStoredSuggestions(business));
@@ -746,6 +762,15 @@ function SocialAgentRunner({ business, onDone }) {
             {suggestionsLoading ? 'Lädt…' : '↻ Trends generieren'}
           </button>
         </div>
+        {topicSeries.length > 0 && (
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+            {topicSeries.map((s, i) => (
+              <button key={`series-${i}`} type="button" className="topic-chip" disabled={loading} onClick={() => setTopic(s)}>
+                {s}
+              </button>
+            ))}
+          </div>
+        )}
         {suggestions.length > 0 && (
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
             {suggestions.map((s, i) => (

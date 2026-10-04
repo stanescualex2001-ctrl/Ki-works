@@ -7,22 +7,36 @@ const MODEL = process.env.SALES_AGENT_MODEL || 'claude-sonnet-5';
 
 // buildTargetProfile: region ist im Business-Dashboard vor jedem Lauf
 // einstellbar (Feld "Ort/Region"), Default kommt aus dem Business-Profil.
-function buildTargetProfile(region, profile) {
-  return `${profile.targetKind} im
+function buildTargetProfile(region, profile, industry) {
+  return `${industry ? industry.targetKind : profile.targetKind} im
 Raum ${region || profile.targetProfileDefault}.`;
 }
 
-function buildPrompt(maxCandidates, excludeList, region, profile) {
+// Branchen-Block (nur Businesses mit `industries`, z. B. ki-works): bei einer
+// gewählten Branche gezielt deren Problem-Beispiel + Stilvorlage, sonst
+// Verteilung der Kandidaten auf mehrere Branchen. Die Beispielmails sind reine
+// STILVORLAGEN (Aufbau/Länge/Ton) — nicht wörtlich kopieren.
+function buildIndustryBlock(profile, industry) {
+  if (!profile.industries?.length) return '';
+  const fmt = (i) => `Branche ${i.name}:
+Problem-Beispiel: ${i.problem}
+Stilvorlage (nicht kopieren, Namen/Details je Kandidat anpassen):
+${i.mailExample}`;
+  if (industry) return `\nBRANCHEN-BLOCK — alle Kandidaten gehören zu dieser Branche:\n${fmt(industry)}\n`;
+  return `\nBRANCHEN-BLOCK — verteile die Kandidaten auf VERSCHIEDENE der folgenden Branchen (nicht alle aus derselben) und nutze pro Kandidat das passende Problem-Beispiel:\n\n${profile.industries.map(fmt).join('\n\n')}\n`;
+}
+
+function buildPrompt(maxCandidates, excludeList, region, profile, industry) {
   return `Du recherchierst potenzielle Neukunden für ${profile.name}.
 
 ${profile.brandBrief}
 
 Zielprofil:
-${buildTargetProfile(region, profile)}
+${buildTargetProfile(region, profile, industry)}
 
 Qualifizierungskriterien:
 ${profile.qualificationCriteria}
-
+${buildIndustryBlock(profile, industry)}
 Bereits kontaktiert (NICHT nochmal vorschlagen):
 ${excludeList}
 
@@ -137,13 +151,15 @@ function extractJsonArray(text) {
   return parsed;
 }
 
-export async function runSalesAgent({ business, maxCandidates = 3, region } = {}) {
+export async function runSalesAgent({ business, maxCandidates = 3, region, industry: industryKey } = {}) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY fehlt');
   const profile = getBusinessProfile(business);
+  const industry = industryKey ? profile.industries?.find((i) => i.key === industryKey) : undefined;
+  if (industryKey && !industry) throw new Error('Unbekannte Branche für dieses Business');
 
   try {
-    return await runSalesAgentInner({ business, maxCandidates, region, apiKey, profile });
+    return await runSalesAgentInner({ business, maxCandidates, region, apiKey, profile, industry });
   } catch (err) {
     // Bisher verschwand ein Fehlschlag (Timeout, ungültige JSON-Antwort,
     // DB-Fehler) spurlos — nur console.error, kein Audit-Log-Eintrag.
@@ -166,7 +182,7 @@ export async function runSalesAgent({ business, maxCandidates = 3, region } = {}
   }
 }
 
-async function runSalesAgentInner({ business, maxCandidates, region, apiKey, profile }) {
+async function runSalesAgentInner({ business, maxCandidates, region, apiKey, profile, industry }) {
   const { rows: existing } = await query(
     `SELECT payload->>'business_name' AS business_name, payload->>'website' AS website
      FROM pending_actions WHERE role = 'sales' AND business = $1`,
@@ -194,7 +210,7 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
     // den Kontext wandert (Impressum-/Kontaktseiten sind kurz).
     { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: maxCandidates * 3, max_content_tokens: 2000 },
   ];
-  const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region, profile) }];
+  const messages = [{ role: 'user', content: buildPrompt(maxCandidates, excludeList, region, profile, industry) }];
 
   // Server-Tools laufen serverseitig in einer eigenen Schleife; bei vielen
   // Websuchen kann das Limit von 10 Runden erreicht werden (stop_reason
@@ -298,7 +314,7 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
     action: 'run',
     summary: `Sales-Agent-Lauf: ${candidates.length} Kandidaten gefunden, ${drafted} Entwürfe erstellt`,
     details: {
-      found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault, usage,
+      industry: industry?.key || null, found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault, usage,
       // Bei 0 Kandidaten die Antwort des Agenten sichern, damit sichtbar ist, warum alles verworfen wurde.
       ...(candidates.length === 0 ? { agentReply: fullText.slice(0, 3000) } : {}),
     },

@@ -275,6 +275,10 @@ th { color: var(--muted); font-weight: 600; white-space: nowrap; background: rgb
   font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.04em;
   color: var(--muted); margin-bottom: 0.2rem;
 }
+.pending-detail-field select {
+  width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--panel); color: var(--text); font: inherit;
+}
 .pending-detail-field input[type="text"] {
   width: 100%; padding: 0.55rem 0.7rem; border: 1px solid var(--border); border-radius: 8px;
   background: var(--panel); color: var(--text); font: inherit;
