@@ -95,15 +95,42 @@ Wenn du keine passenden, noch nicht kontaktierten Kandidaten findest, gib ein
 leeres Array [] zurück.`;
 }
 
+// Das Modell schreibt mehrzeilige Mail-Texte oft mit echten Zeilenumbrüchen
+// statt \n in JSON-Strings — striktes JSON.parse scheitert dann ("Bad control
+// character in string literal"), obwohl der teure Lauf fertig war. Steuer-
+// zeichen innerhalb von String-Literalen werden daher vor dem Parsen escaped.
+function escapeControlCharsInStrings(raw) {
+  let out = '';
+  let inString = false;
+  let escaped = false;
+  for (const ch of raw) {
+    if (inString) {
+      if (escaped) { escaped = false; out += ch; continue; }
+      if (ch === '\\') { escaped = true; out += ch; continue; }
+      if (ch === '"') { inString = false; out += ch; continue; }
+      if (ch === '\n') { out += '\\n'; continue; }
+      if (ch === '\r') { continue; }
+      if (ch === '\t') { out += '\\t'; continue; }
+      out += ch;
+    } else {
+      if (ch === '"') inString = true;
+      out += ch;
+    }
+  }
+  return out;
+}
+
 function extractJsonArray(text) {
   const fenced = text.match(/```json\s*([\s\S]*?)```/);
   const raw = fenced ? fenced[1] : text.match(/(\[[\s\S]*\])/)?.[1];
   if (!raw) throw new Error('Sales-Agent: keine verwertbare JSON-Antwort erhalten');
   let parsed;
   try {
-    parsed = JSON.parse(raw);
+    parsed = JSON.parse(escapeControlCharsInStrings(raw));
   } catch (err) {
-    throw new Error(`Sales-Agent: JSON-Antwort ungültig (${err.message})`);
+    const e = new Error(`Sales-Agent: JSON-Antwort ungültig (${err.message})`);
+    e.rawText = raw;
+    throw e;
   }
   if (!Array.isArray(parsed)) throw new Error('Sales-Agent: Antwort ist kein Array');
   return parsed;
@@ -127,7 +154,11 @@ export async function runSalesAgent({ business, maxCandidates = 3, region } = {}
       source: 'sales_agent',
       action: 'error',
       summary: `Sales-Agent-Lauf fehlgeschlagen: ${err.message}`,
-      details: { error: err.message, maxCandidates, region: region || profile.targetProfileDefault },
+      details: {
+        error: err.message, maxCandidates, region: region || profile.targetProfileDefault,
+        // Bezahlte Rohantwort nicht verlieren, falls nur das Parsen scheiterte.
+        ...(err.rawText ? { rawText: err.rawText.slice(0, 20000) } : {}),
+      },
     });
     throw err;
   }
