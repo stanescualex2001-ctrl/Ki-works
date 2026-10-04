@@ -76,7 +76,8 @@ Ausnahme sein, nicht der Normalfall. Weitere Seiten zu laden ist nicht
 erlaubt, auch nicht für zusätzlichen Kontext.
 
 Antworte NUR mit einem JSON-Codeblock (\`\`\`json ... \`\`\`), keinem weiteren
-Text davor oder danach. Format: ein JSON-Array von Objekten mit genau diesen
+Text davor oder danach — KEINE Zwischenüberlegungen, keine Erklärungen, keine
+Aufzählung verworfener Kandidaten (das kostet unnötig Ausgabe-Tokens). Format: ein JSON-Array von Objekten mit genau diesen
 Feldern: business_name, website (Link zum schnellen Nachschlagen/Prüfen des
 Kandidaten — die eigene Website, falls vorhanden; hat der Betrieb KEINE
 eigene Website, stattdessen den Link zu dessen Facebook-Seite,
@@ -183,7 +184,7 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
     // Kostenbremse (04.10.2026): Limits skalieren mit der Kandidatenzahl —
     // pro Kandidat höchstens 3 Seitenabrufe (Startseite, Impressum, Kontakt)
     // und ca. 3 Suchen, statt der früheren festen 15/20.
-    { type: 'web_search_20260209', name: 'web_search', max_uses: Math.max(5, maxCandidates * 3 - 1) },
+    { type: 'web_search_20260209', name: 'web_search', max_uses: Math.max(8, maxCandidates * 4) },
     // max_content_tokens begrenzt, wie viel Text pro abgerufener Seite in
     // den Kontext wandert (Impressum-/Kontaktseiten sind kurz).
     { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: maxCandidates * 3, max_content_tokens: 2000 },
@@ -291,7 +292,11 @@ async function runSalesAgentInner({ business, maxCandidates, region, apiKey, pro
     source: 'sales_agent',
     action: 'run',
     summary: `Sales-Agent-Lauf: ${candidates.length} Kandidaten gefunden, ${drafted} Entwürfe erstellt`,
-    details: { found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault, usage },
+    details: {
+      found: candidates.length, drafted, skipped, maxCandidates, region: region || profile.targetProfileDefault, usage,
+      // Bei 0 Kandidaten die Antwort des Agenten sichern, damit sichtbar ist, warum alles verworfen wurde.
+      ...(candidates.length === 0 ? { agentReply: fullText.slice(0, 3000) } : {}),
+    },
   });
 
   return { found: candidates.length, drafted, skipped };
