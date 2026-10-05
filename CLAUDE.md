@@ -153,8 +153,8 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 
 ## Offene Punkte (kurz; Details in `docs/OFFENE_PUNKTE.md`)
 
-- **Marketing/Akquise:** Kaltmails + Social brachten bisher keine Rückmeldungen. Plan: Problem-Lösung-Texte mit Demo-Nummer
-  als Handlung, UTM-Parameter, Fokus auf 1 Business/Kanal (ki-works, Restaurants Schwertberg); Instagram-Bio nennt fälschlich
+- **Marketing/Akquise:** Problem-Lösung-Texte + UTM-Links + Mehrbranchen-Pitch für ki-works sind umgesetzt (04.10.2026,
+  siehe `docs/CHANGELOG.md`) — Wirkung (Rückmeldungen) noch nicht erneut geprüft. Instagram-Bio nennt fälschlich
   WhatsApp (selbst korrigieren). Nachfass-Mails erst nach Klärung § 174 TKG (Kaltmail-Einwilligung AT).
 - **Rechtliches:** Impressum/Datenschutz rechtlich prüfen; Verantwortlicher-Platzhalter; USt-/Kleinunternehmer-Status
   ("zzgl. USt." in Preisen); Vapi-DPA fehlt + mögliches Modelltraining mit Anrufdaten (bei Vapi klären); DPIA; AVV.

@@ -1,5 +1,13 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Sales-Agent-E-Mail-Suche nachgeschärft + Dark-Mode-Fix (04.10.2026):**
+  direkt im Anschluss an die Mehrbranchen-Umstellung: `salesAgent.js` prüft
+  pro Kandidat jetzt bis zu 4 Unterseiten (statt 3) mit je 4000 Tokens
+  (statt 3000), zusätzlich Fallback auf Branchenverzeichnis-Einträge und
+  Erkennung von "(at)"-verschleierten E-Mail-Adressen — sollte die
+  "keine E-Mail gefunden"-Quote weiter senken. Kleiner UI-Fix im
+  Business-Dashboard: das Branchen-Dropdown war im Dark Mode kaum lesbar
+  (transparenter Hintergrund), jetzt solide Füllfarbe.
 - **ki-works Sales-/Social-Agent mehrbranchig (04.10.2026):** ki-works-Profil
   (`backend/src/businessProfiles.js`) hat jetzt `industries` (Handwerker,
   Friseure, KFZ-Werkstätten, Restaurants, Immobilien; je Problem-Beispiel +
