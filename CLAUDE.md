@@ -108,6 +108,13 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   Rechenlogik/Formeln und größere UI-Umbauten auf `landing/` — bei
   offensichtlich risikoarmen, rein kosmetischen Änderungen (z. B. Text
   größer machen) ist ein Prototyp-Umweg nicht nötig.
+- **Marketing-Themen laufen in einer separaten Sitzung (06.10.2026):**
+  Akquise-Texte, Social-Media-Inhalte, Kampagnen-/Marketing-Strategie
+  (inkl. `MARKETING.md`) bearbeitet der Nutzer bewusst woanders — hier
+  nur Code/Funktionalität. Keine Marketing-Vorschläge/-Umsetzung von mir
+  aus anstoßen; falls ein Marketing-Thema (z. B. Sales-/Social-Agent-
+  Prompt-Text) hier doch zur Sprache kommt, nur auf explizite
+  Nutzer-Nachfrage behandeln.
 ## Architektur (Kurzfassung)
 
 - **Apps:** `backend/` (Node/Express, PostgreSQL), `landing/` (ki-works.eu, Vite+React, SSR-Prerender, DE/EN/RO),
