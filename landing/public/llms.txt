@@ -1,31 +1,35 @@
 # KI-Works
 
-> KI-Works ist eine Plattform für digitale KI-Mitarbeiter. Kiwo ist der erste
-> KI-Mitarbeiter der Plattform: ein KI-Telefonassistent für Restaurants, der
-> Anrufe entgegennimmt, Reservierungen und Bestellungen aufnimmt und Gästen
-> rund um die Uhr antwortet — ohne Warteschleife.
+> KI-Works ist die Plattform für digitale KI-Mitarbeiter. Kiwo übernimmt Routineaufgaben wie Anrufe, Reservierungen, Bestellungen und Support. EU-Hosting, DSGVO-konform.
 
 ## Was Kiwo kann
+- Rollen im Live-Betrieb: Reception, Support, Orders
+- Rollen in Planung: Sales, Office, Recruiting, Collection, Onboarding, Finance
+- Telefongespräche in natürlicher Sprache, Reservierungen anlegen, ändern und stornieren, Bestellungen aufnehmen
+- Dashboard mit Transkripten, Anrufen, Reservierungen und Auswertungen
 
-- Telefonanrufe entgegennehmen und in natürlicher Sprache mit Gästen sprechen
-- Tischreservierungen anlegen, verschieben und stornieren
-- Bestellungen zur Abholung oder zum Tisch aufnehmen
-- Stammgäste anhand der Telefonnummer erkennen und persönlich begrüßen
-- Fragen zu Speisekarte und Öffnungszeiten korrekt beantworten
-- Bei unbekannten Fragen ehrlich weiterleiten, statt zu raten
+## Branchen
+- Live: Restaurants, Handwerker, Friseure, Autowerkstätten, Immobilien
+- In Planung: Hotels, Arztpraxen
 
-## Plattform
+## Preise pro Monat, alle zzgl. USt.
+- Solo: 99 EUR
+- Team: 249 EUR
+- Scale: 499 EUR
+- Custom: auf Anfrage
 
-- KI-Works ist als Plattform konzipiert und wächst modular um weitere
-  KI-Mitarbeiter (Rollen: Reception, Sales, Support, Office, Orders).
-- Restaurants sind der erste Anwendungsfall.
-- DSGVO-konform, Hosting in der EU.
-- Live-Dashboard für Betriebe: Anrufe, Reservierungen, Bestellungen,
-  Auswertungen.
+## Sprachen der Website
+Deutsch, Englisch, Rumänisch
 
-## Mehr erfahren
+## Kontakt
+- Allgemein: +43 650 9915759, info@ki-works.eu
+- Demo-Hotline (Kiwo live testen): +43 726 223 417
+- Kontaktformular: https://ki-works.eu/kontakt.html
 
-- Website: https://ki-works.eu/
-- Kontakt/Demo: über die Website (Abschnitt "Kiwo testen")
-- E-Mail: info@ki-works.eu
-- Telefon: +43 650 9915759
+## Wichtige Seiten
+- Startseite: https://ki-works.eu/
+- English: https://ki-works.eu/en/
+- Română: https://ki-works.eu/ro/
+- Partner und Reseller: https://ki-works.eu/partner.html
+- Impressum: https://ki-works.eu/impressum.html
+- Datenschutz: https://ki-works.eu/datenschutz.html
