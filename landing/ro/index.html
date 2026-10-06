@@ -28,19 +28,29 @@
     "@graph": [
       {
         "@type": "Organization",
+        "@id": "https://ki-works.eu/#org",
         "name": "KI-Works",
         "url": "https://ki-works.eu/",
         "logo": "https://ki-works.eu/og-image.png",
+        "email": "info@ki-works.eu",
+        "telephone": "+436509915759",
         "description": "KI-Works este o platformă pentru angajați digitali AI, conformă GDPR, găzduită în UE."
       },
       {
-        "@type": "Service",
+        "@type": "SoftwareApplication",
         "name": "Kiwo",
-        "serviceType": "Asistent telefonic AI",
-        "provider": { "@type": "Organization", "name": "KI-Works" },
-        "areaServed": "AT",
-        "description": "Kiwo preia apelurile telefonice, rezervările și comenzile pentru restaurante – non-stop, fără așteptare.",
-        "audience": { "@type": "Audience", "audienceType": "Restaurants" }
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web",
+        "description": "Angajat digital AI pentru apeluri, rezervări, comenzi și suport.",
+        "publisher": { "@id": "https://ki-works.eu/#org" },
+        "offers": [
+          { "@type": "Offer", "name": "Solo",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": 99, "priceCurrency": "EUR", "unitCode": "MON", "valueAddedTaxIncluded": false } },
+          { "@type": "Offer", "name": "Team",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": 249, "priceCurrency": "EUR", "unitCode": "MON", "valueAddedTaxIncluded": false } },
+          { "@type": "Offer", "name": "Scale",
+            "priceSpecification": { "@type": "UnitPriceSpecification", "price": 499, "priceCurrency": "EUR", "unitCode": "MON", "valueAddedTaxIncluded": false } }
+        ]
       }
     ]
   }
