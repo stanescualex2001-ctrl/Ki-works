@@ -733,3 +733,29 @@
   Backend-Deploy-Schritt) + `systemctl restart ki-works-api`, keine
   Migration.
 
+- **Hotels live setzen — Scope besprochen, noch nicht gebaut (06.10.2026):**
+  Nutzer fragte nach, was für "Hotels live" (`industries`-Status `soon`)
+  nötig wäre. Kein reiner Prompt-Job wie Handwerker/Friseure (laufen über
+  die bestehende `appointments`-Rolle, ein einzelner Zeitpunkt) — echter
+  Datenmodell-Umbau, weil `reservations.reserved_at` nur einen einzelnen
+  Zeitpunkt kennt, keine An-/Abreise-Spanne. Gebraucht:
+  1. neue Spalte `checkout_at` (nullable TIMESTAMPTZ) in `reservations` —
+     reine Erweiterung, bricht nichts Bestehendes.
+  2. Kapazität: aktuell gibt's kein Zimmer-Konzept, `check_availability`
+     (`backend/src/vapi.js`) hat nur eine feste Konstante `capacity = 60`
+     fürs Restaurant-Platz-Modell — für Hotels bräuchte es minimal eine
+     Zimmerzahl pro Hotel (z. B. `restaurants.settings.roomCount`) und
+     eine Prüfung auf Datumsbereich-Überschneidung statt des bisherigen
+     90-Minuten-Fensters.
+  3. neuer Prompt-/Tool-Baustein (wie `APPOINTMENTS_PROMPT` in
+     `vapiAdmin.js`, aber mit Check-in + Check-out statt nur einem
+     Termin) — `create_reservation` braucht ein zweites Datumsfeld.
+  4. Dashboard-Kalender/Detailansicht zeigt bisher nur den einen
+     Zeitpunkt — müsste bei Hotel-Kunden auch Checkout-Datum/
+     Aufenthaltsdauer anzeigen.
+  5. Validierung: Checkout muss nach Checkin liegen, beide in der Zukunft.
+  Bewusst **kein** echtes Zimmertyp-/Preis-Management für einen ersten
+  Wurf vorgesehen — nur "Zimmer frei ja/nein" gegen eine Gesamtzahl.
+  **Nutzer-Entscheidung: jetzt nicht umsetzen, nur vormerken** ("Nicht
+  jetzt. Aber merken.").
+
