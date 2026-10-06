@@ -1,5 +1,26 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **SEO/AIO-Nacharbeiten: llms.txt, JSON-LD, nginx-Charset (06.10.2026):**
+  `landing/public/llms.txt` komplett erneuert (Plattform statt nur
+  Restaurant-Framing, Preise, Sprachen, Demo-Hotline, Partner-Seite) —
+  dabei zwei Übertreibungen aus der Nutzer-Vorlage korrigiert: Sales ist
+  nicht live (`ROLE_DEFINITIONS.sales.implemented: false`), Hotels/
+  Arztpraxen sind nicht live (`industries`-Array `status: "soon"`) — beide
+  jetzt korrekt unter "in Planung" statt unter "live". JSON-LD auf allen
+  3 Sprachseiten (`landing/{index,en/index,ro/index}.html`) von
+  `Service` (nur Restaurants) auf `SoftwareApplication` mit `Offers`
+  (Solo/Team/Scale-Preise) umgestellt, `Organization` bekam `@id` (für
+  `publisher`-Verknüpfung) + `telephone`; Übersetzungen pro Sprache
+  gepflegt, nicht nur Deutsch kopiert. Zusätzlich: `llms.txt` wurde live
+  als `Content-Type: text/plain` ohne `charset=utf-8` ausgeliefert (per
+  `curl -I` bestätigt) — `deploy/nginx/ki-works.conf` bekam eine gezielte
+  `location = /llms.txt { charset utf-8; }` (nginx' eingebauter
+  Mechanismus dafür, kein `add_header`-Duplikat-Risiko). Committet+gepusht
+  (`955b200`, `f1bc906`, `5d853e1`), **nginx-Teil noch NICHT auf dem
+  Server angewendet** (Config wird nie per rsync ausgerollt) — braucht
+  `cp deploy/nginx/ki-works.conf /etc/nginx/sites-available/ki-works.conf`
+  + `nginx -t && systemctl reload nginx`; llms.txt/JSON-LD-Teil braucht
+  nur den normalen `landing/`-Build-Deploy.
 - **Sales-Agent-E-Mail-Suche nachgeschärft + Dark-Mode-Fix (04.10.2026):**
   direkt im Anschluss an die Mehrbranchen-Umstellung: `salesAgent.js` prüft
   pro Kandidat jetzt bis zu 4 Unterseiten (statt 3) mit je 4000 Tokens
