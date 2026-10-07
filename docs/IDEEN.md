@@ -779,10 +779,27 @@
     Anfrage auf und meldet sie als Rückruf-Wunsch — nutzt die
     bestehende `request_callback`-Mechanik, kein Neubau nötig, nur als
     Standardfall für diese Branche vorsehen.
-  - **Bestellungen bearbeiten** (z. B. Ersatzteile): die bestehende
-    `orders`-Rolle ist fest an Restaurant-Speisekarte/Tisch gekoppelt,
-    nicht wiederverwendbar — bräuchte eine neue, generische Bestell-Rolle
-    ohne Tisch/Menü-Logik, ähnlicher Umfang wie der Hotels-Umbau oben.
+  - **Bestellungen bearbeiten** (z. B. Ersatzteile) — **Korrektur
+    07.10.2026, Scope kleiner als erst gedacht:** die `orders`-Tabelle/
+    `create_order` (`backend/src/vapi.js`) sind bereits generisch —
+    `items` wird nur als freier Text gespeichert, keine Restaurant-
+    spezifischen DB-Felder. Die Restaurant-Kopplung steckt fast
+    komplett im Prompt-Text (`ORDERS_PROMPT` in `vapiAdmin.js`), der
+    Tischreservierung + Bestellung bewusst zusammen bündelt und von
+    "Gerichte"/"Speisekarte" spricht. Eine Teile-Bestell-Rolle für
+    Werkstätten wäre damit **kein** Umbau wie bei Hotels, sondern
+    derselbe leichte Weg wie bei `appointments` (siehe oben) — ein
+    neuer Prompt-/Tool-Schema-Registry-Eintrag, der `create_order` ohne
+    die Tisch-Bündelung wiederverwendet, keine neue Tabelle/Migration.
+  Nutzer-Frage dazu: ob lieber generischer/weniger hartcodiert gebaut
+  werden sollte, statt jedes Mal neu hartzucodieren — Antwort: Prinzip
+  stimmt, macht das Projekt über die `ROLE_BLOCKS`-Registry bereits so
+  (gleiche Tabellen/Tools, nur Prompt/Tool-Schema variiert pro Rolle,
+  siehe `appointments` als Präzedenzfall). Bewusst **kein** vorab
+  entworfenes, abstraktes Universal-Bestellsystem für alle denkbaren
+  Branchen — Risiko falsch geratener Abstraktionen ohne zweiten echten
+  Anwendungsfall; stattdessen beim nächsten echten Bedarf denselben
+  bewährten, leichten Weg gehen.
   **Nutzer-Entscheidung: jetzt nicht umsetzen, nur vormerken** ("Ja,
   vormerken wie Hotels").
 
