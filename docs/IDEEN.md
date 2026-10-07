@@ -81,6 +81,19 @@
   Gast, sobald die Antwort gespeichert wird). Nutzer fand die Idee einer
   automatischen SMS an den Gast gut, aber bewusst nur vorgemerkt, noch nicht
   gebaut.
+  **Konkreter Anwendungsfall ergänzt (07.10.2026, Werkstatt-Kostenvoranschlag):**
+  Kiwo kann einen echten Kostenvoranschlag nicht selbst erstellen (braucht
+  Diagnose vor Ort), aber einen bereits von der Werkstatt erstellten Betrag
+  **übermitteln** — drei Varianten unterschiedlichen Aufwands: (1) **leicht:**
+  automatische SMS, sobald Personal den Betrag bei der bestehenden
+  `request_callback`-Zeile im Dashboard einträgt — nutzt `backend/src/sms.js`
+  fast 1:1, genau die oben beschriebene, bereits vorgemerkte Automatisierung;
+  (2) **mittel:** ruft der Kunde selbst zurück, könnte Kiwo den gespeicherten
+  Betrag nachschlagen und vorlesen — braucht ein neues Lookup-Tool, aber keine
+  neue Infrastruktur; (3) **schwerer, eigenes Thema:** Kiwo ruft von sich aus
+  aktiv an (echter Outbound-Anruf) — gibt es in diesem Projekt noch gar nicht
+  (Vapi kann das technisch, aber nirgends angebunden), separates, bereits an
+  anderer Stelle vorgemerktes Thema "Voice-Outbound für Karteileichen".
 - **Live-Weiterleitung an echten Menschen — GEBAUT (14.09.2026), siehe
   „Bereits erledigt".** War hier lange nur vorgemerkt; auf Nutzer-Nachfrage
   "kann Kiwo nicht wissen, ob außerhalb der Arbeitsstunden ist" jetzt
