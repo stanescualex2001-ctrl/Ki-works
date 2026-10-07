@@ -94,6 +94,21 @@
   aktiv an (echter Outbound-Anruf) — gibt es in diesem Projekt noch gar nicht
   (Vapi kann das technisch, aber nirgends angebunden), separates, bereits an
   anderer Stelle vorgemerktes Thema "Voice-Outbound für Karteileichen".
+  **Kanal-Frage SMS vs. WhatsApp vs. Telegram geklärt (07.10.2026):**
+  SMS ist schon fertig gebaut (`sms.js`) und erreicht jede Nummer ohne
+  App-Zwang, kann aber (reiner Text) keine Anhänge wie ein PDF
+  verschicken. Telegram wäre technisch am leichtesten (kostenlose
+  Bot-API, keine Freigabe nötig), ist aber in AT/DE/RO kaum als
+  Geschäftskanal etabliert — vom Nutzer verworfen. WhatsApp braucht
+  weiterhin die noch nicht angestoßene Twilio-/Meta-Business-Freigabe
+  (siehe oben). **Für einen echten Kostenvoranschlag als PDF ist nicht
+  WhatsApp die Lösung, sondern E-Mail** — der Gast kann E-Mail beim
+  Rückruf-Wunsch schon jetzt als bevorzugten Kanal angeben (SMS/
+  WhatsApp/E-Mail, bereits gebaut), PDF-Anhänge sind dort Standard,
+  und die Mail-Versand-Infrastruktur (n8n) existiert bereits — keine
+  Freigabe-Warteschlange wie bei WhatsApp nötig. Alternative ohne
+  E-Mail-Pflicht: ein Link zu einer gehosteten Angebots-Seite/PDF
+  funktioniert auch per SMS, ganz ohne neuen Kanal.
 - **Live-Weiterleitung an echten Menschen — GEBAUT (14.09.2026), siehe
   „Bereits erledigt".** War hier lange nur vorgemerkt; auf Nutzer-Nachfrage
   "kann Kiwo nicht wissen, ob außerhalb der Arbeitsstunden ist" jetzt
