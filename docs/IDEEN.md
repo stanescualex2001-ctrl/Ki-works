@@ -759,3 +759,30 @@
   **Nutzer-Entscheidung: jetzt nicht umsetzen, nur vormerken** ("Nicht
   jetzt. Aber merken.").
 
+- **Kiwo für Autowerkstätten erweitern — Scope besprochen, noch nicht
+  gebaut (07.10.2026):** Nutzer fragte, ob Kiwo Lagerbestand/Stückzahl,
+  Angebote, Bestellungen und Termine für eine Werkstatt abdecken könnte.
+  Eingeschätzt nach bereits live/geplanten Bausteinen:
+  - **Schon live** (Autowerkstätten sind bereits als Branche aktiv):
+    Termine über die bestehende `appointments`-Rolle; allgemeine Fragen
+    über die `support`-Rolle, aber nur was die Werkstatt selbst in ihre
+    Wissensdatenbank/FAQ einträgt — Kiwo erfindet laut Basisprompt
+    (`backend/src/vapiAdmin.js`, `basePrompt`) nie eigene Preise/Zahlen.
+  - **Lagerbestand/Stückzahl:** kein Inventar-/Lagersystem im Projekt
+    vorhanden (per Grep bestätigt, keine Tabelle/kein Code dafür). Zwei
+    Wege: (a) Werkstatt pflegt Teile+Stückzahl selbst im Dashboard
+    (analog Wissensdatenbank) — überschaubar, aber manuell/veraltet
+    schnell; (b) echte Anbindung an die Lagersoftware der Werkstatt —
+    unbekanntes Zielsystem, deutlich größerer, nicht planbarer Aufwand.
+  - **Angebote/Kostenvoranschläge:** realistisch nicht automatisierbar
+    per Telefon-KI (braucht Diagnose vor Ort). Machbar: Kiwo nimmt die
+    Anfrage auf und meldet sie als Rückruf-Wunsch — nutzt die
+    bestehende `request_callback`-Mechanik, kein Neubau nötig, nur als
+    Standardfall für diese Branche vorsehen.
+  - **Bestellungen bearbeiten** (z. B. Ersatzteile): die bestehende
+    `orders`-Rolle ist fest an Restaurant-Speisekarte/Tisch gekoppelt,
+    nicht wiederverwendbar — bräuchte eine neue, generische Bestell-Rolle
+    ohne Tisch/Menü-Logik, ähnlicher Umfang wie der Hotels-Umbau oben.
+  **Nutzer-Entscheidung: jetzt nicht umsetzen, nur vormerken** ("Ja,
+  vormerken wie Hotels").
+
