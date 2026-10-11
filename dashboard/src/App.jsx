@@ -3,6 +3,13 @@ import { getStoredTheme, applyTheme } from './theme.js';
 import { useI18n, SUPPORTED_LOCALES } from './i18n/index.jsx';
 import { useBranding } from './branding.jsx';
 
+// "Zurück zur Website"-Link muss die aktuelle Dashboard-Sprache auf die
+// passende Landing-URL abbilden (de → /, en/ro → /en/, /ro/) — sonst landet
+// ein RO/EN-Kunde beim Klick immer auf der deutschen Startseite.
+function landingSiteUrl(locale) {
+  return locale === 'de' ? 'https://ki-works.eu/' : `https://ki-works.eu/${locale}/`;
+}
+
 /* ---------- Light/Dark-Umschalter ---------- */
 function ThemeToggle({ className = '' }) {
   const { t } = useI18n();
@@ -318,7 +325,7 @@ function ForgotPassword({ onBack }) {
 }
 
 function Login({ onLogin }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -363,7 +370,7 @@ function Login({ onLogin }) {
         <button type="button" className="link login-forgot-link" onClick={() => setForgot(true)}>
           {t('login.forgotLink')}
         </button>
-        <a className="site-link login-site-link" href="/">← {t('sidebar.backToWebsite')}</a>
+        <a className="site-link login-site-link" href={landingSiteUrl(locale)}>← {t('sidebar.backToWebsite')}</a>
         <div className="login-toggles">
           <ThemeToggle className="login-theme-toggle" />
           <LanguageToggle className="login-theme-toggle" />
@@ -2501,7 +2508,7 @@ const NAV = [
 ];
 
 export default function App() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const brandingCtx = useBranding();
   const [auth, setAuth] = useState(loadAuth);
   // Agenturen (role: 'agency') verwalten nur ihre eigenen Kunden — landen
@@ -2666,7 +2673,7 @@ export default function App() {
           <ThemeToggle />
           <LanguageToggle />
           <button className="refresh" onClick={logout}>{t('sidebar.logout')} ({isAdmin ? t('sidebar.operator') : auth.name})</button>
-          <a className="site-link" href="/">← {t('sidebar.backToWebsite')}</a>
+          <a className="site-link" href={landingSiteUrl(locale)}>← {t('sidebar.backToWebsite')}</a>
         </div>
       </aside>
 

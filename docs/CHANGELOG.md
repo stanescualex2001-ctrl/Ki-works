@@ -1,5 +1,14 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Kunden-Dashboard: "Zurück zur Website"-Link springt nicht mehr auf DE (11.10.2026):**
+  Nutzer meldete: im Kunden-Dashboard mit RO/EN eingeloggt, Klick auf "Zur
+  Website" landet trotzdem auf der deutschen Startseite. Ursache:
+  `dashboard/src/App.jsx` (Login-Screen Zeile 373, Sidebar Zeile 2676) hatte
+  `href="/"` hardcodiert, ignorierte die Dashboard-Sprache. Fix: neue
+  Helper-Funktion `landingSiteUrl(locale)` (de → `https://ki-works.eu/`,
+  sonst `https://ki-works.eu/<locale>/`), `locale` an beiden Stellen aus
+  `useI18n()` ergänzt. Gleiches Muster wie `localizedPath()` auf der
+  Landing-Seite.
 - **Kontingent-Warn-Mail + regelbasierte Tarif-Empfehlung (11.10.2026):**
   Nutzer fragte, wie Minuten-Überschreitung bei Solo/Team/Scale aktuell
   läuft — Recherche ergab: `/api/usage` zeigt nur an, nichts wird
