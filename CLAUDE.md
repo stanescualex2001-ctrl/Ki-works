@@ -156,10 +156,15 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 - **Social-Assets (Chat-Sandbox):** `edge-tts` braucht Proxy-CA an `certifi` angehängt; echte Logos verwenden, Orb Buddy in jeder
   KI-Works-Reel-Szene, Caption als eigene Datei, Wegwerf-Skripte danach löschen.
 - **DNS:** AAAA-Eintrag von ki-works.eu muss auf Contabo-IPv6 `2a02:c207:2341:9465::1` zeigen (war Ursache von Zertifikat-Problem + "Forbidden" im Mobilfunk, behoben, Mobilfunk bestätigt).
-- **SPA-Caching (Dashboard/Intern):** `index.html` unter `/dashboard` und `/intern` braucht `Cache-Control:
-  no-cache, must-revalidate` in nginx, sonst liefert der Browser gelegentlich eine veraltete `index.html` (alter
-  JS-Hash) aus dem Cache aus — führte zu "funktioniert manchmal nicht"-Bugs trotz korrektem, verifiziertem Code auf
-  dem Server (11.10.2026). Gehashte `assets/`-Dateien dagegen unbedenklich `max-age=31536000, immutable`.
+- **HTML nie ohne Cache-Control ausliefern:** Alle `.html`-Seiten (Landingpage `/`+`/en/`+`/ro/`+Unterseiten,
+  `/dashboard`, `/intern`) brauchen `Cache-Control: no-store, no-cache, must-revalidate` in nginx — sonst darf der
+  Browser sie beliebig lange heuristisch selbst cachen (auch `index.html` mit altem JS-Hash oder ein darin
+  eingebetteter Link/Button). War die Ursache einer sehr hartnäckigen "funktioniert manchmal nicht"-Bugserie
+  (Dashboard-Sprachlink) über mehrere Debug-Runden, obwohl Code und Server längst korrekt waren — zuerst nur für
+  `/dashboard`/`/intern` gefixt, dann gemerkt dass die Landingpage selbst GAR KEINE Cache-Header hatte (11.10.2026).
+  Gehashte `assets/`-Dateien dagegen unbedenklich `max-age=31536000, immutable`. Lehre: bei "geht manchmal, manchmal
+  nicht" trotz verifiziertem Code zuerst `curl -sI` auf ALLE beteiligten HTML-Seiten prüfen, nicht nur die zuletzt
+  geänderte.
 - **Diagnose:** Wenn eine Antwort den Fehler schon verrät, sofort benennen/beheben, nicht über mehrere Nachrichten ziehen.
 
 ## Offene Punkte (kurz; Details in `docs/OFFENE_PUNKTE.md`)
