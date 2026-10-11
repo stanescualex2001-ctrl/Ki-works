@@ -1,5 +1,17 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Stammgäste werden am Telefon namentlich begrüßt (11.10.2026, v1.5.0):**
+  Erkennung per Rufnummer gab es schon (`guestContext()` in `backend/src/
+  vapi.js`, Abgleich gegen bisherige Reservierungen), aber nur als
+  Hintergrund-Kontext für Kiwo — die feste Begrüßung am Anfang war nie
+  personalisiert. Neu: `guestContext()` liefert jetzt zusätzlich den reinen
+  Namen zurück, neue Variable `{{guest_greeting}}` (`, Name` bei erkanntem
+  Stammgast, sonst leer) in `buildVariableValues()`, in die drei
+  `firstMessage`-Vorlagen (DE/EN/RO) in `backend/src/voiceOptions.js`
+  eingebaut ("Grüß Gott{{guest_greeting}}, hier ist Kiwo..."). Nur
+  Telefonanrufe (nicht Chat-Widget), kostet nichts extra (reiner
+  Prompt-Text). Erkennt nur, wer schon mal reserviert hat. Bestehende
+  Kunden-Assistenten brauchen dafür einmalig Resync + Vapi-Publish.
 - **Kunden-Dashboard: "Zurück zur Website"-Link springt nicht mehr auf DE (11.10.2026):**
   Nutzer meldete: im Kunden-Dashboard mit RO/EN eingeloggt, Klick auf "Zur
   Website" landet trotzdem auf der deutschen Startseite. Ursache:

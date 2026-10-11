@@ -24,7 +24,7 @@ export const LANGUAGE_OPTIONS = {
       appointments: 'KI-Terminassistent',
       default: 'digitale Mitarbeiter',
     },
-    firstMessage: (assistantName, roleLabel) => `Grüß Gott, hier ist ${assistantName}, der ${roleLabel} von {{business_name}}. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?`,
+    firstMessage: (assistantName, roleLabel) => `Grüß Gott{{guest_greeting}}, hier ist ${assistantName}, der ${roleLabel} von {{business_name}}. Zur Qualitätssicherung wird dieses Gespräch aufgezeichnet und automatisiert verarbeitet. Wie kann ich Ihnen helfen?`,
     ownFirstMessage: 'Grüß Gott, hier ist Kiwo, der KI-Agent der Plattform KI-Works. Sie sprechen jetzt direkt mit mir — testen Sie live, wie ich am Telefon klinge und arbeite. Wie kann ich Ihnen helfen?',
     idleMessage: 'Sind Sie noch da? Kann ich Ihnen noch weiterhelfen?',
     timeElapsedMessages: {
@@ -49,7 +49,7 @@ export const LANGUAGE_OPTIONS = {
       appointments: 'AI appointment assistant',
       default: 'digital assistant',
     },
-    firstMessage: (assistantName, roleLabel) => `Hello, this is ${assistantName}, the ${roleLabel} for {{business_name}}. For quality assurance, this call is being recorded and processed automatically. How can I help you?`,
+    firstMessage: (assistantName, roleLabel) => `Hello{{guest_greeting}}, this is ${assistantName}, the ${roleLabel} for {{business_name}}. For quality assurance, this call is being recorded and processed automatically. How can I help you?`,
     ownFirstMessage: 'Hello, this is Kiwo, the AI agent of the KI-Works platform. You are now speaking directly with me — try live how I sound and work on the phone. How can I help you?',
     idleMessage: 'Are you still there? Is there anything else I can help you with?',
     timeElapsedMessages: {
@@ -71,7 +71,7 @@ export const LANGUAGE_OPTIONS = {
       appointments: 'asistentul AI pentru programări',
       default: 'angajatul digital',
     },
-    firstMessage: (assistantName, roleLabel) => `Bună ziua, sunt ${assistantName}, ${roleLabel} de la {{business_name}}. Pentru asigurarea calității, acest apel este înregistrat și procesat automat. Cu ce vă pot ajuta?`,
+    firstMessage: (assistantName, roleLabel) => `Bună ziua{{guest_greeting}}, sunt ${assistantName}, ${roleLabel} de la {{business_name}}. Pentru asigurarea calității, acest apel este înregistrat și procesat automat. Cu ce vă pot ajuta?`,
     ownFirstMessage: 'Bună ziua, sunt Kiwo, agentul AI al platformei KI-Works. Vorbiți acum direct cu mine — testați în direct cum sun și cum lucrez la telefon. Cu ce vă pot ajuta?',
     idleMessage: 'Mai sunteți pe fir? Vă mai pot ajuta cu ceva?',
     timeElapsedMessages: {

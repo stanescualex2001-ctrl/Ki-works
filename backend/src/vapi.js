@@ -281,9 +281,11 @@ async function handleToolCalls(message, restaurant) {
 }
 
 // Kunden-Gedächtnis: erkennt Stammgäste an der Rufnummer und liefert dem
-// Agenten Kontext (Name, Besuche, letzte Reservierung, Notizen, letzter Anruf).
+// Agenten Kontext (Name, Besuche, letzte Reservierung, Notizen, letzter Anruf)
+// sowie separat den reinen Namen (für die personalisierte Begrüßung,
+// {{guest_greeting}} — siehe buildVariableValues).
 async function guestContext(phone, restaurant) {
-  if (!phone || !restaurant) return 'Kein bekannter Stammgast.';
+  if (!phone || !restaurant) return { text: 'Kein bekannter Stammgast.', name: null };
   const { rows } = await query(
     `SELECT customer_name, count(*) AS visits, max(reserved_at) AS last_visit,
             string_agg(DISTINCT notes, '; ') AS notes
@@ -293,7 +295,7 @@ async function guestContext(phone, restaurant) {
     [restaurant.id, phone],
   );
   const guest = rows[0];
-  if (!guest) return 'Kein bekannter Stammgast.';
+  if (!guest) return { text: 'Kein bekannter Stammgast.', name: null };
   const lastCall = await query(
     `SELECT summary FROM calls
      WHERE restaurant_id = $1 AND caller_number = $2 AND summary IS NOT NULL
@@ -307,7 +309,7 @@ async function guestContext(phone, restaurant) {
   ];
   if (guest.notes) parts.push(`Notizen: ${guest.notes}`);
   if (lastCall.rows[0]?.summary) parts.push(`Letztes Gespräch: ${lastCall.rows[0].summary}`);
-  return `${parts.join(', ')}.`;
+  return { text: `${parts.join(', ')}.`, name: guest.customer_name };
 }
 
 const WEEKDAY_LABELS = [
@@ -365,9 +367,15 @@ export function formatFaq(faq) {
     .join(' | ');
 }
 
-function buildVariableValues(context, restaurant) {
+function buildVariableValues(context, restaurant, guestName) {
   return {
     guestContext: context,
+    // Für die personalisierte Begrüßung in firstMessage (voiceOptions.js,
+    // z.B. "Grüß Gott{{guest_greeting}}, hier ist Kiwo..."). Nur der reine
+    // Name, kein "Herr/Frau" (Geschlecht nicht bekannt) — führendes ", "
+    // nur bei erkanntem Stammgast, damit Erstanrufer keine hängende
+    // Begrüßung bekommen ("Grüß Gott, hier ist...").
+    guest_greeting: guestName ? `, ${guestName}` : '',
     // "business_*" ist der aktuelle, branchenneutrale Name (Kunden sind
     // nicht nur Restaurants, z. B. auch Handwerk/Praxen). Führendes ", "
     // nur bei vorhandener Adresse — basePrompt in vapiAdmin.js hängt
@@ -401,8 +409,9 @@ function buildVariableValues(context, restaurant) {
 async function handleAssistantRequest(message, restaurant) {
   const caller = message.call?.customer?.number || message.customer?.number || null;
   let context = 'Kein bekannter Stammgast.';
+  let guestName = null;
   try {
-    context = await guestContext(caller, restaurant);
+    ({ text: context, name: guestName } = await guestContext(caller, restaurant));
   } catch (err) {
     console.error('guestContext failed:', err.message);
   }
@@ -417,7 +426,7 @@ async function handleAssistantRequest(message, restaurant) {
     return {
       squadId,
       squadOverrides: {
-        variableValues: buildVariableValues(context, restaurant),
+        variableValues: buildVariableValues(context, restaurant, guestName),
       },
     };
   }
@@ -428,7 +437,7 @@ async function handleAssistantRequest(message, restaurant) {
   return {
     assistantId: restaurant.vapi_assistant_id,
     assistantOverrides: {
-      variableValues: buildVariableValues(context, restaurant),
+      variableValues: buildVariableValues(context, restaurant, guestName),
     },
   };
 }
