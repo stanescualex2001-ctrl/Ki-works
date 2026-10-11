@@ -1,5 +1,29 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Neue Landing-Seite „Funktionen" — Dashboard im Detail, DE/EN/RO (11.10.2026):**
+  Erst Artifact-Prototyp (mehrfach nach Nutzer-Feedback überarbeitet: mehr
+  Inhalt, echte Theme-Tokens, Zahlen-Konsistenz 847/1500 Min. statt
+  412/600), dann echte Umsetzung: `landing/src/pages/Funktionen.jsx` +
+  `main-funktionen.jsx`, neue Routen `/funktionen.html`,
+  `/en/funktionen.html`, `/ro/funktionen.html` (bewusst nicht `/dashboard*`,
+  das ist durch die nginx-Prefix-Regel für die Login-App reserviert).
+  `localizedPath()` in `i18n/index.jsx` generalisiert (Registry
+  `PAGE_FILES` statt Einzel-Ifs) für den neuen Seitentyp. SSR-Prerender
+  (`entry-server.jsx` → `renderFunktionen`, `scripts/prerender.js`,
+  `vite.config.js` Rollup-Inputs) nach bestehendem Kontakt-Seiten-Muster.
+  Inhalt vertieft die kompakte Dashboard-Sektion der Startseite (4
+  Trust-Points wiederverwendet, nicht dupliziert) um Reservierungen,
+  Bestellungen, Speisekarte/Öffnungszeiten selbst ändern,
+  Benachrichtigungen, Anrufe, Protokoll, Rollen pro Branche — Sales/Büro
+  klar als "geplant" markiert. Reservierungen/Bestellungen/Protokoll ohne
+  echte Screenshots als gestylte Mockup-Karten (Tailwind-Tokens
+  `bg-background`/`text-foreground`, kein Hex, Light/Dark automatisch über
+  `.dark`-Klasse). Homepage-Dashboard-Sektion (`App.jsx`) bekam
+  zusätzlichen "Mehr erfahren"-Link zur neuen Seite (neben dem
+  bestehenden Login-Link). `sitemap.xml` + `llms.txt` ergänzt. Build
+  lokal verifiziert (alle 3 Sprachen vorgerendert, ~30.000 Zeichen echter
+  Inhalt statt leerem `<div id="root">`), Light/Dark + Mobile-Breite per
+  Playwright-Screenshot gegengeprüft. Version 1.2.0 (4 package.json).
 - **SEO/AIO-Nacharbeiten: llms.txt, JSON-LD, nginx-Charset (06.10.2026):**
   `landing/public/llms.txt` komplett erneuert (Plattform statt nur
   Restaurant-Framing, Preise, Sprachen, Demo-Hotline, Partner-Seite) —

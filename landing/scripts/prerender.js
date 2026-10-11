@@ -10,7 +10,8 @@ const dir = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.join(dir, "..", "dist");
 const ssrEntry = path.join(dir, "..", "dist-server", "entry-server.js");
 
-const { renderHome, renderImpressum, renderDatenschutz, renderKontakt, renderPartner } = await import(`file://${ssrEntry}`);
+const { renderHome, renderImpressum, renderDatenschutz, renderKontakt, renderFunktionen, renderPartner } =
+  await import(`file://${ssrEntry}`);
 
 const pages = [
   { file: "index.html", render: () => renderHome("de") },
@@ -21,6 +22,9 @@ const pages = [
   { file: "kontakt.html", render: () => renderKontakt("de") },
   { file: "en/kontakt.html", render: () => renderKontakt("en") },
   { file: "ro/kontakt.html", render: () => renderKontakt("ro") },
+  { file: "funktionen.html", render: () => renderFunktionen("de") },
+  { file: "en/funktionen.html", render: () => renderFunktionen("en") },
+  { file: "ro/funktionen.html", render: () => renderFunktionen("ro") },
   { file: "partner.html", render: renderPartner },
 ];
 

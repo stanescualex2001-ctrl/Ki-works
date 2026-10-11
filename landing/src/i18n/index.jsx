@@ -54,13 +54,15 @@ export function useI18n() {
 // Baut aus einem Seitentyp + Ziel-Locale die URL der entsprechenden anderen
 // Sprachversion. Bewusst über einen expliziten "page"-Typ statt
 // window.location.pathname gelöst — dieser Code läuft auch in Node beim
-// SSR-Prerender, wo es kein window gibt. Nur "home"/"kontakt" haben
-// übersetzte Varianten; "legal" (Impressum/Datenschutz) hat keine → null.
-// Generisch für beliebig viele Sprachen: DEFAULT_LOCALE liegt an der
-// Wurzel (/, /kontakt.html), jede andere Sprache unter /<locale>/.
+// SSR-Prerender, wo es kein window gibt. Nur Seiten mit Eintrag in
+// PAGE_FILES haben übersetzte Varianten; "legal" (Impressum/Datenschutz)
+// hat keine → null. Generisch für beliebig viele Sprachen: DEFAULT_LOCALE
+// liegt an der Wurzel (/, /kontakt.html), jede andere Sprache unter /<locale>/.
+const PAGE_FILES = { kontakt: "kontakt.html", funktionen: "funktionen.html" };
+
 export function localizedPath(page, targetLocale) {
   if (page === "legal") return null;
-  const isKontakt = page === "kontakt";
-  if (targetLocale === DEFAULT_LOCALE) return isKontakt ? "/kontakt.html" : "/";
-  return isKontakt ? `/${targetLocale}/kontakt.html` : `/${targetLocale}/`;
+  const file = PAGE_FILES[page];
+  if (targetLocale === DEFAULT_LOCALE) return file ? `/${file}` : "/";
+  return file ? `/${targetLocale}/${file}` : `/${targetLocale}/`;
 }

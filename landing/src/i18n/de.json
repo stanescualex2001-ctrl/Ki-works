@@ -229,9 +229,112 @@
       }
     ],
     "linkText": "Ihr Dashboard ansehen",
+    "moreLinkText": "Mehr erfahren",
     "proofLabel": "Anruf-Transkript",
     "overviewAlt": "Kiwo-Dashboard Übersicht mit Ersparnis-Kachel, echter Screenshot",
     "callAlt": "Anruf-Detail mit Transkript, echter Screenshot"
+  },
+  "funktionenPage": {
+    "eyebrow": "FUNKTIONEN",
+    "title": "Nichts verpasst. Alles nachprüfbar — im Detail.",
+    "intro": "Kiwo nimmt jeden Anruf entgegen — und jede Reservierung, jede Bestellung und jedes Gespräch landet live in Ihrem eigenen Dashboard, inklusive Aufnahme und Transkript zum Nachhören. Hier sehen Sie, wie jeder Bereich im Detail funktioniert.",
+    "promisesHeading": "Die vier Versprechen",
+    "status": {
+      "confirmed": "Bestätigt",
+      "requested": "Angefragt",
+      "cancelled": "Storniert",
+      "new": "Neu",
+      "preparing": "In Zubereitung",
+      "pickedUp": "Abgeholt",
+      "saved": "Gespeichert"
+    },
+    "overview": {
+      "eyebrow": "ÜBERSICHT",
+      "title": "So sieht Ihre Übersicht aus",
+      "desc": "Alle Kennzahlen auf einen Blick — Anrufe, Reservierungen, Bestellungen und die Zeit, die Kiwo Ihnen abgenommen hat.",
+      "callsToday": "Anrufe heute",
+      "callsTrend": "ggü. gestern",
+      "openReservations": "Offene Reservierungen",
+      "openReservationsHint": "für diese Woche",
+      "ordersInProgress": "Bestellungen in Bearbeitung",
+      "ordersInProgressHint": "davon neu",
+      "timeSaved": "Ersparte Zeit diese Woche",
+      "timeSavedHint": "Hochgerechnet aus Anrufdauer × Mitarbeiter-Ersatzfaktor — als Zahl, nicht als Behauptung.",
+      "minutesUsed": "Gesprächsminuten (Monat)",
+      "minutesUsedHint": "Tarif Team · 1500 Min. inklusive"
+    },
+    "reservations": {
+      "eyebrow": "RESERVIERUNGEN",
+      "title": "Reservierungen im Blick",
+      "desc": "Kiwo nimmt Tischreservierungen am Telefon auf und trägt sie direkt ein — mit Name, Personenzahl und Uhrzeit.",
+      "items": [
+        { "name": "Familie Gruber", "detail": "4 Personen · Fr, 19:30", "status": "confirmed" },
+        { "name": "Markus Huber", "detail": "2 Personen · Fr, 20:00", "status": "requested" },
+        { "name": "Thomas Wagner", "detail": "2 Personen · Sa, 21:00", "status": "cancelled" }
+      ]
+    },
+    "orders": {
+      "eyebrow": "BESTELLUNGEN",
+      "title": "Bestellungen verwalten",
+      "desc": "Abhol- und Essensbestellungen landen mit Inhalt und Abholzeit direkt in der Küche-Ansicht.",
+      "items": [
+        { "id": "#1043", "item": "3× Pizza Diavola", "detail": "Abholung 19:30", "status": "new" },
+        { "id": "#1042", "item": "2× Pizza Margherita, 1× Tiramisu", "detail": "Abholung 18:45", "status": "preparing" },
+        { "id": "#1041", "item": "1× Spaghetti Vongole", "detail": "Abholung 18:15", "status": "pickedUp" }
+      ]
+    },
+    "menu": {
+      "eyebrow": "SPEISEKARTE & ÖFFNUNGSZEITEN",
+      "title": "Speisekarte, Öffnungszeiten & FAQ selbst ändern",
+      "desc": "Änderungen wirken sofort am Telefon — ohne Rückfrage bei uns, ohne Wartezeit.",
+      "hoursLabel": "Öffnungszeiten",
+      "hours": [["Mo–Fr", "11:30–22:00"], ["Sa–So", "12:00–23:00"], ["Ruhetag", "—"]],
+      "faqLabel": "Kurz-FAQ für Kiwo",
+      "faq": [["„Gibt es glutenfreie Optionen?“", "Ja, auf Anfrage."], ["„Nehmen Sie Hunde?“", "Ja, auf der Terrasse."]],
+      "savedHint": "Wirkt sofort am Telefon"
+    },
+    "calls": {
+      "eyebrow": "ANRUFE",
+      "title": "Jeden Anruf nachhören und nachlesen",
+      "desc": "Transkript zu jedem Gespräch — Sie prüfen jederzeit, was Kiwo gesagt und verstanden hat.",
+      "items": [
+        { "number": "+43 664 •••• 21", "detail": "Reservierung für Fr. 19:30 angelegt", "duration": "2:14" },
+        { "number": "+43 699 •••• 08", "detail": "Frage zu den Öffnungszeiten beantwortet", "duration": "0:47" },
+        { "number": "+43 676 •••• 55", "detail": "Bestellung #1043 aufgenommen", "duration": "1:32" }
+      ]
+    },
+    "notifications": {
+      "eyebrow": "BENACHRICHTIGUNGEN",
+      "title": "Sofort benachrichtigt, nie manuell nachschauen",
+      "desc": "E-Mail bei jedem neuen Anruf, jeder Reservierung, jeder Bestellung.",
+      "exampleTitle": "Kiwo: Neue Reservierung",
+      "exampleDetail": "Familie Gruber · 4 Pers. · Fr, 19:30 — Venezia",
+      "exampleTime": "vor 2 Min."
+    },
+    "auditLog": {
+      "eyebrow": "PROTOKOLL",
+      "title": "Protokoll: wer hat was geändert",
+      "desc": "Jede Änderung ist nachvollziehbar — mit Zeitstempel.",
+      "items": [
+        { "time": "Heute 14:02", "text": "Reservierung #R-2291 automatisch bestätigt" },
+        { "time": "Heute 11:18", "text": "admin@venezia.at hat Öffnungszeiten aktualisiert" },
+        { "time": "Gestern 19:40", "text": "Bestellung #1038 als abgeholt markiert" }
+      ]
+    },
+    "roles": {
+      "eyebrow": "ROLLEN",
+      "title": "Rollen, die zu Ihrem Betrieb passen",
+      "desc": "Ihr Dashboard zeigt nur das, was Kiwo für Sie tatsächlich übernimmt — je nach aktivierten Rollen.",
+      "live": ["Empfang", "Support", "Bestellungen", "Termine"],
+      "planned": ["Vertrieb", "Büro"],
+      "plannedLabel": "geplant"
+    },
+    "cta": {
+      "title": "Neugierig, wie's bei Ihrem Betrieb aussieht?",
+      "desc": "15 Minuten, unverbindlich. Verfügbar auf Deutsch, Englisch und Rumänisch.",
+      "button": "Demo vereinbaren"
+    },
+    "backToOverview": "Zur kompakten Übersicht auf der Startseite"
   },
   "platformSection": {
     "eyebrow": "KI-WORKS PLATTFORM",

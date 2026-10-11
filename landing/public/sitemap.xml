@@ -73,6 +73,36 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/kontakt.html" />
   </url>
   <url>
+    <loc>https://ki-works.eu/funktionen.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/funktionen.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/en/funktionen.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/funktionen.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/ro/funktionen.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/funktionen.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/funktionen.html" />
+  </url>
+  <url>
     <loc>https://ki-works.eu/partner.html</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>

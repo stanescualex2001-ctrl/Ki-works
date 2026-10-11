@@ -229,9 +229,112 @@
       }
     ],
     "linkText": "See your dashboard",
+    "moreLinkText": "Learn more",
     "proofLabel": "Call transcript",
     "overviewAlt": "Kiwo dashboard overview with savings tile, real screenshot",
     "callAlt": "Call detail with transcript, real screenshot"
+  },
+  "funktionenPage": {
+    "eyebrow": "FEATURES",
+    "title": "Nothing missed. Everything verifiable — in detail.",
+    "intro": "Kiwo answers every call — and every reservation, order and conversation shows up live in your own dashboard, including the recording and transcript to review anytime. Here's how every area works in detail.",
+    "promisesHeading": "The four promises",
+    "status": {
+      "confirmed": "Confirmed",
+      "requested": "Requested",
+      "cancelled": "Cancelled",
+      "new": "New",
+      "preparing": "Preparing",
+      "pickedUp": "Picked up",
+      "saved": "Saved"
+    },
+    "overview": {
+      "eyebrow": "OVERVIEW",
+      "title": "Here's what your overview looks like",
+      "desc": "Every key number at a glance — calls, reservations, orders, and the time Kiwo has taken off your hands.",
+      "callsToday": "Calls today",
+      "callsTrend": "vs. yesterday",
+      "openReservations": "Open reservations",
+      "openReservationsHint": "for this week",
+      "ordersInProgress": "Orders in progress",
+      "ordersInProgressHint": "of which new",
+      "timeSaved": "Time saved this week",
+      "timeSavedHint": "Estimated from call duration × staff replacement factor — a real number, not a claim.",
+      "minutesUsed": "Call minutes (month)",
+      "minutesUsedHint": "Team plan · 1,500 min. included"
+    },
+    "reservations": {
+      "eyebrow": "RESERVATIONS",
+      "title": "Reservations at a glance",
+      "desc": "Kiwo takes table reservations on the phone and enters them directly — with name, party size and time.",
+      "items": [
+        { "name": "The Gruber family", "detail": "4 people · Fri, 7:30 PM", "status": "confirmed" },
+        { "name": "Markus Huber", "detail": "2 people · Fri, 8:00 PM", "status": "requested" },
+        { "name": "Thomas Wagner", "detail": "2 people · Sat, 9:00 PM", "status": "cancelled" }
+      ]
+    },
+    "orders": {
+      "eyebrow": "ORDERS",
+      "title": "Managing orders",
+      "desc": "Pickup and food orders arrive in the kitchen view with full contents and pickup time.",
+      "items": [
+        { "id": "#1043", "item": "3× Pizza Diavola", "detail": "Pickup 7:30 PM", "status": "new" },
+        { "id": "#1042", "item": "2× Pizza Margherita, 1× Tiramisu", "detail": "Pickup 6:45 PM", "status": "preparing" },
+        { "id": "#1041", "item": "1× Spaghetti Vongole", "detail": "Pickup 6:15 PM", "status": "pickedUp" }
+      ]
+    },
+    "menu": {
+      "eyebrow": "MENU & HOURS",
+      "title": "Edit your menu, hours & FAQ yourself",
+      "desc": "Changes take effect on the phone immediately — no back-and-forth with us, no waiting.",
+      "hoursLabel": "Opening hours",
+      "hours": [["Mon–Fri", "11:30 AM–10:00 PM"], ["Sat–Sun", "12:00 PM–11:00 PM"], ["Closed", "—"]],
+      "faqLabel": "Quick FAQ for Kiwo",
+      "faq": [["\"Any gluten-free options?\"", "Yes, on request."], ["\"Are dogs allowed?\"", "Yes, on the terrace."]],
+      "savedHint": "Takes effect on the phone immediately"
+    },
+    "calls": {
+      "eyebrow": "CALLS",
+      "title": "Listen back to and read every call",
+      "desc": "A transcript for every conversation — you can always check exactly what Kiwo said and understood.",
+      "items": [
+        { "number": "+43 664 •••• 21", "detail": "Reservation set up for Fri. 7:30 PM", "duration": "2:14" },
+        { "number": "+43 699 •••• 08", "detail": "Answered a question about opening hours", "duration": "0:47" },
+        { "number": "+43 676 •••• 55", "detail": "Took order #1043", "duration": "1:32" }
+      ]
+    },
+    "notifications": {
+      "eyebrow": "NOTIFICATIONS",
+      "title": "Notified instantly, never check manually again",
+      "desc": "An email the moment a new call, reservation, or order comes in.",
+      "exampleTitle": "Kiwo: New reservation",
+      "exampleDetail": "The Gruber family · 4 people · Fri, 7:30 PM — Venezia",
+      "exampleTime": "2 min. ago"
+    },
+    "auditLog": {
+      "eyebrow": "LOG",
+      "title": "Log: who changed what",
+      "desc": "Every change is traceable — with a timestamp.",
+      "items": [
+        { "time": "Today 2:02 PM", "text": "Reservation #R-2291 confirmed automatically" },
+        { "time": "Today 11:18 AM", "text": "admin@venezia.at updated the opening hours" },
+        { "time": "Yesterday 7:40 PM", "text": "Order #1038 marked as picked up" }
+      ]
+    },
+    "roles": {
+      "eyebrow": "ROLES",
+      "title": "Roles that fit your business",
+      "desc": "Your dashboard only shows what Kiwo actually handles for you — depending on which roles are enabled.",
+      "live": ["Reception", "Support", "Orders", "Appointments"],
+      "planned": ["Sales", "Office"],
+      "plannedLabel": "planned"
+    },
+    "cta": {
+      "title": "Curious how this would look for your business?",
+      "desc": "15 minutes, no obligation. Available in German, English and Romanian.",
+      "button": "Book a demo"
+    },
+    "backToOverview": "Back to the short overview on the homepage"
   },
   "platformSection": {
     "eyebrow": "KI-WORKS PLATFORM",

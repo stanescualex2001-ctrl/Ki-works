@@ -12,7 +12,7 @@ import { LanguageSuggestionBanner } from "./components/LanguageSuggestionBanner.
 import { CookieBanner } from "./components/CookieBanner.jsx";
 import { OrbBuddy } from "./components/OrbBuddy.jsx";
 import { ChatWidget, OPEN_CHAT_EVENT } from "./components/ChatWidget.jsx";
-import { useI18n, DEFAULT_LOCALE } from "./i18n/index.jsx";
+import { useI18n, DEFAULT_LOCALE, localizedPath } from "./i18n/index.jsx";
 
 /* ============================================================
    Design tokens (semantic):
@@ -938,12 +938,20 @@ export default function App() {
                   );
                 })}
               </div>
-              <a
-                href={`/dashboard/?lang=${locale}`}
-                className="mt-6 hidden items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition md:inline-flex"
-              >
-                {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
-              </a>
+              <div className="mt-6 hidden flex-wrap items-center gap-x-6 gap-y-2 md:flex">
+                <a
+                  href={`/dashboard/?lang=${locale}`}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
+                >
+                  {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+                <a
+                  href={localizedPath("funktionen", locale)}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground/60 hover:text-foreground transition"
+                >
+                  {t("dashboardSection.moreLinkText")} <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </div>
             </div>
 
             <div className="relative md:pb-14">
@@ -985,12 +993,20 @@ export default function App() {
                   />
                 </div>
               </div>
-              <a
-                href={`/dashboard/?lang=${locale}`}
-                className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition md:hidden"
-              >
-                {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
-              </a>
+              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 md:hidden">
+                <a
+                  href={`/dashboard/?lang=${locale}`}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
+                >
+                  {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+                <a
+                  href={localizedPath("funktionen", locale)}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground/60 hover:text-foreground transition"
+                >
+                  {t("dashboardSection.moreLinkText")} <ArrowRight className="h-3.5 w-3.5" />
+                </a>
+              </div>
             </div>
           </div>
         </div>

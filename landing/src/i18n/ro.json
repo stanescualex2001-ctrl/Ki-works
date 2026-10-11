@@ -229,9 +229,112 @@
       }
     ],
     "linkText": "Vedeți dashboardul dvs.",
+    "moreLinkText": "Aflați mai multe",
     "proofLabel": "Transcriere apel",
     "overviewAlt": "Prezentare generală a dashboardului Kiwo cu economii, captură reală de ecran",
     "callAlt": "Detaliu apel cu transcriere, captură reală de ecran"
+  },
+  "funktionenPage": {
+    "eyebrow": "FUNCȚII",
+    "title": "Nimic nu se pierde. Totul poate fi verificat — în detaliu.",
+    "intro": "Kiwo răspunde la fiecare apel — iar fiecare rezervare, comandă și conversație apare live în propriul dvs. dashboard, inclusiv înregistrarea și transcrierea, disponibile oricând. Aici vedeți cum funcționează fiecare secțiune în detaliu.",
+    "promisesHeading": "Cele patru promisiuni",
+    "status": {
+      "confirmed": "Confirmat",
+      "requested": "Solicitat",
+      "cancelled": "Anulat",
+      "new": "Nou",
+      "preparing": "În pregătire",
+      "pickedUp": "Ridicat",
+      "saved": "Salvat"
+    },
+    "overview": {
+      "eyebrow": "PREZENTARE GENERALĂ",
+      "title": "Așa arată prezentarea dvs. generală",
+      "desc": "Toate cifrele importante dintr-o privire — apeluri, rezervări, comenzi și timpul pe care Kiwo vi l-a economisit.",
+      "callsToday": "Apeluri azi",
+      "callsTrend": "față de ieri",
+      "openReservations": "Rezervări deschise",
+      "openReservationsHint": "pentru această săptămână",
+      "ordersInProgress": "Comenzi în lucru",
+      "ordersInProgressHint": "dintre care noi",
+      "timeSaved": "Timp economisit săptămâna aceasta",
+      "timeSavedHint": "Calculat din durata apelurilor × factorul de înlocuire a personalului — o cifră reală, nu o afirmație.",
+      "minutesUsed": "Minute de apel (luna aceasta)",
+      "minutesUsedHint": "Plan Team · 1.500 min. incluse"
+    },
+    "reservations": {
+      "eyebrow": "REZERVĂRI",
+      "title": "Rezervările, dintr-o privire",
+      "desc": "Kiwo preia rezervări de masă la telefon și le înregistrează direct — cu nume, număr de persoane și oră.",
+      "items": [
+        { "name": "Familia Gruber", "detail": "4 persoane · Vin, 19:30", "status": "confirmed" },
+        { "name": "Markus Huber", "detail": "2 persoane · Vin, 20:00", "status": "requested" },
+        { "name": "Thomas Wagner", "detail": "2 persoane · Sâm, 21:00", "status": "cancelled" }
+      ]
+    },
+    "orders": {
+      "eyebrow": "COMENZI",
+      "title": "Gestionarea comenzilor",
+      "desc": "Comenzile pentru ridicare ajung direct în vizualizarea bucătăriei, cu conținut și oră de ridicare.",
+      "items": [
+        { "id": "#1043", "item": "3× Pizza Diavola", "detail": "Ridicare 19:30", "status": "new" },
+        { "id": "#1042", "item": "2× Pizza Margherita, 1× Tiramisu", "detail": "Ridicare 18:45", "status": "preparing" },
+        { "id": "#1041", "item": "1× Spaghetti Vongole", "detail": "Ridicare 18:15", "status": "pickedUp" }
+      ]
+    },
+    "menu": {
+      "eyebrow": "MENIU & PROGRAM",
+      "title": "Modificați singur meniul, programul & întrebările frecvente",
+      "desc": "Modificările se aplică imediat la telefon — fără să ne contactați, fără așteptare.",
+      "hoursLabel": "Program de funcționare",
+      "hours": [["Lun–Vin", "11:30–22:00"], ["Sâm–Dum", "12:00–23:00"], ["Zi liberă", "—"]],
+      "faqLabel": "Întrebări rapide pentru Kiwo",
+      "faq": [["„Aveți opțiuni fără gluten?“", "Da, la cerere."], ["„Acceptați câini?“", "Da, pe terasă."]],
+      "savedHint": "Se aplică imediat la telefon"
+    },
+    "calls": {
+      "eyebrow": "APELURI",
+      "title": "Ascultați și recitiți fiecare apel",
+      "desc": "O transcriere pentru fiecare conversație — puteți verifica oricând exact ce a spus și a înțeles Kiwo.",
+      "items": [
+        { "number": "+43 664 •••• 21", "detail": "Rezervare creată pentru vineri, 19:30", "duration": "2:14" },
+        { "number": "+43 699 •••• 08", "detail": "Întrebare despre program, răspunsă", "duration": "0:47" },
+        { "number": "+43 676 •••• 55", "detail": "Comanda #1043 preluată", "duration": "1:32" }
+      ]
+    },
+    "notifications": {
+      "eyebrow": "NOTIFICĂRI",
+      "title": "Notificat instant, fără verificări manuale",
+      "desc": "Un e-mail imediat ce sosește un apel nou, o rezervare sau o comandă.",
+      "exampleTitle": "Kiwo: Rezervare nouă",
+      "exampleDetail": "Familia Gruber · 4 pers. · Vin, 19:30 — Venezia",
+      "exampleTime": "acum 2 min."
+    },
+    "auditLog": {
+      "eyebrow": "JURNAL",
+      "title": "Jurnal: cine a modificat ce",
+      "desc": "Fiecare modificare poate fi urmărită — cu marcaj de timp.",
+      "items": [
+        { "time": "Azi 14:02", "text": "Rezervarea #R-2291 confirmată automat" },
+        { "time": "Azi 11:18", "text": "admin@venezia.at a actualizat programul" },
+        { "time": "Ieri 19:40", "text": "Comanda #1038 marcată ca ridicată" }
+      ]
+    },
+    "roles": {
+      "eyebrow": "ROLURI",
+      "title": "Roluri potrivite pentru afacerea dvs.",
+      "desc": "Dashboardul dvs. arată doar ce preia Kiwo efectiv pentru dvs. — în funcție de rolurile activate.",
+      "live": ["Recepție", "Suport", "Comenzi", "Programări"],
+      "planned": ["Vânzări", "Birou"],
+      "plannedLabel": "planificat"
+    },
+    "cta": {
+      "title": "Curioși cum ar arăta la afacerea dvs.?",
+      "desc": "15 minute, fără obligații. Disponibil în germană, engleză și română.",
+      "button": "Programați o demonstrație"
+    },
+    "backToOverview": "Înapoi la prezentarea scurtă de pe pagina principală"
   },
   "platformSection": {
     "eyebrow": "PLATFORMA KI-WORKS",

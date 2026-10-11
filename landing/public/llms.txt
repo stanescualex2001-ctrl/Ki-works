@@ -30,6 +30,7 @@ Deutsch, Englisch, Rumänisch
 - Startseite: https://ki-works.eu/
 - English: https://ki-works.eu/en/
 - Română: https://ki-works.eu/ro/
+- Funktionen (Dashboard im Detail): https://ki-works.eu/funktionen.html
 - Partner und Reseller: https://ki-works.eu/partner.html
 - Impressum: https://ki-works.eu/impressum.html
 - Datenschutz: https://ki-works.eu/datenschutz.html

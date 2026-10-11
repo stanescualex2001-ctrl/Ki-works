@@ -3,6 +3,7 @@ import App from "./App.jsx";
 import Impressum from "./pages/Impressum.jsx";
 import Datenschutz from "./pages/Datenschutz.jsx";
 import Kontakt from "./pages/Kontakt.jsx";
+import Funktionen from "./pages/Funktionen.jsx";
 import Partner from "./pages/Partner.jsx";
 import { LanguageProvider, DEFAULT_LOCALE } from "./i18n/index.jsx";
 
@@ -34,6 +35,14 @@ export function renderKontakt(locale = DEFAULT_LOCALE) {
   return renderToString(
     <LanguageProvider locale={locale}>
       <Kontakt />
+    </LanguageProvider>,
+  );
+}
+
+export function renderFunktionen(locale = DEFAULT_LOCALE) {
+  return renderToString(
+    <LanguageProvider locale={locale}>
+      <Funktionen />
     </LanguageProvider>,
   );
 }
