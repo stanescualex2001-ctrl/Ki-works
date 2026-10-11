@@ -6,6 +6,7 @@ import { query } from './db.js';
 import { handleVapiWebhook } from './vapi.js';
 import { syncVapiAssistant, syncDemoSquad } from './vapiAdmin.js';
 import { notifyN8n } from './n8n.js';
+import { getAgencyBranding } from './branding.js';
 import { logError, getSystemStatus, startMonitoring } from './monitoring.js';
 import { businessRecommendations } from './claude.js';
 import { runSalesAgent } from './salesAgent.js';
@@ -419,7 +420,11 @@ async function inviteRestaurant(restaurant) {
   const updated = rows[0];
   const base = process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu';
   const setup_link = `${base}/dashboard/?setup=${token}`;
-  notifyN8n('kunde-eingeladen', { restaurant: publicRestaurant(updated), setup_link });
+  notifyN8n('kunde-eingeladen', {
+    restaurant: publicRestaurant(updated),
+    setup_link,
+    branding: await getAgencyBranding(updated.agency_id),
+  });
   return { restaurant: updated, setup_link };
 }
 
@@ -1249,6 +1254,8 @@ app.get('/api/stats/monthly', adminOnly, async (_req, res) => res.json(await sta
 async function statsByRestaurant(interval) {
   const { rows } = await query(
     `SELECT r.id AS restaurant_id, r.name, r.contact_email, r.agency_id,
+       COALESCE(a.branding->>'productName', 'KI-Works')                                  AS product_name,
+       COALESCE(a.branding->>'assistantName', 'Kiwo')                                    AS assistant_name,
        (SELECT count(*) FROM calls c
          WHERE c.restaurant_id = r.id AND c.created_at > now() - $1::interval)          AS calls,
        (SELECT count(*) FROM reservations x
@@ -1264,7 +1271,9 @@ async function statsByRestaurant(interval) {
            AND o.status <> 'cancelled')                                                 AS orders,
        (SELECT count(*) FROM calls c WHERE c.restaurant_id = r.id)                       AS total_calls,
        (SELECT min(created_at) FROM calls c WHERE c.restaurant_id = r.id)                AS first_call_at
-     FROM restaurants r ORDER BY r.id`,
+     FROM restaurants r
+     LEFT JOIN agencies a ON a.id = r.agency_id
+     ORDER BY r.id`,
     [interval],
   );
   return rows;

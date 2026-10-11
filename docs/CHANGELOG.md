@@ -1,5 +1,21 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Agentur-Branding jetzt auch in E-Mails (11.10.2026, v1.6.0):** pixelpress hat
+  als erste echte Agentur einen Zugang + eigenes Branding — dabei aufgefallen:
+  die Oberfläche und der Telefon-KI-Name waren schon markenfrei, aber
+  Benachrichtigungs-E-Mails (Einladung, Tagesbericht, "Rückruf gewünscht")
+  hatten "ki-works"/"Kiwo" fest eincodiert. Neu: `backend/src/branding.js`
+  (`getAgencyBranding(agencyId)`, Default `{productName: 'KI-Works',
+  assistantName: 'Kiwo'}`) — in `kunde-eingeladen`- und
+  `rueckruf-gewuenscht`-Payload ergänzt, `statsByRestaurant()` joint jetzt
+  `agencies.branding` mit rein (für den Tagesbericht). n8n-Workflows 10/14/04
+  nutzen `{{ $json.body.branding.productName }}` etc. statt Hardcoding, auch
+  im "From"-Anzeigenamen (z. B. "Pixelpress.at <info@ki-works.eu>" — die
+  rohe Absenderadresse bleibt vorerst ki-works.eu, da alle Agenturen noch
+  dieselbe SMTP-Adresse teilen; echte eigene Absenderadresse braucht die
+  Agentur-Domain, Teil des nächsten DNS/Domain-Themas). 05/06/08/16 bewusst
+  unverändert (admin-/ki-works-eigene Benachrichtigungen, kein
+  Agentur-Kunden-Kontakt).
 - **Stammgäste werden am Telefon namentlich begrüßt (11.10.2026, v1.5.0):**
   Erkennung per Rufnummer gab es schon (`guestContext()` in `backend/src/
   vapi.js`, Abgleich gegen bisherige Reservierungen), aber nur als

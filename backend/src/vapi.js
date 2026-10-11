@@ -4,6 +4,7 @@ import { notifyN8n } from './n8n.js';
 import { sendSms, reservationSms, orderSms, cancellationSms, rescheduleSms } from './sms.js';
 import { logError } from './monitoring.js';
 import { logAction } from './auditLog.js';
+import { getAgencyBranding } from './branding.js';
 
 // Naive datetimes from the assistant ("2026-07-06T19:00") are Vienna local time.
 function viennaOffsetMs(date) {
@@ -234,7 +235,7 @@ async function requestCallback(restaurant, args, callerNumber, callId) {
      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
     [restaurant.id, callId || null, phone, args.topic || 'Nicht spezifiziert', channel, args.contact || null],
   );
-  notifyN8n('rueckruf-gewuenscht', { request: rows[0], restaurant });
+  notifyN8n('rueckruf-gewuenscht', { request: rows[0], restaurant, branding: await getAgencyBranding(restaurant.agency_id) });
   return { result: 'Alles klar, ich habe Ihr Anliegen notiert — jemand vom Team meldet sich bei Ihnen zurück.' };
 }
 
