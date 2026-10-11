@@ -166,6 +166,14 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   nicht" trotz verifiziertem Code zuerst `curl -sI` auf ALLE beteiligten HTML-Seiten prüfen, nicht nur die zuletzt
   geänderte.
 - **Diagnose:** Wenn eine Antwort den Fehler schon verrät, sofort benennen/beheben, nicht über mehrere Nachrichten ziehen.
+- **Mehrere Claude-Code-Sitzungen auf demselben Server:** `/root/ki-works-src` kann durch eine andere, parallel
+  laufende Sitzung (anderer Branch) umgecheckt werden — `git pull` schlägt dann mit "divergent branches" fehl. Vor
+  jedem Deploy mit `git branch --show-current` prüfen, dass es `claude/ki-works-mvp-deploy-0wtfaz` ist, sonst erst
+  `git checkout claude/ki-works-mvp-deploy-0wtfaz` (11.10.2026, kostete eine Debug-Runde).
+- **certbot --nginx kann am Server-Block-Matching scheitern** ("Could not install certificate" trotz erfolgreich
+  gespeichertem Zertifikat) — dann SSL-Block manuell nach dem `ki-works.eu`-Muster eintragen (`ssl_certificate`
+  `.../live/<domain>/fullchain.pem` + `privkey.pem` + die beiden `include`/`ssl_dhparam`-Zeilen), danach
+  `certbot --nginx -d <domain>` erneut laufen lassen → fragt dann nur noch "reinstall existing certificate" (Option 1).
 
 ## Offene Punkte (kurz; Details in `docs/OFFENE_PUNKTE.md`)
 
@@ -180,10 +188,20 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 - **Kiwo WhatsApp:** nur Konzept; Twilio-WhatsApp-Business/Meta-Freigabe noch nicht angestoßen (Pilot ki-works).
 - **Vapi Publish** nicht automatisierbar; Wortlaut der dreisprachigen Sprachauswahl-Begrüßung (deutscher Akzent bei RO).
 - **Vor Go-Live:** `dev-seed-cleanup.sql`, Demo-Refresh-Timer deaktivieren + `[AUTO-DEMO]`-Einträge löschen.
-- **Billing:** keine automatische Abrechnung (Stripe/GoCardless offen); Agentur-Drilldown, echte Agentur noch nicht eingeladen.
+- **Billing:** keine automatische Abrechnung (Stripe/GoCardless offen); Agentur-Drilldown noch offen.
   Kontingent-Warn-Mail (80 %/100 %/Downgrade-Vorschlag, `usageWarnings.js` + n8n-Workflow 17) ist live und bestätigt
   funktionsfähig. Monatsbericht mit KI-Empfehlungen (Workflow 05, admin-only) ist gebaut, aber bewusst unpublished
   gelassen (Kosten sparen) — Nutzer aktiviert ihn selbst bei Bedarf.
+- **White-Label:** Pixelpress ist die erste echte, eingeladene Agentur — eigene Branded-Domain
+  `kunden.pixelpress.at` (A+AAAA auf den Contabo-Server, eigenes Let's-Encrypt-Zertifikat, `/api/public/branding`
+  erkennt Agentur automatisch per `Host`-Header gegen `agencies.domain`, kein Code mehr nötig) live seit 11.10.2026.
+  Branding (Produktname/Assistentenname/Logo/Akzent) muss die Agentur noch von Testwerten ("Lara") auf echte Werte
+  umstellen. Agentur-Benachrichtigungs-E-Mails (Einladung/Tagesbericht/Rückruf) sind seit v1.6.0 markensensitiv
+  (`backend/src/branding.js`), rohe Absenderadresse bleibt aber `info@ki-works.eu` (geteilte SMTP, nur Anzeigename
+  ändert sich) — eigene Absenderadresse bräuchte eigene Agentur-Mail-Infrastruktur. Nächste Agentur: gleicher Ablauf
+  (Domain im Admin-Dashboard eintragen, DNS A+AAAA, nginx-Serverblock nach `kunden.pixelpress.at`-Muster, certbot).
+  Agenturen sehen den Vapi-"Publish nötig"-Hinweis, können ihn aber nicht selbst quittieren (kein Vapi-Zugang) —
+  Admin bekommt seit v1.7.0 automatisch eine Mail, wenn eine Agentur einen neuen Kunden anlegt.
 - **Sicherheit:** Audit-Lücken in `docs/OFFENE_PUNKTE.md` (Rate-Limits, SSH nur Key, Backups offsite/verschlüsselt, Security-Header).
 - **Sonstiges:** Demo-Gespräche EN/RO nicht gegen DE-Originale abgeglichen; Migrationen/Workflows seit 25.08. laut Nutzer live.
 
