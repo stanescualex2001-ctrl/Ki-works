@@ -156,6 +156,10 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 - **Social-Assets (Chat-Sandbox):** `edge-tts` braucht Proxy-CA an `certifi` angehängt; echte Logos verwenden, Orb Buddy in jeder
   KI-Works-Reel-Szene, Caption als eigene Datei, Wegwerf-Skripte danach löschen.
 - **DNS:** AAAA-Eintrag von ki-works.eu muss auf Contabo-IPv6 `2a02:c207:2341:9465::1` zeigen (war Ursache von Zertifikat-Problem + "Forbidden" im Mobilfunk, behoben, Mobilfunk bestätigt).
+- **SPA-Caching (Dashboard/Intern):** `index.html` unter `/dashboard` und `/intern` braucht `Cache-Control:
+  no-cache, must-revalidate` in nginx, sonst liefert der Browser gelegentlich eine veraltete `index.html` (alter
+  JS-Hash) aus dem Cache aus — führte zu "funktioniert manchmal nicht"-Bugs trotz korrektem, verifiziertem Code auf
+  dem Server (11.10.2026). Gehashte `assets/`-Dateien dagegen unbedenklich `max-age=31536000, immutable`.
 - **Diagnose:** Wenn eine Antwort den Fehler schon verrät, sofort benennen/beheben, nicht über mehrere Nachrichten ziehen.
 
 ## Offene Punkte (kurz; Details in `docs/OFFENE_PUNKTE.md`)
@@ -172,9 +176,9 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 - **Vapi Publish** nicht automatisierbar; Wortlaut der dreisprachigen Sprachauswahl-Begrüßung (deutscher Akzent bei RO).
 - **Vor Go-Live:** `dev-seed-cleanup.sql`, Demo-Refresh-Timer deaktivieren + `[AUTO-DEMO]`-Einträge löschen.
 - **Billing:** keine automatische Abrechnung (Stripe/GoCardless offen); Agentur-Drilldown, echte Agentur noch nicht eingeladen.
-  Kontingent-Warn-Mail (80 %/100 %/Downgrade-Vorschlag) ist fertig (`usageWarnings.js` + `n8n/workflows/
-  17-kontingent-warnung.json`), braucht nur noch Migration `029` + n8n-Import auf dem Server (copy-paste-Befehle
-  wurden gegeben).
+  Kontingent-Warn-Mail (80 %/100 %/Downgrade-Vorschlag, `usageWarnings.js` + n8n-Workflow 17) ist live und bestätigt
+  funktionsfähig. Monatsbericht mit KI-Empfehlungen (Workflow 05, admin-only) ist gebaut, aber bewusst unpublished
+  gelassen (Kosten sparen) — Nutzer aktiviert ihn selbst bei Bedarf.
 - **Sicherheit:** Audit-Lücken in `docs/OFFENE_PUNKTE.md` (Rate-Limits, SSH nur Key, Backups offsite/verschlüsselt, Security-Header).
 - **Sonstiges:** Demo-Gespräche EN/RO nicht gegen DE-Originale abgeglichen; Migrationen/Workflows seit 25.08. laut Nutzer live.
 
