@@ -1,5 +1,16 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Einladungs-/Passwort-Reset-Links zeigen jetzt auf die Agentur-Domain (11.10.2026, v1.8.0):**
+  Nutzer-Frage "wie sieht ein Agentur-Kunde sein Branding?" deckte auf: die
+  Mail-Texte waren markensensitiv (v1.6.0), aber die **Links** darin zeigten
+  immer fest auf `ki-works.eu/dashboard/` — ein Pixelpress-Kunde wäre beim
+  Klick erst auf KI-Works-Branding gelandet, bevor er die richtige Domain
+  fand. `getAgencyBranding()` liefert jetzt zusätzlich `baseUrl`
+  (`https://<agencies.domain>`, da `domain` NOT NULL ist) — `inviteRestaurant()`
+  und der Passwort-vergessen-Pfad für Restaurants in `server.js` nutzen das
+  jetzt für den Setup-/Reset-Link statt `KIWORKS_PUBLIC_URL`; n8n-Workflow 10
+  entsprechend angepasst. Agentur-eigener Passwort-Reset (nicht deren Kunde)
+  bewusst unverändert (ki-works-Branding, direkte Agentur-ki-works-Beziehung).
 - **Admin-Mail wenn Agentur einen neuen Kunden anlegt (11.10.2026, v1.7.0):**
   Pixelpress bemerkte: legt eine Agentur selbst einen Kunden an, sieht nur
   die Agentur eine "Publish nötig"-Warnung in der eigenen Kundenliste —

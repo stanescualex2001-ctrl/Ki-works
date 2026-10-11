@@ -418,12 +418,12 @@ async function inviteRestaurant(restaurant) {
     [token, restaurant.id],
   );
   const updated = rows[0];
-  const base = process.env.KIWORKS_PUBLIC_URL || 'https://ki-works.eu';
-  const setup_link = `${base}/dashboard/?setup=${token}`;
+  const branding = await getAgencyBranding(updated.agency_id);
+  const setup_link = `${branding.baseUrl}/dashboard/?setup=${token}`;
   notifyN8n('kunde-eingeladen', {
     restaurant: publicRestaurant(updated),
     setup_link,
-    branding: await getAgencyBranding(updated.agency_id),
+    branding,
   });
   return { restaurant: updated, setup_link };
 }
@@ -551,13 +551,15 @@ app.post('/api/public/forgot-password', async (req, res) => {
        WHERE id = $2`,
       [token, restaurantRows[0].id],
     );
+    const { rows: agencyIdRows } = await query('SELECT agency_id FROM restaurants WHERE id = $1', [restaurantRows[0].id]);
+    const branding = await getAgencyBranding(agencyIdRows[0]?.agency_id);
     notifyN8n('passwort-vergessen', {
       email,
-      subject: 'ki-works — Passwort zurücksetzen',
+      subject: `${branding.productName} — Passwort zurücksetzen`,
       text: `Für Ihren Zugang (${restaurantRows[0].name}) wurde ein Passwort-Reset angefordert.\n\n`
         + `Falls Sie das waren, legen Sie über diesen Link ein neues Passwort fest `
-        + `(1 Stunde gültig):\n\n${base}/dashboard/?setup=${token}\n\n`
-        + 'Falls nicht, ignorieren Sie diese E-Mail einfach.\n\nIhr ki-works Team',
+        + `(1 Stunde gültig):\n\n${branding.baseUrl}/dashboard/?setup=${token}\n\n`
+        + `Falls nicht, ignorieren Sie diese E-Mail einfach.\n\nIhr ${branding.productName} Team`,
     });
     return generic();
   }
