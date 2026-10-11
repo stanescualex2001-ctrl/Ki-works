@@ -1,0 +1,73 @@
+{
+  "name": "05 Monatsbericht mit KI-Empfehlungen (1. des Monats, 08:00)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "cronExpression", "expression": "0 8 1 * *" }] }
+      },
+      "id": "wf5-schedule",
+      "name": "Monatserster 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "http://127.0.0.1:3001/api/stats/monthly",
+        "options": {}
+      },
+      "id": "wf5-http",
+      "name": "Monatsstatistik holen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-api-key", "value": "={{ $env.ANTHROPIC_API_KEY }}" },
+            { "name": "anthropic-version", "value": "2023-06-01" },
+            { "name": "content-type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 600, messages: [{ role: 'user', content: 'Analysiere diese Monatszahlen fuer ein Restaurant (Anrufe, Reservierungen, Gaeste) und schreibe auf Deutsch: 1) eine kurze Zusammenfassung was diesen Monat passiert ist, 2) zwei bis drei konkrete, umsetzbare Verbesserungsvorschlaege. Zahlen: ' + JSON.stringify($json) }] }) }}",
+        "options": {}
+      },
+      "id": "wf5-claude",
+      "name": "Claude: Bericht + Empfehlungen",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "[ADMIN-E-MAIL EINTRAGEN]",
+        "subject": "📈 ki-works Monatsbericht & Empfehlungen",
+        "text": "={{ $json.content[0].text }}",
+        "options": {}
+      },
+      "id": "wf5-email",
+      "name": "Monatsbericht senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [660, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Monatserster 08:00": { "main": [[{ "node": "Monatsstatistik holen", "type": "main", "index": 0 }]] },
+    "Monatsstatistik holen": { "main": [[{ "node": "Claude: Bericht + Empfehlungen", "type": "main", "index": 0 }]] },
+    "Claude: Bericht + Empfehlungen": { "main": [[{ "node": "Monatsbericht senden", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1", "timezone": "Europe/Vienna" }
+}

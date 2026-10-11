@@ -1242,6 +1242,7 @@ app.get('/api/stats', adminOnly, async (_req, res) => {
 });
 app.get('/api/stats/daily', adminOnly, async (_req, res) => res.json(await statsSince('1 day')));
 app.get('/api/stats/weekly', adminOnly, async (_req, res) => res.json(await statsSince('7 days')));
+app.get('/api/stats/monthly', adminOnly, async (_req, res) => res.json(await statsSince('30 days')));
 
 // Per-customer stats: one row per restaurant incl. contact_email,
 // so n8n can send each customer their own report.
