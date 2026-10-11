@@ -1,0 +1,44 @@
+{
+  "name": "17 Kontingent-Warnung → E-Mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "usage-warning",
+        "options": {}
+      },
+      "id": "wf17-webhook",
+      "name": "Webhook: Kontingent-Warnung",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "usage-warning"
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.contactEmail }}",
+        "ccEmail": "={{ $json.body.adminEmail }}",
+        "subject": "={{ $json.body.kind === 'exceeded' ? '⚠️ Kontingent überschritten – ' + $json.body.restaurantName : $json.body.kind === 'approaching' ? '📊 Kontingent bald erreicht – ' + $json.body.restaurantName : '💡 Tarif-Tipp für ' + $json.body.restaurantName }}",
+        "emailFormat": "text",
+        "text": "=Kontingent-Update für {{ $json.body.restaurantName }} (Tarif {{ $json.body.tierLabel }}):\n\n{{ $json.body.kind === 'exceeded' ? 'Das Minutenkontingent wurde diesen Monat überschritten.' : $json.body.kind === 'approaching' ? 'Das Minutenkontingent wird diesen Monat bald erreicht.' : 'Kiwo hat eine Tarif-Einschätzung für diesen Kunden.' }}\n\nGenutzt: {{ $json.body.minutesUsed }} von {{ $json.body.minutesIncluded }} Minuten{{ $json.body.overageMinutes > 0 ? (' (' + $json.body.overageMinutes + ' Min. Überschreitung, ca. ' + $json.body.overageCost + ' €)') : '' }}\n{{ $json.body.recommendation ? ('\\nKiwo empfiehlt: ' + ($json.body.recommendation.action === 'upgrade' ? ('Umstieg auf ' + $json.body.recommendation.suggestedTierLabel) : ('Tarif ' + $json.body.recommendation.suggestedTierLabel + ' könnte reichen')) + ' (⌀ ' + $json.body.recommendation.avgMinutesUsed + ' Min./Monat in den letzten Monaten).') : '' }}\n\n→ Dashboard: https://ki-works.eu/dashboard/",
+        "options": {}
+      },
+      "id": "wf17-email",
+      "name": "Warn-Mail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Kontingent-Warnung": {
+      "main": [[{ "node": "Warn-Mail senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
