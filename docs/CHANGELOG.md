@@ -1,5 +1,19 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Agentur-Login nur noch über die eigene Domain erlaubt (11.10.2026, v1.9.0):**
+  Nutzer-Frage "warum kann ein Agentur-Kunde über ki-works einloggen?" deckte
+  die letzte echte Lücke auf: `/api/login` prüfte bisher nur E-Mail/Passwort,
+  nie die aufgerufene Domain — ein Agentur-Kunde (oder die Agentur selbst)
+  konnte sich technisch auch über `ki-works.eu` einloggen und sah dann
+  KI-Works-Branding. Fix: `POST /api/login` joint jetzt `agencies.domain` mit
+  und lehnt den Login mit 403 + Hinweis-Link ab, wenn die aufgerufene Domain
+  nicht zur hinterlegten Agentur-Domain passt (betrifft Restaurant- UND
+  Agentur-Login; Admin-Login unberührt, eigener Zweig). Zusätzlich:
+  "Zurück zur Website"-Link im Dashboard (Login-Screen + Sidebar,
+  `dashboard/src/App.jsx`) zeigte immer fest auf ki-works.eu — bei aktivem
+  Agentur-Branding (`useBranding().isAgency`) jetzt komplett ausgeblendet
+  statt eine falsche Domain zu zeigen (keine generische Zielseite vorhanden,
+  da wir die eigentliche Agentur-Website nicht hosten).
 - **Einladungs-/Passwort-Reset-Links zeigen jetzt auf die Agentur-Domain (11.10.2026, v1.8.0):**
   Nutzer-Frage "wie sieht ein Agentur-Kunde sein Branding?" deckte auf: die
   Mail-Texte waren markensensitiv (v1.6.0), aber die **Links** darin zeigten

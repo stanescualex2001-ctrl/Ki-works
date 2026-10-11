@@ -326,6 +326,7 @@ function ForgotPassword({ onBack }) {
 
 function Login({ onLogin }) {
   const { t, locale } = useI18n();
+  const branding = useBranding();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -370,7 +371,9 @@ function Login({ onLogin }) {
         <button type="button" className="link login-forgot-link" onClick={() => setForgot(true)}>
           {t('login.forgotLink')}
         </button>
-        <a className="site-link login-site-link" href={landingSiteUrl(locale)}>← {t('sidebar.backToWebsite')}</a>
+        {!branding?.isAgency && (
+          <a className="site-link login-site-link" href={landingSiteUrl(locale)}>← {t('sidebar.backToWebsite')}</a>
+        )}
         <div className="login-toggles">
           <ThemeToggle className="login-theme-toggle" />
           <LanguageToggle className="login-theme-toggle" />
@@ -2673,7 +2676,9 @@ export default function App() {
           <ThemeToggle />
           <LanguageToggle />
           <button className="refresh" onClick={logout}>{t('sidebar.logout')} ({isAdmin ? t('sidebar.operator') : auth.name})</button>
-          <a className="site-link" href={landingSiteUrl(locale)}>← {t('sidebar.backToWebsite')}</a>
+          {!brandingCtx?.isAgency && (
+            <a className="site-link" href={landingSiteUrl(locale)}>← {t('sidebar.backToWebsite')}</a>
+          )}
         </div>
       </aside>
 

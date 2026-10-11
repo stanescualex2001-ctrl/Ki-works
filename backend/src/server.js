@@ -240,12 +240,27 @@ app.post('/api/login', async (req, res) => {
     });
   }
 
+  // Weiße-Label-Kunden dürfen sich nur über die eigene Agentur-Domain
+  // einloggen, nie über ki-works.eu — sonst sehen sie beim Login schon
+  // KI-Works-Branding, bevor sie überhaupt im Dashboard sind (11.10.2026,
+  // Nutzer-Hinweis: der Login selbst prüfte bisher nie die aufgerufene
+  // Domain, nur E-Mail/Passwort). `agencies.domain` ist NOT NULL.
+  const requestHost = (req.headers.host || '').split(':')[0].toLowerCase();
+  const wrongDomainError = (domain) => ({
+    error: `Dieser Zugang gehört zu einer White-Label-Agentur. Bitte loggen Sie sich über https://${domain}/dashboard/ ein.`,
+  });
+
   const { rows } = await query(
-    'SELECT id, name, password_hash FROM restaurants WHERE lower(login_email) = lower($1)',
+    `SELECT r.id, r.name, r.password_hash, a.domain AS agency_domain
+     FROM restaurants r LEFT JOIN agencies a ON a.id = r.agency_id
+     WHERE lower(r.login_email) = lower($1)`,
     [email],
   );
   const r = rows[0];
   if (r && verifyPassword(password, r.password_hash)) {
+    if (r.agency_domain && r.agency_domain.toLowerCase() !== requestHost) {
+      return res.status(403).json(wrongDomainError(r.agency_domain));
+    }
     return res.json({
       token: signToken({ role: 'customer', restaurant_id: r.id, name: r.name }),
       role: 'customer',
@@ -255,13 +270,16 @@ app.post('/api/login', async (req, res) => {
   }
 
   const { rows: agencyRows } = await query(
-    'SELECT id, name, password_hash, active FROM agencies WHERE lower(login_email) = lower($1)',
+    'SELECT id, name, password_hash, active, domain FROM agencies WHERE lower(login_email) = lower($1)',
     [email],
   );
   const a = agencyRows[0];
   if (a && verifyPassword(password, a.password_hash)) {
     if (!a.active) {
       return res.status(403).json({ error: 'Dieser Zugang wurde deaktiviert. Bitte kontaktieren Sie ki-works.' });
+    }
+    if (a.domain && a.domain.toLowerCase() !== requestHost) {
+      return res.status(403).json(wrongDomainError(a.domain));
     }
     return res.json({
       token: signToken({ role: 'agency', agency_id: a.id, name: a.name }),
