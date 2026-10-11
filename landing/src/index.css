@@ -364,3 +364,15 @@
   50% { transform: translateY(-6px); }
 }
 @utility orb-float { animation: orb-float 3.4s ease-in-out infinite; }
+
+/* Scroll-Animationen (gesteuert von src/reveal.js, Ruhezustand ist sichtbar) */
+.rv { opacity: 0; transition: opacity 950ms cubic-bezier(.2,.7,.2,1) var(--rv-d, 0ms), transform 950ms cubic-bezier(.2,.7,.2,1) var(--rv-d, 0ms), filter 950ms cubic-bezier(.2,.7,.2,1) var(--rv-d, 0ms); }
+.rv[data-rv="up"] { transform: translateY(44px); }
+.rv[data-rv="left"] { transform: translateX(-72px); }
+.rv[data-rv="right"] { transform: translateX(72px); }
+.rv[data-rv="zoom"] { transform: scale(.86); }
+.rv[data-rv="pop"] { transform: scale(.7); transition-timing-function: cubic-bezier(.34,1.56,.64,1); }
+.rv[data-rv="blur"] { transform: translateY(14px); filter: blur(8px); }
+.rv.rv-in[data-rv] { opacity: 1; transform: none; filter: none; }
+@media (prefers-reduced-motion: reduce) { .rv, .rv[data-rv] { opacity: 1; transform: none; filter: none; transition: none; } }
+#rv-bar { position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 80; transform-origin: left; transform: scaleX(0); background: linear-gradient(90deg, #06b6d4, #7c3aed); pointer-events: none; }

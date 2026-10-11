@@ -1,5 +1,18 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Landing: Scroll-Animationen auf allen Seiten (11.10.2026, v1.5.0):** Nutzer-Wunsch, vorab
+  als Artifact-Prototyp abgestimmt. Neue Datei `landing/src/reveal.js` (von jedem
+  `main-*.jsx` importiert) + CSS am Ende von `landing/src/index.css`. Effekte (Intensität
+  "dezent"): Hochgleiten/Slide links+rechts/Zoom/Blur für Überschriften, Raster-Karten,
+  Listen (inkl. FAQ), Bilder und Block-Karten; Pop für runde Buttons; Zahlen zählen hoch;
+  leichter Parallax auf `.blur-3xl`-Blobs; Fortschrittsbalken oben. **Auslöse-Linie 65 %
+  von oben**, eigene Scroll-Messung statt IntersectionObserver (rootMargin wird in iframes
+  ignoriert — war Ursache für "zu weit unten" im Mockup). Ruhezustand sichtbar: nur Elemente
+  unterhalb der Linie werden nach dem Laden ausgeblendet, Prerender-HTML bleibt vollständig;
+  `prefers-reduced-motion` schaltet alles ab; am Seitenende werden Wartende abgespielt.
+  Greift per DOM-Muster (h1/h2, `.grid`, `.space-y-*`, `ul/ol`, `rounded-2xl|3xl`, `.glass`,
+  `a/button rounded-full`) — neue Blöcke animieren automatisch, Header/Nav/`fixed` nie.
+
 - **Kunden-Dashboard: "Zurück zur Website"-Link springt nicht mehr auf DE (11.10.2026):**
   Nutzer meldete: im Kunden-Dashboard mit RO/EN eingeloggt, Klick auf "Zur
   Website" landet trotzdem auf der deutschen Startseite. Ursache:
