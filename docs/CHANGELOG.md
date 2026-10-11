@@ -8,7 +8,16 @@
   Helper-Funktion `landingSiteUrl(locale)` (de → `https://ki-works.eu/`,
   sonst `https://ki-works.eu/<locale>/`), `locale` an beiden Stellen aus
   `useI18n()` ergänzt. Gleiches Muster wie `localizedPath()` auf der
-  Landing-Seite.
+  Landing-Seite. Nutzer meldete danach "funktioniert teilweise"/"manchmal
+  läuft gut" — Ursache war ein zweites Problem: `deploy/nginx/ki-works.conf`
+  setzte für `/dashboard` und `/intern` keine Cache-Control-Header, der
+  Browser cachte dadurch gelegentlich eine veraltete `index.html` (zeigt
+  auf alten JS-Hash). Fix: `index.html` explizit `no-cache,
+  must-revalidate`, gehashte `assets/`-Dateien `public,
+  max-age=31536000, immutable` — Standard-SPA-Caching-Pattern. Da
+  nginx-Änderungen nie per rsync übernommen werden, braucht der Nutzer
+  dafür den manuellen Copy+Reload-Schritt (siehe Deploy-Befehle in der
+  Chat-Antwort vom 11.10.2026).
 - **Kontingent-Warn-Mail + regelbasierte Tarif-Empfehlung (11.10.2026):**
   Nutzer fragte, wie Minuten-Überschreitung bei Solo/Team/Scale aktuell
   läuft — Recherche ergab: `/api/usage` zeigt nur an, nichts wird
