@@ -1,5 +1,16 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Admin-Mail wenn Agentur einen neuen Kunden anlegt (11.10.2026, v1.7.0):**
+  Pixelpress bemerkte: legt eine Agentur selbst einen Kunden an, sieht nur
+  die Agentur eine "Publish nötig"-Warnung in der eigenen Kundenliste —
+  den echten Vapi-"Publish"-Klick kann aber nur der Admin machen (eigener
+  Vapi-Zugang), die Agentur hat dafür bewusst keinen Button (`!isAgencyUser`
+  in `customers.markPublished`, `dashboard/src/App.jsx`). Ohne Mail hätte
+  der Admin das nur durch zufälliges Nachschauen bemerkt. Neu: `POST
+  /api/restaurants` löst bei Agentur-erstellten Kunden zusätzlich
+  `notifyN8n('agentur-kunde-angelegt', ...)` aus (nur wenn `agencyId`
+  gesetzt ist — bei admin-eigenen Kunden nicht nötig), neuer n8n-Workflow
+  `18-agentur-kunde-angelegt.json` mailt an `ADMIN_EMAIL`.
 - **Agentur-Branding jetzt auch in E-Mails (11.10.2026, v1.6.0):** pixelpress hat
   als erste echte Agentur einen Zugang + eigenes Branding — dabei aufgefallen:
   die Oberfläche und der Telefon-KI-Name waren schon markenfrei, aber

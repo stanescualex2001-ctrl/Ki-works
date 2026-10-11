@@ -1,0 +1,43 @@
+{
+  "id": "KiWorksAgencyCustomer18v1",
+  "name": "18 Agentur-Kunde angelegt → Admin-Mail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "agentur-kunde-angelegt",
+        "options": {}
+      },
+      "id": "wf18-webhook",
+      "name": "Webhook: Agentur-Kunde angelegt",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "agentur-kunde-angelegt"
+    },
+    {
+      "parameters": {
+        "fromEmail": "info@ki-works.eu",
+        "toEmail": "={{ $json.body.adminEmail }}",
+        "subject": "=🏢 {{ $json.body.agencyName }} hat einen neuen Kunden angelegt: {{ $json.body.restaurant.name }}",
+        "text": "=Die Agentur \"{{ $json.body.agencyName }}\" hat einen neuen Kunden angelegt:\n\nName: {{ $json.body.restaurant.name }}\nAdresse: {{ $json.body.restaurant.address || '–' }}\nKontakt-E-Mail: {{ $json.body.restaurant.contact_email || '–' }}\nKontakt-Telefon: {{ $json.body.restaurant.contact_phone || '–' }}\n\nDer Vapi-Assistent wurde automatisch eingerichtet, braucht aber noch dein manuelles \"Publish\" im Vapi-Dashboard (https://dashboard.vapi.ai) — das kann die Agentur nicht selbst erledigen.\n\n→ Dashboard: https://ki-works.eu/dashboard/",
+        "options": {}
+      },
+      "id": "wf18-email",
+      "name": "Admin-Mail senden",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [220, 0],
+      "credentials": {
+        "smtp": { "id": "kiworks-smtp", "name": "KiWorks SMTP" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook: Agentur-Kunde angelegt": {
+      "main": [[{ "node": "Admin-Mail senden", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

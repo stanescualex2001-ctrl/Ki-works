@@ -636,6 +636,17 @@ app.post('/api/restaurants', async (req, res) => {
       ...(enabled_roles ? [JSON.stringify(enabled_roles)] : [])],
   );
   notifyN8n('restaurant-onboarding', { restaurant: publicRestaurant(rows[0]) });
+  // Admin sieht Agentur-eigene Kunden nicht automatisch im Blick — ohne
+  // Mail würde er erst beim nächsten Login in die Kundenliste bemerken,
+  // dass ein neuer Vapi-Assistent auf "Publish" wartet (Agenturen können
+  // das selbst nicht, siehe customers.markPublished in App.jsx).
+  if (agencyId) {
+    notifyN8n('agentur-kunde-angelegt', {
+      restaurant: publicRestaurant(rows[0]),
+      agencyName: req.user?.name || 'Agentur',
+      adminEmail: process.env.ADMIN_EMAIL || null,
+    });
+  }
   const vapi = await syncVapiAssistant(rows[0].id).catch((err) => ({ ok: false, warning: err.message }));
   const { rows: updated } = await query('SELECT * FROM restaurants WHERE id = $1', [rows[0].id]);
   res.status(201).json({ ...publicRestaurant(updated[0]), vapi });
