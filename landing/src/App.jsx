@@ -601,7 +601,7 @@ function ROICalc() {
         {heroContent}
         <p className="mt-5 text-[11px] text-foreground/40">
           {t("pricing.footnote")}{" "}
-          <a href="/kontakt.html?plan=custom" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
+          <a href={`${localizedPath("kontakt", locale)}?plan=custom`} className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
             {t("pricing.footnoteCta")}
           </a>.
         </p>
@@ -643,7 +643,7 @@ function ROICalc() {
           {t("roi.cta.choosePlan")}
         </a>
         <a
-          href="/kontakt.html"
+          href={localizedPath("kontakt", locale)}
           className="flex-1 min-w-[9rem] rounded-full border border-foreground/15 px-5 py-3 text-center text-sm font-medium text-foreground/80 transition hover:border-foreground/30"
         >
           {t("roi.cta.requestDemo")}
@@ -1205,7 +1205,7 @@ export default function App() {
                 </div>
 
                 <a
-                  href={`/kontakt.html?plan=${tier.name.toLowerCase()}`}
+                  href={`${localizedPath("kontakt", locale)}?plan=${tier.name.toLowerCase()}`}
                   className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
                 >
                   {t("pricing.cta")} <ArrowRight className="h-3.5 w-3.5" />
@@ -1220,7 +1220,7 @@ export default function App() {
                 {t("pricing.customDesc")}
               </p>
               <a
-                href="/kontakt.html?plan=custom"
+                href={`${localizedPath("kontakt", locale)}?plan=custom`}
                 className="mt-6 flex items-center justify-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
                 {t("pricing.customCta")} <ArrowRight className="h-3.5 w-3.5" />
@@ -1235,7 +1235,7 @@ export default function App() {
           </div>
           <p className="mt-6 text-center text-[11px] text-foreground/35">
             {t("pricing.footnote")}{" "}
-            <a href="/kontakt.html?plan=custom" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
+            <a href={`${localizedPath("kontakt", locale)}?plan=custom`} className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
               {t("pricing.footnoteCta")}
             </a>
             .
@@ -1268,7 +1268,7 @@ export default function App() {
           </div>
           <div className="mt-8 flex justify-center">
             <a
-              href="/partner.html"
+              href={localizedPath("partner", locale)}
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
             >
               {t("resellerSection.cta")} <ArrowRight className="h-3.5 w-3.5" />
@@ -1293,7 +1293,7 @@ export default function App() {
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <a
-                href="/kontakt.html"
+                href={localizedPath("kontakt", locale)}
                 className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
               >
                 <Mail className="h-3.5 w-3.5" /> {t("ctaSection.button")}

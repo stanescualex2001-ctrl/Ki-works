@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Mail, Phone, Send, Check, MessageCircle } from "lucide-react";
 import { PageShell } from "../components/PageShell.jsx";
 import { OPEN_CHAT_EVENT } from "../components/ChatWidget.jsx";
-import { useI18n } from "../i18n/index.jsx";
+import { useI18n, localizedPath } from "../i18n/index.jsx";
 
 const PLAN_OPTIONS = ["Solo", "Team", "Scale", "Custom"];
 
 function ContactForm() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [form, setForm] = useState({ name: "", business: "", email: "", phone: "", message: "" });
   const [plan, setPlan] = useState(() => {
     if (typeof window === "undefined") return null;
@@ -120,7 +120,7 @@ function ContactForm() {
           className="mt-0.5 h-4 w-4 shrink-0 rounded border-foreground/20 bg-foreground/[0.03] accent-cyan-400"
         />
         {t("kontakt.form.consentPrefix")}{" "}
-        <a href="/datenschutz.html" className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
+        <a href={localizedPath("datenschutz", locale)} className="text-cyan-600 hover:text-cyan-800 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
           {t("kontakt.form.consentLink")}
         </a>{" "}
         {t("kontakt.form.consentSuffix")}

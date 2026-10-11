@@ -71,9 +71,6 @@
     "cta": "Auf Deutsch ansehen",
     "dismissAriaLabel": "Hinweis schließen"
   },
-  "legalNotice": {
-    "germanOnly": "Diese Seite ist nur auf Deutsch verfügbar. / This page is only available in German."
-  },
   "heroOrb": {
     "speechBubble": "Hi, ich bin Kiwo",
     "badgeCall": "Anruf angenommen",
@@ -468,6 +465,167 @@
       "doneTitle": "Danke für Ihre Nachricht!",
       "doneDesc": "Wir melden uns so schnell wie möglich bei Ihnen.",
       "genericError": "Senden fehlgeschlagen"
+    }
+  },
+  "partner": {
+    "eyebrow": "FÜR AGENTUREN",
+    "heroTitle1": "Kiwo als Ihr eigenes KI-Produkt.",
+    "heroTitle2": "White-Label, ohne Entwicklungsaufwand.",
+    "heroDesc": "Sie betreuen bereits Kunden, die Website, Shop oder Marketing brauchen. Mit Kiwo als White-Label-Partnerprogramm bieten Sie zusätzlich einen digitalen KI-Mitarbeiter an — unter Ihrem eigenen Namen, ohne dass Sie ihn selbst entwickeln müssen.",
+    "introTitle": "Kurz zu Kiwo",
+    "introDescBefore": "Kiwo ist ein digitaler KI-Mitarbeiter für Telefon und Web-Chat: nimmt Anrufe entgegen, beantwortet Fragen, nimmt Reservierungen und Bestellungen auf — rund um die Uhr, auch außerhalb der Öffnungszeiten. Läuft produktiv auf",
+    "introDescLink": "ki-works.eu",
+    "introDescAfter": "und wird dort auch privat weiterentwickelt.",
+    "whiteLabelHeading": "Was White-Label für Sie bedeutet",
+    "whiteLabelPoints": [
+      { "title": "Ihr Branding, nicht unseres", "desc": "Ihre Endkunden sehen Ihr Logo, Ihre Farben, Ihren Namen. Kiwo läuft im Hintergrund als Technik-Plattform." },
+      { "title": "Sie bleiben der Ansprechpartner", "desc": "Der Kundenkontakt bleibt bei Ihnen — wir liefern die Technik, nicht den direkten Draht zu Ihren Kunden." },
+      { "title": "Kein Entwicklungsaufwand", "desc": "Keine eigene KI-Entwicklung, kein Vapi-/Anthropic-Setup, kein Support für die Kerntechnik — das übernehmen wir." },
+      { "title": "Volle Funktionalität", "desc": "Telefon, Web-Chat, Reservierungen/Bestellungen, eigenes Kunden-Dashboard — alles, was Kiwo auch bei Direktkunden bietet." }
+    ],
+    "ttmTitle": "Tage statt Monate",
+    "ttmDesc": "Eine eigene KI-Mitarbeiter-Lösung selbst zu entwickeln dauert typischerweise Monate. Die technische Einrichtung als Kiwo-Partner (eigene Domain, eigenes Branding) ist in Tagen erledigt — sobald Ihre Domain per DNS auf uns zeigt.",
+    "whyHeading": "Warum sich das für Sie lohnt",
+    "whyPoints": [
+      "Zusätzlicher, wiederkehrender Umsatz ohne eigenes Entwicklungsrisiko",
+      "Cross-/Upsell bei Ihren bestehenden Kunden — Sie kennen deren Bedarf bereits",
+      "Abo-Umsatz statt Einmal-Projektgeschäft — planbarer als klassische Webprojekte",
+      "Schnelle Einführung pro Kunde, kein monatelanges Entwicklungsprojekt"
+    ],
+    "demoCard": {
+      "badgeTitle": "Ihre Agentur — powered by Kiwo",
+      "badgeSubtitle": "Beispiel-Vorschau, fiktive Firma",
+      "fictiveLabel": "fiktiv",
+      "customerLabel": "Kunde",
+      "customerName": "„Gasthaus Sonnenblick“ (Beispiel)",
+      "stat1Value": "47",
+      "stat1Label": "Anrufe / 7 Tage",
+      "stat2Value": "12",
+      "stat2Label": "Reservierungen",
+      "stat3Value": "0",
+      "stat3Label": "Verpasste Anrufe",
+      "footnote": "So könnte das Dashboard aussehen, das Ihre Kunden unter Ihrem eigenen Namen nutzen — die Zahlen sind ein Beispiel, keine echten Kundendaten."
+    },
+    "stepsHeading": "So funktioniert's",
+    "steps": [
+      { "n": "1", "title": "Kontakt aufnehmen", "desc": "Kurzes Gespräch — wir zeigen Ihnen Kiwo live, Sie schildern Ihre Kundenstruktur." },
+      { "n": "2", "title": "Partnerkonditionen klären", "desc": "Gestaffelte Konditionen je nach Kundenzahl, individuell besprochen — kein starres Preisblatt." },
+      { "n": "3", "title": "Sie vermitteln, wir liefern", "desc": "Sie sprechen Ihre Kunden an, wir richten Technik + Branding pro Kunde ein." }
+    ],
+    "conditionsTitle": "Partnerkonditionen",
+    "conditionsDesc": "Wir arbeiten mit gestaffelten Partnerkonditionen je nach Anzahl Ihrer Endkunden — die Details besprechen wir im persönlichen Gespräch, passend zu Ihrer Kundenstruktur.",
+    "faqHeading": "Häufige Fragen",
+    "faqItems": [
+      { "q": "Wie schnell können wir starten?", "a": "Die technische Einrichtung pro Agentur (eigene Domain, eigenes Branding, eigener Assistentenname) ist in Tagen erledigt, nicht Monaten — sobald Ihre Domain per DNS auf unseren Server zeigt, ist der Rest ein kurzer, standardisierter Ablauf. Kein monatelanges Entwicklungsprojekt wie bei einer Eigenentwicklung." },
+      { "q": "Sehen unsere Kunden irgendwo „ki-works“ oder „Kiwo“?", "a": "Nein. Eigene Domain, eigenes Logo/Farben/Produktname und ein von Ihnen gewählter Assistentenname — für Ihre Kunden ist ki-works als Technik-Lieferant unsichtbar." },
+      { "q": "Behalten wir den Kundenkontakt?", "a": "Ja, durchgehend. Sie legen Ihre Kunden selbst an und verwalten sie selbst im eigenen Login — wir liefern nur die Technik im Hintergrund, keinen direkten Draht zu Ihren Endkunden." },
+      { "q": "Was kostet das?", "a": "Gestaffelte Partnerkonditionen je nach Anzahl Ihrer Endkunden — die Details besprechen wir im persönlichen Gespräch, passend zu Ihrer Kundenstruktur. Kein starres Preisblatt." },
+      { "q": "Ist das DSGVO-konform?", "a": "EU-Hosting und TLS-verschlüsselte Übertragung, strikte Datentrennung zwischen den Kunden verschiedener Agenturen. Details für Ihre eigene Prüfung besprechen wir gerne im Gespräch." },
+      { "q": "Müssen wir selbst etwas entwickeln oder warten?", "a": "Nein. Kein eigenes Vapi-/Anthropic-Setup, keine eigene Server-Infrastruktur, kein Support für die Kerntechnik — das läuft komplett bei uns." }
+    ],
+    "ctaTitle": "Interesse an einem Gespräch?",
+    "ctaDesc": "Unverbindlich, kein Verkaufsdruck."
+  },
+  "impressum": {
+    "title": "Impressum",
+    "internalNoticeLabel": "Hinweis (intern):",
+    "internalNotice": "Platzhalter unten mit den echten Firmendaten ausfüllen. Diese Seite sollte vor der Veröffentlichung von einem Anwalt bzw. Datenschutzberater geprüft werden — insbesondere hinsichtlich Gewerbeberechtigung, Firmenbuch-/UID-Nummer und Aufsichtsbehörde.",
+    "sectionAngabenTitle": "Angaben gemäß § 5 ECG, § 25 Mediengesetz",
+    "labels": {
+      "operator": "Betreiber",
+      "address": "Anschrift",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "businessPurpose": "Unternehmensgegenstand",
+      "registration": "Gewerbeberechtigung / Firmenbuchnummer / UID",
+      "authority": "Zuständige Aufsichtsbehörde / Kammer"
+    },
+    "values": {
+      "operator": "[Name / Firmenname eintragen]",
+      "address": "[Straße, PLZ, Ort, Österreich]",
+      "phone": "[Telefonnummer eintragen]",
+      "businessPurpose": "KI-gestützte Telefonassistenz für Gastronomie und Dienstleister",
+      "registration": "[falls vorhanden eintragen]",
+      "authority": "[falls zutreffend eintragen]"
+    },
+    "disputeTitle": "EU-Streitschlichtung",
+    "disputeDesc": "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:",
+    "liabilityTitle": "Haftung für Inhalte",
+    "liabilityDesc": "Die Inhalte dieser Website wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen."
+  },
+  "datenschutz": {
+    "title": "Datenschutzerklärung",
+    "internalNoticeLabel": "Hinweis (intern):",
+    "internalNotice": "Diese Erklärung ist ein technischer Ausgangstext und ersetzt keine Rechtsberatung. Bitte vor Veröffentlichung von einem Anwalt bzw. Datenschutzberater prüfen lassen — insbesondere den Platzhalter beim Verantwortlichen (Abschnitt 1) sowie die noch offene Vertragsgrundlage mit Vapi (Abschnitt 5).",
+    "s1": {
+      "title": "1. Verantwortlicher",
+      "textBefore": "[ALEX: HIER NAME/FIRMENNAME + STRASSE HAUSNR + PLZ ORT, ÖSTERREICH EINTRAGEN], E-Mail:",
+      "textAfter": "(im Folgenden „ki-works“, „wir“)."
+    },
+    "s2": {
+      "title": "2. Wer ist wofür verantwortlich?",
+      "intro": "Diese Erklärung betrifft zwei unterschiedliche Rollen:",
+      "visitorsBold1": "Website-Besucher und Interessenten",
+      "visitorsMid": " (z. B. das Kontaktformular auf dieser Seite): Hier ist",
+      "visitorsBold2": "ki-works",
+      "visitorsRest": " Verantwortlicher im Sinne der DSGVO.",
+      "guestsBold1": "Gäste unserer Restaurant-/Geschäftskunden",
+      "guestsMid": ", die telefonisch reservieren oder bestellen: Hier ist der jeweilige",
+      "guestsBold2": "Betrieb",
+      "guestsRest": " (z. B. das Restaurant) Verantwortlicher, ki-works verarbeitet die Daten in dessen Auftrag als Auftragsverarbeiter (Art. 28 DSGVO). Der Betrieb informiert seine Gäste eigenständig; ki-works stellt hierfür Hinweistexte und den telefonischen Aufzeichnungshinweis bereit."
+    },
+    "s3": {
+      "title": "3. Welche Daten wir verarbeiten",
+      "colCategory": "Kategorie",
+      "colExamples": "Beispiele",
+      "colPurpose": "Zweck",
+      "rows": [
+        { "category": "Website-Nutzung", "examples": "Aufruf der Seiten (keine Analyse-Cookies gesetzt)", "purpose": "Bereitstellung der Website" },
+        { "category": "Kontaktanfragen", "examples": "Name, Betrieb, E-Mail, Telefon, Nachricht", "purpose": "Bearbeitung Ihrer Anfrage" },
+        { "category": "Gästedaten (im Auftrag des Betriebs)", "examples": "Name, Telefonnummer, Reservierungs-/Bestelldetails", "purpose": "Reservierungs-/Bestellannahme" },
+        { "category": "Anruf-Rohdaten", "examples": "Gesprächsaufzeichnung, Transkript", "purpose": "Erstellung der Reservierung/Bestellung, Qualitätssicherung — Löschung nach 7 Tagen" },
+        { "category": "Kunden-Zugangsdaten", "examples": "Login-E-Mail, verschlüsseltes Passwort", "purpose": "Zugang zum Dashboard" }
+      ]
+    },
+    "s4": {
+      "title": "4. Rechtsgrundlagen",
+      "text": "Vertragserfüllung bzw. vorvertragliche Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO) für Reservierungen/Bestellungen und Kundenanfragen; berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) an Betrieb und Verbesserung des Dienstes, z. B. Qualitätssicherung von Telefonaten."
+    },
+    "s5": {
+      "title": "5. Empfänger und Auftragsverarbeiter",
+      "intro": "Zur Erbringung unseres Dienstes setzen wir folgende Dienstleister ein:",
+      "providers": [
+        { "name": "Anthropic (Claude API)", "location": "USA", "purpose": "Verarbeitung von Gesprächsinhalten zur Erstellung von Zusammenfassungen und Auswertungen." },
+        { "name": "Vapi Inc.", "location": "USA", "purpose": "Technische Abwicklung der Telefonanrufe, Spracherkennung, Aufzeichnung." },
+        { "name": "Twilio Inc.", "location": "USA/EU", "purpose": "Telefonnummern und SMS-Versand." },
+        { "name": "Contabo GmbH", "location": "Deutschland", "purpose": "Serverhosting (Datenbank, Anwendung)." },
+        { "name": "E-Mail-Hosting-Anbieter", "location": "", "purpose": "Versand von Benachrichtigungs-E-Mails." }
+      ],
+      "transferBefore": "Bei der Übermittlung an Anthropic und Twilio in die USA stützen wir uns auf die",
+      "transferLinkText": "EU-Standardvertragsklauseln",
+      "transferAfter": "(Art. 46 Abs. 2 lit. c DSGVO), die automatisch Bestandteil der jeweiligen Nutzungsbedingungen bzw. Auftragsverarbeitungsverträge sind. Für Vapi prüfen wir aktuell die entsprechenden Vertragsgrundlagen."
+    },
+    "s6": {
+      "title": "6. Speicherdauer",
+      "items": [
+        { "bold": "Gesprächsaufzeichnung und Transkript:", "rest": "werden automatisiert nach 7 Tagen gelöscht." },
+        { "bold": "Reservierungs- und Bestelldaten:", "rest": "werden für die Dauer der Geschäftsbeziehung bzw. gesetzlicher Aufbewahrungspflichten des jeweiligen Betriebs gespeichert." },
+        { "bold": "Kontaktanfragen:", "rest": "werden gelöscht, sobald sie bearbeitet sind und keine gesetzliche Aufbewahrungspflicht entgegensteht." }
+      ]
+    },
+    "s7": {
+      "title": "7. Ihre Rechte",
+      "textBefore": "Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch. Wenden Sie sich hierfür an",
+      "textMid": "bzw. — bei Gästedaten — direkt an den jeweiligen Betrieb. Sie haben zudem das Recht, sich bei der österreichischen Datenschutzbehörde (",
+      "textAfter": ") zu beschweren."
+    },
+    "s8": {
+      "title": "8. Cookies",
+      "text": "Diese Website verwendet keine Analyse- oder Tracking-Cookies. Für technisch notwendige Einstellungen (z. B. Ihre Theme- oder Sprachwahl, Ihren Login im Kunden-Dashboard) wird ausschließlich der lokale Browser-Speicher (localStorage) verwendet — dieser sendet, anders als ein Cookie, keine Daten automatisch an unseren Server und benötigt daher keine Einwilligung. Über den Cookie-Banner bzw. den Link \"Cookie-Einstellungen\" im Footer können Sie dennoch schon jetzt zwischen \"nur notwendige\" und \"alle akzeptieren\" wählen — vorsorglich für den Fall, dass wir künftig Analyse- oder Marketing-Dienste einsetzen. Ihre Wahl können Sie dort jederzeit ändern."
+    },
+    "s9": {
+      "title": "9. KI-Transparenz",
+      "text": "Gespräche mit unseren KI-Rollen (z. B. telefonische Reservierungsannahme) werden Gästen zu Beginn des Gesprächs klar als automatisierte, KI-gestützte Kommunikation kenntlich gemacht (Art. 50 EU-KI-Verordnung). Den entsprechenden Hinweistext stellt ki-works dem jeweiligen Betrieb zur Verfügung."
     }
   }
 }

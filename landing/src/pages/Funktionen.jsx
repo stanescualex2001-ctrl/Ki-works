@@ -49,6 +49,7 @@ function StatTile({ label, value, hint, hintTone = "" }) {
 export default function Funktionen() {
   const { t, locale } = useI18n();
   const dashboardHref = `${localizedPath("home", locale)}#dashboard`;
+  const kontaktHref = localizedPath("kontakt", locale);
   const promises = t("dashboardSection.trustPoints");
   const promiseIcons = [Play, Pencil, Bell, Euro];
 
@@ -280,7 +281,7 @@ export default function Funktionen() {
             <div className="mt-1 text-sm text-foreground/55">{cta.desc}</div>
           </div>
           <a
-            href={dashboardHref}
+            href={kontaktHref}
             className="inline-flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-6 py-3 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
           >
             {cta.button} <ArrowRight className="h-3.5 w-3.5" />

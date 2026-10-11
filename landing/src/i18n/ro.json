@@ -71,9 +71,6 @@
     "cta": "Vezi în română",
     "dismissAriaLabel": "Închide mesajul"
   },
-  "legalNotice": {
-    "germanOnly": "Această pagină este disponibilă doar în limba germană. / This page is only available in German."
-  },
   "heroOrb": {
     "speechBubble": "Salut, sunt Kiwo",
     "badgeCall": "Apel preluat",
@@ -462,6 +459,167 @@
       "doneTitle": "Mulțumim pentru mesajul dvs.!",
       "doneDesc": "Vă răspundem cât mai curând posibil.",
       "genericError": "Trimiterea a eșuat"
+    }
+  },
+  "partner": {
+    "eyebrow": "PENTRU AGENȚII",
+    "heroTitle1": "Kiwo ca propriul dvs. produs AI.",
+    "heroTitle2": "White-label, fără efort de dezvoltare.",
+    "heroDesc": "Aveți deja clienți care au nevoie de website, magazin online sau marketing. Cu Kiwo ca program de parteneriat white-label, le oferiți suplimentar un angajat digital AI — sub propriul dvs. nume, fără să fie nevoie să îl dezvoltați singuri.",
+    "introTitle": "Pe scurt despre Kiwo",
+    "introDescBefore": "Kiwo este un angajat digital AI pentru telefon și chat web: preia apeluri, răspunde la întrebări, preia rezervări și comenzi — non-stop, chiar și în afara programului de lucru. Funcționează în producție pe",
+    "introDescLink": "ki-works.eu",
+    "introDescAfter": "și este dezvoltat în continuare tot acolo.",
+    "whiteLabelHeading": "Ce înseamnă white-label pentru dvs.",
+    "whiteLabelPoints": [
+      { "title": "Brandul dvs., nu al nostru", "desc": "Clienții dvs. finali văd logo-ul, culorile și numele dvs. Kiwo rulează în fundal ca platformă tehnică." },
+      { "title": "Rămâneți dvs. persoana de contact", "desc": "Contactul cu clienții rămâne la dvs. — noi livrăm tehnologia, nu o legătură directă cu clienții dvs." },
+      { "title": "Fără efort de dezvoltare", "desc": "Fără dezvoltare AI proprie, fără configurare Vapi/Anthropic, fără suport pentru tehnologia de bază — ne ocupăm noi de asta." },
+      { "title": "Funcționalitate completă", "desc": "Telefon, chat web, rezervări/comenzi, propriul dashboard pentru clienți — tot ce oferă Kiwo și clienților direcți." }
+    ],
+    "ttmTitle": "Zile, nu luni",
+    "ttmDesc": "Dezvoltarea propriei soluții de angajat AI durează de obicei luni de zile. Configurarea tehnică ca partener Kiwo (domeniu propriu, branding propriu) este gata în câteva zile — de îndată ce domeniul dvs. indică spre noi prin DNS.",
+    "whyHeading": "De ce merită pentru dvs.",
+    "whyPoints": [
+      "Venit suplimentar, recurent, fără risc de dezvoltare propriu",
+      "Cross-/upsell la clienții dvs. existenți — le cunoașteți deja nevoile",
+      "Venit din abonamente în loc de proiecte unice — mai previzibil decât proiectele web clasice",
+      "Implementare rapidă per client, fără proiect de dezvoltare de luni de zile"
+    ],
+    "demoCard": {
+      "badgeTitle": "Agenția dvs. — powered by Kiwo",
+      "badgeSubtitle": "Previzualizare exemplu, companie fictivă",
+      "fictiveLabel": "fictiv",
+      "customerLabel": "Client",
+      "customerName": "„Han Răsărit” (exemplu)",
+      "stat1Value": "47",
+      "stat1Label": "Apeluri / 7 zile",
+      "stat2Value": "12",
+      "stat2Label": "Rezervări",
+      "stat3Value": "0",
+      "stat3Label": "Apeluri pierdute",
+      "footnote": "Așa ar putea arăta dashboardul pe care clienții dvs. îl folosesc sub propriul nume — cifrele sunt un exemplu, nu date reale ale clienților."
+    },
+    "stepsHeading": "Cum funcționează",
+    "steps": [
+      { "n": "1", "title": "Ne contactați", "desc": "O scurtă discuție — vă arătăm Kiwo live, ne descrieți structura clienților dvs." },
+      { "n": "2", "title": "Stabilim condițiile de parteneriat", "desc": "Condiții eșalonate în funcție de numărul de clienți, discutate individual — fără listă de prețuri fixă." },
+      { "n": "3", "title": "Dvs. recomandați, noi livrăm", "desc": "Dvs. vă contactați clienții, noi configurăm tehnologia + brandingul pentru fiecare client." }
+    ],
+    "conditionsTitle": "Condiții de parteneriat",
+    "conditionsDesc": "Lucrăm cu condiții de parteneriat eșalonate în funcție de numărul clienților dvs. finali — detaliile le discutăm într-o convorbire personală, adaptată structurii dvs. de clienți.",
+    "faqHeading": "Întrebări frecvente",
+    "faqItems": [
+      { "q": "Cât de repede putem începe?", "a": "Configurarea tehnică per agenție (domeniu propriu, branding propriu, nume propriu al asistentului) este gata în zile, nu luni — de îndată ce domeniul dvs. indică prin DNS spre serverul nostru, restul este un proces scurt și standardizat. Niciun proiect de dezvoltare de luni de zile ca în cazul unei dezvoltări proprii." },
+      { "q": "Clienții noștri văd undeva „ki-works” sau „Kiwo”?", "a": "Nu. Domeniu propriu, logo/culori/nume de produs propriu și un nume de asistent ales de dvs. — pentru clienții dvs., ki-works este invizibil ca furnizor de tehnologie." },
+      { "q": "Păstrăm contactul cu clienții?", "a": "Da, pe tot parcursul. Vă creați și gestionați singuri clienții în propriul login — noi livrăm doar tehnologia în fundal, fără legătură directă cu clienții dvs. finali." },
+      { "q": "Cât costă?", "a": "Condiții de parteneriat eșalonate în funcție de numărul clienților dvs. finali — detaliile le discutăm într-o convorbire personală, adaptată structurii dvs. de clienți. Fără listă de prețuri fixă." },
+      { "q": "Este conform GDPR?", "a": "Găzduire în UE și transmisie criptată TLS, separare strictă a datelor între clienții diferitelor agenții. Discutăm cu plăcere detaliile pentru propria dvs. verificare într-o convorbire." },
+      { "q": "Trebuie să dezvoltăm sau să întreținem noi ceva?", "a": "Nu. Fără configurare Vapi/Anthropic proprie, fără infrastructură de server proprie, fără suport pentru tehnologia de bază — totul rulează complet la noi." }
+    ],
+    "ctaTitle": "Interesați de o discuție?",
+    "ctaDesc": "Fără obligații, fără presiune de vânzare."
+  },
+  "impressum": {
+    "title": "Date de identificare",
+    "internalNoticeLabel": "Notă (internă):",
+    "internalNotice": "Completați mai jos câmpurile cu datele reale ale companiei. Această pagină ar trebui verificată de un avocat sau consultant în protecția datelor înainte de publicare — în special în ceea ce privește autorizația comercială, numărul de înregistrare / CUI și autoritatea de supraveghere competentă.",
+    "sectionAngabenTitle": "Informații conform § 5 ECG, § 25 Legea presei austriece",
+    "labels": {
+      "operator": "Operator",
+      "address": "Adresă",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "businessPurpose": "Obiect de activitate",
+      "registration": "Autorizație comercială / Număr de înregistrare / CUI",
+      "authority": "Autoritate de supraveghere / cameră competentă"
+    },
+    "values": {
+      "operator": "[Completați numele / numele firmei]",
+      "address": "[Stradă, cod poștal, localitate, Austria]",
+      "phone": "[Completați numărul de telefon]",
+      "businessPurpose": "Asistență telefonică bazată pe AI pentru restaurante și prestatori de servicii",
+      "registration": "[completați dacă este cazul]",
+      "authority": "[completați dacă este cazul]"
+    },
+    "disputeTitle": "Soluționarea litigiilor la nivelul UE",
+    "disputeDesc": "Comisia Europeană pune la dispoziție o platformă pentru soluționarea online a litigiilor (SOL):",
+    "liabilityTitle": "Răspundere pentru conținut",
+    "liabilityDesc": "Conținutul acestui website a fost creat cu cea mai mare grijă. Cu toate acestea, nu ne asumăm nicio garanție pentru corectitudinea, caracterul complet și actualitatea conținutului."
+  },
+  "datenschutz": {
+    "title": "Politica de confidențialitate",
+    "internalNoticeLabel": "Notă (internă):",
+    "internalNotice": "Această declarație este un text tehnic de pornire și nu înlocuiește consultanța juridică. Vă rugăm să o verificați cu un avocat sau consultant în protecția datelor înainte de publicare — în special câmpul de completat de la Operator (secțiunea 1), precum și baza contractuală încă neclarificată cu Vapi (secțiunea 5).",
+    "s1": {
+      "title": "1. Operator",
+      "textBefore": "[ALEX: COMPLETAȚI AICI NUMELE/NUMELE FIRMEI + STRADA NR. + COD POȘTAL LOCALITATE, AUSTRIA], e-mail:",
+      "textAfter": "(denumit în continuare „ki-works”, „noi”)."
+    },
+    "s2": {
+      "title": "2. Cine răspunde pentru ce?",
+      "intro": "Această declarație se referă la două roluri diferite:",
+      "visitorsBold1": "Vizitatorii website-ului și persoanele interesate",
+      "visitorsMid": " (de ex. formularul de contact de pe această pagină): aici,",
+      "visitorsBold2": "ki-works",
+      "visitorsRest": " este operator în sensul GDPR.",
+      "guestsBold1": "Oaspeții clienților noștri (restaurante/firme)",
+      "guestsMid": " care fac rezervări sau comenzi telefonice: aici, respectiva",
+      "guestsBold2": "firmă",
+      "guestsRest": " (de ex. restaurantul) este operator, iar ki-works prelucrează datele în numele acesteia, ca persoană împuternicită (art. 28 GDPR). Firma își informează singură oaspeții; ki-works pune la dispoziție textele de informare și mesajul de înregistrare telefonică necesare în acest scop."
+    },
+    "s3": {
+      "title": "3. Ce date prelucrăm",
+      "colCategory": "Categorie",
+      "colExamples": "Exemple",
+      "colPurpose": "Scop",
+      "rows": [
+        { "category": "Utilizarea website-ului", "examples": "Accesarea paginilor (fără cookie-uri de analiză)", "purpose": "Furnizarea website-ului" },
+        { "category": "Cereri de contact", "examples": "Nume, firmă, e-mail, telefon, mesaj", "purpose": "Procesarea cererii dvs." },
+        { "category": "Date ale oaspeților (în numele firmei)", "examples": "Nume, număr de telefon, detalii rezervare/comandă", "purpose": "Preluarea rezervărilor/comenzilor" },
+        { "category": "Date brute ale apelurilor", "examples": "Înregistrarea convorbirii, transcriere", "purpose": "Crearea rezervării/comenzii, asigurarea calității — ștergere după 7 zile" },
+        { "category": "Date de acces ale clienților", "examples": "E-mail de autentificare, parolă criptată", "purpose": "Acces la dashboard" }
+      ]
+    },
+    "s4": {
+      "title": "4. Temeiuri juridice",
+      "text": "Executarea contractului, respectiv măsuri precontractuale (art. 6 alin. 1 lit. b GDPR) pentru rezervări/comenzi și solicitări ale clienților; interes legitim (art. 6 alin. 1 lit. f GDPR) pentru funcționarea și îmbunătățirea serviciului, de ex. asigurarea calității convorbirilor telefonice."
+    },
+    "s5": {
+      "title": "5. Destinatari și persoane împuternicite",
+      "intro": "Pentru furnizarea serviciului nostru, folosim următorii prestatori:",
+      "providers": [
+        { "name": "Anthropic (Claude API)", "location": "SUA", "purpose": "Prelucrarea conținutului convorbirilor pentru crearea de rezumate și analize." },
+        { "name": "Vapi Inc.", "location": "SUA", "purpose": "Gestionarea tehnică a apelurilor telefonice, recunoaștere vocală, înregistrare." },
+        { "name": "Twilio Inc.", "location": "SUA/UE", "purpose": "Numere de telefon și trimitere SMS." },
+        { "name": "Contabo GmbH", "location": "Germania", "purpose": "Găzduire server (bază de date, aplicație)." },
+        { "name": "Furnizor de găzduire e-mail", "location": "", "purpose": "Trimiterea e-mailurilor de notificare." }
+      ],
+      "transferBefore": "Pentru transferul către Anthropic și Twilio în SUA, ne bazăm pe",
+      "transferLinkText": "clauzele contractuale standard UE",
+      "transferAfter": "(art. 46 alin. 2 lit. c GDPR), care fac parte automat din termenii și condițiile respective sau din contractele de prelucrare a datelor. Pentru Vapi, verificăm în prezent bazele contractuale corespunzătoare."
+    },
+    "s6": {
+      "title": "6. Durata stocării",
+      "items": [
+        { "bold": "Înregistrarea convorbirii și transcrierea:", "rest": "sunt șterse automat după 7 zile." },
+        { "bold": "Datele de rezervare și comandă:", "rest": "sunt stocate pe durata relației contractuale, respectiv a obligațiilor legale de păstrare ale firmei respective." },
+        { "bold": "Cererile de contact:", "rest": "sunt șterse imediat ce au fost procesate și nu există nicio obligație legală de păstrare." }
+      ]
+    },
+    "s7": {
+      "title": "7. Drepturile dvs.",
+      "textBefore": "Aveți dreptul la informare, rectificare, ștergere, restricționarea prelucrării, portabilitatea datelor și opoziție. Pentru aceasta, contactați",
+      "textMid": "respectiv — pentru datele oaspeților — direct firma respectivă. De asemenea, aveți dreptul de a depune o plângere la autoritatea austriacă de protecție a datelor (",
+      "textAfter": ")."
+    },
+    "s8": {
+      "title": "8. Cookie-uri",
+      "text": "Acest website nu utilizează cookie-uri de analiză sau de urmărire. Pentru setările tehnic necesare (de ex. alegerea temei sau a limbii, autentificarea dvs. în dashboardul pentru clienți) se utilizează exclusiv stocarea locală în browser (localStorage) — spre deosebire de un cookie, aceasta nu trimite automat date către serverul nostru și, prin urmare, nu necesită consimțământ. Prin bannerul de cookie-uri, respectiv prin linkul „Setări cookie-uri” din footer, puteți totuși alege deja între „doar necesare” și „acceptați toate” — ca măsură de precauție, pentru cazul în care vom folosi în viitor servicii de analiză sau marketing. Vă puteți schimba oricând alegerea acolo."
+    },
+    "s9": {
+      "title": "9. Transparență AI",
+      "text": "Conversațiile cu rolurile noastre AI (de ex. preluarea telefonică a rezervărilor) sunt semnalate clar oaspeților, la începutul convorbirii, ca fiind comunicare automatizată, asistată de AI (art. 50 din Regulamentul UE privind AI). Textul de informare corespunzător este pus la dispoziția firmei de către ki-works."
     }
   }
 }

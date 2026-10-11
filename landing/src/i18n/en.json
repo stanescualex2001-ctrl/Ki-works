@@ -71,9 +71,6 @@
     "cta": "View in English",
     "dismissAriaLabel": "Dismiss notice"
   },
-  "legalNotice": {
-    "germanOnly": "This page is only available in German. / Diese Seite ist nur auf Deutsch verfügbar."
-  },
   "heroOrb": {
     "speechBubble": "Hi, I'm Kiwo",
     "badgeCall": "Call answered",
@@ -462,6 +459,167 @@
       "doneTitle": "Thank you for your message!",
       "doneDesc": "We'll get back to you as soon as possible.",
       "genericError": "Sending failed"
+    }
+  },
+  "partner": {
+    "eyebrow": "FOR AGENCIES",
+    "heroTitle1": "Kiwo as your own AI product.",
+    "heroTitle2": "White-label, no development effort.",
+    "heroDesc": "You already look after clients who need a website, shop or marketing. With Kiwo as a white-label partner program, you can also offer a digital AI employee — under your own name, without having to build it yourself.",
+    "introTitle": "Kiwo in short",
+    "introDescBefore": "Kiwo is a digital AI employee for phone and web chat: answers calls, answers questions, takes reservations and orders — around the clock, even outside business hours. Runs in production at",
+    "introDescLink": "ki-works.eu",
+    "introDescAfter": "and is also developed further there, in private.",
+    "whiteLabelHeading": "What white-label means for you",
+    "whiteLabelPoints": [
+      { "title": "Your branding, not ours", "desc": "Your end customers see your logo, your colors, your name. Kiwo runs in the background as the technology platform." },
+      { "title": "You stay the point of contact", "desc": "Customer contact stays with you — we deliver the technology, not a direct line to your customers." },
+      { "title": "No development effort", "desc": "No in-house AI development, no Vapi/Anthropic setup, no support for the core technology — we handle that." },
+      { "title": "Full functionality", "desc": "Phone, web chat, reservations/orders, your customer's own dashboard — everything Kiwo offers direct customers too." }
+    ],
+    "ttmTitle": "Days, not months",
+    "ttmDesc": "Building your own AI-employee solution from scratch typically takes months. Technical setup as a Kiwo partner (your own domain, your own branding) is done in days — as soon as your domain points to us via DNS.",
+    "whyHeading": "Why it's worth it for you",
+    "whyPoints": [
+      "Additional, recurring revenue without your own development risk",
+      "Cross-/upsell with your existing customers — you already know their needs",
+      "Subscription revenue instead of one-off project work — more predictable than classic web projects",
+      "Fast rollout per customer, no months-long development project"
+    ],
+    "demoCard": {
+      "badgeTitle": "Your agency — powered by Kiwo",
+      "badgeSubtitle": "Example preview, fictional company",
+      "fictiveLabel": "fictional",
+      "customerLabel": "Customer",
+      "customerName": "\"The Sunset Inn\" (example)",
+      "stat1Value": "47",
+      "stat1Label": "Calls / 7 days",
+      "stat2Value": "12",
+      "stat2Label": "Reservations",
+      "stat3Value": "0",
+      "stat3Label": "Missed calls",
+      "footnote": "This is roughly how the dashboard your customers use under your own name could look — the numbers are an example, not real customer data."
+    },
+    "stepsHeading": "How it works",
+    "steps": [
+      { "n": "1", "title": "Get in touch", "desc": "A short call — we show you Kiwo live, you describe your customer base." },
+      { "n": "2", "title": "Agree on partner terms", "desc": "Tiered terms depending on customer count, discussed individually — no fixed price sheet." },
+      { "n": "3", "title": "You refer, we deliver", "desc": "You approach your customers, we set up technology + branding per customer." }
+    ],
+    "conditionsTitle": "Partner terms",
+    "conditionsDesc": "We work with tiered partner terms depending on your number of end customers — we'll discuss the details in a personal conversation, tailored to your customer base.",
+    "faqHeading": "Frequently asked questions",
+    "faqItems": [
+      { "q": "How fast can we start?", "a": "Technical setup per agency (your own domain, your own branding, your own assistant name) is done in days, not months — once your domain points to our server via DNS, the rest is a short, standardized process. No months-long development project like building it yourself." },
+      { "q": "Will our customers see \"ki-works\" or \"Kiwo\" anywhere?", "a": "No. Your own domain, your own logo/colors/product name, and an assistant name you choose — for your customers, ki-works is invisible as the technology supplier." },
+      { "q": "Do we keep the customer relationship?", "a": "Yes, throughout. You create and manage your customers yourself in your own login — we only deliver the technology in the background, with no direct line to your end customers." },
+      { "q": "What does it cost?", "a": "Tiered partner terms depending on your number of end customers — we'll discuss the details in a personal conversation, tailored to your customer base. No fixed price sheet." },
+      { "q": "Is this GDPR-compliant?", "a": "EU hosting and TLS-encrypted transmission, strict data separation between the customers of different agencies. We're happy to discuss details for your own review in a conversation." },
+      { "q": "Do we have to build or maintain anything ourselves?", "a": "No. No own Vapi/Anthropic setup, no own server infrastructure, no support for the core technology — that's all handled on our end." }
+    ],
+    "ctaTitle": "Interested in a conversation?",
+    "ctaDesc": "No obligation, no sales pressure."
+  },
+  "impressum": {
+    "title": "Legal Notice",
+    "internalNoticeLabel": "Internal note:",
+    "internalNotice": "Fill in the placeholders below with the real company details. This page should be reviewed by a lawyer or data protection consultant before publication — especially regarding the trade license, company register / VAT number, and supervisory authority.",
+    "sectionAngabenTitle": "Information per § 5 ECG, § 25 Austrian Media Act",
+    "labels": {
+      "operator": "Operator",
+      "address": "Address",
+      "email": "Email",
+      "phone": "Phone",
+      "businessPurpose": "Business purpose",
+      "registration": "Trade license / company register number / VAT ID",
+      "authority": "Competent supervisory authority / chamber"
+    },
+    "values": {
+      "operator": "[Enter name / company name]",
+      "address": "[Street, postal code, city, Austria]",
+      "phone": "[Enter phone number]",
+      "businessPurpose": "AI-powered phone assistance for hospitality and service businesses",
+      "registration": "[Enter if applicable]",
+      "authority": "[Enter if applicable]"
+    },
+    "disputeTitle": "EU Online Dispute Resolution",
+    "disputeDesc": "The European Commission provides a platform for online dispute resolution (ODR):",
+    "liabilityTitle": "Liability for content",
+    "liabilityDesc": "The content of this website has been created with the greatest possible care. However, we cannot guarantee the accuracy, completeness or timeliness of the content."
+  },
+  "datenschutz": {
+    "title": "Privacy Policy",
+    "internalNoticeLabel": "Internal note:",
+    "internalNotice": "This policy is a technical starting draft and does not replace legal advice. Please have it reviewed by a lawyer or data protection consultant before publication — especially the placeholder under Controller (Section 1) and the still-open contractual basis with Vapi (Section 5).",
+    "s1": {
+      "title": "1. Controller",
+      "textBefore": "[ALEX: ENTER NAME/COMPANY NAME + STREET NO. + POSTAL CODE CITY, AUSTRIA HERE], email:",
+      "textAfter": "(hereinafter \"ki-works\", \"we\")."
+    },
+    "s2": {
+      "title": "2. Who is responsible for what?",
+      "intro": "This policy covers two different roles:",
+      "visitorsBold1": "Website visitors and prospects",
+      "visitorsMid": " (e.g. the contact form on this page): here,",
+      "visitorsBold2": "ki-works",
+      "visitorsRest": " is the controller within the meaning of the GDPR.",
+      "guestsBold1": "Guests of our restaurant/business customers",
+      "guestsMid": " who make phone reservations or orders: here, the respective",
+      "guestsBold2": "business",
+      "guestsRest": " (e.g. the restaurant) is the controller; ki-works processes the data on its behalf as a processor (Art. 28 GDPR). The business informs its guests independently; ki-works provides the business with the relevant notices and the phone recording notice for this purpose."
+    },
+    "s3": {
+      "title": "3. What data we process",
+      "colCategory": "Category",
+      "colExamples": "Examples",
+      "colPurpose": "Purpose",
+      "rows": [
+        { "category": "Website usage", "examples": "Page views (no analytics cookies set)", "purpose": "Providing the website" },
+        { "category": "Contact inquiries", "examples": "Name, business, email, phone, message", "purpose": "Processing your inquiry" },
+        { "category": "Guest data (on behalf of the business)", "examples": "Name, phone number, reservation/order details", "purpose": "Taking reservations/orders" },
+        { "category": "Raw call data", "examples": "Call recording, transcript", "purpose": "Creating the reservation/order, quality assurance — deleted after 7 days" },
+        { "category": "Customer login data", "examples": "Login email, encrypted password", "purpose": "Access to the dashboard" }
+      ]
+    },
+    "s4": {
+      "title": "4. Legal bases",
+      "text": "Performance of a contract or pre-contractual measures (Art. 6(1)(b) GDPR) for reservations/orders and customer inquiries; legitimate interest (Art. 6(1)(f) GDPR) in operating and improving the service, e.g. quality assurance of phone calls."
+    },
+    "s5": {
+      "title": "5. Recipients and processors",
+      "intro": "We use the following service providers to deliver our service:",
+      "providers": [
+        { "name": "Anthropic (Claude API)", "location": "USA", "purpose": "Processing conversation content to create summaries and analyses." },
+        { "name": "Vapi Inc.", "location": "USA", "purpose": "Technical handling of phone calls, speech recognition, recording." },
+        { "name": "Twilio Inc.", "location": "USA/EU", "purpose": "Phone numbers and SMS delivery." },
+        { "name": "Contabo GmbH", "location": "Germany", "purpose": "Server hosting (database, application)." },
+        { "name": "Email hosting provider", "location": "", "purpose": "Sending notification emails." }
+      ],
+      "transferBefore": "For transfers to Anthropic and Twilio in the USA, we rely on the",
+      "transferLinkText": "EU Standard Contractual Clauses",
+      "transferAfter": "(Art. 46(2)(c) GDPR), which automatically form part of the respective terms of use or data processing agreements. For Vapi, we are currently reviewing the corresponding contractual basis."
+    },
+    "s6": {
+      "title": "6. Storage period",
+      "items": [
+        { "bold": "Call recording and transcript:", "rest": "automatically deleted after 7 days." },
+        { "bold": "Reservation and order data:", "rest": "stored for the duration of the business relationship or the respective business's statutory retention obligations." },
+        { "bold": "Contact inquiries:", "rest": "deleted once processed, unless a statutory retention obligation applies." }
+      ]
+    },
+    "s7": {
+      "title": "7. Your rights",
+      "textBefore": "You have the right to access, rectification, erasure, restriction of processing, data portability and objection. Please contact",
+      "textMid": "or — for guest data — the respective business directly. You also have the right to lodge a complaint with the Austrian data protection authority (",
+      "textAfter": ")."
+    },
+    "s8": {
+      "title": "8. Cookies",
+      "text": "This website does not use analytics or tracking cookies. For technically necessary settings (e.g. your theme or language choice, your login to the customer dashboard) we use only local browser storage (localStorage) — unlike a cookie, this does not automatically send data to our server and therefore does not require consent. Via the cookie banner or the \"Cookie settings\" link in the footer, you can still choose between \"necessary only\" and \"accept all\" — as a precaution in case we use analytics or marketing services in the future. You can change your choice there at any time."
+    },
+    "s9": {
+      "title": "9. AI transparency",
+      "text": "Conversations with our AI roles (e.g. taking phone reservations) are clearly identified to guests at the start of the call as automated, AI-powered communication (Art. 50 EU AI Act). ki-works provides the business with the corresponding notice text."
     }
   }
 }

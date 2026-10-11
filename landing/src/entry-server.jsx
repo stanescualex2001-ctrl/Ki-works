@@ -15,17 +15,17 @@ export function renderHome(locale = DEFAULT_LOCALE) {
   );
 }
 
-export function renderImpressum() {
+export function renderImpressum(locale = DEFAULT_LOCALE) {
   return renderToString(
-    <LanguageProvider locale="de">
+    <LanguageProvider locale={locale}>
       <Impressum />
     </LanguageProvider>,
   );
 }
 
-export function renderDatenschutz() {
+export function renderDatenschutz(locale = DEFAULT_LOCALE) {
   return renderToString(
-    <LanguageProvider locale="de">
+    <LanguageProvider locale={locale}>
       <Datenschutz />
     </LanguageProvider>,
   );
@@ -47,9 +47,9 @@ export function renderFunktionen(locale = DEFAULT_LOCALE) {
   );
 }
 
-export function renderPartner() {
+export function renderPartner(locale = DEFAULT_LOCALE) {
   return renderToString(
-    <LanguageProvider locale="de">
+    <LanguageProvider locale={locale}>
       <Partner />
     </LanguageProvider>,
   );

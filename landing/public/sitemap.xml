@@ -32,15 +32,63 @@
   </url>
   <url>
     <loc>https://ki-works.eu/impressum.html</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-10-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/impressum.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/en/impressum.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/impressum.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/ro/impressum.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/impressum.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/impressum.html" />
   </url>
   <url>
     <loc>https://ki-works.eu/datenschutz.html</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-10-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/datenschutz.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/en/datenschutz.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/datenschutz.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/ro/datenschutz.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/datenschutz.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/datenschutz.html" />
   </url>
   <url>
     <loc>https://ki-works.eu/kontakt.html</loc>
@@ -104,8 +152,32 @@
   </url>
   <url>
     <loc>https://ki-works.eu/partner.html</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-10-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/partner.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/partner.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/partner.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/partner.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/en/partner.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/partner.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/partner.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/partner.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/partner.html" />
+  </url>
+  <url>
+    <loc>https://ki-works.eu/ro/partner.html</loc>
+    <lastmod>2026-10-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+    <xhtml:link rel="alternate" hreflang="de" href="https://ki-works.eu/partner.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://ki-works.eu/en/partner.html" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://ki-works.eu/ro/partner.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://ki-works.eu/partner.html" />
   </url>
 </urlset>

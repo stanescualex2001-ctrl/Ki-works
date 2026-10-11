@@ -1,41 +1,5 @@
 import { PageShell } from "../components/PageShell.jsx";
-import { LegalLanguageNotice } from "../components/LegalLanguageNotice.jsx";
-
-const datenkategorien = [
-  {
-    kategorie: "Website-Nutzung",
-    beispiele: "Aufruf der Seiten (keine Analyse-Cookies gesetzt)",
-    zweck: "Bereitstellung der Website",
-  },
-  {
-    kategorie: "Kontaktanfragen",
-    beispiele: "Name, Betrieb, E-Mail, Telefon, Nachricht",
-    zweck: "Bearbeitung Ihrer Anfrage",
-  },
-  {
-    kategorie: "Gästedaten (im Auftrag des Betriebs)",
-    beispiele: "Name, Telefonnummer, Reservierungs-/Bestelldetails",
-    zweck: "Reservierungs-/Bestellannahme",
-  },
-  {
-    kategorie: "Anruf-Rohdaten",
-    beispiele: "Gesprächsaufzeichnung, Transkript",
-    zweck: "Erstellung der Reservierung/Bestellung, Qualitätssicherung — Löschung nach 7 Tagen",
-  },
-  {
-    kategorie: "Kunden-Zugangsdaten",
-    beispiele: "Login-E-Mail, verschlüsseltes Passwort",
-    zweck: "Zugang zum Dashboard",
-  },
-];
-
-const dienstleister = [
-  { name: "Anthropic (Claude API)", ort: "USA", zweck: "Verarbeitung von Gesprächsinhalten zur Erstellung von Zusammenfassungen und Auswertungen." },
-  { name: "Vapi Inc.", ort: "USA", zweck: "Technische Abwicklung der Telefonanrufe, Spracherkennung, Aufzeichnung." },
-  { name: "Twilio Inc.", ort: "USA/EU", zweck: "Telefonnummern und SMS-Versand." },
-  { name: "Contabo GmbH", ort: "Deutschland", zweck: "Serverhosting (Datenbank, Anwendung)." },
-  { name: "E-Mail-Hosting-Anbieter", ort: "", zweck: "Versand von Benachrichtigungs-E-Mails." },
-];
+import { useI18n } from "../i18n/index.jsx";
 
 function A({ href, children, external = false }) {
   const opensNewTab = external || href.startsWith("mailto:");
@@ -51,150 +15,99 @@ function A({ href, children, external = false }) {
 }
 
 export default function Datenschutz() {
+  const { t } = useI18n();
+  const d = t("datenschutz");
+
   return (
-    <PageShell page="legal">
+    <PageShell page="datenschutz">
       <div className="mx-auto max-w-3xl px-5 py-16 sm:px-6 md:py-24">
-        <h1 className="text-3xl md:text-4xl font-semibold">Datenschutzerklärung</h1>
-        <LegalLanguageNotice />
+        <h1 className="text-3xl md:text-4xl font-semibold">{d.title}</h1>
 
         <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/10 p-4 text-sm text-amber-800/90 dark:text-amber-100/90">
-          <strong className="text-amber-600 dark:text-amber-300">Hinweis (intern):</strong> Diese Erklärung ist ein
-          technischer Ausgangstext und ersetzt keine Rechtsberatung. Bitte vor Veröffentlichung von
-          einem Anwalt bzw. Datenschutzberater prüfen lassen — insbesondere den Platzhalter beim
-          Verantwortlichen (Abschnitt 1) sowie die noch offene Vertragsgrundlage mit Vapi
-          (Abschnitt 5).
+          <strong className="text-amber-600 dark:text-amber-300">{d.internalNoticeLabel}</strong> {d.internalNotice}
         </div>
 
-        <h2 className="mt-10 text-lg font-semibold">1. Verantwortlicher</h2>
+        <h2 className="mt-10 text-lg font-semibold">{d.s1.title}</h2>
         <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          [ALEX: HIER NAME/FIRMENNAME + STRASSE HAUSNR + PLZ ORT, ÖSTERREICH EINTRAGEN], E-Mail:{" "}
-          <A href="mailto:info@ki-works.eu">info@ki-works.eu</A> (im Folgenden „ki-works", „wir").
+          {d.s1.textBefore} <A href="mailto:info@ki-works.eu">info@ki-works.eu</A> {d.s1.textAfter}
         </p>
 
-        <h2 className="mt-10 text-lg font-semibold">2. Wer ist wofür verantwortlich?</h2>
-        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Diese Erklärung betrifft zwei unterschiedliche Rollen:
-        </p>
+        <h2 className="mt-10 text-lg font-semibold">{d.s2.title}</h2>
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">{d.s2.intro}</p>
         <ul className="mt-3 list-disc space-y-2.5 pl-5 text-sm text-foreground/65 leading-relaxed">
           <li>
-            <strong className="text-foreground/85">Website-Besucher und Interessenten</strong> (z. B.
-            das Kontaktformular auf dieser Seite): Hier ist{" "}
-            <strong className="text-foreground/85">ki-works</strong> Verantwortlicher im Sinne der
-            DSGVO.
+            <strong className="text-foreground/85">{d.s2.visitorsBold1}</strong>{d.s2.visitorsMid}{" "}
+            <strong className="text-foreground/85">{d.s2.visitorsBold2}</strong>{d.s2.visitorsRest}
           </li>
           <li>
-            <strong className="text-foreground/85">Gäste unserer Restaurant-/Geschäftskunden</strong>,
-            die telefonisch reservieren oder bestellen: Hier ist der jeweilige{" "}
-            <strong className="text-foreground/85">Betrieb</strong> (z. B. das Restaurant)
-            Verantwortlicher, ki-works verarbeitet die Daten in dessen Auftrag als
-            Auftragsverarbeiter (Art. 28 DSGVO). Der Betrieb informiert seine Gäste eigenständig;
-            ki-works stellt hierfür Hinweistexte und den telefonischen Aufzeichnungshinweis
-            bereit.
+            <strong className="text-foreground/85">{d.s2.guestsBold1}</strong>{d.s2.guestsMid}{" "}
+            <strong className="text-foreground/85">{d.s2.guestsBold2}</strong>{d.s2.guestsRest}
           </li>
         </ul>
 
-        <h2 className="mt-10 text-lg font-semibold">3. Welche Daten wir verarbeiten</h2>
+        <h2 className="mt-10 text-lg font-semibold">{d.s3.title}</h2>
         <div className="mt-4 overflow-x-auto rounded-xl border border-foreground/10">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-foreground/10 text-xs text-foreground/45">
-                <th className="px-4 py-3 font-medium">Kategorie</th>
-                <th className="px-4 py-3 font-medium">Beispiele</th>
-                <th className="px-4 py-3 font-medium">Zweck</th>
+                <th className="px-4 py-3 font-medium">{d.s3.colCategory}</th>
+                <th className="px-4 py-3 font-medium">{d.s3.colExamples}</th>
+                <th className="px-4 py-3 font-medium">{d.s3.colPurpose}</th>
               </tr>
             </thead>
             <tbody>
-              {datenkategorien.map((row) => (
-                <tr key={row.kategorie} className="border-b border-foreground/5 last:border-0 align-top">
-                  <td className="px-4 py-3 text-foreground/80">{row.kategorie}</td>
-                  <td className="px-4 py-3 text-foreground/60">{row.beispiele}</td>
-                  <td className="px-4 py-3 text-foreground/60">{row.zweck}</td>
+              {d.s3.rows.map((row) => (
+                <tr key={row.category} className="border-b border-foreground/5 last:border-0 align-top">
+                  <td className="px-4 py-3 text-foreground/80">{row.category}</td>
+                  <td className="px-4 py-3 text-foreground/60">{row.examples}</td>
+                  <td className="px-4 py-3 text-foreground/60">{row.purpose}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <h2 className="mt-10 text-lg font-semibold">4. Rechtsgrundlagen</h2>
-        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Vertragserfüllung bzw. vorvertragliche Maßnahmen (Art. 6 Abs. 1 lit. b DSGVO) für
-          Reservierungen/Bestellungen und Kundenanfragen; berechtigtes Interesse (Art. 6 Abs. 1
-          lit. f DSGVO) an Betrieb und Verbesserung des Dienstes, z. B. Qualitätssicherung von
-          Telefonaten.
-        </p>
+        <h2 className="mt-10 text-lg font-semibold">{d.s4.title}</h2>
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">{d.s4.text}</p>
 
-        <h2 className="mt-10 text-lg font-semibold">5. Empfänger und Auftragsverarbeiter</h2>
-        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Zur Erbringung unseres Dienstes setzen wir folgende Dienstleister ein:
-        </p>
+        <h2 className="mt-10 text-lg font-semibold">{d.s5.title}</h2>
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">{d.s5.intro}</p>
         <ul className="mt-3 space-y-2.5 pl-5 text-sm text-foreground/65 leading-relaxed list-disc">
-          {dienstleister.map((d) => (
-            <li key={d.name}>
-              <strong className="text-foreground/85">{d.name}</strong>
-              {d.ort && `, ${d.ort}`} — {d.zweck}
+          {d.s5.providers.map((p) => (
+            <li key={p.name}>
+              <strong className="text-foreground/85">{p.name}</strong>
+              {p.location && `, ${p.location}`} — {p.purpose}
             </li>
           ))}
         </ul>
         <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Bei der Übermittlung an Anthropic und Twilio in die USA stützen wir uns auf die{" "}
+          {d.s5.transferBefore}{" "}
           <A href="https://www.twilio.com/en-us/legal/data-protection-addendum" external>
-            EU-Standardvertragsklauseln
+            {d.s5.transferLinkText}
           </A>{" "}
-          (Art. 46 Abs. 2 lit. c DSGVO), die automatisch Bestandteil der jeweiligen
-          Nutzungsbedingungen bzw. Auftragsverarbeitungsverträge sind. Für Vapi prüfen wir aktuell
-          die entsprechenden Vertragsgrundlagen.
+          {d.s5.transferAfter}
         </p>
 
-        <h2 className="mt-10 text-lg font-semibold">6. Speicherdauer</h2>
+        <h2 className="mt-10 text-lg font-semibold">{d.s6.title}</h2>
         <ul className="mt-3 space-y-2.5 pl-5 text-sm text-foreground/65 leading-relaxed list-disc">
-          <li>
-            <strong className="text-foreground/85">Gesprächsaufzeichnung und Transkript:</strong>{" "}
-            werden automatisiert nach <strong className="text-foreground/85">7 Tagen</strong> gelöscht.
-          </li>
-          <li>
-            <strong className="text-foreground/85">Reservierungs- und Bestelldaten:</strong> werden für
-            die Dauer der Geschäftsbeziehung bzw. gesetzlicher Aufbewahrungspflichten des
-            jeweiligen Betriebs gespeichert.
-          </li>
-          <li>
-            <strong className="text-foreground/85">Kontaktanfragen:</strong> werden gelöscht, sobald
-            sie bearbeitet sind und keine gesetzliche Aufbewahrungspflicht entgegensteht.
-          </li>
+          {d.s6.items.map((item) => (
+            <li key={item.bold}>
+              <strong className="text-foreground/85">{item.bold}</strong> {item.rest}
+            </li>
+          ))}
         </ul>
 
-        <h2 className="mt-10 text-lg font-semibold">7. Ihre Rechte</h2>
+        <h2 className="mt-10 text-lg font-semibold">{d.s7.title}</h2>
         <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
-          Datenübertragbarkeit und Widerspruch. Wenden Sie sich hierfür an{" "}
-          <A href="mailto:info@ki-works.eu">info@ki-works.eu</A> bzw. — bei Gästedaten — direkt an
-          den jeweiligen Betrieb. Sie haben zudem das Recht, sich bei der österreichischen
-          Datenschutzbehörde (<A href="https://www.dsb.gv.at" external>dsb.gv.at</A>) zu
-          beschweren.
+          {d.s7.textBefore} <A href="mailto:info@ki-works.eu">info@ki-works.eu</A> {d.s7.textMid}{" "}
+          <A href="https://www.dsb.gv.at" external>dsb.gv.at</A> {d.s7.textAfter}
         </p>
 
-        <h2 className="mt-10 text-lg font-semibold">8. Cookies</h2>
-        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Diese Website verwendet keine Analyse- oder Tracking-Cookies. Für
-          technisch notwendige Einstellungen (z. B. Ihre Theme- oder
-          Sprachwahl, Ihren Login im Kunden-Dashboard) wird ausschließlich
-          der lokale Browser-Speicher (localStorage) verwendet — dieser
-          sendet, anders als ein Cookie, keine Daten automatisch an unseren
-          Server und benötigt daher keine Einwilligung. Über den
-          Cookie-Banner bzw. den Link "Cookie-Einstellungen" im Footer
-          können Sie dennoch schon jetzt zwischen "nur notwendige" und
-          "alle akzeptieren" wählen — vorsorglich für den Fall, dass wir
-          künftig Analyse- oder Marketing-Dienste einsetzen. Ihre Wahl
-          können Sie dort jederzeit ändern.
-        </p>
+        <h2 className="mt-10 text-lg font-semibold">{d.s8.title}</h2>
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">{d.s8.text}</p>
 
-        <h2 className="mt-10 text-lg font-semibold">9. KI-Transparenz</h2>
-        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">
-          Gespräche mit unseren KI-Rollen (z. B. telefonische
-          Reservierungsannahme) werden Gästen zu Beginn des Gesprächs klar
-          als automatisierte, KI-gestützte Kommunikation kenntlich gemacht
-          (Art. 50 EU-KI-Verordnung). Den entsprechenden Hinweistext
-          stellt ki-works dem jeweiligen Betrieb zur Verfügung.
-        </p>
+        <h2 className="mt-10 text-lg font-semibold">{d.s9.title}</h2>
+        <p className="mt-3 text-sm text-foreground/65 leading-relaxed">{d.s9.text}</p>
       </div>
     </PageShell>
   );

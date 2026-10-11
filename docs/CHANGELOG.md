@@ -1,5 +1,32 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Link-Audit-Fixes + Partner/Impressum/Datenschutz jetzt DE/EN/RO (11.10.2026):**
+  Nutzer meldete: Links auf RO/EN-Seiten landeten teils auf der DE-Version,
+  `partner.html` fehlte komplett in EN/RO, Funktionen-CTA zeigte auf den
+  `#dashboard`-Anker statt zum Kontaktformular. 3 Explore-Agenten haben den
+  echten Bug gefunden: `App.jsx` (wird für alle 3 Sprachen gerendert)
+  hardcoded `/kontakt.html` an 6 Stellen statt `localizedPath("kontakt",
+  locale)` — jetzt gefixt, Query-Strings (`?plan=...`) erhalten.
+  `dashboard/?lang=de` lief bereits korrekt (kein Bug, code-geprüft).
+  Funktionen-Seite: CTA-Button zeigt jetzt auf Kontakt, "Zurück"-Link
+  bleibt zur Startseite. Zusätzlich auf Nutzer-Wunsch: `partner.html`,
+  `impressum.html` und `datenschutz.html` komplett auf echtes i18n
+  umgestellt (vorher 100 % hardcodierte deutsche Strings) und EN/RO-Routen
+  gebaut (gleiches SSR-Prerender-Muster wie bei der Funktionen-Seite) —
+  bewusste Alt-Entscheidung aus `LegalLanguageNotice.jsx` (Risiko von
+  Nuancenverlust bei KI-Übersetzung rechtlich bindender Inhalte) damit
+  überschrieben; reine Übersetzung des bestehenden deutschen
+  Entwurfstexts, der "Hinweis (intern)"-Kasten (ersetzt keine
+  Rechtsprüfung) bleibt in allen 3 Sprachen erhalten.
+  `LegalLanguageNotice.jsx` (obsolet) gelöscht. `localizedPath()` in
+  `i18n/index.jsx` generalisiert (`PAGE_FILES`-Registry um
+  partner/impressum/datenschutz erweitert). Footer-/CookieBanner-/
+  Kontakt-Links zu Impressum/Datenschutz jetzt ebenfalls lokalisiert.
+  `sitemap.xml` um alle neuen Sprachvarianten + hreflang ergänzt. Build
+  lokal verifiziert (18 Seiten × echter vorgerenderter Inhalt), Light/Dark
+  + Link-Stichproben per Playwright-Screenshot gegengeprüft; ein
+  Spacing-Bug (Komma mit Leerzeichen davor in Datenschutz §2) dabei
+  gefunden und gefixt. Version 1.3.0 (4 package.json).
 - **Neue Landing-Seite „Funktionen" — Dashboard im Detail, DE/EN/RO (11.10.2026):**
   Erst Artifact-Prototyp (mehrfach nach Nutzer-Feedback überarbeitet: mehr
   Inhalt, echte Theme-Tokens, Zahlen-Konsistenz 847/1500 Min. statt

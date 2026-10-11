@@ -170,7 +170,8 @@ function SolutionsMenuContent({ onNavigate, stacked = false, homeHref }) {
 }
 
 /* ---------- Header (Nav) — geteilt zwischen Startseite, Kontakt, Impressum, Datenschutz ---------- */
-// page: "home" | "kontakt" | "legal" — bestimmt, wohin Logo/Nav-Anker/
+// page: "home" | "kontakt" | "funktionen" | "partner" | "impressum" |
+// "datenschutz" — bestimmt, wohin Logo/Nav-Anker/
 // Kontakt-Link je nach aktueller Sprache zeigen (siehe i18n/index.jsx
 // localizedPath) und ob der Sprachumschalter eine Zielseite hat.
 export function Header({ page = "home" }) {

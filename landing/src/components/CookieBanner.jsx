@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useI18n } from "../i18n/index.jsx";
+import { useI18n, localizedPath } from "../i18n/index.jsx";
 import { getConsent, setConsent } from "../lib/cookieConsent.js";
 
 // Ausgelöst vom "Cookie-Einstellungen"-Link im Footer, um den Banner erneut
@@ -18,7 +18,7 @@ export const COOKIE_BANNER_VISIBILITY_EVENT = "kiworks-cookie-banner-visibility"
 // keine Wahl gespeichert ist, oder wenn über das Footer-Event erneut
 // geöffnet.
 export function CookieBanner() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ export function CookieBanner() {
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-4 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6">
         <p className="text-foreground/70 leading-relaxed">
           {t("cookieBanner.text")}{" "}
-          <a href="/datenschutz.html" className="font-medium text-cyan-700 hover:text-cyan-900 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
+          <a href={localizedPath("datenschutz", locale)} className="font-medium text-cyan-700 hover:text-cyan-900 dark:text-cyan-300 dark:hover:text-cyan-200 transition">
             {t("cookieBanner.link")}
           </a>
         </p>
