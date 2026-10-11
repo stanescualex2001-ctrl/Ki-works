@@ -172,6 +172,8 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 - **Vapi Publish** nicht automatisierbar; Wortlaut der dreisprachigen Sprachauswahl-Begrüßung (deutscher Akzent bei RO).
 - **Vor Go-Live:** `dev-seed-cleanup.sql`, Demo-Refresh-Timer deaktivieren + `[AUTO-DEMO]`-Einträge löschen.
 - **Billing:** keine automatische Abrechnung (Stripe/GoCardless offen); Agentur-Drilldown, echte Agentur noch nicht eingeladen.
+  Kontingent-Warn-Mail (80 %/100 %/Downgrade-Vorschlag) ist im Backend fertig (`usageWarnings.js`), braucht aber noch
+  Migration `029` auf dem Server + eine neue n8n-Workflow (Webhook-Pfad `usage-warning`) für den Mail-Versand selbst.
 - **Sicherheit:** Audit-Lücken in `docs/OFFENE_PUNKTE.md` (Rate-Limits, SSH nur Key, Backups offsite/verschlüsselt, Security-Header).
 - **Sonstiges:** Demo-Gespräche EN/RO nicht gegen DE-Originale abgeglichen; Migrationen/Workflows seit 25.08. laut Nutzer live.
 

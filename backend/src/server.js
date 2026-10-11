@@ -18,6 +18,8 @@ import { runWebchatTurn } from './webchat.js';
 import { logAction } from './auditLog.js';
 import { sendSms, reservationSms } from './sms.js';
 import { publishFacebookPhoto, publishInstagramPhoto } from './socialMedia.js';
+import { PRICING_TIERS, OVERAGE_RATE_PER_MINUTE } from './pricing.js';
+import { startUsageWarningChecks } from './usageWarnings.js';
 import {
   authMiddleware, adminOnly, customerScope, agencyScope,
   hashPassword, verifyPassword, signToken, generateSetupToken,
@@ -1281,16 +1283,6 @@ app.get('/api/stats/daily/by-restaurant', async (req, res) =>
 app.get('/api/stats/weekly/by-restaurant', async (req, res) =>
   res.json(await scopedStats(req, '7 days')));
 
-// Minuten-Kontingente je Tarif (siehe landing/src/App.jsx pricingTiers —
-// bei einer künftigen Preisänderung dort UND hier anpassen) + einheitlicher
-// Überschreitungspreis (siehe MARKETING.md Tarif-Tabelle).
-const PRICING_TIERS = {
-  solo: { label: 'Solo', minutesIncluded: 600 },
-  team: { label: 'Team', minutesIncluded: 1500 },
-  scale: { label: 'Scale', minutesIncluded: 3500 },
-};
-const OVERAGE_RATE_PER_MINUTE = 0.20;
-
 // Verbrauchte Gesprächsminuten im laufenden Kalendermonat + Vergleich gegen
 // das Kontingent des gebuchten Tarifs (rein informativ — es gibt noch kein
 // automatisches Billing, siehe CLAUDE.md „Offene Punkte").
@@ -1369,6 +1361,7 @@ async function purgeOldCallRawData() {
 purgeOldCallRawData();
 setInterval(purgeOldCallRawData, 24 * 60 * 60 * 1000);
 startMonitoring();
+startUsageWarningChecks();
 
 // -----------------------------------------------------------------------------
 app.use((err, _req, res, _next) => {

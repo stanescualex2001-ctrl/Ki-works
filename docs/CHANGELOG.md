@@ -1,5 +1,31 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Kontingent-Warn-Mail + regelbasierte Tarif-Empfehlung (11.10.2026):**
+  Nutzer fragte, wie Minuten-Überschreitung bei Solo/Team/Scale aktuell
+  läuft — Recherche ergab: `/api/usage` zeigt nur an, nichts wird
+  automatisch gewarnt/abgerechnet/geblockt (CLAUDE.md „Billing" war schon
+  korrekt). Gebaut: `backend/src/usageWarnings.js`, täglicher Check
+  (gleiches `setInterval`-Muster wie `monitoring.js`/DSGVO-Purge) über
+  alle Kunden mit gesetztem `pricing_tier`. Löst bei 80 % ("approaching")
+  und 100 % ("exceeded") des Kontingents eine `notifyN8n('usage-warning',
+  …)` aus — Empfänger laut Nutzer-Entscheidung Kunde **und** Admin
+  (`ADMIN_EMAIL`). Dedupe pro Kalendermonat + Schwelle über neue Tabelle
+  `usage_warnings_sent` (Migration `029`), damit der tägliche Check nicht
+  mehrfach pro Monat mailt. Zusätzlich auf Nutzer-Wunsch: regelbasierte
+  (kein Claude-Aufruf, keine laufenden Kosten — Nutzer-Entscheidung gegen
+  automatisierte KI-Texte hier) Tarif-Empfehlung aus den letzten bis zu 3
+  abgeschlossenen Kalendermonaten (`recommendTierChange()`) — Hochstufung
+  bei ⌀ ≥90 % des Kontingents über ≥2 Monate, Rückstufung bei ⌀ ≤40 %,
+  wird der Warn-Mail als `recommendation`-Feld beigelegt bzw. als eigener
+  `downgrade-suggestion`-Event verschickt, wenn kein Schwellenwert
+  getriggert hat. `PRICING_TIERS`/`OVERAGE_RATE_PER_MINUTE` dafür aus
+  `server.js` in neues Modul `backend/src/pricing.js` extrahiert (keine
+  Duplikation zwischen `/api/usage` und dem neuen Check). **Noch offen:**
+  Migration `029` muss auf dem Server laufen, und es braucht eine neue
+  n8n-Workflow für den Webhook-Pfad `usage-warning` (der eigentliche
+  Mail-Versand/-Text liegt wie bei allen anderen Benachrichtigungen in
+  n8n, nicht im Backend) — Payload-Form in `usageWarnings.js` dokumentiert.
+  Version 1.4.0 (4 package.json).
 - **Link-Audit-Fixes + Partner/Impressum/Datenschutz jetzt DE/EN/RO (11.10.2026):**
   Nutzer meldete: Links auf RO/EN-Seiten landeten teils auf der DE-Version,
   `partner.html` fehlte komplett in EN/RO, Funktionen-CTA zeigte auf den
