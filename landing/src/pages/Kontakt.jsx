@@ -173,19 +173,22 @@ export default function Kontakt() {
           </a>
         </div>
 
-        <button
-          type="button"
-          onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
-          className="group mt-5 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 text-left transition hover:border-cyan-400/30 sm:p-5"
-        >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] transition group-hover:scale-105">
+        <div className="mt-5 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 sm:p-5">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D]">
             <MessageCircle className="h-4 w-4" />
           </span>
-          <span>
+          <span className="flex-1">
             <span className="block text-sm font-semibold">{t("kontakt.chatHintTitle")}</span>
             <span className="mt-0.5 block text-xs text-foreground/60">{t("kontakt.chatHint")}</span>
           </span>
-        </button>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
+            className="shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2 text-xs font-semibold text-[#0A0F1D] hover:scale-[1.03] transition-transform"
+          >
+            {t("kontakt.chatHintButton")}
+          </button>
+        </div>
 
         <ContactForm />
       </div>

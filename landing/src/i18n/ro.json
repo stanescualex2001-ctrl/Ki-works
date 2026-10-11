@@ -151,6 +151,7 @@
     "placeholder": "› Alegeți o comandă mai sus pentru a testa Kiwo live.",
     "chatHintTitle": "Preferați să scrieți în loc să sunați?",
     "chatHint": "Discutați direct cu Kiwo.",
+    "chatHintButton": "Chat acum",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -443,6 +444,7 @@
     "phoneLabel": "Telefon",
     "chatHintTitle": "Aveți o întrebare specifică?",
     "chatHint": "Discutați direct cu Kiwo.",
+    "chatHintButton": "Chat acum",
     "form": {
       "heading": "Scrieți un mesaj",
       "planLabel": "Interesat de (opțional)",

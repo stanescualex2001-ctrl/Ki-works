@@ -867,19 +867,22 @@ export default function App() {
               </div>
             </GlowCard>
 
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
-              className="group mt-4 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 text-left transition hover:border-cyan-400/30 sm:p-5"
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D] transition group-hover:scale-105">
+            <div className="mt-4 flex w-full items-center gap-4 rounded-2xl border border-foreground/10 bg-gradient-to-br from-cyan-400/10 to-violet-500/10 p-4 sm:p-5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 text-[#0A0F1D]">
                 <MessageCircle className="h-4 w-4" />
               </span>
-              <span>
+              <span className="flex-1">
                 <span className="block text-sm font-semibold">{t("liveTest.chatHintTitle")}</span>
                 <span className="mt-0.5 block text-xs text-foreground/60">{t("liveTest.chatHint")}</span>
               </span>
-            </button>
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event(OPEN_CHAT_EVENT))}
+                className="shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-4 py-2 text-xs font-semibold text-[#0A0F1D] hover:scale-[1.03] transition-transform"
+              >
+                {t("liveTest.chatHintButton")}
+              </button>
+            </div>
           </div>
 
           <div className="mt-16 text-center">
@@ -938,16 +941,10 @@ export default function App() {
                   );
                 })}
               </div>
-              <div className="mt-6 hidden flex-wrap items-center gap-x-6 gap-y-2 md:flex">
-                <a
-                  href={`/dashboard/?lang=${locale}`}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
-                >
-                  {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
-                </a>
+              <div className="mt-6 hidden flex-wrap items-center gap-3 md:flex">
                 <a
                   href={localizedPath("funktionen", locale)}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground/60 hover:text-foreground transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-2.5 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
                 >
                   {t("dashboardSection.moreLinkText")} <ArrowRight className="h-3.5 w-3.5" />
                 </a>
@@ -993,16 +990,10 @@ export default function App() {
                   />
                 </div>
               </div>
-              <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 md:hidden">
-                <a
-                  href={`/dashboard/?lang=${locale}`}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-violet-600 hover:text-violet-800 dark:text-violet-300 dark:hover:text-violet-200 transition"
-                >
-                  {t("dashboardSection.linkText")} <ArrowRight className="h-3.5 w-3.5" />
-                </a>
+              <div className="mt-6 flex flex-wrap items-center gap-3 md:hidden">
                 <a
                   href={localizedPath("funktionen", locale)}
-                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground/60 hover:text-foreground transition"
+                  className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 px-5 py-2.5 text-sm font-semibold text-[#0A0F1D] glow-cyan hover:scale-[1.02] transition-transform"
                 >
                   {t("dashboardSection.moreLinkText")} <ArrowRight className="h-3.5 w-3.5" />
                 </a>

@@ -151,6 +151,7 @@
     "placeholder": "› Choose a command above to try Kiwo live.",
     "chatHintTitle": "Prefer writing over calling?",
     "chatHint": "Chat directly with Kiwo.",
+    "chatHintButton": "Chat now",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -443,6 +444,7 @@
     "phoneLabel": "Phone",
     "chatHintTitle": "Have a specific question?",
     "chatHint": "Chat directly with Kiwo.",
+    "chatHintButton": "Chat now",
     "form": {
       "heading": "Write a message",
       "planLabel": "Interested in (optional)",

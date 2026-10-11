@@ -151,6 +151,7 @@
     "placeholder": "› Wähle einen Befehl oben, um Kiwo live zu testen.",
     "chatHintTitle": "Lieber schreiben statt anrufen?",
     "chatHint": "Chatten Sie direkt mit Kiwo.",
+    "chatHintButton": "Jetzt chatten",
     "commands": {
       "call": {
         "role": "Kiwo Reception",
@@ -449,6 +450,7 @@
     "phoneLabel": "Telefon",
     "chatHintTitle": "Individuelle Frage?",
     "chatHint": "Chatten Sie direkt mit Kiwo.",
+    "chatHintButton": "Jetzt chatten",
     "form": {
       "heading": "Nachricht schreiben",
       "planLabel": "Interessiert an (optional)",
