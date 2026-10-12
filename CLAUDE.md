@@ -194,14 +194,16 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   gelassen (Kosten sparen) — Nutzer aktiviert ihn selbst bei Bedarf.
 - **White-Label:** Pixelpress ist die erste echte, eingeladene Agentur — eigene Branded-Domain
   `kunden.pixelpress.at` (A+AAAA auf den Contabo-Server, eigenes Let's-Encrypt-Zertifikat, `/api/public/branding`
-  erkennt Agentur automatisch per `Host`-Header gegen `agencies.domain`, kein Code mehr nötig) live seit 11.10.2026.
-  Branding (Produktname/Assistentenname/Logo/Akzent) muss die Agentur noch von Testwerten ("Lara") auf echte Werte
-  umstellen. Agentur-Benachrichtigungs-E-Mails (Einladung/Tagesbericht/Rückruf) sind seit v1.6.0 markensensitiv
-  (`backend/src/branding.js`), rohe Absenderadresse bleibt aber `info@ki-works.eu` (geteilte SMTP, nur Anzeigename
-  ändert sich) — eigene Absenderadresse bräuchte eigene Agentur-Mail-Infrastruktur. Nächste Agentur: gleicher Ablauf
-  (Domain im Admin-Dashboard eintragen, DNS A+AAAA, nginx-Serverblock nach `kunden.pixelpress.at`-Muster, certbot).
-  Agenturen sehen den Vapi-"Publish nötig"-Hinweis, können ihn aber nicht selbst quittieren (kein Vapi-Zugang) —
-  Admin bekommt seit v1.7.0 automatisch eine Mail, wenn eine Agentur einen neuen Kunden anlegt.
+  erkennt Agentur automatisch per `Host`-Header gegen `agencies.domain`) live seit 11.10.2026, Thema end-to-end
+  durchgezogen: Branding in UI/Telefon-Begrüßung/E-Mails, Einladungs-/Passwort-Reset-Links zeigen auf die Agentur-
+  Domain (`getAgencyBranding().baseUrl`, v1.8.0), `/api/login` lehnt Login über die falsche Domain mit 403 ab
+  (v1.9.0, betrifft Restaurant- und Agentur-Login), "Zurück zur Website"-Link bei aktivem Agentur-Branding
+  ausgeblendet statt falscher Domain. Branding (Produktname/Assistentenname/Logo/Akzent) muss Pixelpress noch von
+  Testwerten ("Lara") auf echte Werte umstellen. Rohe Mail-Absenderadresse bleibt `info@ki-works.eu` (geteilte SMTP,
+  nur Anzeigename ändert sich) — eigene Absenderadresse bräuchte eigene Agentur-Mail-Infrastruktur. Nächste Agentur:
+  gleicher Ablauf (Domain im Admin-Dashboard eintragen, DNS A+AAAA, nginx-Serverblock nach
+  `kunden.pixelpress.at`-Muster, certbot). Admin bekommt seit v1.7.0 automatisch eine Mail, wenn eine Agentur einen
+  neuen Kunden anlegt (Vapi-"Publish" kann nur der Admin selbst erledigen).
 - **Sicherheit:** Audit-Lücken in `docs/OFFENE_PUNKTE.md` (Rate-Limits, SSH nur Key, Backups offsite/verschlüsselt, Security-Header).
 - **Sonstiges:** Demo-Gespräche EN/RO nicht gegen DE-Originale abgeglichen; Migrationen/Workflows seit 25.08. laut Nutzer live.
 
