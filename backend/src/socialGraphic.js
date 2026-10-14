@@ -8,6 +8,7 @@ import sharp from 'sharp';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import { SCENES } from './socialScenes.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FONT_DIR = path.join(__dirname, '..', 'assets', 'fonts');
 const BOLD_FONT = `file://${path.join(FONT_DIR, 'SpaceGrotesk-Bold.ttf')}`;
@@ -26,8 +27,8 @@ function escapeXml(s) {
 
 // Grobe Zeilenumbruch-Schätzung ohne echte Textmessung (SVG/sharp bietet das
 // vor dem Rendern nicht) — Erfahrungswert für Space Grotesk Bold.
-function wrapLines(text, fontSize, maxWidth = MAX_TEXT_WIDTH, maxLines = 4) {
-  const avgCharWidth = fontSize * 0.58;
+function wrapLines(text, fontSize, maxWidth = MAX_TEXT_WIDTH, maxLines = 4, charFactor = 0.58) {
+  const avgCharWidth = fontSize * charFactor;
   const maxChars = Math.max(6, Math.floor(maxWidth / avgCharWidth));
   const words = text.trim().split(/\s+/);
   const lines = [];
@@ -52,10 +53,10 @@ function wrapLines(text, fontSize, maxWidth = MAX_TEXT_WIDTH, maxLines = 4) {
 
 function headlineFontSize(headline) {
   const len = headline.length;
-  if (len <= 20) return 84;
-  if (len <= 40) return 66;
-  if (len <= 70) return 52;
-  return 42;
+  if (len <= 20) return 104;
+  if (len <= 40) return 88;
+  if (len <= 70) return 70;
+  return 56;
 }
 
 // Statische (nicht animierte) Kurzform von Orb Buddy als Wiedererkennungs-
@@ -98,10 +99,10 @@ function buildSvg({ headline, subline, visual }) {
   const headlineTspans = lines.map((line, i) =>
     `<tspan x="${PADDING}" y="${startY + i * lineHeight}">${escapeXml(line)}</tspan>`).join('');
 
-  const sublineLines = subline ? wrapLines(subline, 34, MAX_TEXT_WIDTH, 2) : [];
+  const sublineLines = subline ? wrapLines(subline, 56, MAX_TEXT_WIDTH, 2) : [];
   const sublineY = startY + blockHeight + 20;
   const sublineTspans = sublineLines.map((line, i) =>
-    `<tspan x="${PADDING}" y="${sublineY + i * 44}">${escapeXml(line)}</tspan>`).join('');
+    `<tspan x="${PADDING}" y="${sublineY + i * 66}">${escapeXml(line)}</tspan>`).join('');
 
   return `
 <svg width="${WIDTH}" height="${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
@@ -137,26 +138,75 @@ function buildSvg({ headline, subline, visual }) {
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#bg)" />
   <rect width="${WIDTH}" height="${HEIGHT}" fill="url(#accent-glow)" />
 
-  <text font-family="Space Grotesk" font-weight="700" font-size="30" fill="${v.accentColor}" opacity="0.85" letter-spacing="1">
-    <tspan x="${PADDING}" y="120">${escapeXml(v.eyebrow)}</tspan>
+  <text font-family="Space Grotesk" font-weight="700" font-size="46" fill="${v.accentColor}" opacity="0.95" letter-spacing="2">
+    <tspan x="${PADDING}" y="125">${escapeXml(v.eyebrow)}</tspan>
   </text>
 
   <text font-family="Space Grotesk" font-weight="700" fill="${v.textColor}" font-size="${fontSize}">
     ${headlineTspans}
   </text>
 
-  ${subline ? `<text font-family="Space Grotesk" font-weight="500" fill="${v.textColor}" opacity="0.85" font-size="34">${sublineTspans}</text>` : ''}
+  ${subline ? `<text font-family="Space Grotesk" font-weight="700" fill="${v.textColor}" opacity="0.9" font-size="56">${sublineTspans}</text>` : ''}
 
   ${v.mascot === 'orb' ? orbBuddyMark(WIDTH - 150, HEIGHT - 210, 1.05) : ''}
 
-  <text font-family="Space Grotesk" font-weight="700" font-size="42" fill="${v.textColor}" opacity="0.92">
-    <tspan x="${PADDING}" y="${HEIGHT - 70}">${escapeXml(v.domain)}</tspan>
+  <text font-family="Space Grotesk" font-weight="700" font-size="60" fill="${v.textColor}" opacity="0.95">
+    <tspan x="${PADDING}" y="${HEIGHT - 55}">${escapeXml(v.domain)}</tspan>
   </text>
 </svg>`;
 }
 
-export async function renderSocialImage({ headline, subline, visual }) {
+
+// Szenen-Layout (Motiv-Bilder): großer Text oben, Motiv im unteren Bereich.
+// Headline max. 3 Zeilen, Untertitel 1 Zeile — der Social-Agent-Prompt
+// verlangt dafür kurze Texte.
+function sceneHeadlineSize(headline) {
+  const len = headline.length;
+  if (len <= 16) return 116;
+  if (len <= 30) return 104;
+  return 90;
+}
+
+function buildSceneSvg({ headline, subline, visual, scene }) {
+  const v = { ...DEFAULT_VISUAL, ...visual };
+  // Zeilenumbruch bevorzugt an Satzenden ("Auf dem Dach." / "Das Telefon klingelt."):
+  // größte Schrift wählen, bei der jeder Satz in eine Zeile passt (max. 3 Sätze),
+  // sonst normaler Umbruch. Zeichenbreite Space Grotesk Bold ≈ 0.52 × Schriftgröße.
+  const sentences = headline.trim().split(/(?<=[.!?])\s+/);
+  const fits = (sz) => sentences.every((t) => t.length <= Math.floor(MAX_TEXT_WIDTH / (sz * 0.52)));
+  const sentenceSize = sentences.length > 1 && sentences.length <= 3
+    ? [116, 104, 96, 90].find(fits) : undefined;
+  const size = sentenceSize || sceneHeadlineSize(headline);
+  const lines = sentenceSize ? sentences : wrapLines(headline, size, MAX_TEXT_WIDTH, 3, 0.52);
+  const lh = size * 1.08;
+  const tspans = lines.map((l, i) => `<tspan x="${PADDING}" y="${250 + i * lh}">${escapeXml(l)}</tspan>`).join('');
+  const subY = 250 + (lines.length - 1) * lh + 92;
+  const subLine = subline ? wrapLines(subline, 60, MAX_TEXT_WIDTH, 1, 0.5)[0] : '';
+  const accent = scene.accent;
+  return `
+<svg width="${WIDTH}" height="${HEIGHT}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="orb" cx="34%" cy="28%" r="80%"><stop offset="0" stop-color="#A5F3FC"/><stop offset="0.4" stop-color="#22D3EE"/><stop offset="1" stop-color="#7C3AED"/></radialGradient>
+    ${scene.defs}
+  </defs>
+  ${scene.bg}${scene.motif}
+  <text font-family="Space Grotesk" font-weight="700" font-size="46" letter-spacing="3" fill="${accent}"><tspan x="${PADDING}" y="118">${escapeXml(v.eyebrow)}</tspan></text>
+  <text font-family="Space Grotesk" font-weight="700" font-size="${size}" fill="#FFFFFF">${tspans}</text>
+  ${subLine ? `<text font-family="Space Grotesk" font-weight="700" font-size="60" fill="${accent}"><tspan x="${PADDING}" y="${subY}">${escapeXml(subLine)}</tspan></text>` : ''}
+  <text font-family="Space Grotesk" font-weight="700" font-size="60" fill="#FFFFFF" opacity="0.95"><tspan x="${PADDING}" y="${HEIGHT - 55}">${escapeXml(v.domain)}</tspan></text>
+  <g transform="translate(${WIDTH - 105} ${HEIGHT - 90})">
+    <circle r="69" fill="#22D3EE" opacity="0.25"/><circle r="46" fill="url(#orb)"/>
+    <circle cx="-14" cy="-5" r="5" fill="#0B1220"/><circle cx="14" cy="-5" r="5" fill="#0B1220"/>
+    <path d="M-13 13 Q0 25 13 13" fill="none" stroke="#0B1220" stroke-width="4.2" stroke-linecap="round"/>
+  </g>
+</svg>`;
+}
+
+// motif: Key aus socialScenes.js (SCENES). Unbekannt/leer/'standard' → das
+// bisherige Layout (Business-Verlauf + Maskottchen).
+export async function renderSocialImage({ headline, subline, visual, motif }) {
   if (!headline) throw new Error('renderSocialImage: headline erforderlich');
-  const svg = buildSvg({ headline, subline, visual });
+  const scene = motif ? SCENES[motif] : undefined;
+  const svg = scene ? buildSceneSvg({ headline, subline, visual, scene }) : buildSvg({ headline, subline, visual });
   return sharp(Buffer.from(svg)).png().toBuffer();
 }

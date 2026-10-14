@@ -188,6 +188,16 @@
   "keine E-Mail gefunden"-Quote weiter senken. Kleiner UI-Fix im
   Business-Dashboard: das Branchen-Dropdown war im Dark Mode kaum lesbar
   (transparenter Hintergrund), jetzt solide Füllfarbe.
+- **Social-Bilder mit Branchen-Motiv + größerer Schrift (14.10.2026):** neue
+  Szenen-Bibliothek `backend/src/socialScenes.js` (handwerker, friseur,
+  werkstatt, restaurant, immobilien, zaehlen, demo, agentur + `standard`),
+  `socialGraphic.js` rendert Szene + große Texte (Eyebrow 46, Untertitel 60,
+  Footer 60, Headline bis 116). Social-Agent wählt per neuem JSON-Feld
+  `motif` den Key (nur Businesses mit `useMotifs: true`, aktuell ki-works;
+  LEDTEK/pixelpress bleiben beim Standard-Layout, nur Schrift größer).
+  Headline max. 5 Wörter, Untertitel max. 28 Zeichen. Neues Motiv = ein
+  Eintrag in `SCENES` + Zeile in `SCENE_HINTS`.
+
 - **ki-works Sales-/Social-Agent mehrbranchig (04.10.2026):** ki-works-Profil
   (`backend/src/businessProfiles.js`) hat jetzt `industries` (Handwerker,
   Friseure, KFZ-Werkstätten, Restaurants, Immobilien; je Problem-Beispiel +

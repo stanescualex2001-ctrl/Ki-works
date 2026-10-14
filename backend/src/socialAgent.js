@@ -10,6 +10,7 @@ import fs from 'fs';
 import path from 'path';
 import { query } from './db.js';
 import { renderSocialImage } from './socialGraphic.js';
+import { SCENES, SCENE_HINTS } from './socialScenes.js';
 import { logAction } from './auditLog.js';
 import { getBusinessProfile } from './businessProfiles.js';
 import { ask } from './claude.js';
@@ -28,6 +29,13 @@ async function getUsedTopics(business, profile) {
 }
 
 function buildPrompt(excludeList, profile, topic) {
+  // Nur Businesses mit eigenen Motiv-Szenen (siehe profile.useMotifs):
+  // Claude wählt zum Thema den passenden Motiv-Key, sonst bleibt das Layout 'standard'.
+  const motifField = profile.useMotifs
+    ? `
+- motif: GENAU einer dieser Keys, passend zum Thema (Hintergrund + Motiv im Bild):
+${Object.entries(SCENE_HINTS).map(([k, h]) => `  ${k} = ${h}`).join('\n')}`
+    : '';
   const excludeBlock = excludeList.length
     ? excludeList.map((t) => `- ${t}`).join('\n')
     : '(noch keine)';
@@ -51,9 +59,9 @@ ${topicInstruction}
 Antworte NUR mit einem JSON-Codeblock (\`\`\`json ... \`\`\`), keinem weiteren
 Text davor oder danach. Format: ein Objekt mit genau diesen Feldern:
 - topic: kurzer interner Titel des Themas (für Dopplungs-Erkennung)
-- headline: sehr kurzer Blickfang-Satz fürs Bild (max. ca. 6 Wörter, ohne
-  Punkt am Ende)
-- subline: ein erklärender Satz fürs Bild (max. ca. 12 Wörter)
+- headline: sehr kurzer Blickfang-Satz fürs Bild (max. 5 Wörter, kurze
+  Wörter bevorzugen — die Schrift im Bild ist riesig)
+- subline: kurzer Zusatz fürs Bild, max. 28 Zeichen (eine Zeile)${motifField}
 - caption: der eigentliche Instagram/Facebook-Beitragstext (2-4 Sätze,
   deutsch, endet mit einem dezenten Call-to-Action und 3-5 passenden
   Hashtags)`;
@@ -110,7 +118,8 @@ async function runSocialAgentInner({ business, assetsDir, topic, apiKey, profile
   const fullText = response.content.filter((b) => b.type === 'text').map((b) => b.text).join('\n');
   const draft = extractJsonObject(fullText);
 
-  const imageBuffer = await renderSocialImage({ headline: draft.headline, subline: draft.subline, visual: profile.visual });
+  const motif = profile.useMotifs && SCENES[draft.motif] ? draft.motif : 'standard';
+  const imageBuffer = await renderSocialImage({ headline: draft.headline, subline: draft.subline, visual: profile.visual, motif });
   const filename = `${crypto.randomUUID()}.png`;
   fs.mkdirSync(assetsDir, { recursive: true });
   fs.writeFileSync(path.join(assetsDir, filename), imageBuffer);
@@ -120,6 +129,7 @@ async function runSocialAgentInner({ business, assetsDir, topic, apiKey, profile
     topic: draft.topic ?? draft.headline,
     headline: draft.headline,
     subline: draft.subline ?? null,
+    motif,
     caption: draft.caption,
     imageUrl,
   };

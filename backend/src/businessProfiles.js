@@ -119,6 +119,8 @@ Rufen Sie +43 726 223 417 an und hören Sie selbst, wie Kiwo klingt (2 Minuten).
 Alex von ki-works.eu
 Tel. +43 650 9915759
 info@ki-works.eu`,
+    // Social-Bilder mit Branchen-Motiv/eigenem Hintergrund (socialScenes.js)
+    useMotifs: true,
     seedTopics: ['Verpasster Anruf = verlorene Reservierung', 'Zeitersparnis: 15 Stunden pro Woche'],
     // Sichtbares Branding für Social-Media-Grafiken (socialGraphic.js) —
     // je Business eigene Farben/Beschriftung, sonst würde jedes Bild
