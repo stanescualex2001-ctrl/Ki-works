@@ -108,13 +108,13 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
   Rechenlogik/Formeln und größere UI-Umbauten auf `landing/` — bei
   offensichtlich risikoarmen, rein kosmetischen Änderungen (z. B. Text
   größer machen) ist ein Prototyp-Umweg nicht nötig.
-- **Marketing-Themen laufen in einer separaten Sitzung (06.10.2026):**
-  Akquise-Texte, Social-Media-Inhalte, Kampagnen-/Marketing-Strategie
-  (inkl. `MARKETING.md`) bearbeitet der Nutzer bewusst woanders — hier
-  nur Code/Funktionalität. Keine Marketing-Vorschläge/-Umsetzung von mir
-  aus anstoßen; falls ein Marketing-Thema (z. B. Sales-/Social-Agent-
-  Prompt-Text) hier doch zur Sprache kommt, nur auf explizite
-  Nutzer-Nachfrage behandeln.
+- **Sitzungs-Aufteilung (14.10.2026, Nutzer-Klarstellung):** Es laufen mehrere Claude-Code-Sitzungen
+  parallel. Eine Sitzung ist die **Marketing-Sitzung** (Akquise-/Social-Texte, Bilder/Videos, Strategie,
+  `MARKETING.md` — dort ist auch Code erlaubt, wenn er dem Marketing dient: Sales-/Social-Agent, Social-
+  Grafiken `socialScenes.js`/`socialGraphic.js`, Business-Dashboard-Agentenkarten). Die anderen Sitzungen
+  machen Produkt-/Plattform-Code (White-Label, Telefon-Kiwo, Dashboard). Wer nicht sicher ist, in welcher
+  Sitzung er läuft: den Nutzer fragen, bevor er Marketing-Themen ablehnt oder abgrenzt.
+
 ## Architektur (Kurzfassung)
 
 - **Apps:** `backend/` (Node/Express, PostgreSQL), `landing/` (ki-works.eu, Vite+React, SSR-Prerender, DE/EN/RO),
