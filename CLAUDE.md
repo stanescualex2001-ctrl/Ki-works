@@ -154,7 +154,8 @@ Kontrolle ggf. `sudo cat /proc/$(systemctl show ki-works-api -p MainPID
 - **Theme-Keys pro App** (`kiworks-theme-landing/-dashboard/-intern`), da gleiche Origin.
 - **Print-PDFs:** nur statische (nicht Variable) Fonts, TrimBox/BleedBox per pikepdf ergänzen; im Zweifel Proof-Datei der Druckerei erfragen.
 - **Social-Assets (Chat-Sandbox):** `edge-tts` braucht Proxy-CA an `certifi` angehängt; echte Logos verwenden, Orb Buddy in jeder
-  KI-Works-Reel-Szene, Caption als eigene Datei, Wegwerf-Skripte danach löschen.
+  KI-Works-Reel-Szene, Caption als eigene Datei, Wegwerf-Skripte danach löschen. **Jedes Bild/Video IMMER zusammen mit Beitragstext
+  + Link-Kommentar (UTM) liefern** (Nutzer-Wunsch 14.10.2026); Videos 9:16, Untertitel eingebrannt, als "Beispielgespräch" markiert.
 - **DNS:** AAAA-Eintrag von ki-works.eu muss auf Contabo-IPv6 `2a02:c207:2341:9465::1` zeigen (war Ursache von Zertifikat-Problem + "Forbidden" im Mobilfunk, behoben, Mobilfunk bestätigt).
 - **HTML nie ohne Cache-Control ausliefern:** Alle `.html`-Seiten (Landingpage `/`+`/en/`+`/ro/`+Unterseiten,
   `/dashboard`, `/intern`) brauchen `Cache-Control: no-store, no-cache, must-revalidate` in nginx — sonst darf der
