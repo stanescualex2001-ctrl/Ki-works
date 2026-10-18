@@ -160,6 +160,9 @@
     "colPhone": "Telefon",
     "colParty": "Pers.",
     "colSource": "Sursă",
+    "colSource": "Sursă",
+    "sourceForm": "Formular de contact",
+    "sourceChat": "Chat web",
     "colStatus": "Stare",
     "colNotes": "Note",
     "cancel": "Anulează"

@@ -1,5 +1,11 @@
 # Changelog – Bereits erledigt (Archiv, nicht automatisch geladen)
 
+- **Herkunft von Anfragen per UTM-Link (18.10.2026, v1.10.0):** Landingpage merkt sich
+  `utm_source/medium/campaign` pro Tab (`landing/src/lib/utm.js`, sessionStorage, kein
+  Cookie) und schickt sie nur beim Absenden des Kontaktformulars mit. Backend speichert sie
+  in `leads.source` als `utm:<source>/<medium>/<campaign>` (keine Migration nötig, Format
+  per Regex geprüft). Dashboard (Admin) → Anfragen: neue Spalte "Herkunft"
+  (z. B. "linkedin · erklaervideo"; ohne UTM "Kontaktformular", Chat "Web-Chat").
 - **Agentur-Login nur noch über die eigene Domain erlaubt (11.10.2026, v1.9.0):**
   Nutzer-Frage "warum kann ein Agentur-Kunde über ki-works einloggen?" deckte
   die letzte echte Lücke auf: `/api/login` prüfte bisher nur E-Mail/Passwort,

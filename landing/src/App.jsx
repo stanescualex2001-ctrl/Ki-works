@@ -1,3 +1,4 @@
+import "./lib/utm.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {

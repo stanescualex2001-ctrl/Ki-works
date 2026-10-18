@@ -3,6 +3,7 @@ import { Mail, Phone, Send, Check, MessageCircle } from "lucide-react";
 import { PageShell } from "../components/PageShell.jsx";
 import { OPEN_CHAT_EVENT } from "../components/ChatWidget.jsx";
 import { useI18n, localizedPath } from "../i18n/index.jsx";
+import { getUtm } from "../lib/utm.js";
 
 const PLAN_OPTIONS = ["Solo", "Team", "Scale", "Custom"];
 
@@ -24,7 +25,7 @@ function ContactForm() {
     e.preventDefault();
     setStatus("sending");
     setError(null);
-    const body = plan ? { ...form, message: `[Paket: ${plan}] ${form.message}` } : form;
+    const body = { ...(plan ? { ...form, message: `[Paket: ${plan}] ${form.message}` } : form), utm: getUtm() };
     fetch("/api/public/interest", {
       method: "POST",
       headers: { "content-type": "application/json" },

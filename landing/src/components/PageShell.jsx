@@ -1,3 +1,4 @@
+import "../lib/utm.js";
 import { Header } from "./Header.jsx";
 import { Footer } from "./Footer.jsx";
 import { CookieBanner } from "./CookieBanner.jsx";

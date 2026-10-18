@@ -2063,6 +2063,17 @@ function AgencyProfile({ refreshKey, onChanged, agencyId }) {
 
 const LEAD_STATUS_KEYS = ['new', 'contacted', 'won', 'lost'];
 
+// Herkunft eines Leads: "utm:linkedin/social/erklaervideo" → "linkedin · erklaervideo"
+function leadSourceLabel(source, t) {
+  if (!source) return t('leads.sourceForm');
+  if (source === 'webchat') return t('leads.sourceChat');
+  if (source.startsWith('utm:')) {
+    const [src, , campaign] = source.slice(4).split('/');
+    return [src, campaign].filter(Boolean).join(' · ') || t('leads.sourceForm');
+  }
+  return source;
+}
+
 function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
   const { t, locale } = useI18n();
   const intlLocale = LOCALE_INTL[locale] || LOCALE_INTL.de;
@@ -2099,7 +2110,7 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
             <tr>
               <th>{t('leads.colReceived')}</th><th>{t('leads.colName')}</th><th>{t('leads.colBusiness')}</th>
               <th>{t('leads.colEmail')}</th><th>{t('leads.colPhone')}</th><th>{t('leads.colMessage')}</th>
-              <th>{t('leads.colStatus')}</th>
+              <th>{t('leads.colSource')}</th><th>{t('leads.colStatus')}</th>
             </tr>
           </thead>
           <tbody>
@@ -2111,6 +2122,7 @@ function Leads({ refreshKey, onChanged, onOpenRestaurant }) {
                 <td>{l.email || '–'}</td>
                 <td>{l.phone || '–'}</td>
                 <td>{l.message || ''}</td>
+                <td>{leadSourceLabel(l.source, t)}</td>
                 <td className="lead-actions">
                   <select
                     value={l.status}

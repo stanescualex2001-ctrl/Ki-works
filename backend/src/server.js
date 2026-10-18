@@ -326,15 +326,17 @@ app.post('/api/webhooks/social-post', async (req, res) => {
 
 // --- Interessenten-Formular der Firmen-Website (öffentlich) --------------------
 app.post('/api/public/interest', async (req, res) => {
-  const { name, business, email, phone, message } = req.body || {};
+  const { name, business, email, phone, message, utm } = req.body || {};
   if (!name || (!email && !phone)) {
     return res.status(400).json({ error: 'Name und E-Mail oder Telefon erforderlich' });
   }
   const clip = (v, n) => (typeof v === 'string' ? v.slice(0, n) : null);
   const { rows } = await query(
-    `INSERT INTO leads (name, business, email, phone, message)
-     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-    [clip(name, 120), clip(business, 120), clip(email, 160), clip(phone, 40), clip(message, 2000)],
+    `INSERT INTO leads (name, business, email, phone, message, source)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [clip(name, 120), clip(business, 120), clip(email, 160), clip(phone, 40), clip(message, 2000),
+      // Herkunft aus UTM-Link (z. B. "linkedin/social/erklaervideo"); sonst NULL = Kontaktformular
+      typeof utm === 'string' && /^[\w.\-]{0,40}\/[\w.\-]{0,40}\/[\w.\-]{0,40}$/.test(utm) ? `utm:${utm}` : null],
   );
   notifyN8n('neuer-interessent', { lead: rows[0] });
   res.status(201).json({ ok: true });

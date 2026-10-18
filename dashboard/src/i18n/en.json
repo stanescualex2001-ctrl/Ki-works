@@ -160,6 +160,9 @@
     "colPhone": "Phone",
     "colParty": "Guests",
     "colSource": "Source",
+    "colSource": "Source",
+    "sourceForm": "Contact form",
+    "sourceChat": "Web chat",
     "colStatus": "Status",
     "colNotes": "Notes",
     "cancel": "Cancel"
